@@ -1,0 +1,19 @@
+name: global
+on:
+  pull_request:
+  release:
+    types: [ published ]
+jobs:
+  copyright:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout devtools
+        uses: actions/checkout@v2
+
+      - name: Check copyright notice
+        run: |
+          pip install \
+            pre-commit \
+            python-magic==0.4.18 \
+            comment-parser>=1.2.3
+          pre-commit run --all-files
