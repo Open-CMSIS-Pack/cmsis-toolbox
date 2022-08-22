@@ -2,9 +2,13 @@
 
 This is the installer for the CMSIS-Toolbox.
 
-**Refer to:**
-- [Overview.md](./docs/Overview.md) for an overview of the CMSIS-Toolbox
-- [Installation](./docs/installation.md) for details on how to setup the CMSIS-Toolbox
+## Download and Install
+
+The **CMSIS-Toolbox** is currently under development but supports already a wide range of use cases.
+
+- [**Download CMSIS-Toolbox**](https://github.com/Open-CMSIS-Pack/devtools/releases)
+- [**Setup and Installation**](./docs/installation.md)
+- [**Implementation Progress**](./docs/progress.md)
 
 This installer provides:
 

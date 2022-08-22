@@ -1,5 +1,5 @@
-[submodule "external/googletest"]
-	path = external/googletest
-	url = https://github.com/google/googletest.git
+[submodule "external/open-cmsis-pack-devtools"]
+	path = external/open-cmsis-pack-devtools
+	url = https://github.com/Open-CMSIS-Pack/devtools.git
 	branch = main
 	ignore = dirty
