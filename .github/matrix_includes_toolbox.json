@@ -3,7 +3,7 @@
         "runs_on":"macos-12",
         "target":"darwin64",
         "arch": "amd64",
-        "runOn": "publicRepo"
+        "runOn": "always"
     },
     {
         "runs_on":"ubuntu-20.04",

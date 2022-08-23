@@ -20,8 +20,7 @@ on:
 jobs:
   matrix_prep:
     if: |
-        (github.event_name == 'pull_request') ||
-        (github.event_name == 'release' && startsWith(github.ref, 'refs/heads/main/'))
+        (github.event_name == 'pull_request') || (github.event_name == 'release')
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -121,99 +120,6 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-  release:
-    if: |
-        github.event_name == 'release' &&
-        startsWith(github.ref, 'refs/tags/heads/main/')
-    needs: [ create_installer ]
-    runs-on: ubuntu-20.04
-    timeout-minutes: 15
-
-    steps:
-      - name: Checkout devtools
-        uses: actions/checkout@v2
-
-      - name: Download cmsis-toolbox installer
-        uses: actions/download-artifact@v2
-        with:
-          name: cmsis-toolbox
-          path: ${{ github.workspace }}
-
-      - name: Attach installer to release assets
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: cmsis-toolbox.sh
-          tag: ${{ github.ref }}
-          overwrite: true
-          asset_name: cmsis-toolbox.sh
-
-      - name: Extract cmsis-toolbox installer files
-        run: |
-          chmod +x cmsis-toolbox.sh
-          ./cmsis-toolbox.sh -x toolbox/zip
-
-      - name: Copy files separated by target for archiving
-        run: |
-          mkdir -p zip/cmsis-toolbox-windows64/bin zip/cmsis-toolbox-windows64/etc zip/cmsis-toolbox-windows64/doc
-          mkdir -p zip/cmsis-toolbox-linux64/bin   zip/cmsis-toolbox-linux64/etc   zip/cmsis-toolbox-linux64/doc
-          mkdir -p zip/cmsis-toolbox-darwin64/bin  zip/cmsis-toolbox-darwin64/etc  zip/cmsis-toolbox-darwin64/doc
-          cp zip/bin/cbuild.exe    zip/cmsis-toolbox-windows64/bin/cbuild.exe
-          cp zip/bin/cbuildgen.exe zip/cmsis-toolbox-windows64/bin/cbuildgen.exe
-          cp zip/bin/cpackget.exe  zip/cmsis-toolbox-windows64/bin/cpackget.exe
-          cp zip/bin/csolution.exe zip/cmsis-toolbox-windows64/bin/csolution.exe
-          cp zip/bin/packchk.exe   zip/cmsis-toolbox-windows64/bin/packchk.exe
-          cp zip/bin/cbuild.lin    zip/cmsis-toolbox-linux64/bin/cbuild
-          cp zip/bin/cbuildgen.lin zip/cmsis-toolbox-linux64/bin/cbuildgen
-          cp zip/bin/cpackget.lin  zip/cmsis-toolbox-linux64/bin/cpackget
-          cp zip/bin/csolution.lin zip/cmsis-toolbox-linux64/bin/csolution
-          cp zip/bin/packchk.lin   zip/cmsis-toolbox-linux64/bin/packchk
-          cp zip/bin/cbuild.mac    zip/cmsis-toolbox-darwin64/bin/cbuild
-          cp zip/bin/cbuildgen.mac zip/cmsis-toolbox-darwin64/bin/cbuildgen
-          cp zip/bin/cpackget.mac  zip/cmsis-toolbox-darwin64/bin/cpackget
-          cp zip/bin/csolution.mac zip/cmsis-toolbox-darwin64/bin/csolution
-          cp zip/bin/packchk.mac   zip/cmsis-toolbox-darwin64/bin/packchk
-          cp zip/LICENSE.txt       zip/cmsis-toolbox-windows64/LICENSE.txt
-          cp zip/LICENSE.txt       zip/cmsis-toolbox-linux64/LICENSE.txt
-          cp zip/LICENSE.txt       zip/cmsis-toolbox-darwin64/LICENSE.txt
-          rm zip/etc/setup
-          cp -r zip/etc/*          zip/cmsis-toolbox-windows64/etc
-          cp -r zip/etc/*          zip/cmsis-toolbox-linux64/etc
-          cp -r zip/etc/*          zip/cmsis-toolbox-darwin64/etc
-          cp -r zip/doc/*          zip/cmsis-toolbox-windows64/doc
-          cp -r zip/doc/*          zip/cmsis-toolbox-linux64/doc
-          cp -r zip/doc/*          zip/cmsis-toolbox-darwin64/doc
-        working-directory: toolbox
-
-      - name: Set toolchain default paths
-        run: |
-          ./scripts/set-default.sh Windows zip/cmsis-toolbox-windows64/etc
-          ./scripts/set-default.sh Linux zip/cmsis-toolbox-linux64/etc
-          ./scripts/set-default.sh Darwin zip/cmsis-toolbox-darwin64/etc
-
-      - name: Zip folders
-        run: |
-          zip -r cmsis-toolbox-windows64.zip       cmsis-toolbox-windows64
-          tar -czvf cmsis-toolbox-linux64.tar.gz   cmsis-toolbox-linux64
-          tar -czvf cmsis-toolbox-darwin64.tar.gz  cmsis-toolbox-darwin64
-        working-directory: toolbox/zip
-
-      - name: Calculate checksums
-        run: |
-          sha256sum cmsis-toolbox-windows64.zip --text > cmsis-toolbox-checksums.txt
-          sha256sum cmsis-toolbox-linux64.tar.gz --text >> cmsis-toolbox-checksums.txt
-          sha256sum cmsis-toolbox-darwin64.tar.gz --text >> cmsis-toolbox-checksums.txt
-        working-directory: toolbox/zip
-
-      - name: Attach installer to release assets
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: toolbox/zip/cmsis-toolbox-*
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
-
   tests:
     needs: [ create_installer, matrix_prep ]
     timeout-minutes: 15
@@ -303,3 +209,148 @@ jobs:
         with:
           check_name: toolbox_test-${{ matrix.target }}-${{ matrix.arch }}
           report_paths: build/test_reports/toolboxtest1-${{ matrix.target }}.xml
+
+  release:
+    if: github.event_name == 'release'
+    needs: [ create_installer ]
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout devtools
+        uses: actions/checkout@v2
+
+      - name: Download cmsis-toolbox installer
+        uses: actions/download-artifact@v2
+        with:
+          name: cmsis-toolbox
+          path: ${{ github.workspace }}
+
+      - name: Attach installer to release assets
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: cmsis-toolbox.sh
+          tag: ${{ github.ref }}
+          overwrite: true
+          asset_name: cmsis-toolbox.sh
+
+      - name: Extract cmsis-toolbox installer files
+        run: |
+          chmod +x cmsis-toolbox.sh
+          ./cmsis-toolbox.sh -x toolbox/zip
+
+      - name: Copy files separated by target for archiving
+        run: |
+          mkdir -p zip/cmsis-toolbox-windows64/bin zip/cmsis-toolbox-windows64/etc zip/cmsis-toolbox-windows64/doc
+          mkdir -p zip/cmsis-toolbox-linux64/bin   zip/cmsis-toolbox-linux64/etc   zip/cmsis-toolbox-linux64/doc
+          mkdir -p zip/cmsis-toolbox-darwin64/bin  zip/cmsis-toolbox-darwin64/etc  zip/cmsis-toolbox-darwin64/doc
+          cp zip/bin/cbuild.exe    zip/cmsis-toolbox-windows64/bin/cbuild.exe
+          cp zip/bin/cbuildgen.exe zip/cmsis-toolbox-windows64/bin/cbuildgen.exe
+          cp zip/bin/cpackget.exe  zip/cmsis-toolbox-windows64/bin/cpackget.exe
+          cp zip/bin/csolution.exe zip/cmsis-toolbox-windows64/bin/csolution.exe
+          cp zip/bin/packchk.exe   zip/cmsis-toolbox-windows64/bin/packchk.exe
+          cp zip/bin/cbuild.lin    zip/cmsis-toolbox-linux64/bin/cbuild
+          cp zip/bin/cbuildgen.lin zip/cmsis-toolbox-linux64/bin/cbuildgen
+          cp zip/bin/cpackget.lin  zip/cmsis-toolbox-linux64/bin/cpackget
+          cp zip/bin/csolution.lin zip/cmsis-toolbox-linux64/bin/csolution
+          cp zip/bin/packchk.lin   zip/cmsis-toolbox-linux64/bin/packchk
+          cp zip/bin/cbuild.mac    zip/cmsis-toolbox-darwin64/bin/cbuild
+          cp zip/bin/cbuildgen.mac zip/cmsis-toolbox-darwin64/bin/cbuildgen
+          cp zip/bin/cpackget.mac  zip/cmsis-toolbox-darwin64/bin/cpackget
+          cp zip/bin/csolution.mac zip/cmsis-toolbox-darwin64/bin/csolution
+          cp zip/bin/packchk.mac   zip/cmsis-toolbox-darwin64/bin/packchk
+          cp zip/LICENSE.txt       zip/cmsis-toolbox-windows64/LICENSE.txt
+          cp zip/LICENSE.txt       zip/cmsis-toolbox-linux64/LICENSE.txt
+          cp zip/LICENSE.txt       zip/cmsis-toolbox-darwin64/LICENSE.txt
+          rm zip/etc/setup
+          cp -r zip/etc/*          zip/cmsis-toolbox-windows64/etc
+          cp -r zip/etc/*          zip/cmsis-toolbox-linux64/etc
+          cp -r zip/etc/*          zip/cmsis-toolbox-darwin64/etc
+          cp -r zip/doc/*          zip/cmsis-toolbox-windows64/doc
+          cp -r zip/doc/*          zip/cmsis-toolbox-linux64/doc
+          cp -r zip/doc/*          zip/cmsis-toolbox-darwin64/doc
+        working-directory: toolbox
+
+      - name: Set toolchain default paths
+        run: |
+          ./scripts/set-default.sh Windows zip/cmsis-toolbox-windows64/etc
+          ./scripts/set-default.sh Linux zip/cmsis-toolbox-linux64/etc
+          ./scripts/set-default.sh Darwin zip/cmsis-toolbox-darwin64/etc
+
+      - name: Zip folders
+        run: |
+          zip -r cmsis-toolbox-windows64.zip       cmsis-toolbox-windows64
+          tar -czvf cmsis-toolbox-linux64.tar.gz   cmsis-toolbox-linux64
+          tar -czvf cmsis-toolbox-darwin64.tar.gz  cmsis-toolbox-darwin64
+        working-directory: toolbox/zip
+
+      - name: Calculate checksums
+        id: checksum
+        run: |
+          echo "::set-output name=WIN_SHA::$(echo $(sha256sum cmsis-toolbox-windows64.zip | cut -f1 -d' '))"
+          echo "::set-output name=LIN_SHA::$(echo $(sha256sum cmsis-toolbox-linux64.tar.gz | cut -f1 -d' '))"
+          echo "::set-output name=MAC_SHA::$(echo $(sha256sum cmsis-toolbox-darwin64.tar.gz | cut -f1 -d' '))"
+          sha256sum cmsis-toolbox-windows64.zip --text > cmsis-toolbox-checksums.txt
+          sha256sum cmsis-toolbox-linux64.tar.gz --text >> cmsis-toolbox-checksums.txt
+          sha256sum cmsis-toolbox-darwin64.tar.gz --text >> cmsis-toolbox-checksums.txt
+        working-directory: tools/toolbox/zip
+
+      - name: Attach installer to release assets
+        id: release_assets
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: toolbox/zip/cmsis-toolbox-*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+
+      - name: Checkout vcpkg-ce-registry repo
+        uses: actions/checkout@v3
+        with:
+          repository: Open-CMSIS-Pack/vcpkg-ce-registry
+          path: vcpkg-ce-registry
+          # token needs to be changed
+          token: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Set variables
+        id: vars
+        run: |
+          echo "::set-output name=VERSION::$(echo ${{github.ref_name}} | sed 's/.*\///')"
+          echo "::set-output name=MANIFEST_FILE::$(echo tools\/open-cmsis-pack\/ctools-$(echo ${{github.ref_name}} | sed 's/.*\///').json)"
+          echo "::set-output name=API_URL::$(echo "https://api.github.com/repos/Open-CMSIS-Pack/cmsis-toolbox/releases/tags/${{github.ref_name}}")"
+
+      - name: Update Index file
+        run: |
+          sed -i -e '1h;1!H;$!d;x;s/.*.json*/&,\n    tools\/open-cmsis-pack\/ctools-${{ steps.vars.outputs.VERSION }}.json/' index.yaml
+        working-directory: ./vcpkg-ce-registry
+
+      - name: Create manifest file
+        run: cp tools/open-cmsis-pack/ctools-0.10.1.json ${{ steps.vars.outputs.MANIFEST_FILE }}
+        working-directory: ./vcpkg-ce-registry
+
+      - name: Update manifest file
+        run: |
+          WIN_URL=$(curl -s "${{ steps.vars.outputs.API_URL }}" | jq --raw-output '.assets[] | select(.name=="cmsis-toolbox-windows64.zip") | .browser_download_url')
+          LIN_URL=$(curl -s "${{ steps.vars.outputs.API_URL }}" | jq --raw-output '.assets[] | select(.name=="cmsis-toolbox-linux64.tar.gz") | .browser_download_url')
+          MAC_URL=$(curl -s "${{ steps.vars.outputs.API_URL }}" | jq --raw-output '.assets[] | select(.name=="cmsis-toolbox-darwin64.tar.gz") | .browser_download_url')
+          jq --arg win_url "$WIN_URL" --arg lin_url "$LIN_URL" --arg mac_url "$MAC_URL" --raw-output '.info.version="${{ steps.vars.outputs.VERSION }}" | .demands."windows and x64".install.unzip=$win_url | .demands."windows and x64".install.sha256="${{ steps.checksum.outputs.WIN_SHA }}" | .demands."linux and x64".install.untar=$lin_url | .demands."linux and x64".install.sha256="${{ steps.checksum.outputs.LIN_SHA }}" | .demands."osx and x64".install.untar=$mac_url | .demands."osx and x64".install.sha256="${{ steps.checksum.outputs.MAC_SHA }}"' ${{ steps.vars.outputs.MANIFEST_FILE }} > OUT.tmp && mv OUT.tmp ${{ steps.vars.outputs.MANIFEST_FILE }}
+        working-directory: ./vcpkg-ce-registry
+
+      - name: commit changes
+        id: commit_changes
+        uses: endbug/add-and-commit@v9
+        with:
+          message: 'Version ${{ steps.vars.outputs.VERSION }} update'
+          add: 'index.yaml ${{ steps.vars.outputs.MANIFEST_FILE }} --force'
+          cwd: './vcpkg-ce-registry/'
+
+      - name: Rollback Release
+        if: failure()
+        uses: author/action-rollback@stable
+        with:
+          tag: ${{ github.ref_name }}
+          delete_orphan_tag: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
