@@ -224,15 +224,34 @@ jobs:
       fail-fast: true
       matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
     steps:
-      - name: Install packages
+      - name: Install macos deps
+        if: ${{ startsWith(matrix.runs_on, 'macos') }}
         run: |
-          sudo apt-get install ninja-build
-      - name: Checkout devtools
+          brew install \
+            ninja
+
+      - name: Install linux deps
+        if: ${{ startsWith(matrix.runs_on, 'ubuntu') }}
+        run: |
+          sudo apt update
+          sudo apt-get install \
+            bc \
+            build-essential \
+            ninja-build
+
+      - name: Install windows deps
+        if: ${{ startsWith(matrix.runs_on, 'windows') }}
+        run: choco install -y ninja
+
+      - name: Checkout cmsis-toolbox
         uses: actions/checkout@v2
         with:
           submodules: recursive
 
-      # https://github.com/Open-CMSIS-Pack/devtools-build-action
+      - name: Create build folder
+        run: |
+          mkdir build
+
       - name: Download cmsis-toolbox installer
         uses: actions/download-artifact@v2
         with:
@@ -243,16 +262,22 @@ jobs:
         if: ${{ startsWith(matrix.runs_on, 'macos') || startsWith(matrix.runs_on, 'ubuntu') }}
         run: chmod +x cmsis-toolbox.sh
 
-      - name: Build ToolboxTests
-        uses: Open-CMSIS-Pack/devtools-build-action@v1.1
+      - name: Configure windows build for amd64
+        if: ${{ startsWith(matrix.runs_on, 'windows') }}
+        uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: ${{ matrix.arch }}
-          build_type: Debug
-          target: ToolboxTests
+          arch: amd64
 
-      - name: Run Toolbox tests
+      - uses: ammaraskar/gcc-problem-matcher@master
+        if: ${{ startsWith(matrix.runs_on, 'macos') || startsWith(matrix.runs_on, 'ubuntu') }}
+      - uses: ammaraskar/msvc-problem-matcher@master
+        if: ${{ startsWith(matrix.runs_on, 'windows') }}
+
+      - name: Build and run Toolbox tests
         run: |
-          ctest -V -C Debug -R ToolboxTests
+          cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug ..
+          cmake --build . --target ToolboxTest1
+          ctest -V -C Debug -R ToolboxTest1
         working-directory: ./build
 
       - name: Archive tests results
@@ -269,7 +294,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: toolbox_test-${{ matrix.target }}-${{ matrix.arch }}
-          path: ./build/test_reports/toolboxtests-*.xml
+          path: ./build/test_reports/toolboxtest1-*.xml
           retention-days: 1
           if-no-files-found: error
 
@@ -277,4 +302,4 @@ jobs:
         uses: mikepenz/action-junit-report@v2
         with:
           check_name: toolbox_test-${{ matrix.target }}-${{ matrix.arch }}
-          report_paths: build/test_reports/toolboxtests-${{ matrix.target }}.xml
+          report_paths: build/test_reports/toolboxtest1-${{ matrix.target }}.xml
