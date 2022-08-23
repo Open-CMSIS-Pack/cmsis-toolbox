@@ -224,10 +224,13 @@ jobs:
       fail-fast: true
       matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
     steps:
+      - name: Install packages
+        run: |
+          sudo apt-get install ninja-build
       - name: Checkout devtools
         uses: actions/checkout@v2
         with:
-          submodules: true
+          submodules: recursive
 
       # https://github.com/Open-CMSIS-Pack/devtools-build-action
       - name: Download cmsis-toolbox installer
