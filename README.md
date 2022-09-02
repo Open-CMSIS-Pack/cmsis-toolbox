@@ -6,7 +6,7 @@ This is the installer for the CMSIS-Toolbox.
 
 The **CMSIS-Toolbox** is currently under development but supports already a wide range of use cases.
 
-- [**Download CMSIS-Toolbox**](https://github.com/Open-CMSIS-Pack/devtools/releases)
+- [**Download CMSIS-Toolbox**](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases)
 - [**Setup and Installation**](./docs/installation.md)
 - [**Implementation Progress**](./docs/progress.md)
 

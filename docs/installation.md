@@ -18,7 +18,7 @@ Content:
 
 ## Installation
 
-The [**CMSIS-Toolbox**](https://github.com/Open-CMSIS-Pack/devtools/releases) is provided for Win64, Linux, and macOS in an archive file.
+The [**CMSIS-Toolbox**](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases) is provided for Win64, Linux, and macOS in an archive file.
  > Note: The `cmsis-toolbox.sh` is provided for legacy reasons, but may be deprecated in future versions.
 
 To setup the **CMSIS-Toolbox** on a local computer, install the content of the archive file to `<cmsis-toolbox-installation-dir>`, for example to `/c/ctools`.
