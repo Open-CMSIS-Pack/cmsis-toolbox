@@ -279,7 +279,7 @@ jobs:
           sha256sum cmsis-toolbox-windows64.zip --text > cmsis-toolbox-checksums.txt
           sha256sum cmsis-toolbox-linux64.tar.gz --text >> cmsis-toolbox-checksums.txt
           sha256sum cmsis-toolbox-darwin64.tar.gz --text >> cmsis-toolbox-checksums.txt
-        working-directory: tools/toolbox/zip
+        working-directory: toolbox/zip
 
       - name: Attach installer to release assets
         id: release_assets
