@@ -266,6 +266,7 @@ jobs:
           ./scripts/set-default.sh Windows zip/cmsis-toolbox-windows64/etc
           ./scripts/set-default.sh Linux zip/cmsis-toolbox-linux64/etc
           ./scripts/set-default.sh Darwin zip/cmsis-toolbox-darwin64/etc
+        working-directory: toolbox
 
       - name: Zip folders
         run: |
