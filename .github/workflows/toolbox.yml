@@ -5,38 +5,20 @@ on:
       - main
     paths:
       - '.github/workflows/toolbox.yml'
-      - '.github/matrix_includes_toolbox.json'
       - 'CMakeLists.txt'
       - '**'
   pull_request:
     paths:
       - '.github/workflows/toolbox.yml'
-      - '.github/matrix_includes_toolbox.json'
       - 'CMakeLists.txt'
       - '**'
   release:
     types: [published]
 
 jobs:
-  matrix_prep:
-    if: |
-        (github.event_name == 'pull_request') || (github.event_name == 'release')
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-    - name: Check out repo
-      uses: actions/checkout@v2
-      with:
-        submodules: recursive
-    - id: set-matrix
-      run: |
-        publicRepo=$(echo '${{ github.event.repository.private && 'privateRepo' || 'publicRepo' }}')
-        matrix=$(jq --arg publicRepo "$publicRepo" 'map(. | select((.runOn==$publicRepo) or (.runOn=="always")) )' matrix_includes_toolbox.json)
-        echo ::set-output name=matrix::{\"include\":$(echo $matrix)}\"
-      working-directory: .github/
   create_installer:
-    needs: matrix_prep
+    if: |
+      ${{ github.event_name == 'pull_request' || github.event_name == 'release' }}
     runs-on: ubuntu-20.04
     timeout-minutes: 15
 
@@ -121,23 +103,30 @@ jobs:
           if-no-files-found: error
 
   tests:
-    needs: [ create_installer, matrix_prep ]
+    if: |
+      ${{ github.event_name == 'pull_request' || github.event_name == 'release' }}
+    needs: [ create_installer ]
     timeout-minutes: 15
-    runs-on: ${{ matrix.runs_on }}
+    runs-on: ${{ matrix.config.os }}
     env:
       CI_TOOLBOX_INSTALLER: ${{ github.workspace }}/cmsis-toolbox.sh
     strategy:
       fail-fast: true
-      matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
+      matrix:
+        config:
+          - { os: macos-12, target: darwin64, arch: amd64 }
+          - { os: windows-2019, target: windows64, arch: amd64}
+          - { os: ubuntu-20.04, target: linux64, arch: amd64}
+          - { os: ubuntu-20.04, target: linux64, arch: aarch64}
     steps:
       - name: Install macos deps
-        if: ${{ startsWith(matrix.runs_on, 'macos') }}
+        if: ${{ startsWith(matrix.config.os, 'macos') }}
         run: |
           brew install \
             ninja
 
       - name: Install linux deps
-        if: ${{ startsWith(matrix.runs_on, 'ubuntu') }}
+        if: ${{ startsWith(matrix.config.os, 'ubuntu') }}
         run: |
           sudo apt update
           sudo apt-get install \
@@ -146,7 +135,7 @@ jobs:
             ninja-build
 
       - name: Install windows deps
-        if: ${{ startsWith(matrix.runs_on, 'windows') }}
+        if: ${{ startsWith(matrix.config.os, 'windows') }}
         run: choco install -y ninja
 
       - name: Checkout cmsis-toolbox
@@ -165,19 +154,19 @@ jobs:
           path: ${{ github.workspace }}
 
       - name: Set correct cmsis-toolbox file permission
-        if: ${{ startsWith(matrix.runs_on, 'macos') || startsWith(matrix.runs_on, 'ubuntu') }}
+        if: ${{ startsWith(matrix.config.os, 'macos') || startsWith(matrix.config.os, 'ubuntu') }}
         run: chmod +x cmsis-toolbox.sh
 
       - name: Configure windows build for amd64
-        if: ${{ startsWith(matrix.runs_on, 'windows') }}
+        if: ${{ startsWith(matrix.config.os, 'windows') }}
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: amd64
 
       - uses: ammaraskar/gcc-problem-matcher@master
-        if: ${{ startsWith(matrix.runs_on, 'macos') || startsWith(matrix.runs_on, 'ubuntu') }}
+        if: ${{ startsWith(matrix.config.os, 'macos') || startsWith(matrix.config.os, 'ubuntu') }}
       - uses: ammaraskar/msvc-problem-matcher@master
-        if: ${{ startsWith(matrix.runs_on, 'windows') }}
+        if: ${{ startsWith(matrix.config.os, 'windows') }}
 
       - name: Build and run Toolbox tests
         run: |
@@ -190,7 +179,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
-          name: toolboxtest-${{ matrix.target }}-${{ matrix.arch }}
+          name: toolboxtest-${{ matrix.config.target }}-${{ matrix.config.arch }}
           path: ./build/Testing/Temporary/LastTest.log
           retention-days: 1
           if-no-files-found: error
@@ -199,7 +188,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
-          name: toolbox_test-${{ matrix.target }}-${{ matrix.arch }}
+          name: toolbox_test-${{ matrix.config.target }}-${{ matrix.config.arch }}
           path: ./build/test_reports/toolboxtest1-*.xml
           retention-days: 1
           if-no-files-found: error
@@ -207,11 +196,11 @@ jobs:
       - name: Publish Toolbox Test Results
         uses: mikepenz/action-junit-report@v2
         with:
-          check_name: toolbox_test-${{ matrix.target }}-${{ matrix.arch }}
-          report_paths: build/test_reports/toolboxtest1-${{ matrix.target }}.xml
+          check_name: toolbox_test-${{ matrix.config.target }}-${{ matrix.config.arch }}
+          report_paths: build/test_reports/toolboxtest1-${{ matrix.config.target }}.xml
 
   release:
-    if: github.event_name == 'release'
+    if: ${{ github.event_name == 'release' }}
     needs: [ create_installer ]
     runs-on: ubuntu-20.04
     timeout-minutes: 15
@@ -286,11 +275,7 @@ jobs:
         working-directory: toolbox/zip
 
       - name: Calculate checksums
-        id: checksum
         run: |
-          echo "::set-output name=WIN_SHA::$(echo $(sha256sum cmsis-toolbox-windows64.zip | cut -f1 -d' '))"
-          echo "::set-output name=LIN_SHA::$(echo $(sha256sum cmsis-toolbox-linux64.tar.gz | cut -f1 -d' '))"
-          echo "::set-output name=MAC_SHA::$(echo $(sha256sum cmsis-toolbox-darwin64.tar.gz | cut -f1 -d' '))"
           sha256sum cmsis-toolbox-windows64.zip --text > cmsis-toolbox-checksums.txt
           sha256sum cmsis-toolbox-linux64.tar.gz --text >> cmsis-toolbox-checksums.txt
           sha256sum cmsis-toolbox-darwin64.tar.gz --text >> cmsis-toolbox-checksums.txt
@@ -305,52 +290,3 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
-
-      - name: Checkout vcpkg-ce-registry repo
-        uses: actions/checkout@v3
-        with:
-          repository: Open-CMSIS-Pack/vcpkg-ce-registry
-          path: vcpkg-ce-registry
-          # token needs to be changed
-          token: ${{secrets.GITHUB_TOKEN}}
-
-      - name: Set variables
-        id: vars
-        run: |
-          echo "::set-output name=VERSION::$(echo ${{github.ref_name}} | sed 's/.*\///')"
-          echo "::set-output name=MANIFEST_FILE::$(echo tools\/open-cmsis-pack\/ctools-$(echo ${{github.ref_name}} | sed 's/.*\///').json)"
-          echo "::set-output name=API_URL::$(echo "https://api.github.com/repos/Open-CMSIS-Pack/cmsis-toolbox/releases/tags/${{github.ref_name}}")"
-
-      - name: Update Index file
-        run: |
-          sed -i -e '1h;1!H;$!d;x;s/.*.json*/&,\n    tools\/open-cmsis-pack\/ctools-${{ steps.vars.outputs.VERSION }}.json/' index.yaml
-        working-directory: ./vcpkg-ce-registry
-
-      - name: Create manifest file
-        run: cp tools/open-cmsis-pack/ctools-0.10.1.json ${{ steps.vars.outputs.MANIFEST_FILE }}
-        working-directory: ./vcpkg-ce-registry
-
-      - name: Update manifest file
-        run: |
-          WIN_URL=$(curl -s "${{ steps.vars.outputs.API_URL }}" | jq --raw-output '.assets[] | select(.name=="cmsis-toolbox-windows64.zip") | .browser_download_url')
-          LIN_URL=$(curl -s "${{ steps.vars.outputs.API_URL }}" | jq --raw-output '.assets[] | select(.name=="cmsis-toolbox-linux64.tar.gz") | .browser_download_url')
-          MAC_URL=$(curl -s "${{ steps.vars.outputs.API_URL }}" | jq --raw-output '.assets[] | select(.name=="cmsis-toolbox-darwin64.tar.gz") | .browser_download_url')
-          jq --arg win_url "$WIN_URL" --arg lin_url "$LIN_URL" --arg mac_url "$MAC_URL" --raw-output '.info.version="${{ steps.vars.outputs.VERSION }}" | .demands."windows and x64".install.unzip=$win_url | .demands."windows and x64".install.sha256="${{ steps.checksum.outputs.WIN_SHA }}" | .demands."linux and x64".install.untar=$lin_url | .demands."linux and x64".install.sha256="${{ steps.checksum.outputs.LIN_SHA }}" | .demands."osx and x64".install.untar=$mac_url | .demands."osx and x64".install.sha256="${{ steps.checksum.outputs.MAC_SHA }}"' ${{ steps.vars.outputs.MANIFEST_FILE }} > OUT.tmp && mv OUT.tmp ${{ steps.vars.outputs.MANIFEST_FILE }}
-        working-directory: ./vcpkg-ce-registry
-
-      - name: commit changes
-        id: commit_changes
-        uses: endbug/add-and-commit@v9
-        with:
-          message: 'Version ${{ steps.vars.outputs.VERSION }} update'
-          add: 'index.yaml ${{ steps.vars.outputs.MANIFEST_FILE }} --force'
-          cwd: './vcpkg-ce-registry/'
-
-      - name: Rollback Release
-        if: failure()
-        uses: author/action-rollback@stable
-        with:
-          tag: ${{ github.ref_name }}
-          delete_orphan_tag: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
