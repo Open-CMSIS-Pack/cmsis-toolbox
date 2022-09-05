@@ -263,9 +263,9 @@ jobs:
 
       - name: Set toolchain default paths
         run: |
-          ./scripts/set-default.sh Windows zip/cmsis-toolbox-windows64/etc
-          ./scripts/set-default.sh Linux zip/cmsis-toolbox-linux64/etc
-          ./scripts/set-default.sh Darwin zip/cmsis-toolbox-darwin64/etc
+          ./scripts/set-default.sh Windows toolbox/zip/cmsis-toolbox-windows64/etc
+          ./scripts/set-default.sh Linux toolbox/zip/cmsis-toolbox-linux64/etc
+          ./scripts/set-default.sh Darwin toolbox/zip/cmsis-toolbox-darwin64/etc
 
       - name: Zip folders
         run: |
