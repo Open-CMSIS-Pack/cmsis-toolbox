@@ -280,8 +280,7 @@ esac
 # update environment variables in etc/setup file
 # Note not using in-place editing in sed as it is not portable
 setup="${install_dir}"/etc/setup
-sed -e "s|export CMSIS_BUILD_ROOT.*|export CMSIS_BUILD_ROOT=${install_dir// /\\\\ }/bin|"\
-    -e "s|export CMSIS_PACK_ROOT.*|export CMSIS_PACK_ROOT=${cmsis_pack_root}|"\
+sed -e "s|export CMSIS_PACK_ROOT.*|export CMSIS_PACK_ROOT=${cmsis_pack_root}|"\
     -e "s|export CMSIS_COMPILER_ROOT.*|export CMSIS_COMPILER_ROOT=${cmsis_compiler_root// /\\\\ }|"\
     "${setup}" > temp.$$ && mv temp.$$ "${setup}"
 
@@ -289,7 +288,7 @@ sed -e "s|export CMSIS_BUILD_ROOT.*|export CMSIS_BUILD_ROOT=${install_dir// /\\\
 if [[ $OS == "WSL_Windows" ]]
   then
   echo -e '\n# Windows Subsystem for Linux (WSL) environment variables and shell functions'\
-          '\nexport WSLENV=CMSIS_PACK_ROOT/p:CMSIS_COMPILER_ROOT/p:CMSIS_BUILD_ROOT/p'\
+          '\nexport WSLENV=CMSIS_PACK_ROOT/p:CMSIS_COMPILER_ROOT/p'\
           '\ncbuildgen() { cbuildgen.exe "$@" ; }'\
           '\nexport -f cbuildgen'\
           '\ncpackget() { cpackget.exe "$@" ; }'\
