@@ -12,8 +12,8 @@ list `packs`, `devices`, `components`, `dependencies` at cproject level         
 `defines`/`undefines`/`includes`/`excludes` at component/group/file level in cbuild      | :heavy_check_mark:       | cbuild 0.10.6
 compiler `misc` options                                                                  | :heavy_check_mark:       | csolution 0.9.0
 `device` discovering from `board` setting                                                | :heavy_check_mark:       | csolution 0.9.1
-`optimize`, `debug`, `warnings` in csolution                                             | :x:                      |
-`optimize`, `debug`, `warnings` in cbuild                                                | :x:                      |
+`optimize`, `debug`, `warnings` in csolution                                             | :heavy_check_mark:       | csolution 1.2.0
+`optimize`, `debug`, `warnings` in cbuild                                                | :heavy_multiplication_x: | in progress
 access sequences handling in csolution                                                   | :heavy_check_mark:       | csolution 0.9.1
 access sequences handling in cbuild                                                      | :heavy_check_mark:       | cbuild 0.11.0
 list commands at csolution and context level                                             | :heavy_check_mark:       | csolution 0.9.1
@@ -30,7 +30,7 @@ pack selection: `path` attribute in cbuild                                      
 schema for flexible vendor specific additions                                            | :heavy_check_mark:       | csolution 0.9.2
 user provided linker script selection                                                    | :heavy_check_mark:       | csolution 0.9.2
 support for IAR compiler                                                                 | :heavy_check_mark:       | cbuild 0.10.5
-minimum/range component version handling                                                 | :x:                      |
+minimum/range component version handling                                                 | :heavy_check_mark:       | csolution 1.1.0
 replacement of cbuild bash scripts                                                       | :heavy_check_mark:       | cbuild 0.11.0
 multi-project solution handling in cbuild                                                | :x:                      |
 layered solutions in-source conversion                                                   | :heavy_check_mark:       | csolution 0.9.4
@@ -38,7 +38,10 @@ support for output directories customization at csolution level                 
 support for board attributes in conditions                                               | :heavy_check_mark:       | csolution 1.0.0
 `for-compiler` and `setup` handling                                                      | :heavy_check_mark:       | csolution 1.0.0
 multiple contexts selection via wildcards                                                | :heavy_check_mark:       | csolution 1.0.0
-layer `interface` definitions                                                            | :x:                      |
+layer `interface` definitions                                                            | :heavy_check_mark:       | csolution 1.1.0
+separation of config files belonging to layers                                           | :heavy_check_mark:       | csolution 1.2.0
+generation of cbuild-idx.yml and cbuild.yml files                                        | :heavy_check_mark:       | csolution 1.2.0
+support arm64 architecture                                                               | :heavy_multiplication_x: | in progress
 distribution of layers                                                                   | :x:                      |
 resources management                                                                     | :x:                      |
 linker scatter file handling                                                             | :x:                      |
