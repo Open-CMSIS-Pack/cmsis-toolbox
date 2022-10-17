@@ -31,6 +31,7 @@ usage() {
   echo "  -h           : Print out version and usage"
   echo "  -v           : Print out version, timestamp and git hash"
   echo "  -x [<dir>]   : Extract full content into optional <dir>"
+  echo "  -a [<dir>]   : Set architecture: amd64 or arm64"
 }
 
 # version
@@ -64,6 +65,13 @@ winpath() {
   fi
 }
 
+# Remove binaries
+remove_bin() {
+  rm -f "$@"/*/*.lin-*
+  rm -f "$@"/*/*.exe-*
+  rm -f "$@"/*/*.mac-*
+}
+
 # find __ARCHIVE__ maker
 marker=$(awk '/^__ARCHIVE__/ {print NR + 1; exit 0; }' "${0}")
 
@@ -89,10 +97,32 @@ if [ $# -gt 0 ]
     fi
     tail -n+${marker} "${0}" | tar xz -C "$dir"
     exit 0
+  elif [ $1 == "-a" ]
+    then
+    arch=$2
   else
     echo "Warning: command line argument ignored!"
   fi
 fi
+
+# detect architecture
+if [ -z ${arch} ]
+  then
+  arch=$(uname -m)
+fi
+case $arch in
+  'amd64' | 'x86_64')
+    arch="amd64"
+    ;;
+  'arm64' | aarch64*)
+    arch="arm64"
+    ;;
+  *)
+  echo "[ERROR] Unsupported architecture $arch"
+  exit 1
+  ;;
+esac
+echo "[INFO] Installing for architecture: ${arch}"
 
 # detect platform and set 'OS' variable accordingly
 OS=$(uname -s)
@@ -256,23 +286,27 @@ fi
 # manage os specific files and extensions
 case $OS in
   'Linux' | 'WSL_Linux')
-    for f in "${install_dir}"/bin/*.lin; do
-      mv "$f" "${f%.lin}"
+    extn="lin-${arch}"
+    for f in "${install_dir}"/bin/*.${extn}; do
+      mv "$f" "${f%.${extn}}"
     done
-    rm -f "${install_dir}"/*/*.exe
-    rm -f "${install_dir}"/*/*.mac
+    remove_bin ${install_dir}
     chmod -R +x "${install_dir}"/bin
     ;;
   'Windows' | 'WSL_Windows')
-    rm -f "${install_dir}"/*/*.lin
-    rm -f "${install_dir}"/*/*.mac
+    extn="exe-${arch}"
+    for f in "${install_dir}"/bin/*.${extn}; do
+      mv "$f" "${f%.${extn}}.exe"
+    done
+    echo "install_dir: ${install_dir}"
+    remove_bin ${install_dir}
     ;;
   'Darwin')
-    for f in "${install_dir}"/bin/*.mac; do
-      mv "$f" "${f%.mac}"
+    extn="mac-${arch}"
+    for f in "${install_dir}"/bin/*.${extn}; do
+      mv "$f" "${f%.${extn}}"
     done
-    rm -f "${install_dir}"/*/*.lin
-    rm -f "${install_dir}"/*/*.exe
+    remove_bin ${install_dir}
     chmod -R +x "${install_dir}"/bin
     ;;
 esac

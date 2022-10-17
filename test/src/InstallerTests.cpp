@@ -83,10 +83,18 @@ void ToolBoxInstallerTests::CheckInstallationDir(
 
 void ToolBoxInstallerTests::CheckExtractedDir(const string& path, bool expect) {
   vector<pair<string, vector<string>>> dirVec = {
-    { "bin", vector<string>{
-              "cbuild.sh", "cbuildgen.exe","cbuildgen.lin","cbuildgen.mac",
-              "cpackget.exe", "cpackget.lin", "cpackget.mac",
-              "csolution.exe", "csolution.lin", "csolution.mac" }},
+    { "bin", vector<string>{ "cbuild.sh",
+              "cbuild.lin-amd64",    "cbuild.exe-amd64",    "cbuild.mac-amd64",
+              "cpackget.lin-amd64",  "cpackget.exe-amd64",  "cpackget.mac-amd64",
+              "cbuildgen.lin-amd64", "cbuildgen.exe-amd64", "cbuildgen.mac-amd64",
+              "csolution.lin-amd64", "csolution.exe-amd64", "csolution.mac-amd64",
+              "packchk.lin-amd64",   "packchk.exe-amd64",   "packchk.mac-amd64",
+              "cbuild.lin-arm64",
+              "cpackget.lin-arm64",
+              "cbuildgen.lin-arm64",
+              "csolution.lin-arm64",
+              "packchk.lin-arm64" }},
+
     { "doc", vector<string>{
               "index.html"}},
 
