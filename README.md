@@ -1,16 +1,10 @@
-# CMSIS Toolbox Installer
+# CMSIS-Toolbox Installer
 
-This is the installer for the CMSIS-Toolbox.
+This is the installer for the CMSIS-Toolbox. It provides command line tools for processing software packs that are provided in Open-CMSIS-Pack format. It is currently under development but supports already a wide range of use cases (refer to [**implementation progress**](./docs/progress.md)).
 
-## Download and Install
+The [**documentation**](./docs/installation.md) explains the download, installation, and configuration process.
 
-The **CMSIS-Toolbox** is currently under development but supports already a wide range of use cases.
-
-- [**Download CMSIS-Toolbox**](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases)
-- [**Setup and Installation**](./docs/installation.md)
-- [**Implementation Progress**](./docs/progress.md)
-
-This installer provides:
+The CMSIS-Toolbox includes:
 
 Tool               | Binary         | Description                                         | Origin Repo
 :------------------|:---------------|:----------------------------------------------------|:------------------------------------------------------------------
