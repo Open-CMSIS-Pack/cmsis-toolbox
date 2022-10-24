@@ -302,7 +302,8 @@ case $OS in
     remove_bin ${install_dir}
     ;;
   'Darwin')
-    extn="mac-${arch}"
+    # darwin arm64 native support is not available yet, temporary using amd64 instead
+    extn="mac-amd64"
     for f in "${install_dir}"/bin/*.${extn}; do
       mv "$f" "${f%.${extn}}"
     done
