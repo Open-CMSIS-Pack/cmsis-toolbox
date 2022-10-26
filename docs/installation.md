@@ -59,9 +59,19 @@ The various tools use the following environment variables.
 
 Environment Variable     | Description
 :------------------------|:------------
-**CMSIS_PACK_ROOT**      | Path to the CMSIS-Pack root directory (i.e. /c/open-cmsis/pack) that stores software packs
+**CMSIS_PACK_ROOT**      | Path to the CMSIS-Pack Root directory (i.e. /c/open-cmsis/pack) that stores software packs
 **CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. /c/ctools/etc)
 **Path**                 | Add to the system path to the CMSIS-Toolbox 'bin' directory (i.e. /c/ctools/bin)
+
+#### **CMSIS_PACK_ROOT:** This variable points to the [CMSIS-Pack Root Directory](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory) that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
+
+- The default values for the supported platforms are listed below.
+  Platform    | Default path
+  :-----------|:------------
+  Linux       | ${HOME}/.cache/arm/packs
+  Windows     | ${LOCALAPPDATA}/Arm/Packs
+  MacOS       | ${HOME}/.cache/arm/packs
+  WSL_Windows | ${LOCALAPPDATA}/Arm/Packs
 
 > Note: If you do not have a CMSIS-Pack root yet, use [**cpackget**](../../cpackget/docs/cpackget.md) to initialize your repository.
 
