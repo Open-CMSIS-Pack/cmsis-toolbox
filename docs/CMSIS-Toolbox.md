@@ -2,13 +2,14 @@
 
 The CMSIS Toolbox encapsulates CMSIS Package Installer, CMSIS Pack Check, CMSIS Build tools and CMSIS Project Manager binaries for all supported platforms as well as documents, schemas and templates to assist the creation and compilation of multiproject solutions based on CMSIS Packs.
 
-Tool               | Binary         | Description
-:------------------|:---------------|:-------------------------------------------------
-Package Installer  | cpackget       | Install packs into local environment
-Pack Check         | packchk        | Validate CMSIS packs
-Project Manager    | csolution      | Validate multiproject solutions and generate CPRJs
-Build Manager      | cbuildgen      | Generate CMakeLists and invoke CMake/Ninja
-
+Tool                     | Binary         | Description
+:----------------------- |:---------------|:-------------------------------------------------
+Package Installer        | cpackget       | Install packs into local environment
+Project Manager          | csolution      | Validate multiproject solutions and generate CPRJs
+Build Invocation         | cbuild         | Utility orchestrating the build steps for a CPRJ
+Build Generator          | cbuildgen      | Generate CMakeLists.txt from CPRJ
+Pack Verification        | packchk        | Semantic validation of a software pack
+System View Verification | svdconv        | Semantic validation of System View description files and device header file generator
 
 ## Getting Started
 

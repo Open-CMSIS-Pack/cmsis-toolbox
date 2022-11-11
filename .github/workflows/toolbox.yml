@@ -63,6 +63,16 @@ jobs:
           target: "toolbox/packchk/"
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download svdconv release assets
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Open-CMSIS-Pack/devtools"
+          version: tags/tools/svdconv/3.3.43
+          regex: true
+          file: "svdconv-.*\\.(zip|tbz2)"
+          target: "toolbox/svdconv/"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Unzip and copy files
         run: |
           sudo chmod +x ./cbuild/cbuild_install.sh
@@ -79,6 +89,10 @@ jobs:
           tar -xvf packchk/packchk-*-linux64-amd64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.lin-amd64
           tar -xvf packchk/packchk-*-linux64-arm64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.lin-arm64
           unzip packchk/packchk-\*-windows64-amd64.zip -d packchk && mv packchk/packchk.exe distribution/bin/packchk.exe-amd64
+          tar -xvf svdconv/svdconv-*-darwin64-amd64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.mac-amd64
+          tar -xvf svdconv/svdconv-*-linux64-amd64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.lin-amd64
+          tar -xvf svdconv/svdconv-*-linux64-arm64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.lin-arm64
+          unzip svdconv/svdconv-\*-windows64-amd64.zip -d svdconv && mv svdconv/svdconv.exe distribution/bin/svdconv.exe-amd64
           cp ../docs/LICENSE.txt distribution
           cp ../docs/index.html distribution/doc
         working-directory: toolbox
@@ -242,21 +256,25 @@ jobs:
           cp zip/bin/cpackget.exe-amd64  zip/cmsis-toolbox-windows-amd64/bin/cpackget.exe
           cp zip/bin/csolution.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/csolution.exe
           cp zip/bin/packchk.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/packchk.exe
+          cp zip/bin/svdconv.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/svdconv.exe
           cp zip/bin/cbuild.lin-amd64    zip/cmsis-toolbox-linux-amd64/bin/cbuild
           cp zip/bin/cbuildgen.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuildgen
           cp zip/bin/cpackget.lin-amd64  zip/cmsis-toolbox-linux-amd64/bin/cpackget
           cp zip/bin/csolution.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/csolution
           cp zip/bin/packchk.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/packchk
+          cp zip/bin/svdconv.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/svdconv
           cp zip/bin/cbuild.lin-arm64    zip/cmsis-toolbox-linux-arm64/bin/cbuild
           cp zip/bin/cbuildgen.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/cbuildgen
           cp zip/bin/cpackget.lin-arm64  zip/cmsis-toolbox-linux-arm64/bin/cpackget
           cp zip/bin/csolution.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/csolution
           cp zip/bin/packchk.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/packchk
+          cp zip/bin/svdconv.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/svdconv
           cp zip/bin/cbuild.mac-amd64    zip/cmsis-toolbox-darwin-amd64/bin/cbuild
           cp zip/bin/cbuildgen.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/cbuildgen
           cp zip/bin/cpackget.mac-amd64  zip/cmsis-toolbox-darwin-amd64/bin/cpackget
           cp zip/bin/csolution.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/csolution
           cp zip/bin/packchk.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/packchk
+          cp zip/bin/svdconv.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/svdconv
           cp zip/LICENSE.txt             zip/cmsis-toolbox-windows-amd64/LICENSE.txt
           cp zip/LICENSE.txt             zip/cmsis-toolbox-linux-amd64/LICENSE.txt
           cp zip/LICENSE.txt             zip/cmsis-toolbox-linux-arm64/LICENSE.txt
