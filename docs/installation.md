@@ -87,22 +87,27 @@ Each of these `*.cmake` files defines the path (`TOOLCHAIN_ROOT`) to the toolcha
 ############### EDIT BELOW ###############
 # Set base directory of toolchain
 set(TOOLCHAIN_ROOT "C:/Keil_v5/ARM/ARMCLANG/bin")
+set(TOOLCHAIN_VERSION "6.19.0")
 set(EXT .exe)
-...
-set(CMAKE_C_COMPILER_VERSION "6.16.0")
+############ DO NOT EDIT BELOW ###########
 ```
 
 ### Setup Win64
 
 For Windows, use the dialog **System Properties - Advanced** and add the **Environment Variables** listed above.
 
-Below is a typical setup for users of Keil MDK
+#### Keil MDK
+The CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\ctools` directory of the MDK installation.
 
-Environment Variable     | Description
-:------------------------|:------------
-**CMSIS_PACK_ROOT**      | `%localappdata%\Arm\Packs`
-**CMSIS_COMPILER_ROOT**  | `C:\Keil_v5\ARM\ctools\etc`
-**Path**                 | `C:\Keil_v5\ARM\ctools\bin`
+Adding the binary directory of the ctools directory to your **PATH** environment variable allows you to invoke the tools at the
+command line without the need to specify the full path (default: `C:\Keil_v5\ARM\ctools\bin`)
+
+For sharing the pack directory between MDK and the ctools it is required that both **CMSIS_PACK_ROOT** environment variable
+and the **RTE_PATH** setting in the MDK's TOOLS.INI (default: C:\Keil_v5\TOOLS.INI) point to the same directory.
+Note that in case the default location `%localappdata%\Arm\Packs` was selected during installation, the seeting of **CMSIS_PACK_ROOT**
+environment variable is not required.
+
+The **CMSIS_COMPILER_ROOT** environment varible is not required if the compiler configuration files provided in ctools/etc are used.
 
 > Note: At the Windows command prompt, use `set` to list all environment variables.
 
