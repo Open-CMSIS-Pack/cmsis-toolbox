@@ -9,7 +9,7 @@ Content:
     - [Toolchain Options](#toolchain-options)
   - [Configuration](#configuration)
     - [Environment Variables](#environment-variables)
-    - [./etc/setup/\*.cmake](#etcsetupcmake)
+    - [./etc/\*.cmake](#etccmake)
     - [Setup Win64](#setup-win64)
     - [Setup Linux or Bash](#setup-linux-or-bash)
     - [Setup MacOS](#setup-macos)
@@ -75,9 +75,9 @@ Environment Variable     | Description
 
 > Note: If you do not have a CMSIS-Pack root yet, use [**cpackget**](../../cpackget/docs/cpackget.md) to initialize your repository.
 
-### ./etc/setup/\*.cmake
+### ./etc/\*.cmake
 
-The support of the various toolchains is defined by `*.cmake` files in the directory `<cmsis-toolbox-installation-dir>/etc/setup`.
+The support of the various toolchains is defined by `*.cmake` files in the directory `<cmsis-toolbox-installation-dir>/etc`.
 
 > Note: The filenames reflect the available compiler versions on the host system.  There may be multiple files for each compiler to support different versions, for example `AC6.6.16.0.cmake` and `AC6.6.18.0.cmake`.
 
