@@ -37,5 +37,6 @@ int main(int argc, char **argv) {
   catch (...) {
     std::cout << "non-standard exception";
     return 2;
+
   }
 }
