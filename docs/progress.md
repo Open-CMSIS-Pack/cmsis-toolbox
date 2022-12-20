@@ -13,7 +13,7 @@ list `packs`, `devices`, `components`, `dependencies` at cproject level         
 compiler `misc` options                                                                  | :heavy_check_mark:       | csolution 0.9.0
 `device` discovering from `board` setting                                                | :heavy_check_mark:       | csolution 0.9.1
 `optimize`, `debug`, `warnings` in csolution                                             | :heavy_check_mark:       | csolution 1.2.0
-`optimize`, `debug`, `warnings` in cbuild                                                | :heavy_multiplication_x: | in progress
+`optimize`, `debug`, `warnings` in cbuild                                                | :heavy_check_mark:       | cbuild 1.3.0
 access sequences handling in csolution                                                   | :heavy_check_mark:       | csolution 0.9.1
 access sequences handling in cbuild                                                      | :heavy_check_mark:       | cbuild 0.11.0
 list commands at csolution and context level                                             | :heavy_check_mark:       | csolution 0.9.1
@@ -38,11 +38,20 @@ support for output directories customization at csolution level                 
 support for board attributes in conditions                                               | :heavy_check_mark:       | csolution 1.0.0
 `for-compiler` and `setup` handling                                                      | :heavy_check_mark:       | csolution 1.0.0
 multiple contexts selection via wildcards                                                | :heavy_check_mark:       | csolution 1.0.0
-layer `interface` definitions                                                            | :heavy_check_mark:       | csolution 1.1.0
+layer `interfaces` definitions                                                           | :heavy_check_mark:       | csolution 1.1.0
 separation of config files belonging to layers                                           | :heavy_check_mark:       | csolution 1.2.0
 generation of cbuild-idx.yml and cbuild.yml files                                        | :heavy_check_mark:       | csolution 1.2.0
-support arm64 architecture                                                               | :heavy_multiplication_x: | in progress
-distribution of layers                                                                   | :x:                      |
+support for linux-arm64 host platform                                                    | :heavy_check_mark:       | csolution 1.3.0
+support for win-arm64 and mac-arm64 host platforms                                       | :x:                      |
+distribution of layers                                                                   | :heavy_multiplication_x: | in progress
+disable update of RTE folder by default in cbuild                                        | :heavy_check_mark:       | cbuild 1.4.0
+`--update-rte` flag to enable the update of RTE folder contents in cbuild                | :heavy_check_mark:       | cbuild 1.4.0
+`--no-update-rte` flag to skip the update of RTE folder contents in csolution            | :heavy_check_mark:       | csolution 1.4.0
+`connections` handling replacing `interfaces`                                            | :heavy_check_mark:       | csolution 1.4.0
+`variables` handling for setting layer paths                                             | :heavy_check_mark:       | csolution 1.4.0
+`list layers` command for finding layers with compatible connections                     | :heavy_check_mark:       | csolution 1.4.0
+`list toolchains` command for finding configured toolchains                              | :heavy_check_mark:       | csolution 1.4.0
+support csolution.yml and context as input data in cbuild                                | :heavy_multiplication_x: | in progress
 resources management                                                                     | :x:                      |
 linker scatter file handling                                                             | :x:                      |
 execution groups/phases                                                                  | :x:                      |
