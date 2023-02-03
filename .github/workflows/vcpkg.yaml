@@ -1,0 +1,37 @@
+name: toolbox
+on:
+  push:
+    branches:
+      - vcpkg
+
+jobs:
+  update_registry:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout toolbox
+        uses: actions/checkout@v3
+        with:
+          path: toolbox
+
+      - name: Checkout registry
+        uses: actions/checkout@v3
+        with:
+          repository: Open-CMSIS-Pack/vcpkg-ce-registry
+          path: registry
+          ref: testing
+          ssh-key: ${{ secrets.VCPKG_CE_REGISTRY_DEPLOY_KEY }}
+
+      - name: Update registry
+        run: |
+          ./toolbox/.github/update_registry.sh registry 1.4.0
+
+      - name: Push registry
+        working-directory: registry
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Add CMSIS-Toolbox release 1.4.0 to registry"
+          git push
