@@ -111,7 +111,7 @@ jobs:
         working-directory: installer
 
       - name: Archive cmsis-toolbox installer
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: cmsis-toolbox
           path: installer/cmsis-toolbox.sh
@@ -193,7 +193,7 @@ jobs:
 
       - name: Archive tests results
         if: ${{ always() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: toolboxtest-${{ matrix.config.target }}-${{ matrix.config.arch }}
           path: ./build/Testing/Temporary/LastTest.log
@@ -202,7 +202,7 @@ jobs:
 
       - name: Archive gtest report
         if: ${{ always() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: toolbox_test-${{ matrix.config.target }}-${{ matrix.config.arch }}
           path: ./build/test_reports/toolboxtest1-*.xml
@@ -215,7 +215,7 @@ jobs:
           check_name: toolbox_test-${{ matrix.config.target }}-${{ matrix.config.arch }}
           report_paths: build/test_reports/toolboxtest1-${{ matrix.config.target }}.xml
 
-  release:
+  release_zip_packages:
     if: ${{ github.event_name == 'release' }}
     needs: [ create_installer ]
     runs-on: ubuntu-20.04
@@ -297,7 +297,7 @@ jobs:
           ./scripts/set-default.sh Linux toolbox/zip/cmsis-toolbox-linux-arm64/etc
           ./scripts/set-default.sh Darwin toolbox/zip/cmsis-toolbox-darwin-amd64/etc
 
-      - name: Zip folders
+      - name: Package folder
         run: |
           zip -r cmsis-toolbox-windows-amd64.zip       cmsis-toolbox-windows-amd64
           tar -czvf cmsis-toolbox-linux-amd64.tar.gz   cmsis-toolbox-linux-amd64
@@ -313,19 +313,91 @@ jobs:
           sha256sum cmsis-toolbox-darwin-amd64.tar.gz --text >> cmsis-toolbox-checksums.txt
         working-directory: toolbox/zip
 
+      - name: Archive cmsis-toolbox-darwin-amd64.tar.gz for macOS installer creation job
+        uses: actions/upload-artifact@v3
+        with:
+          name: cmsis-toolbox-zip
+          path: cmsis-toolbox-darwin-amd64.tar.gz
+          retention-days: 1
+          if-no-files-found: error
+          working-directory: toolbox/zip
+
+      - name: Archive checksums for macOS package
+        uses: actions/upload-artifact@v3
+        with:
+          name: cmsis-toolbox-checksums
+          path: cmsis-toolbox-checksums.txt
+          retention-days: 1
+          if-no-files-found: error
+          working-directory: toolbox/zip
+
       - name: Attach installer to release assets
         id: release_assets
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: toolbox/zip/cmsis-toolbox-*
+          file: zip/cmsis-toolbox-*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+
+  release_darwin_installer:
+    if: ${{ github.event_name == 'release' }}
+    needs: [ release_zip_packages ]
+    runs-on: macos-12
+    timeout-minutes: 15
+    steps:
+      - name: Install coreutils for sha256sum
+        run: |
+          brew install coreutils
+
+      - name: Downloading zip and tar.gz packages
+        uses: actions/download-artifact@v3
+        with:
+          name: 'cmsis-toolbox-zip'
+          path: zip
+
+      - name: Downloading checksum file
+        uses: actions/download-artifact@v3
+        with:
+          name: 'cmsis-toolbox-checksums'
+          path: zip
+
+      - name: Move darwin zipfile to a pkg folder && extract it
+        run: |
+          tar xzf cmsis-toolbox-darwin-amd64.tar.gz
+          rm -rf cmsis-toolbox-darwin-amd64.tar.gz
+        working-directory: zip
+
+      - name: Create a .pkg installer
+        run: |
+          VERSION=$(cut -d/ -f5 <<< ${{ github.ref }})
+          pkgbuild \
+            --identifier cmsis-toolbox.app \
+            --root cmsis-toolbox-darwin-amd64 \
+            --version "$VERSION" \
+            --install-location /Applications/cmsis-toolbox \
+            cmsis-toolbox-darwin-amd64.pkg
+        working-directory: zip
+
+      - name: Appending checksum for cmsis-toolbox-darwin-amd64.pkg
+        run: |
+          sha256sum cmsis-toolbox-darwin-amd64.pkg --text > cmsis-toolbox-checksums.txt
+        working-directory: zip
+
+      - name: Attach macOS installer and cmsis-toolbox-checksums
+        id: release_assets_2
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: zip/cmsis-toolbox-*
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true
 
   update_registry:
     if: ${{ github.event_name == 'release' }}
-    needs: [ release ]
+    needs: [ release_zip_packages ]
     runs-on: ubuntu-22.04
     timeout-minutes: 15
 
