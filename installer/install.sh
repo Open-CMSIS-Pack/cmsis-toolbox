@@ -242,7 +242,7 @@ else
 fi
 
 # ask for IAR installation path
-read -e -p "Enter the installed IAR C/C++ Compiler V8.50.6.265/W32 for ARM directory [${iar_default_path}]: " iar_root
+read -e -p "Enter the installed IAR C/C++ Compiler for ARM directory [${iar_default_path}]: " iar_root
 iar_root=${iar_root:-${iar_default_path}}
 if [[ -d "${iar_root}" ]]
   then
