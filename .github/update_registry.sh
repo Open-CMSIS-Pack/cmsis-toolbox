@@ -57,7 +57,7 @@ echo "Regenerating vcpkg registry index at '${REGISTRY}' ..."
 
 function regen() {
     . <(curl -sL https://aka.ms/vcpkg-init.sh)
-    vcpkg z-ce regenerate ${REGISTRY}
+    vcpkg x-regenerate ${REGISTRY}
 }
 
 regen
