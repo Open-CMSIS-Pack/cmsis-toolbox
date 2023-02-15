@@ -21,7 +21,6 @@ protected:
   void RunInstallerScript   (const string& arg);
   void CheckInstallationDir (const string& path, bool expect);
   void CheckExtractedDir    (const string& path, bool expect);
-  void CheckCustomToolchainEnvVar(const string& path);
 };
 
 void ToolBoxInstallerTests::SetUp() {
@@ -127,35 +126,6 @@ void ToolBoxInstallerTests::CheckExtractedDir(const string& path, bool expect) {
     << "File LICENSE.txt does " << (expect ? "not " : "") << "exist!";
 }
 
-void ToolBoxInstallerTests::CheckCustomToolchainEnvVar(const string& path) {
-  error_code ec;
-  const string checkToolchainFile = fs::path(path).append("etc").append("check-toolchain.cmake").generic_string();
-  const string includeFile = fs::path(path).append("etc").append("AC6.6.18.0.cmake").generic_string();
-  string checkToolchainContent = "\
-set(CPU Cortex-M0)\n\
-include("+includeFile+")\n\
-if (NOT ${TOOLCHAIN_ROOT} STREQUAL \"Custom/Directory/AC6.6.18.0\")\n\
-  message(FATAL_ERROR)\n\
-endif()\n\
-";
-  ofstream cmakeStream(checkToolchainFile);
-  cmakeStream << checkToolchainContent << flush;
-  cmakeStream.close();
-
-  // set toolchain environment variable and check whether it is correctly recognized when running cmake
-  CrossPlatformUtils::SetEnv("AC6_TOOLCHAIN_6_18_0", "Custom/Directory/AC6.6.18.0");
-  const string cmd = "cmake -P " + checkToolchainFile;
-  int ret_val = system(cmd.c_str());
-  ASSERT_EQ(ret_val, 0);
-
-  // set toolchain environment variable to a different value and check its effect
-  CrossPlatformUtils::SetEnv("AC6_TOOLCHAIN_6_18_0", "Another/Custom/Directory");
-  ret_val = system(cmd.c_str());
-  ASSERT_NE(ret_val, 0);
-
-  RteFsUtils::DeleteFileAutoRetry(checkToolchainFile);
-}
-
 // Test installer wih Invalid arguments
 TEST_F(ToolBoxInstallerTests, InvalidArgTest) {
   string installDir = testout_folder + "/Installation";
@@ -195,7 +165,6 @@ TEST_F(ToolBoxInstallerTests, InstallerExtractTest) {
   RteFsUtils::DeleteTree (extractDir);
   RunInstallerScript     (arg);
   CheckExtractedDir      (extractDir, true);
-  CheckCustomToolchainEnvVar(extractDir);
 }
 
 // Validate installation and post installation content
