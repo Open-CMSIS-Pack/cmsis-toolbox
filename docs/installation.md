@@ -59,6 +59,7 @@ The various tools use the following environment variables.
 
 Environment Variable     | Description
 :------------------------|:------------
+`<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries
 **CMSIS_PACK_ROOT**      | Path to the CMSIS-Pack Root directory (i.e. /c/open-cmsis/pack) that stores software packs
 **CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. /c/ctools/etc)
 **Path**                 | Add to the system path to the CMSIS-Toolbox 'bin' directory (i.e. /c/ctools/bin)
@@ -75,20 +76,36 @@ Environment Variable     | Description
 
 > Note: If you do not have a CMSIS-Pack root yet, use [**cpackget**](../../cpackget/docs/cpackget.md) to initialize your repository.
 
-### ./etc/\*.cmake
+#### **TOOLCHAIN Registration**
 
-The support of the various toolchains is defined by `*.cmake` files in the directory `<cmsis-toolbox-installation-dir>/etc`.
+The registration of a toolchain is manually defined by an environment variable with its name and semantic version numbers (major, minor and patch) in the format:
+```
+<name>_TOOLCHAIN_<major>_<minor>_<patch>=<path/to/toolchain/binaries>
+```
 
-> Note: The filenames reflect the available compiler versions on the host system.  There may be multiple files for each compiler to support different versions, for example `AC6.6.16.0.cmake` and `AC6.6.18.0.cmake`.
+For example in Windows:
+```
+set AC6_TOOLCHAIN_6_18_0=C:/Keil_v5/ARM/ARMCLANG/bin
+```
+For example in Unix:
+```
+export GCC_TOOLCHAIN_10_3_1=/opt/gcc-arm-none-eabi-10.3-2021.10/bin
+```
 
-Each of these `*.cmake` files defines the path (`TOOLCHAIN_ROOT`) to the toolchain binaries, the file extension (`EXT`) of the executable binaries, the version (`CMAKE_C_COMPILER_VERSION`) and other compiler related parameters for the invocation. Edit the files to reflect the path as shown in the example (for `AC6`) below:
+#### **./etc/\*.cmake**
 
+The mappings and dictionaries for various toolchain version ranges are defined by `*.cmake` files in the directory `<cmsis-toolbox-installation-dir>/etc`.
+
+> Note: Since cmsis-toolbox 1.5.0 these files are not specific to a single toolchain. Filenames reflect the **minimum compiler versions** that can be registered on the host system. 
+There may be multiple files for each compiler to support different version ranges, for example  `AC6.6.16.0.cmake` and `AC6.6.18.0.cmake`.
+
+> Note: For backward compatibility it is still possible to set the CMake variables `TOOLCHAIN_ROOT` and `TOOLCHAIN_VERSION` in each of these `*.cmake` files defines, but this will be removed in cmsis-toolbox 2.0.0 and therefore it is already recommended to use the [environment variable registration](#TOOLCHAIN) instead.
 ```CMake
 ############### EDIT BELOW ###############
 # Set base directory of toolchain
 set(TOOLCHAIN_ROOT "C:/Keil_v5/ARM/ARMCLANG/bin")
 set(TOOLCHAIN_VERSION "6.19.0")
-set(EXT .exe)
+
 ############ DO NOT EDIT BELOW ###########
 ```
 
