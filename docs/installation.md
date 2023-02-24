@@ -41,7 +41,7 @@ The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The instal
 
 The CMSIS-Toolbox works with the following toolchains. Install one or more toolchains depending on your requirements.
 
-- [**GNU Arm Embedded Toolchain**](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads) version 11.2.1 or higher.
+- [**GNU Arm Embedded Toolchain**](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads) version 10.3.1 or higher.
 
 - [**Keil MDK**](http://www.keil.com/mdk5/install) version 5.36 or higher.
 

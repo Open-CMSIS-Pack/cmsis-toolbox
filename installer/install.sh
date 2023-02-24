@@ -242,7 +242,7 @@ else
 fi
 
 # ask for IAR installation path
-read -e -p "Enter the installed IAR C/C++ Compiler V8.50.6.265/W32 for ARM directory [${iar_default_path}]: " iar_root
+read -e -p "Enter the installed IAR C/C++ Compiler for ARM directory [${iar_default_path}]: " iar_root
 iar_root=${iar_root:-${iar_default_path}}
 if [[ -d "${iar_root}" ]]
   then
@@ -355,11 +355,11 @@ script="${cmsis_compiler_root}/AC5.5.6.7.cmake"
 sed -e "s|set(TOOLCHAIN_ROOT.*|set(TOOLCHAIN_ROOT \"${compiler5_root}\")|" "${script}" > temp.$$ && mv temp.$$ "${script}"
 sed -e "s|set(EXT.*|set(EXT ${extension})|" "${script}" > temp.$$ && mv temp.$$ "${script}"
 
-script="${cmsis_compiler_root}/GCC.11.2.1.cmake"
+script="${cmsis_compiler_root}/GCC.10.3.1.cmake"
 sed -e "s|set(TOOLCHAIN_ROOT.*|set(TOOLCHAIN_ROOT \"${gcc_root}\")|" "${script}" > temp.$$ && mv temp.$$ "${script}"
 sed -e "s|set(EXT.*|set(EXT ${extension})|" "${script}" > temp.$$ && mv temp.$$ "${script}"
 
-script="${cmsis_compiler_root}/IAR.8.50.6.cmake"
+script="${cmsis_compiler_root}/IAR.9.32.1.cmake"
 sed -e "s|set(TOOLCHAIN_ROOT.*|set(TOOLCHAIN_ROOT \"${iar_root}\")|" "${script}" > temp.$$ && mv temp.$$ "${script}"
 sed -e "s|set(EXT.*|set(EXT ${extension})|" "${script}" > temp.$$ && mv temp.$$ "${script}"
 

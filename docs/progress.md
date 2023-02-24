@@ -42,7 +42,7 @@ layer `interfaces` definitions                                                  
 separation of config files belonging to layers                                           | :heavy_check_mark:       | csolution 1.2.0
 generation of cbuild-idx.yml and cbuild.yml files                                        | :heavy_check_mark:       | csolution 1.2.0
 support for linux-arm64 host platform                                                    | :heavy_check_mark:       | csolution 1.3.0
-support for win-arm64 and mac-arm64 host platforms                                       | :x:                      |
+support for win-arm64 and mac-arm64 host platforms                                       | :heavy_multiplication_x: | in progress
 distribution of layers                                                                   | :heavy_multiplication_x: | in progress
 disable update of RTE folder by default in cbuild                                        | :heavy_check_mark:       | cbuild 1.4.0
 `--update-rte` flag to enable the update of RTE folder contents in cbuild                | :heavy_check_mark:       | cbuild 1.4.0
@@ -51,7 +51,12 @@ disable update of RTE folder by default in cbuild                               
 `variables` handling for setting layer paths                                             | :heavy_check_mark:       | csolution 1.4.0
 `list layers` command for finding layers with compatible connections                     | :heavy_check_mark:       | csolution 1.4.0
 `list toolchains` command for finding configured toolchains                              | :heavy_check_mark:       | csolution 1.4.0
-support csolution.yml and context as input data in cbuild                                | :heavy_multiplication_x: | in progress
+support csolution.yml and context as input data in cbuild                                | :heavy_check_mark:       | cbuild 1.5.0
+add `output` filenames customization handling in cbuild                                  | :heavy_check_mark:       | cbuild 1.5.0
+add `output` filenames customization handling in csolution                               | :heavy_check_mark:       | csolution 1.5.0
+rework toolchains registration in cbuild                                                 | :heavy_check_mark:       | cbuild 1.5.0
+rework toolchains registration in csolution                                              | :heavy_check_mark:       | csolution 1.5.0
+`--toolchains` command line option for selecting the compiler                            | :heavy_check_mark:       | csolution 1.5.0
 resources management                                                                     | :x:                      |
 linker scatter file handling                                                             | :x:                      |
 execution groups/phases                                                                  | :x:                      |
