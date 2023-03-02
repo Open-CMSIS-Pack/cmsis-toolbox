@@ -31,7 +31,7 @@ To setup the **CMSIS-Toolbox** on a local computer, copy the content of the arch
 
 The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The installation of these tools is required.
 
-- [**CMake**](https://cmake.org/download) version 3.18.0 or higher.
+- [**CMake**](https://cmake.org/download) version 3.22.0 or higher.
 > Note: For Win64, enable the install option *Add CMake to the system PATH*.
 
 - [**Ninja**](https://github.com/ninja-build/ninja/releases) version 1.10.0 or higher.
@@ -47,19 +47,19 @@ The CMSIS-Toolbox works with the following toolchains. Install one or more toolc
 
 - [**Arm Compiler**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18 or higher.
 
-- [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) is currently in alpha quality.
+- [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
 
 ## Configuration
 
-It is required to customize the installation for the actual setup of your development environment as described in the following.
+It maybe required to customize the your execution environment as described in the following, in case the default settings are not suitable.
 
 ### Environment Variables
 
-The various tools use the following environment variables.
+The tools use the following environment variables.
 
 Environment Variable     | Description
 :------------------------|:------------
-`<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries
+`[AC6|GCC|IAR]>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries
 **CMSIS_PACK_ROOT**      | Path to the CMSIS-Pack Root directory (i.e. /c/open-cmsis/pack) that stores software packs
 **CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. /c/ctools/etc)
 **Path**                 | Add to the system path to the CMSIS-Toolbox 'bin' directory (i.e. /c/ctools/bin)
@@ -114,7 +114,7 @@ set(TOOLCHAIN_VERSION "6.19.0")
 For Windows, use the dialog **System Properties - Advanced** and add the **Environment Variables** listed above.
 
 #### Keil MDK
-The CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\ctools` directory of the MDK installation.
+The CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `<installDir>\ARM\ctools` directory of the MDK installation.
 
 Adding the binary directory of the ctools directory to your **PATH** environment variable allows you to invoke the tools at the
 command line without the need to specify the full path (default: `C:\Keil_v5\ARM\ctools\bin`)
