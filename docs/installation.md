@@ -21,7 +21,7 @@ Content:
   
 ## Download
 
-Download the CMSIS-Toolbox from the [**release page**](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases). It is provided for Win64, Linux, and MacOS in an archive file.
+Download the CMSIS-Toolbox from the [**release page**](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases). It is provided for Windows (amd64), Linux (amd64, arm64), and MacOS (amd64) in an archive file.
 
 > Note: The `cmsis-toolbox.sh` is provided for legacy reasons, but may be deprecated in future versions.
 
@@ -33,7 +33,7 @@ To setup the **CMSIS-Toolbox** on a local computer, copy the content of the arch
 
 The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The installation of these tools is required.
 
-- [**CMake**](https://cmake.org/download) version 3.18.0 or higher.
+- [**CMake**](https://cmake.org/download) version 3.22.0 or higher.
 
 > Note: For Win64, enable the install option *Add CMake to the system PATH*.
 
