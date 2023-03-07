@@ -7,15 +7,15 @@ This is the installer for the CMSIS-Toolbox. The CMSIS-Toolbox provides a set of
 
 It is currently under development but supports already a wide range of use cases (refer to [**implementation progress**](./docs/progress.md)).
 
-The [**documentation**](./docs/installation.md) explains the download, installation, and configuration process.
+The [**CMSIS-Toolbox: Installation**](./docs/installation.md) explains the download, installation, and configuration process.
 
 The CMSIS-Toolbox includes:
 
-Tool                     | Binary         | Description                                         | Origin Repo
-:------------------------|:---------------|:----------------------------------------------------|:------------------------------------------------------------------
-Package Installer        | cpackget       | Install packs into local environment                | [Open-CMSIS-Pack/cpackget](https://github.com/Open-CMSIS-Pack/cpackget)
-Project Manager          | csolution      | Validate multiproject solutions and generate CPRJs  | [Open-CMSIS-Pack/devtools](https://github.com/Open-CMSIS-Pack/devtools)
-Build Invocation         | cbuild         | Utility orchestrating the build steps for a CPRJ    | [Open-CMSIS-Pack/cbuild](https://github.com/Open-CMSIS-Pack/cbuild)
-Build Generator          | cbuildgen      | Generate CMakeLists.txt from CPRJ                   | [Open-CMSIS-Pack/devtools](https://github.com/Open-CMSIS-Pack/devtools)
-Pack Verification        | packchk        | Semantic validation of a software pack              | [Open-CMSIS-Pack/devtools](https://github.com/Open-CMSIS-Pack/devtools)
-System View Verification | svdconv        | Semantic validation of System View description files and device header file generator | [Open-CMSIS-Pack/devtools](https://github.com/Open-CMSIS-Pack/devtools)
+Tool           | Description                                         | Tool source code repository
+:--------------|:----------------------------------------------------|:------------------------------------------------------------------
+[cpackget](https://github.com/Open-CMSIS-Pack/cpackget/blob/main/README.md)              | Package Installer: manage packs in local environment                   | [Open-CMSIS-Pack/cpackget](https://github.com/Open-CMSIS-Pack/cpackget)
+[csolution](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/projmgr/docs/Manual/Overview.md) | Project Manager: create build information for multi-project solutions  | [Open-CMSIS-Pack/devtools](https://github.com/Open-CMSIS-Pack/devtools)
+[cbuild](https://github.com/Open-CMSIS-Pack/cbuild/blob/main/README.md)                   | Build Invocation: orchestrate the build steps                          | [Open-CMSIS-Pack/cbuild](https://github.com/Open-CMSIS-Pack/cbuild)
+cbuildgen      | Build Generator: generate CMakeLists.txt from `*.CPRJ` files           | [Open-CMSIS-Pack/devtools](https://github.com/Open-CMSIS-Pack/devtools)
+[packchk](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/packchk/README.md)  | Pack Verification: validate a software pack before release             | [Open-CMSIS-Pack/devtools](https://github.com/Open-CMSIS-Pack/devtools)
+[svdconv](https://arm-software.github.io/CMSIS_5/SVD/html/svd_SVDConv_pg.html)             | System View Verification: validate `*.SVD` files and convert to  device header file | [Open-CMSIS-Pack/devtools](https://github.com/Open-CMSIS-Pack/devtools)
