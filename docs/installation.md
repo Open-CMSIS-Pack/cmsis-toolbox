@@ -134,7 +134,7 @@ command line without the need to specify the full path (default: `C:\Keil_v5\ARM
 
 For sharing the pack directory between MDK and the ctools it is required that both **CMSIS_PACK_ROOT** environment variable
 and the **RTE_PATH** setting in the MDK's TOOLS.INI (default: C:\Keil_v5\TOOLS.INI) point to the same directory.
-Note that in case the default location `%localappdata%\Arm\Packs` was selected during installation, the seeting of **CMSIS_PACK_ROOT**
+Note that in case the default location `%localappdata%\Arm\Packs` was selected during installation, the setting of **CMSIS_PACK_ROOT**
 environment variable is not required.
 
 The **CMSIS_COMPILER_ROOT** environment varible is not required if the compiler configuration files provided in ctools/etc are used.
