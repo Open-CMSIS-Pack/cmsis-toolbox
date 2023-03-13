@@ -328,13 +328,13 @@ jobs:
 
       - name: Update registry
         run: |
-          VERSION=$(cut -d/ -f5 <<< ${{ github.ref }})
+          VERSION=$(cut -d/ -f3 <<< ${{ github.ref }})
           ./toolbox/.github/update_registry.sh registry ${VERSION}
 
       - name: Push registry
         working-directory: registry
         run: |
-          VERSION=$(cut -d/ -f5 <<< ${{ github.ref }})
+          VERSION=$(cut -d/ -f3 <<< ${{ github.ref }})
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
