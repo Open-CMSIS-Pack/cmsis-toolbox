@@ -26,6 +26,18 @@
 				}
 			}
 		},
+		"windows and arm64": {
+			"install": {
+				"unzip": "https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/download/${CTOOLS_VERSION}/cmsis-toolbox-windows-arm64.zip",
+				"sha256": "${CTOOLS_WINDOWS_ARM64_SHA}",
+				"strip": 1
+			},
+			"exports": {
+				"paths": {
+					"PATH": "bin"
+				}
+			}
+		},
 		"linux and x64": {
 			"install": {
 				"untar": "https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/download/${CTOOLS_VERSION}/cmsis-toolbox-linux-amd64.tar.gz",
@@ -40,10 +52,17 @@
 				"strip": 1
 			}
 		},
-		"osx": {
+		"osx and x64": {
 			"install": {
 				"untar": "https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/download/${CTOOLS_VERSION}/cmsis-toolbox-darwin-amd64.tar.gz",
 				"sha256": "${CTOOLS_DARWIN_AMD64_SHA}",
+				"strip": 1
+			}
+		},
+		"osx and arm64": {
+			"install": {
+				"untar": "https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/download/${CTOOLS_VERSION}/cmsis-toolbox-darwin-arm64.tar.gz",
+				"sha256": "${CTOOLS_DARWIN_ARM64_SHA}",
 				"strip": 1
 			}
 		},

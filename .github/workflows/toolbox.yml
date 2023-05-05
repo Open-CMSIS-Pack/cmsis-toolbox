@@ -70,13 +70,17 @@ jobs:
           cp -r cbuild/bin/* distribution/bin
           cp -r cbuild/etc/* distribution/etc
           tar -xvf packchk/packchk-*-darwin64-amd64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.mac-amd64
+          #tar -xvf packchk/packchk-*-darwin64-arm64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.mac-arm64
           tar -xvf packchk/packchk-*-linux64-amd64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.lin-amd64
           tar -xvf packchk/packchk-*-linux64-arm64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.lin-arm64
           unzip packchk/packchk-\*-windows64-amd64.zip -d packchk && mv packchk/packchk.exe distribution/bin/packchk.exe-amd64
+          #unzip packchk/packchk-\*-windows64-arm64.zip -d packchk && mv packchk/packchk.exe distribution/bin/packchk.exe-arm64
           tar -xvf svdconv/svdconv-*-darwin64-amd64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.mac-amd64
+          #tar -xvf svdconv/svdconv-*-darwin64-arm64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.mac-arm64
           tar -xvf svdconv/svdconv-*-linux64-amd64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.lin-amd64
           tar -xvf svdconv/svdconv-*-linux64-arm64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.lin-arm64
           unzip svdconv/svdconv-\*-windows64-amd64.zip -d svdconv && mv svdconv/svdconv.exe distribution/bin/svdconv.exe-amd64
+          #unzip svdconv/svdconv-\*-windows64-arm64.zip -d svdconv && mv svdconv/svdconv.exe distribution/bin/svdconv.exe-arm64
           cp ../docs/LICENSE.txt distribution
           cp ../docs/index.html distribution/doc
         working-directory: toolbox
@@ -115,7 +119,9 @@ jobs:
       matrix:
         config:
           - { os: macos-12, target: darwin64, arch: amd64 }
+          - { os: macos-12, target: darwin64, arch: arm64 }
           - { os: windows-2019, target: windows64, arch: amd64}
+          - { os: windows-2019, target: windows64, arch: arm64}
           - { os: ubuntu-20.04, target: linux64, arch: amd64}
           - { os: ubuntu-20.04, target: linux64, arch: arm64}
     steps:
@@ -232,15 +238,23 @@ jobs:
       - name: Copy files separated by target for archiving
         run: |
           mkdir -p zip/cmsis-toolbox-windows-amd64/bin zip/cmsis-toolbox-windows-amd64/etc zip/cmsis-toolbox-windows-amd64/doc
+          mkdir -p zip/cmsis-toolbox-windows-arm64/bin zip/cmsis-toolbox-windows-arm64/etc zip/cmsis-toolbox-windows-arm64/doc
           mkdir -p zip/cmsis-toolbox-linux-amd64/bin   zip/cmsis-toolbox-linux-amd64/etc   zip/cmsis-toolbox-linux-amd64/doc
           mkdir -p zip/cmsis-toolbox-linux-arm64/bin   zip/cmsis-toolbox-linux-arm64/etc   zip/cmsis-toolbox-linux-arm64/doc
           mkdir -p zip/cmsis-toolbox-darwin-amd64/bin  zip/cmsis-toolbox-darwin-amd64/etc  zip/cmsis-toolbox-darwin-amd64/doc
+          mkdir -p zip/cmsis-toolbox-darwin-arm64/bin  zip/cmsis-toolbox-darwin-arm64/etc  zip/cmsis-toolbox-darwin-arm64/doc
           cp zip/bin/cbuild.exe-amd64    zip/cmsis-toolbox-windows-amd64/bin/cbuild.exe
           cp zip/bin/cbuildgen.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/cbuildgen.exe
           cp zip/bin/cpackget.exe-amd64  zip/cmsis-toolbox-windows-amd64/bin/cpackget.exe
           cp zip/bin/csolution.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/csolution.exe
           cp zip/bin/packchk.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/packchk.exe
           cp zip/bin/svdconv.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/svdconv.exe
+          cp zip/bin/cbuild.exe-arm64    zip/cmsis-toolbox-windows-arm64/bin/cbuild.exe
+          cp zip/bin/cbuildgen.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/cbuildgen.exe
+          cp zip/bin/cpackget.exe-arm64  zip/cmsis-toolbox-windows-arm64/bin/cpackget.exe
+          cp zip/bin/csolution.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/csolution.exe
+          #cp zip/bin/packchk.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/packchk.exe
+          #cp zip/bin/svdconv.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/svdconv.exe
           cp zip/bin/cbuild.lin-amd64    zip/cmsis-toolbox-linux-amd64/bin/cbuild
           cp zip/bin/cbuildgen.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuildgen
           cp zip/bin/cpackget.lin-amd64  zip/cmsis-toolbox-linux-amd64/bin/cpackget
@@ -259,42 +273,60 @@ jobs:
           cp zip/bin/csolution.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/csolution
           cp zip/bin/packchk.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/packchk
           cp zip/bin/svdconv.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/svdconv
+          cp zip/bin/cbuild.mac-arm64    zip/cmsis-toolbox-darwin-arm64/bin/cbuild
+          cp zip/bin/cbuildgen.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/cbuildgen
+          cp zip/bin/cpackget.mac-arm64  zip/cmsis-toolbox-darwin-arm64/bin/cpackget
+          cp zip/bin/csolution.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/csolution
+          #cp zip/bin/packchk.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/packchk
+          #cp zip/bin/svdconv.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/svdconv
           cp zip/LICENSE.txt             zip/cmsis-toolbox-windows-amd64/LICENSE.txt
+          cp zip/LICENSE.txt             zip/cmsis-toolbox-windows-arm64/LICENSE.txt
           cp zip/LICENSE.txt             zip/cmsis-toolbox-linux-amd64/LICENSE.txt
           cp zip/LICENSE.txt             zip/cmsis-toolbox-linux-arm64/LICENSE.txt
           cp zip/LICENSE.txt             zip/cmsis-toolbox-darwin-amd64/LICENSE.txt
+          cp zip/LICENSE.txt             zip/cmsis-toolbox-darwin-arm64/LICENSE.txt
           rm zip/etc/setup
           cp -r zip/etc/*                zip/cmsis-toolbox-windows-amd64/etc
+          cp -r zip/etc/*                zip/cmsis-toolbox-windows-arm64/etc
           cp -r zip/etc/*                zip/cmsis-toolbox-linux-amd64/etc
           cp -r zip/etc/*                zip/cmsis-toolbox-linux-arm64/etc
           cp -r zip/etc/*                zip/cmsis-toolbox-darwin-amd64/etc
+          cp -r zip/etc/*                zip/cmsis-toolbox-darwin-arm64/etc
           cp -r zip/doc/*                zip/cmsis-toolbox-windows-amd64/doc
+          cp -r zip/doc/*                zip/cmsis-toolbox-windows-arm64/doc
           cp -r zip/doc/*                zip/cmsis-toolbox-linux-amd64/doc
           cp -r zip/doc/*                zip/cmsis-toolbox-linux-arm64/doc
           cp -r zip/doc/*                zip/cmsis-toolbox-darwin-amd64/doc
+          cp -r zip/doc/*                zip/cmsis-toolbox-darwin-arm64/doc
         working-directory: toolbox
 
       - name: Set toolchain default paths
         run: |
           ./scripts/set-default.sh Windows toolbox/zip/cmsis-toolbox-windows-amd64/etc
+          ./scripts/set-default.sh Windows toolbox/zip/cmsis-toolbox-windows-arm64/etc
           ./scripts/set-default.sh Linux toolbox/zip/cmsis-toolbox-linux-amd64/etc
           ./scripts/set-default.sh Linux toolbox/zip/cmsis-toolbox-linux-arm64/etc
           ./scripts/set-default.sh Darwin toolbox/zip/cmsis-toolbox-darwin-amd64/etc
+          ./scripts/set-default.sh Darwin toolbox/zip/cmsis-toolbox-darwin-arm64/etc
 
       - name: Zip folders
         run: |
           zip -r cmsis-toolbox-windows-amd64.zip       cmsis-toolbox-windows-amd64
+          zip -r cmsis-toolbox-windows-arm64.zip       cmsis-toolbox-windows-arm64
           tar -czvf cmsis-toolbox-linux-amd64.tar.gz   cmsis-toolbox-linux-amd64
           tar -czvf cmsis-toolbox-linux-arm64.tar.gz   cmsis-toolbox-linux-arm64
           tar -czvf cmsis-toolbox-darwin-amd64.tar.gz  cmsis-toolbox-darwin-amd64
+          tar -czvf cmsis-toolbox-darwin-arm64.tar.gz  cmsis-toolbox-darwin-arm64
         working-directory: toolbox/zip
 
       - name: Calculate checksums
         run: |
           sha256sum cmsis-toolbox-windows-amd64.zip --text > cmsis-toolbox-checksums.txt
+          sha256sum cmsis-toolbox-windows-arm64.zip --text >> cmsis-toolbox-checksums.txt
           sha256sum cmsis-toolbox-linux-amd64.tar.gz --text >> cmsis-toolbox-checksums.txt
           sha256sum cmsis-toolbox-linux-arm64.tar.gz --text >> cmsis-toolbox-checksums.txt
           sha256sum cmsis-toolbox-darwin-amd64.tar.gz --text >> cmsis-toolbox-checksums.txt
+          sha256sum cmsis-toolbox-darwin-arm64.tar.gz --text >> cmsis-toolbox-checksums.txt
         working-directory: toolbox/zip
 
       - name: Attach installer to release assets
