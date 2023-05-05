@@ -32,7 +32,7 @@ user provided linker script selection                                           
 support for IAR compiler                                                                 | :heavy_check_mark:       | cbuild 0.10.5
 minimum/range component version handling                                                 | :heavy_check_mark:       | csolution 1.1.0
 replacement of cbuild bash scripts                                                       | :heavy_check_mark:       | cbuild 0.11.0
-multi-project solution handling in cbuild                                                | :x:                      |
+multi-project solution handling in cbuild                                                | :heavy_check_mark:       | cbuild 1.5.0
 layered solutions in-source conversion                                                   | :heavy_check_mark:       | csolution 0.9.4
 support for output directories customization at csolution level                          | :heavy_check_mark:       | csolution 1.0.0
 support for board attributes in conditions                                               | :heavy_check_mark:       | csolution 1.0.0
@@ -42,7 +42,7 @@ layer `interfaces` definitions                                                  
 separation of config files belonging to layers                                           | :heavy_check_mark:       | csolution 1.2.0
 generation of cbuild-idx.yml and cbuild.yml files                                        | :heavy_check_mark:       | csolution 1.2.0
 support for linux-arm64 host platform                                                    | :heavy_check_mark:       | csolution 1.3.0
-support for win-arm64 and mac-arm64 host platforms                                       | :heavy_multiplication_x: | in progress
+support for win-arm64 and mac-arm64 host platforms                                       | :heavy_check_mark:       | csolution 1.7.0
 distribution of layers                                                                   | :heavy_multiplication_x: | in progress
 disable update of RTE folder by default in cbuild                                        | :heavy_check_mark:       | cbuild 1.4.0
 `--update-rte` flag to enable the update of RTE folder contents in cbuild                | :heavy_check_mark:       | cbuild 1.4.0
@@ -57,8 +57,10 @@ add `output` filenames customization handling in csolution                      
 rework toolchains registration in cbuild                                                 | :heavy_check_mark:       | cbuild 1.5.0
 rework toolchains registration in csolution                                              | :heavy_check_mark:       | csolution 1.5.0
 `--toolchains` command line option for selecting the compiler                            | :heavy_check_mark:       | csolution 1.5.0
+linker script file pre-processing in csolution                                           | :heavy_check_mark:       | csolution 1.7.0
+linker script file pre-processing in cbuild                                              | :heavy_check_mark:       | cbuild 1.7.0
+generate regions_*.h file from memory tags                                               | :heavy_check_mark:       | csolution 1.7.0
 resources management                                                                     | :x:                      |
-linker scatter file handling                                                             | :x:                      |
 execution groups/phases                                                                  | :x:                      |
 pre/post build steps in csolution                                                        | :x:                      |
 pre/post build steps in cbuild                                                           | :x:                      |
