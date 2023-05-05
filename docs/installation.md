@@ -80,7 +80,7 @@ This variable points to the [CMSIS-Pack Root Directory](https://github.com/Open-
   MacOS       | ${HOME}/.cache/arm/packs
   WSL_Windows | ${LOCALAPPDATA}/Arm/Packs
 
-> Note: If you do not have a CMSIS-Pack root yet, use [**cpackget**](../../cpackget/docs/cpackget.md) to initialize your repository.
+> Note: If you do not have a CMSIS-Pack root yet, use [**cpackget**](../docs/cpackget.md) to initialize your repository.
 
 #### **TOOLCHAIN Registration**
 
