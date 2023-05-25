@@ -91,12 +91,12 @@ void ToolBoxInstallerTests::CheckExtractedDir(const string& path, bool expect) {
               "csolution.lin-amd64", "csolution.exe-amd64", "csolution.mac-amd64",
               "packchk.lin-amd64",   "packchk.exe-amd64",   "packchk.mac-amd64",
               "svdconv.lin-amd64",   "svdconv.exe-amd64",   "svdconv.mac-amd64",
-              "cbuild.lin-arm64",
-              "cpackget.lin-arm64",
-              "cbuildgen.lin-arm64",
-              "csolution.lin-arm64",
-              "packchk.lin-arm64",
-              "svdconv.lin-arm64" }},
+              "cbuild.lin-arm64",    "cbuild.exe-arm64",    "cbuild.mac-arm64",
+              "cpackget.lin-arm64",  "cpackget.exe-arm64",  "cpackget.mac-arm64",
+              "cbuildgen.lin-arm64", "cbuildgen.exe-arm64", "cbuildgen.mac-arm64",
+              "csolution.lin-arm64", "csolution.exe-arm64", "csolution.mac-arm64",
+              "packchk.lin-arm64",   "packchk.exe-arm64",   "packchk.mac-arm64",
+              "svdconv.lin-arm64",   "svdconv.exe-arm64",   "svdconv.mac-arm64"}},
 
     { "doc", vector<string>{
               "index.html"}},
