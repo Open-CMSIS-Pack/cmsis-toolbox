@@ -70,18 +70,18 @@ jobs:
           ./cbuild/cbuild_install.sh -x cbuild
           cp -r cbuild/bin/* distribution/bin
           cp -r cbuild/etc/* distribution/etc
-          tar -xvf packchk/packchk-*-darwin64-amd64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.mac-amd64
-          tar -xvf packchk/packchk-*-darwin64-arm64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.mac-arm64
-          tar -xvf packchk/packchk-*-linux64-amd64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.lin-amd64
-          tar -xvf packchk/packchk-*-linux64-arm64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.lin-arm64
-          unzip packchk/packchk-\*-windows64-amd64.zip -d packchk && mv packchk/packchk.exe distribution/bin/packchk.exe-amd64
-          unzip packchk/packchk-\*-windows64-arm64.zip -d packchk && mv packchk/packchk.exe distribution/bin/packchk.exe-arm64
-          tar -xvf svdconv/svdconv-*-darwin64-amd64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.mac-amd64
-          tar -xvf svdconv/svdconv-*-darwin64-arm64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.mac-arm64
-          tar -xvf svdconv/svdconv-*-linux64-amd64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.lin-amd64
-          tar -xvf svdconv/svdconv-*-linux64-arm64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.lin-arm64
-          unzip svdconv/svdconv-\*-windows64-amd64.zip -d svdconv && mv svdconv/svdconv.exe distribution/bin/svdconv.exe-amd64
-          unzip svdconv/svdconv-\*-windows64-arm64.zip -d svdconv && mv svdconv/svdconv.exe distribution/bin/svdconv.exe-arm64
+          tar -xvf packchk/packchk-*-darwin-amd64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.mac-amd64
+          tar -xvf packchk/packchk-*-darwin-arm64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.mac-arm64
+          tar -xvf packchk/packchk-*-linux-amd64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.lin-amd64
+          tar -xvf packchk/packchk-*-linux-arm64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.lin-arm64
+          unzip packchk/packchk-\*-windows-amd64.zip -d packchk && mv packchk/packchk.exe distribution/bin/packchk.exe-amd64
+          unzip packchk/packchk-\*-windows-arm64.zip -d packchk && mv packchk/packchk.exe distribution/bin/packchk.exe-arm64
+          tar -xvf svdconv/svdconv-*-darwin-amd64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.mac-amd64
+          tar -xvf svdconv/svdconv-*-darwin-arm64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.mac-arm64
+          tar -xvf svdconv/svdconv-*-linux-amd64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.lin-amd64
+          tar -xvf svdconv/svdconv-*-linux-arm64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.lin-arm64
+          unzip svdconv/svdconv-\*-windows-amd64.zip -d svdconv && mv svdconv/svdconv.exe distribution/bin/svdconv.exe-amd64
+          unzip svdconv/svdconv-\*-windows-arm64.zip -d svdconv && mv svdconv/svdconv.exe distribution/bin/svdconv.exe-arm64
           cp ../docs/LICENSE.txt distribution
           cp ../docs/index.html distribution/doc
         working-directory: toolbox
