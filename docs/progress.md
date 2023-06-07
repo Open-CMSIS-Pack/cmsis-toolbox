@@ -60,6 +60,14 @@ rework toolchains registration in csolution                                     
 linker script file pre-processing in csolution                                           | :heavy_check_mark:       | csolution 1.7.0
 linker script file pre-processing in cbuild                                              | :heavy_check_mark:       | cbuild 1.7.0
 generate regions_*.h file from memory tags                                               | :heavy_check_mark:       | csolution 1.7.0
+`context-map` handling                                                                   | :heavy_check_mark:       | csolution 2.0.0-dev0
+reworked `output` nodes                                                                  | :heavy_check_mark:       | csolution 2.0.0-dev0
+reworked output file types                                                               | :heavy_check_mark:       | cbuild 2.0.0-dev0
+updated access sequences                                                                 | :heavy_check_mark:       | csolution 2.0.0-dev0
+removed deprecated nodes                                                                 | :heavy_check_mark:       | csolution 2.0.0-dev0
+`update-rte` command for creating/updating and listing config files                      | :heavy_check_mark:       | csolution 2.0.0-dev1
+`rte` `base-dir` at cproject level for RTE folder customization                          | :heavy_check_mark:       | csolution 2.0.0-dev1
+reworked `cdefault` handling                                                             | :heavy_check_mark:       | csolution 2.0.0-dev1
 resources management                                                                     | :x:                      |
 execution groups/phases                                                                  | :x:                      |
 pre/post build steps in csolution                                                        | :x:                      |
