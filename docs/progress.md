@@ -68,6 +68,8 @@ removed deprecated nodes                                                        
 `update-rte` command for creating/updating and listing config files                      | :heavy_check_mark:       | csolution 2.0.0-dev1
 `rte` `base-dir` at cproject level for RTE folder customization                          | :heavy_check_mark:       | csolution 2.0.0-dev1
 reworked `cdefault` handling                                                             | :heavy_check_mark:       | csolution 2.0.0-dev1
+support multiple `--context` inputs                                                      | :heavy_check_mark:       | csolution 2.0.0-dev2
+support multiple `setup` for each context                                                | :heavy_check_mark:       | csolution 2.0.0-dev2
 resources management                                                                     | :x:                      |
 execution groups/phases                                                                  | :x:                      |
 pre/post build steps in csolution                                                        | :x:                      |
