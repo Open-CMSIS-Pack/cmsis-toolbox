@@ -222,15 +222,6 @@ jobs:
           name: cmsis-toolbox
           path: ${{ github.workspace }}
 
-      - name: Attach installer to release assets
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: cmsis-toolbox.sh
-          tag: ${{ github.ref }}
-          overwrite: true
-          asset_name: cmsis-toolbox.sh
-
       - name: Extract cmsis-toolbox installer files
         run: |
           chmod +x cmsis-toolbox.sh
