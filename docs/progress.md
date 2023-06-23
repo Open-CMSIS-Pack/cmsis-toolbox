@@ -70,6 +70,9 @@ removed deprecated nodes                                                        
 reworked `cdefault` handling                                                             | :heavy_check_mark:       | csolution 2.0.0-dev1
 support multiple `--context` inputs                                                      | :heavy_check_mark:       | csolution 2.0.0-dev2
 support multiple `setup` for each context                                                | :heavy_check_mark:       | csolution 2.0.0-dev2
+support for standard language options in cbuild                                          | :heavy_check_mark:       | cbuild 2.0.0-dev3
+support for standard language options in csolution                                       | :heavy_check_mark:       | csolution 2.0.0-dev3
+support for `language` and `scope` component file attributes in csolution                | :heavy_check_mark:       | csolution 2.0.0-dev3
 resources management                                                                     | :x:                      |
 execution groups/phases                                                                  | :x:                      |
 pre/post build steps in csolution                                                        | :x:                      |
