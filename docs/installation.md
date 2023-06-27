@@ -1,4 +1,4 @@
-# CMSIS-Toolbox: Installation
+# Toolbox: Installation
 
 Content:
 
@@ -63,7 +63,7 @@ Environment Variable     | Description
 :------------------------|:------------
 `<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries
 **CMSIS_PACK_ROOT**      | Path to the CMSIS-Pack Root directory (i.e. /c/open-cmsis/pack) that stores software packs
-**CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. /c/ctools/etc)
+**CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. /c/cmsis-toolbox/etc)
 **Path**                 | Add to the system path to the CMSIS-Toolbox 'bin' directory (i.e. /c/cmsis-toolbox/bin)
 
 #### **CMSIS_PACK_ROOT**
@@ -130,12 +130,12 @@ The CMSIS-Toolbox is shipped as part of the installer. The tools are located in 
 Adding the binary directory of the cmsis-toolbox directory to your **PATH** environment variable allows you to invoke the tools at the
 command line without the need to specify the full path (default: `C:\Keil_v5\ARM\cmsis-toolbox\bin`)
 
-For sharing the pack directory between MDK and the ctools it is required that both **CMSIS_PACK_ROOT** environment variable
+For sharing the pack directory between MDK and the CMSIS-Toolbox it is required that both **CMSIS_PACK_ROOT** environment variable
 and the **RTE_PATH** setting in the MDK's TOOLS.INI (default: C:\Keil_v5\TOOLS.INI) point to the same directory.
 Note that in case the default location `%localappdata%\Arm\Packs` was selected during installation, the setting of **CMSIS_PACK_ROOT**
 environment variable is not required.
 
-The **CMSIS_COMPILER_ROOT** environment varible is not required if the compiler configuration files provided in ctools/etc are used.
+The **CMSIS_COMPILER_ROOT** environment varible is not required if the compiler configuration files provided in cmsis-toolbox/etc are used.
 
 > Note: At the Windows command prompt, use `set` to list all environment variables.
 
@@ -147,15 +147,15 @@ In Linux,  there are multiple ways to configure the **Environment Variables**. I
 
 ```Shell
 export CMSIS_PACK_ROOT=/home/ubuntu/packs
-export CMSIS_COMPILER_ROOT=/opt/ctools/etc
-export PATH=/opt/ctools/bin:$PATH
+export CMSIS_COMPILER_ROOT=/opt/cmsis-toolbox/etc
+export PATH=/opt/cmsis-toolbox/bin:$PATH
 ```
 
 > Note: The command `printenv` should list these environment variables.
 
 ### Setup MacOS
 
-MacOS protects by default execution of files that are downloaded and/or not signed. As the CMSIS-Toolbox is currently not signed, it is required to execute the following commands after installation:
+MacOS protects by default execution of files that are downloaded and/or not signed. As the CMSIS-Toolbox is not signed, it is required to execute the following commands after installation:
 
 - Remove the flags that prevent execution for downloaded executables
 
@@ -193,4 +193,4 @@ To work with the **CMSIS-Toolbox** in VS Code use:
 
 - In the **Terminal** window, enter the commands for the tools as explained in [project examples](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/projmgr/docs/Manual/Overview.md#project-examples).\
 
-Refer also to the repository [vscode-get-started](https://github.com/Open-CMSIS-Pack/vscode-get-started) for more information.
+Refer also to the repository [vscode-get-started](https://github.com/Open-Pack/vscode-get-started) for more information.
