@@ -23,11 +23,9 @@ Content:
 
 Download the CMSIS-Toolbox from the [**release page**](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases). It is provided for Windows (amd64), Linux (amd64, arm64), and MacOS (amd64) in an archive file.
 
-> Note: The `cmsis-toolbox.sh` is provided for legacy reasons, but may be deprecated in future versions.
-
 ## Installation
 
-To setup the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example to `/c/ctools`.
+To setup the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example to `/c/cmsis-toolbox`.
 
 ### Requirements
 
@@ -55,7 +53,7 @@ The CMSIS-Toolbox works with the following toolchains. Install one or more toolc
 
 ## Configuration
 
-It is required to customize the installation for the actual setup of your development environment as described in the following.
+It maybe required to customize the installation for the actual setup of your development environment as described in the following.
 
 ### Environment Variables
 
@@ -66,7 +64,7 @@ Environment Variable     | Description
 `<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries
 **CMSIS_PACK_ROOT**      | Path to the CMSIS-Pack Root directory (i.e. /c/open-cmsis/pack) that stores software packs
 **CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. /c/ctools/etc)
-**Path**                 | Add to the system path to the CMSIS-Toolbox 'bin' directory (i.e. /c/ctools/bin)
+**Path**                 | Add to the system path to the CMSIS-Toolbox 'bin' directory (i.e. /c/cmsis-toolbox/bin)
 
 #### **CMSIS_PACK_ROOT**
 
@@ -127,10 +125,10 @@ For Windows, use the dialog **System Properties - Advanced** and add the **Envir
 
 #### Keil MDK
 
-The CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\ctools` directory of the MDK installation.
+The CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\cmsis-toolbox` directory of the MDK installation.
 
-Adding the binary directory of the ctools directory to your **PATH** environment variable allows you to invoke the tools at the
-command line without the need to specify the full path (default: `C:\Keil_v5\ARM\ctools\bin`)
+Adding the binary directory of the cmsis-toolbox directory to your **PATH** environment variable allows you to invoke the tools at the
+command line without the need to specify the full path (default: `C:\Keil_v5\ARM\cmsis-toolbox\bin`)
 
 For sharing the pack directory between MDK and the ctools it is required that both **CMSIS_PACK_ROOT** environment variable
 and the **RTE_PATH** setting in the MDK's TOOLS.INI (default: C:\Keil_v5\TOOLS.INI) point to the same directory.
