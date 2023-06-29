@@ -1,5 +1,7 @@
 # Installation
 
+[**> CMSIS-Toolbox**](README.md) **> Installation**
+
 This chapter explains the setup of the CMSIS-Toolbox along with a build environment.
 
 **Chapter Contents:**

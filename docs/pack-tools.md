@@ -1,5 +1,7 @@
 # Pack Creation
 
+[**> CMSIS-Toolbox**](README.md) **> Pack Creation**
+
 This chapter describes how to create software packs and explains the tools `packchk` (software pack verification) and `svdconv` (SVD file converter).
 
 **Chapter Contents:**
