@@ -1,17 +1,19 @@
-# Toolbox: Installation
+# Installation
 
-Content:
+This chapter explains the setup of the CMSIS-Toolbox along with a build environment.
 
-- [CMSIS-Toolbox: Installation](#cmsis-toolbox-installation)
+**Chapter Contents:**
+
+- [Installation](#installation)
   - [Download](#download)
-  - [Installation](#installation)
+  - [Setup](#setup)
     - [Requirements](#requirements)
     - [Toolchain Options](#toolchain-options)
   - [Configuration](#configuration)
     - [Environment Variables](#environment-variables)
-      - [**CMSIS\_PACK\_ROOT**](#cmsis_pack_root)
-      - [**TOOLCHAIN Registration**](#toolchain-registration)
-      - [**./etc/\*.cmake**](#etccmake)
+      - [CMSIS\_PACK\_ROOT](#cmsis_pack_root)
+      - [TOOLCHAIN Registration](#toolchain-registration)
+      - [./etc/\*.cmake](#etccmake)
     - [Setup Win64](#setup-win64)
       - [Keil MDK](#keil-mdk)
     - [Setup Linux or Bash](#setup-linux-or-bash)
@@ -23,7 +25,7 @@ Content:
 
 Download the CMSIS-Toolbox from the [**release page**](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases). It is provided for Windows (amd64), Linux (amd64, arm64), and MacOS (amd64) in an archive file.
 
-## Installation
+## Setup
 
 To setup the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example to `/c/cmsis-toolbox`.
 
@@ -66,7 +68,7 @@ Environment Variable     | Description
 **CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. /c/cmsis-toolbox/etc)
 **Path**                 | Add to the system path to the CMSIS-Toolbox 'bin' directory (i.e. /c/cmsis-toolbox/bin)
 
-#### **CMSIS_PACK_ROOT**
+#### CMSIS_PACK_ROOT
 
 This variable points to the [CMSIS-Pack Root Directory](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory) that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
 
@@ -80,7 +82,7 @@ This variable points to the [CMSIS-Pack Root Directory](https://github.com/Open-
 
 > Note: If you do not have a CMSIS-Pack root yet, use [**cpackget**](./cpackget.md) to initialize your repository.
 
-#### **TOOLCHAIN Registration**
+#### TOOLCHAIN Registration
 
 The registration of a toolchain is manually defined by an environment variable with its name and semantic version numbers (major, minor and patch) in the format:
 
@@ -100,7 +102,7 @@ For example in Unix:
 export GCC_TOOLCHAIN_10_3_1=/opt/gcc-arm-none-eabi-10.3-2021.10/bin
 ```
 
-#### **./etc/\*.cmake**
+#### ./etc/\*.cmake
 
 The mappings and dictionaries for various toolchain version ranges are defined by `*.cmake` files in the directory `<cmsis-toolbox-installation-dir>/etc`.
 
