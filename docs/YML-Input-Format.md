@@ -798,8 +798,9 @@ Configure the generated output files.
 
 `output:`                              |            | Content
 :--------------------------------------|:-----------|:--------------------------------
-&nbsp;&nbsp;&nbsp; `base-name:`        |  Optional  | Specify a base name for all output files.
+&nbsp;&nbsp;&nbsp; `base-name:`        |  Optional  | Specify a common base name for all output files.
 &nbsp;&nbsp;&nbsp; `type:`             |  Optional  | A list of output types for code generation (see list below).
+
 
 `type:`           | Description
 :-----------------|:-------------
@@ -827,11 +828,11 @@ output:                  # configure output files
   - bin                  # generate a BIN file 
 ```
 
-Gnerate a **library**:
+Generate a **library**:
 
 ```yml
 output:                  # configure output files
-  type: lib              # Generate executeable file.
+  type: lib              # Generate library file.
 ```
 
 ## Translation Control
