@@ -232,8 +232,8 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
    vcpkg  activate
    ```  
 
-Alternatively you may use a existing repository, for example [github.com/Open-CMSIS-Pack/vscode-get-started](
-https://github.com/Open-CMSIS-Pack/vscode-get-started).
+Alternatively you may use an existing repository, for example [github.com/Open-CMSIS-Pack/vscode-get-started](
+https://github.com/Open-CMSIS-Pack/vscode-get-started) with a vcpkg-configuration.json file.
 
 ## vcpgk - Setup in VS Code
 
@@ -243,7 +243,7 @@ https://github.com/Open-CMSIS-Pack/vscode-get-started).
 4. Specify the destination folder to clone to and select 'Open' when asked 'Would you like to open the cloned directory?'
 5. Use `View` menu 'Explorer' and select the file `vcpkg-configuration.json`. This file instructs [Microsoft vcpkg](https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts) to install the prerequisite artifacts required for building the solution and installs therefore:
 
-    - CMSIS-Toolbox
+    - CMSIS-Toolbox 2.0.0
     - cmake 3.25.2
     - ninja 1.10.2
     - arm-none-eabi-gcc 12.2.1-mpacbti (GNU Arm Embedded Toolchain 12.2.1)
@@ -252,8 +252,8 @@ https://github.com/Open-CMSIS-Pack/vscode-get-started).
 >
 > - In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
 >
-> - In case of `Error: Unable to resolve dependency ... in \<registry\>` you may need to update the registry with the menu `View` option `Command Palette...`, select `vcpkg: Run vcpkg command` and enter: `z-ce update <registry>`.
+> - In case of `Error: Unable to resolve dependency ... in \<registry\>` you may need to update the registry with the menu `View` option `Command Palette...`, select `vcpkg: Run vcpkg command` and enter: `z-ce update <registry>`. Newer versions of vcpkg support `x-update-registry --all` to update all registries.
 
-Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code.
+Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal. 
 
-Alternatively use `View` and open `CMSIS`. Then use the `Build` buttons to translate the project.
+Alternatively use `View` and open the `CMSIS` Extension. Then use the `Build` buttons to translate the project, flash your connected board and/or launch a debug connection.
