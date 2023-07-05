@@ -1,5 +1,7 @@
 # Installation
 
+<!-- markdownlint-disable MD036 -->
+
 [**CMSIS-Toolbox**](README.md) **> Installation**
 
 This chapter explains the setup of the CMSIS-Toolbox along with a build environment.
@@ -24,7 +26,6 @@ There are three different ways to setup the CMSIS-Toolbox:
       - [Setup MacOS](#setup-macos)
   - [vcpkg - Setup using CLI](#vcpkg---setup-using-cli)
   - [vcpgk - Setup in VS Code](#vcpgk---setup-in-vs-code)
-    - [Using Visual Studio Code](#using-visual-studio-code)
   
 ## Manual Setup
 
@@ -123,9 +124,11 @@ environment variable is not required.
 
 The **CMSIS_COMPILER_ROOT** environment varible is not required if the compiler configuration files provided in cmsis-toolbox/etc are used.
 
-> Note: At the Windows command prompt, use `set` to list all environment variables.
-
-> Note: Keil MDK may be used to [*import*](https://www.keil.com/support/man/docs/uv4/uv4_ui_import.htm) and [*export*](https://www.keil.com/support/man/docs/uv4/uv4_ui_export.htm) project files in `*.CPRJ` format.
+> **Notes:**
+>
+> At the Windows command prompt, use `set` to list all environment variables.
+>
+> Keil MDK may be used to [*import*](https://www.keil.com/support/man/docs/uv4/uv4_ui_import.htm) and [*export*](https://www.keil.com/support/man/docs/uv4/uv4_ui_export.htm) project files in `*.CPRJ` format.
 
 #### Setup Linux or Bash
 
@@ -229,38 +232,28 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
    vcpkg  activate
    ```  
 
-Alternatively you may use a existing repository, i.e. 
-https://github.com/Open-CMSIS-Pack/vscode-get-started
+Alternatively you may use an existing repository, for example [github.com/Open-CMSIS-Pack/vscode-get-started](
+https://github.com/Open-CMSIS-Pack/vscode-get-started) with a vcpkg-configuration.json file.
 
 ## vcpgk - Setup in VS Code
 
 1. Download & Install [Microsoft Visual Studio Code](https://code.visualstudio.com/download) for your operating system.
-2. Launch Visual Studio Code. From the 'View' menu open 'Extensions' (ctrl+shift+x). Search for "Keil Studio Pack" and select the install button.
-3. From the 'View' menu open 'Source Control'. Select 'Clone Repository' and copy the url: https://github.com/Open-CMSIS-Pack/vscode-get-started into the input dialog
+2. Launch Visual Studio Code. Using the menu `View` and open `Extensions` and install the `Keil Studio Pack` extensions.
+3. Use the menu `View` and open `Source Control`. Select 'Clone Repository' and enter as url [`https://github.com/Open-CMSIS-Pack/vscode-get-started`](https://github.com/Open-CMSIS-Pack/vscode-get-started).
 4. Specify the destination folder to clone to and select 'Open' when asked 'Would you like to open the cloned directory?'
-5. Open the 'Explorer' view (ctrl-shift-e) and select the file 'vcpkg-configuration.json'. This file instructs [Microsoft vcpkg](https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts) to install the prerequisite artifacts required for building the solution.
+5. Use `View` menu 'Explorer' and select the file `vcpkg-configuration.json`. This file instructs [Microsoft vcpkg](https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts) to install the prerequisite artifacts required for building the solution and installs therefore:
 
-    - CMSIS-Toolbox
+    - CMSIS-Toolbox 2.0.0
     - cmake 3.25.2
     - ninja 1.10.2
     - arm-none-eabi-gcc 12.2.1-mpacbti (GNU Arm Embedded Toolchain 12.2.1)
 
-6. In case vcpkg shows an error in the VSCode status bar, you can see furth information in the "OUTPUT" for 'vcpkg'.
-In case of 'Error: Unable to resolve dependency ... in <registry>' you may need to update the registry by running 'vcpkg: Run vcpkg command'
-from the 'View' menu's 'Command Palette...' (ctrl+shift+p) typing: `z-ce update <registry>`. 
-7. Open the 'CMSIS' view from the side bar and press the 'Build' button. The last line of the ninja build output will tell you where you can
-find the application elf file. Alternatively you can select 'Build' or                                     'Rebuild' from the context menu of the `*.cprj` file of the solution context
-(e.g. hello.debug+avh.cprj)
+> **Notes:**
+>
+> - In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
+>
+> - In case of `Error: Unable to resolve dependency ... in \<registry\>` you may need to update the registry with the menu `View` option `Command Palette...`, select `vcpkg: Run vcpkg command` and enter: `z-ce update <registry>`. Newer versions of vcpkg support `x-update-registry --all` to update all registries.
 
+Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal. 
 
-### Using Visual Studio Code
-
-[Visual Studio Code](https://code.visualstudio.com/) is an effective environment to create CMSIS-based projects.  To setup an environment install the [Keil Studio Pack](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) extension from the Visual Studio marketplace.
-
-To work with the **CMSIS-Toolbox** in VS Code use:
-
-- **Terminal - New Terminal** to open a terminal window, on Win64 choose as profile `Command prompt`.
-
-- In the **Terminal** window, enter the commands for the tools as explained in [project examples](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/projmgr/docs/Manual/Overview.md#project-examples).\
-
-Refer also to the repository [vscode-get-started](https://github.com/Open-Pack/vscode-get-started) for more information.
+Alternatively use `View` and open the `CMSIS` Extension. Then use the `Build` buttons to translate the project, flash your connected board and/or launch a debug connection.

@@ -217,7 +217,6 @@ A [`context:`](YML-Input-Format.md#context-name-conventions) identifies a config
 
 `Sample.Debug+FRDM-K32L3A6`
 
-
 This output file convention is identical with the [context: name conventions](YML-Input-Format.md#context-name-conventions) and enables that each `target-type:` and/or `build-type:` can be identified and independently generated which provides the support for test automation. It is however not required to build every possible combination, this should be under user control.
 
 ### Toolchain Agnostic Project
@@ -705,7 +704,7 @@ The following sequence describes the Linker Script management of the **`csolutio
 
 ### Linker Script Preprocessing
 
-A Linker Script file is preprocessed when a `regions:` header file is specified in the [`linker:`](YML-Input-Format.md#linker) node or when the [Linker Script file is automatically generated](#automatic-linker-script-generation). A standard C preprocessor is used to create the final linker script as shown below.
+A Linker Script file is preprocessed when a `regions:` header file or a `define:` is specified in the [`linker:`](YML-Input-Format.md#linker) node or when the [Linker Script file is automatically generated](#automatic-linker-script-generation). A standard C preprocessor is used to create the final linker script as shown below.
 
 ![Linker Script File Generation](./images/linker-script-file.png "Linker Script File Generation")
 

@@ -771,26 +771,60 @@ compiler: AC6@6.18.0       # Select Arm Compiler version 6
 
 ### `linker:`
 
-The `linker:` node specifies an explicit Linker Script and/or memory regions header file.  It can be applied in `*.cproject.yml` and `*.clayer.yml` files.  If multiple `linker:` nodes are specified an error is issued.
+The `linker:` node specifies an explicit Linker Script and/or memory regions header file.  It can be applied in `*.cproject.yml` and `*.clayer.yml` files.
+Refer to [Linker Script Management](build-overview.md#linker-script-management) for detailed information.
 
-`linker:`                                                   |            |  Content
+`linker:`                                                   |            | Content
 :-----------------------------------------------------------|:-----------|:--------------------------------
-**`- regions:`**                                            |**Optional**|**Path and file name of `regions_<device_or_board>.h`, used to generate a Linker Script.**
-&nbsp;&nbsp;&nbsp; [`for-compiler:`](#for-compiler)         |  Optional  |  Include Linker Script for the specified toolchain.
-&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)           |  Optional  |  Include Linker Script for a list of *build* and *target* type names.
-&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context)   |  Optional  |  Exclude Linker Script for a list of *build* and *target* type names.
-**`- script:`**                                             |**Optional**|**Explicit file name of the Linker Script, overrules files provided with [`file:`](#files) or components.**
-&nbsp;&nbsp;&nbsp; [`for-compiler:`](#for-compiler)         |  Optional  |  Include Linker Script for the specified toolchain.
-&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)           |  Optional  |  Include Linker Script for a list of *build* and *target* type names.
-&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context)   |  Optional  |  Exclude Linker Script for a list of *build* and *target* type names.
-**[`- define:`](#define)**                                  |**Optional**|**Define symbol settings for the linker script file preprocessor.**
-&nbsp;&nbsp;&nbsp; [`for-compiler:`](#for-compiler)         |  Optional  |  Apply define settings for the specified toolchain.
-&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)           |  Optional  |  Include define settings for a list of *build* and *target* type names.
-&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context)   |  Optional  |  Exclude define settings for a list of *build* and *target* type names.
+`- regions:`                                                |  Optional  | Path and file name of `<regions_file>.h`, used to generate a Linker Script.
+&nbsp;&nbsp;&nbsp;`script:`                                 |  Optional  | Explicit file name of the Linker Script, overrules files provided with [`file:`](#files) or components.
+&nbsp;&nbsp;&nbsp;[`define:`](#define)                      |  Optional  | Define symbol settings for the linker script file preprocessor.
+&nbsp;&nbsp;&nbsp;[`for-compiler:`](#for-compiler)         |  Optional  |  Include Linker Script for the specified toolchain.
+&nbsp;&nbsp;&nbsp;[`for-context:`](#for-context)           |  Optional  |  Include Linker Script for a list of *build* and *target* type names.
+&nbsp;&nbsp;&nbsp;[`not-for-context:`](#not-for-context)   |  Optional  |  Exclude Linker Script for a list of *build* and *target* type names.
 
-> **Note:** 
+> **Notes:** 
+> 
+> The `linker:` node must have at least `regions:`, `script:`, or `define:`.
+> 
+> If no `script:` file is specified, compiler specific [linker script template files](build-overview.md#linker-script-templates) are used.
 >
-> If no `script:` file is specified, compiler specific [linker script template files](Linker-Script-Management.md#linker-script-templates) are used.
+> A Linker Script file is preprocessed when `regions:` or a `define:` is specified in the `linker:` node. 
+
+**Examples:**
+
+```yml
+linker:
+  - script:   MyLinker.scf     # linker script file
+    regions:  MyRegions.h      # pre-processed using header file
+```
+
+```yml
+linker:
+  - regions:  MyRegions.h      # Default linker script is used and pre-processed using header file
+```
+
+```yml
+linker:
+  - script:   MyLinker.scf     # linker script file, not pre-processed
+    for-compiler: AC6          # for Arm Compiler 6 
+
+  - script:   MyLinker.ld      # linker script file, not pre-processed
+    for-compiler: CLANG        # for CLANG LLVM based compiler
+```
+
+```yml
+linker:
+  - script:   MyLinker.scf     # linker script file
+    for-compiler: AC6          # for Arm Compiler 6
+    regions:  MyRegions.h      # pre-processed using header file
+
+  - script:   MyLinker.ld      # linker script file
+    for-compiler: CLANG        # for CLANG LLVM based compiler
+    regions:  MyRegions.h      # pre-processed using header file
+    define:                    # with define setting 
+      - Setup: 1               # define with value
+```
 
 ### `output:`
 
@@ -800,7 +834,6 @@ Configure the generated output files.
 :--------------------------------------|:-----------|:--------------------------------
 &nbsp;&nbsp;&nbsp; `base-name:`        |  Optional  | Specify a common base name for all output files.
 &nbsp;&nbsp;&nbsp; `type:`             |  Optional  | A list of output types for code generation (see list below).
-
 
 `type:`           | Description
 :-----------------|:-------------
