@@ -36,5 +36,4 @@ Hands-on Tutorial         | Description
 ## Report a Bug
 
 Please report any issue you are facing while using CMSIS-Toolbox in the [Issues tab on GitHub](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/issues/new/choose).
-Select the appropriate issue template, depending on the severity of the issue. Bugs (or deviations) from the defined behaviour that can be worked around shall be#
-reported as "non-blocking bug". In turn, issues that prevent you from using a certian feature entirely, are considered a "blocking bug" and labelled as *critical*.
+Select the appropriate issue template, depending on the severity of the issue. Bugs (or deviations) from the defined behaviour that can be worked around shall be reported as "non-blocking bug". In turn, issues that prevent you from using a certain feature entirely, are considered a "blocking bug" and labelled as *critical*.
