@@ -3,7 +3,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **> Build Tools**
+[**> CMSIS-Toolbox**](README.md) **> Build Tools**
 
 This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects), [`csolution`](#csolution-invocation) (transform *user input files*), and [`cpackget`](#cpackget-invocation) (manage software packs). It includes command line syntax details and examples.
 
@@ -43,15 +43,12 @@ This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects)
 
 ## Requirements
 
-Install the CMSIS-Toolbox as described in chapter [Installation](installation.md).
-
 The CMSIS-Pack repository must be present in the host development environment.
 
-There are several ways to configure the CMSIS-Pack repository:
-
-- Use the **`cpackget` Package Installer** command `init` to [initialize the CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory), [update the pack index file](#update-pack-index-file). Then [add software packs](build-tools.md#add-packs).
-
-- Share an existing CMSIS-Pack repository (i.e. from Keil MDK) via the environment variable `CMSIS_PACK_ROOT`.
+- There are several ways to initialize and configure the pack repository, for example using the
+  tool `cpackget` that is part of the CMSIS-Toolbox.
+- Before running the CMSIS-Toolbox tools the location of the pack repository shall be set via the environment variable
+  `CMSIS_PACK_ROOT` otherwise its [default location](installation.md#environment-variables) will be taken.
 
 ## `cbuild` Invocation
 

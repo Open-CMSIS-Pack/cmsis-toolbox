@@ -1,10 +1,10 @@
-# Implementation Progress
+## Implementation Progress
 
 Feature                                                                                  | Status                   | Version
 :----------------------------------------------------------------------------------------|:-------------------------|:----------------
 `csolution.yml`, `cproject.yml` and `clayer.yml` handling                                | :heavy_check_mark:       | csolution 0.9.0
 `cdefault.yml` handling                                                                  | :heavy_check_mark:       | csolution 0.9.3
-`build-types` and `target-types` at csolution level                                      | :heavy_check_mark:       | csolution 0.9.0
+`build-types` and `target-types` at csolution level                                      | :heavy_check_mark:       | csolution 0.9.0 
 `for-type`/`not-for-type` context handling                                               | :heavy_check_mark:       | csolution 0.9.0
 list `packs`, `devices`, `components`, `dependencies` at cproject level                  | :heavy_check_mark:       | csolution 0.9.0
 `defines`/`undefines`/`add-paths`/`del-paths` at solution/project/target level           | :heavy_check_mark:       | csolution 0.9.0

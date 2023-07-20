@@ -1,35 +1,33 @@
 # Installation
 
-<!-- markdownlint-disable MD036 -->
-
-[**CMSIS-Toolbox**](README.md) **> Installation**
+[**> CMSIS-Toolbox**](README.md) **> Installation**
 
 This chapter explains the setup of the CMSIS-Toolbox along with a build environment.
-
-There are three different ways to setup the CMSIS-Toolbox:
-
-- [Manual setup](#manual-setup) with operating system commands and environment variables.
-- [vcpkg - CLI](#vcpkg---setup-using-cli) using the vcpkg tool in command-line mode
-- [vcpgk - VS Code](#vcpgk---setup-in-vs-code) using the vcpgk tool with VS Code integration
 
 **Chapter Contents:**
 
 - [Installation](#installation)
-  - [Manual Setup](#manual-setup)
+  - [Download](#download)
+  - [Setup](#setup)
     - [Requirements](#requirements)
     - [Toolchain Options](#toolchain-options)
+  - [Configuration](#configuration)
     - [Environment Variables](#environment-variables)
-      - [Default Values](#default-values)
+      - [CMSIS\_PACK\_ROOT](#cmsis_pack_root)
       - [TOOLCHAIN Registration](#toolchain-registration)
-      - [Setup Win64](#setup-win64)
-      - [Setup Linux or Bash](#setup-linux-or-bash)
-      - [Setup MacOS](#setup-macos)
-  - [vcpkg - Setup using CLI](#vcpkg---setup-using-cli)
-  - [vcpgk - Setup in VS Code](#vcpgk---setup-in-vs-code)
+      - [./etc/\*.cmake](#etccmake)
+    - [Setup Win64](#setup-win64)
+      - [Keil MDK](#keil-mdk)
+    - [Setup Linux or Bash](#setup-linux-or-bash)
+    - [Setup MacOS](#setup-macos)
+  - [Setup a Build Environment](#setup-a-build-environment)
+  - [Using Visual Studio Code](#using-visual-studio-code)
   
-## Manual Setup
+## Download
 
-Download the CMSIS-Toolbox from the [**release page**](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases). It is provided for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (amd64, arm64) in an archive file.
+Download the CMSIS-Toolbox from the [**release page**](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases). It is provided for Windows (amd64), Linux (amd64, arm64), and MacOS (amd64) in an archive file.
+
+## Setup
 
 To setup the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example to `/c/cmsis-toolbox`.
 
@@ -37,11 +35,11 @@ To setup the **CMSIS-Toolbox** on a local computer, copy the content of the arch
 
 The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The installation of these tools is required.
 
-- [**CMake**](https://cmake.org/download) version 3.25.2 or higher.
+- [**CMake**](https://cmake.org/download) version 3.22.0 or higher.
 
 > Note: For Win64, enable the install option *Add CMake to the system PATH*.
 
-- [**Ninja**](https://github.com/ninja-build/ninja/releases) version 1.10.2 or higher.
+- [**Ninja**](https://github.com/ninja-build/ninja/releases) version 1.10.0 or higher.
 
 > Note: [**Ninja**](https://github.com/ninja-build/ninja/releases) may be copied to the `<cmsis-toolbox-installation-dir>/bin` directory.
 
@@ -55,28 +53,28 @@ The CMSIS-Toolbox works with the following toolchains. Install one or more toolc
 
 - [**Arm Compiler**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18 or higher.
 
-- [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
+- [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) is currently in alpha quality.
 
-- [**CLANG**](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest) version 16.0.0 or higher (experimental).
-
-### Environment Variables
+## Configuration
 
 It maybe required to customize the installation for the actual setup of your development environment as described in the following.
+
+### Environment Variables
 
 The various tools use the following environment variables.
 
 Environment Variable     | Description
 :------------------------|:------------
 `<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries
-**CMSIS_PACK_ROOT**      | Path to the [CMSIS-Pack Root Directory](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory) that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
+**CMSIS_PACK_ROOT**      | Path to the CMSIS-Pack Root directory (i.e. /c/open-cmsis/pack) that stores software packs
 **CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. /c/cmsis-toolbox/etc)
-**Path**                 | Add to the system path the CMSIS-Toolbox 'bin' directory (i.e. /c/cmsis-toolbox/bin) as well as CMake and Ninja.
+**Path**                 | Add to the system path to the CMSIS-Toolbox 'bin' directory (i.e. /c/cmsis-toolbox/bin)
 
-#### Default Values
+#### CMSIS_PACK_ROOT
 
-The environment variable **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are optional. If missing, default settings are used.
+This variable points to the [CMSIS-Pack Root Directory](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory) that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
 
-- **CMSIS_PACK_ROOT** default values:
+- The default values for the supported platforms are listed below.
   Platform    | Default path
   :-----------|:------------
   Linux       | ${HOME}/.cache/arm/packs
@@ -84,7 +82,7 @@ The environment variable **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are opt
   MacOS       | ${HOME}/.cache/arm/packs
   WSL_Windows | ${LOCALAPPDATA}/Arm/Packs
 
-- **CMSIS_COMPILER_ROOT** default is `
+> Note: If you do not have a CMSIS-Pack root yet, use [**cpackget**](./cpackget.md) to initialize your repository.
 
 #### TOOLCHAIN Registration
 
@@ -106,13 +104,32 @@ For example in Unix:
 export GCC_TOOLCHAIN_10_3_1=/opt/gcc-arm-none-eabi-10.3-2021.10/bin
 ```
 
-#### Setup Win64
+#### ./etc/\*.cmake
+
+The mappings and dictionaries for various toolchain version ranges are defined by `*.cmake` files in the directory `<cmsis-toolbox-installation-dir>/etc`.
+
+> **Notes:**
+>
+> - Since cmsis-toolbox 1.5.0 these files are not specific to a single toolchain. Filenames reflect the **minimum compiler versions** that can be registered on the host system.
+> - There may be multiple files for each compiler to support different version ranges, for example  `AC6.6.16.0.cmake` and `AC6.6.18.0.cmake`.
+> - For backward compatibility it is still possible to set the CMake variables `TOOLCHAIN_ROOT` and `TOOLCHAIN_VERSION` in each of these `*.cmake` files defines, but this will be removed in cmsis-toolbox 2.0.0 and therefore it is already recommended to use the [environment variable registration](#toolchain-registration) instead.
+
+```CMake
+############### EDIT BELOW ###############
+# Set base directory of toolchain
+set(TOOLCHAIN_ROOT "C:/Keil_v5/ARM/ARMCLANG/bin")
+set(TOOLCHAIN_VERSION "6.19.0")
+
+############ DO NOT EDIT BELOW ###########
+```
+
+### Setup Win64
 
 For Windows, use the dialog **System Properties - Advanced** and add the **Environment Variables** listed above.
 
-**Keil MDK**
+#### Keil MDK
 
-When using Keil MDK version 5, the CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\cmsis-toolbox` (in older versions `ARM\ctools`) directory of the MDK installation.
+The CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\cmsis-toolbox` directory of the MDK installation.
 
 Adding the binary directory of the cmsis-toolbox directory to your **PATH** environment variable allows you to invoke the tools at the
 command line without the need to specify the full path (default: `C:\Keil_v5\ARM\cmsis-toolbox\bin`)
@@ -124,19 +141,15 @@ environment variable is not required.
 
 The **CMSIS_COMPILER_ROOT** environment varible is not required if the compiler configuration files provided in cmsis-toolbox/etc are used.
 
-> **Notes:**
->
-> At the Windows command prompt, use `set` to list all environment variables.
->
-> Keil MDK may be used to [*import*](https://www.keil.com/support/man/docs/uv4/uv4_ui_import.htm) and [*export*](https://www.keil.com/support/man/docs/uv4/uv4_ui_export.htm) project files in `*.CPRJ` format.
+> Note: At the Windows command prompt, use `set` to list all environment variables.
 
-#### Setup Linux or Bash
+### Setup Linux or Bash
 
 In Linux,  there are multiple ways to configure the **Environment Variables**. In a Bash environment, add the following content to the file `.bashrc` for example:
 
 **Example:**
 
-```txt
+```Shell
 export CMSIS_PACK_ROOT=/home/ubuntu/packs
 export CMSIS_COMPILER_ROOT=/opt/cmsis-toolbox/etc
 export PATH=/opt/cmsis-toolbox/bin:$PATH
@@ -144,7 +157,7 @@ export PATH=/opt/cmsis-toolbox/bin:$PATH
 
 > Note: The command `printenv` should list these environment variables.
 
-#### Setup MacOS
+### Setup MacOS
 
 MacOS protects by default execution of files that are downloaded and/or not signed. As the CMSIS-Toolbox is not signed, it is required to execute the following commands after installation:
 
@@ -162,98 +175,26 @@ chmod +x <cmsis-toolbox-installation-dir>/bin/cbuild
 ...
 ```
 
-## vcpkg - Setup using CLI
+## Setup a Build Environment
 
-The following setups describe how to setup the CMSIS-Toolbox using a command line (CLI) environment.
+To create a new [**csolution**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/projmgr/docs/Manual/Overview.md) build environment for CMSIS-based project:
 
-1. Install and enable vcpkg; the command depends on the shell.
+- Use the Package Installer [**cpackget**](cpackget.md) to [initialize the CMSIS-Pack root directory](./cpackget.md#initialize-cmsis-pack-root-directory), [update the pack index file](./cpackget.md#update-pack-index-file) and [add software packs](./cpackget.md#add-packs).
 
-   - Windows Command Prompt (cmd)
+- Use the Project Manager [**csolution**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/projmgr/docs/Manual/Overview.md) to get information from the installed packs such as device names and component identifiers, to validate the csolution and to generate the `*.CPRJ` files for compilation.
 
-   ```txt
-   curl -LO https://aka.ms/vcpkg-init.cmd && .\vcpkg-init.cmd
-   %USERPROFILE%\.vcpkg\vcpkg-init.cmd
-     ```
+- Use the Build Manager [**cbuild**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/buildmgr/README.md) to generate `cmakelist.txt` files and control the build process.
 
-   - Windows powerShell
+>Note: Keil MDK may be used to [*import*](https://www.keil.com/support/man/docs/uv4/uv4_ui_import.htm) and [*export*](https://www.keil.com/support/man/docs/uv4/uv4_ui_export.htm) project files in `*.CPRJ` format.
 
-    ```txt
-    iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
-    . ~/.vcpkg/vcpkg-init.ps1
-    ```
+## Using Visual Studio Code
 
-   - Linux / macOS
+[Visual Studio Code](https://code.visualstudio.com/) is an effective environment to create CMSIS-based projects.  To setup an environment install the [Keil Studio Pack](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) extension from the Visual Studio marketplace.
 
-    ```txt
-    . <(curl https://aka.ms/vcpkg-init.sh -L)
-    . ~/.vcpkg/vcpkg-init
-    ```
+To work with the **CMSIS-Toolbox** in VS Code use:
 
-2. Activate required tools using one of the following methods:
-  
-   - `vcpkg-configuration.json` configuration file in current directory or any parent directory
+- **Terminal - New Terminal** to open a terminal window, on Win64 choose as profile `Command prompt`.
 
-   ```txt
-   vcpkg activate
-   ```
+- In the **Terminal** window, enter the commands for the tools as explained in [project examples](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/projmgr/docs/Manual/Overview.md#project-examples).\
 
-   - explicitly specify a `configuration.json` file
-
-   ```txt
-   vcpkg activate --project mypath/vcpkg-configuration.json
-   ```
-
-   - with explict commands
-
-   ```txt
-   vcpkg use arm:cmsis-toolbox microsoft:cmake microsoft:ninja arm:arm-none-eabi-gcc
-   ```
-
-3. Deactivate previous configuration
-
-   ```txt
-   vcpkg deactivate
-   ```
-
-4. Update registries to access latest versions of the tools artifacts.
-
-   ```txt
-   vcpkg  x-update-registry --all
-   ```
-
-5. Create a new vcpkg configuration file with these commands:
-
-   ```txt
-   vcpkg new --application
-   vcpkg add artifact arm:cmsis-toolbox [--version major.minor.patch]
-   vcpkg add artifact microsoft:cmake
-   vcpkg add artifact microsoft:ninja
-   vcpkg add artifact arm:arm-none-eabi-gcc
-   vcpkg  activate
-   ```  
-
-Alternatively you may use an existing repository, for example [github.com/Open-CMSIS-Pack/vscode-get-started](
-https://github.com/Open-CMSIS-Pack/vscode-get-started) with a vcpkg-configuration.json file.
-
-## vcpgk - Setup in VS Code
-
-1. Download & Install [Microsoft Visual Studio Code](https://code.visualstudio.com/download) for your operating system.
-2. Launch Visual Studio Code. Using the menu `View` and open `Extensions` and install the `Keil Studio Pack` extensions.
-3. Use the menu `View` and open `Source Control`. Select 'Clone Repository' and enter as url [`https://github.com/Open-CMSIS-Pack/vscode-get-started`](https://github.com/Open-CMSIS-Pack/vscode-get-started).
-4. Specify the destination folder to clone to and select 'Open' when asked 'Would you like to open the cloned directory?'
-5. Use `View` menu 'Explorer' and select the file `vcpkg-configuration.json`. This file instructs [Microsoft vcpkg](https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts) to install the prerequisite artifacts required for building the solution and installs therefore:
-
-    - CMSIS-Toolbox 2.0.0
-    - cmake 3.25.2
-    - ninja 1.10.2
-    - arm-none-eabi-gcc 12.2.1-mpacbti (GNU Arm Embedded Toolchain 12.2.1)
-
-> **Notes:**
->
-> - In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
->
-> - In case of `Error: Unable to resolve dependency ... in \<registry\>` you may need to update the registry with the menu `View` option `Command Palette...`, select `vcpkg: Run vcpkg command` and enter: `z-ce update <registry>`. Newer versions of vcpkg support `x-update-registry --all` to update all registries.
-
-Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal. 
-
-Alternatively use `View` and open the `CMSIS` Extension. Then use the `Build` buttons to translate the project, flash your connected board and/or launch a debug connection.
+Refer also to the repository [vscode-get-started](https://github.com/Open-Pack/vscode-get-started) for more information.

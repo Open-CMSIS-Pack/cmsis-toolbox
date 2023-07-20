@@ -4,7 +4,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **> Build Operation**
+[**> CMSIS-Toolbox**](README.md) **> Build Operation**
 
 This chapter explains the overall build process that of the CMSIS-Toolbox and how to add a new compiler toolchain.
 

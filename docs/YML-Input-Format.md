@@ -1,16 +1,15 @@
-# User Input Files
+# YAML Input Format
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **> User Input Files**
-
-The following chapter explains the YAML format of the *user input files* that describes the software of an embedded application.
+The following chapter explains the YAML format that is used to describe the `*.yml` input files for the **CSolution**
+Project Manager.
 
 **Table of Contents**
 
-- [User Input Files](#user-input-files)
+- [YAML Input Format](#yaml-input-format)
   - [Name Conventions](#name-conventions)
     - [Filename Extensions](#filename-extensions)
     - [`pack:` Name Conventions](#pack-name-conventions)
@@ -85,12 +84,20 @@ The following chapter explains the YAML format of the *user input files* that de
     - [Example: Board](#example-board)
     - [Example: Simple Project](#example-simple-project)
     - [Example: Sensor Shield](#example-sensor-shield)
+  - [Generator (Proposal)](#generator-proposal)
+    - [Workflow assumptions](#workflow-assumptions)
+    - [Steps for component selection and configuration](#steps-for-component-selection-and-configuration)
+    - [Enhance Usability](#enhance-usability)
+    - [Workflow](#workflow)
+      - [Example Content of `*.cgen.json` (in this case `STM32CubeMX.cgen.json`)](#example-content-of-cgenjson-in-this-case-stm32cubemxcgenjson)
+    - [Changes to the \*.GPDSC file](#changes-to-the-gpdsc-file)
+    - [Changes to the \*.PDSC file](#changes-to-the-pdsc-file)
 
 ## Name Conventions
 
 ### Filename Extensions
 
-The **`csolution` Project Manager** recognizes the [categories](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) of [files](#files) based on the filename extension in the YAML input files as shown in the table below.
+The **csolution - CMSIS Project Manager** recognizes the [categories](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) of [files](#files) based on the filename extension in the YAML input files as shown in the table below.
 
 File Extension           | [Category](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) | Description
 :--------------------------------------------|:-------------|:---------------------
@@ -105,7 +112,7 @@ File Extension           | [Category](https://open-cmsis-pack.github.io/Open-CMS
 
 ### `pack:` Name Conventions
 
-The **`csolution` Project Manager** uses the following syntax to specify the `pack:` names in the `*.yml` files.
+The **csolution - CMSIS Project Manager** uses the following syntax to specify the `pack:` names in the `*.yml` files.
 
 ```yml
 vendor [:: pack-name [@[~ | >=] version] ]
@@ -119,7 +126,7 @@ Element      |              | Description
 
 > **Note:**
 >
-> When no version is specified, the **`csolution` Project Manager** only loads the latests version of a software pack. This also applies when wildcards are used in the `pack-name`.
+> When no version is specified, the **csolution - CMSIS Project Manager** only loads the latests version of a software pack. This also applies when wildcards are used in the `pack-name`.
 
 **Examples:**
 
@@ -133,7 +140,7 @@ Element      |              | Description
 
 ### `component:` Name Conventions
 
-The **`csolution` Project Manager** uses the following syntax to specify the `component:` names in the `*.yml` files.
+The **csolution - CMSIS Project Manager** uses the following syntax to specify the `component:` names in the `*.yml` files.
 
 ```yml
 [Cvendor::] Cclass [&Cbundle] :Cgroup [:Csub] [&Cvariant] [@[~ | >=]Cversion]
@@ -153,7 +160,7 @@ Element    |              | Description
 
 **Partly defined components**
 
-A component can be partly defined in *user input files* (`*.cproject.yml`, `*.clayer.yml`, `*.genlayer.yml`) by omitting `Cvendor`, `Cvariant`, and `Cversion`, even when this are part of the `components` element of the software pack. The component select algorithm resolves this to a fully defined component by:
+A component can be partly defined in `csolution` input files (`*.cproject.yml`, `*.clayer.yml`, `*.genlayer.yml`) by omitting `Cvendor`, `Cvariant`, and `Cversion`, even when this are part of the `components` element of the software pack. The component select algorithm resolves this to a fully defined component by:
 
 - when a partly specified component resolves to several possible choices, the tool selects:
   - (a) the default `Cvariant` of the component as defined in the PDSC file. 
@@ -167,7 +174,7 @@ The fully resolved component name is shown in the [`*.cbuild.yml`](YML-CBuild-Fo
 
 **Multiple component definitions are rejected**
 
-- If a component is added more then once in the *user input files* and an *error* is issued.
+- If a component is added more then once in the `csolution` input files and an *error* is issued.
 - An attempt to select multiple variants (using `Cvariant`) of a component results in an *error*.
 
 **Examples:**
@@ -460,7 +467,7 @@ Keyword                          | Description
 
 ### `default:`
 
-When [`cdefault:`](#solution) is specified in the `*.csolution.yml` file, the **`csolution` Project Manager** uses a file with the name `cdefault.yml` or `cdefault.yaml` to setup 
+When [`cdefault:`](#solution) is specified in the `*.csolution.yml` file, the **csolution - CMSIS Project Manager** uses a file with the name `cdefault.yml` or `cdefault.yaml` to setup 
 the compiler along with some specific default controls. The search order for this file is:
 
 - A `cdefault.yml` or `cdefault.yaml` file in the same directory as the `<solution-name>.csolution.yml` file. 
@@ -495,11 +502,11 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 
 `solution:`                                          |            | Content
 :----------------------------------------------------|:-----------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `created-by:`                     |  Optional  | Identifies the tool that created this solution.
-&nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this solution, i.e. **CMSIS-Toolbox@1.5.0**
-&nbsp;&nbsp;&nbsp; `description:`                    |  Optional  | Brief description text of this solution.
+&nbsp;&nbsp;&nbsp; `created-by:`                     |  Optional  | Identifies the tool that created this csolution project.
+&nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this csolution project, i.e. **ctools@1.5.0**
+&nbsp;&nbsp;&nbsp; `description:`                    |  Optional  | Brief description text of the solution.
 &nbsp;&nbsp;&nbsp; `cdefault:`                       |  Optional  | When specified, the [`cdefault.yml`](#default) file is used to setup compiler specific controls. 
-&nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
+&nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for the solution.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)      |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)  |  Optional  | Set the language standard for C++ source file compilation.
 &nbsp;&nbsp;&nbsp; [`output-dirs:`](#output-dirs)    |  Optional  | Control the output directories for the build output.
@@ -547,7 +554,7 @@ The `project:` node is the start of a `*.cproject.yml` file and can contain the 
 
 `project:`                                          |            | Content
 :---------------------------------------------------|:-----------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `description:`                   |  Optional  | Brief description text of this project.
+&nbsp;&nbsp;&nbsp; `description:`                   |  Optional  | Brief description text of the project.
 &nbsp;&nbsp;&nbsp; [`output:`](#output)             |  Optional  | Configure the generated output files.
 &nbsp;&nbsp;&nbsp; [`generators:`](#generators)     |  Optional  | Control the directory structure for generator output.
 &nbsp;&nbsp;&nbsp; [`rte:`](#rte)                   |  Optional  | Control the directory structure for [RTE (run-time environment)](Overview.md#rte-directory-structure) files.
@@ -642,7 +649,7 @@ layer:
 
 ## Directory Control
 
-The following nodes control the directory structure for the application.
+The following nodes control the directory structure for **CSolution** based projects.
 
 ### `output-dirs:`
 
@@ -678,7 +685,7 @@ output-dirs:
 
 Allows to control the directory structure for generator output files.  
 
-When no explicit `generators:` is specified, the **`csolution` Project Manager** uses as path:
+When no explicit `generators:` is specified, the **CSolution** Project Manager uses as path:
 
 - The `workingDir` defined in the [generators element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_generators_pg.html#element_generator) of the PDSC file.
 - When no `workingDir` is defined the default directory `$ProjectDir()$/generated/<generator-id>` is used; `<generator-id>` is defined by the `id` in the generators element of the PDSC file.
@@ -771,60 +778,26 @@ compiler: AC6@6.18.0       # Select Arm Compiler version 6
 
 ### `linker:`
 
-The `linker:` node specifies an explicit Linker Script and/or memory regions header file.  It can be applied in `*.cproject.yml` and `*.clayer.yml` files.
-Refer to [Linker Script Management](build-overview.md#linker-script-management) for detailed information.
+The `linker:` node specifies an explicit Linker Script and/or memory regions header file.  It can be applied in `*.cproject.yml` and `*.clayer.yml` files.  If multiple `linker:` nodes are specified an error is issued.
 
-`linker:`                                                   |            | Content
+`linker:`                                                   |            |  Content
 :-----------------------------------------------------------|:-----------|:--------------------------------
-`- regions:`                                                |  Optional  | Path and file name of `<regions_file>.h`, used to generate a Linker Script.
-&nbsp;&nbsp;&nbsp;`script:`                                 |  Optional  | Explicit file name of the Linker Script, overrules files provided with [`file:`](#files) or components.
-&nbsp;&nbsp;&nbsp;[`define:`](#define)                      |  Optional  | Define symbol settings for the linker script file preprocessor.
-&nbsp;&nbsp;&nbsp;[`for-compiler:`](#for-compiler)         |  Optional  |  Include Linker Script for the specified toolchain.
-&nbsp;&nbsp;&nbsp;[`for-context:`](#for-context)           |  Optional  |  Include Linker Script for a list of *build* and *target* type names.
-&nbsp;&nbsp;&nbsp;[`not-for-context:`](#not-for-context)   |  Optional  |  Exclude Linker Script for a list of *build* and *target* type names.
+**`- regions:`**                                            |**Optional**|**Path and file name of `regions_<device_or_board>.h`, used to generate a Linker Script.**
+&nbsp;&nbsp;&nbsp; [`for-compiler:`](#for-compiler)         |  Optional  |  Include Linker Script for the specified toolchain.
+&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)           |  Optional  |  Include Linker Script for a list of *build* and *target* type names.
+&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context)   |  Optional  |  Exclude Linker Script for a list of *build* and *target* type names.
+**`- script:`**                                             |**Optional**|**Explicit file name of the Linker Script, overrules files provided with [`file:`](#files) or components.**
+&nbsp;&nbsp;&nbsp; [`for-compiler:`](#for-compiler)         |  Optional  |  Include Linker Script for the specified toolchain.
+&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)           |  Optional  |  Include Linker Script for a list of *build* and *target* type names.
+&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context)   |  Optional  |  Exclude Linker Script for a list of *build* and *target* type names.
+**[`- define:`](#define)**                                  |**Optional**|**Define symbol settings for the linker script file preprocessor.**
+&nbsp;&nbsp;&nbsp; [`for-compiler:`](#for-compiler)         |  Optional  |  Apply define settings for the specified toolchain.
+&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)           |  Optional  |  Include define settings for a list of *build* and *target* type names.
+&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context)   |  Optional  |  Exclude define settings for a list of *build* and *target* type names.
 
-> **Notes:** 
-> 
-> The `linker:` node must have at least `regions:`, `script:`, or `define:`.
-> 
-> If no `script:` file is specified, compiler specific [linker script template files](build-overview.md#linker-script-templates) are used.
+> **Note:** 
 >
-> A Linker Script file is preprocessed when `regions:` or a `define:` is specified in the `linker:` node. 
-
-**Examples:**
-
-```yml
-linker:
-  - script:   MyLinker.scf     # linker script file
-    regions:  MyRegions.h      # pre-processed using header file
-```
-
-```yml
-linker:
-  - regions:  MyRegions.h      # Default linker script is used and pre-processed using header file
-```
-
-```yml
-linker:
-  - script:   MyLinker.scf     # linker script file, not pre-processed
-    for-compiler: AC6          # for Arm Compiler 6 
-
-  - script:   MyLinker.ld      # linker script file, not pre-processed
-    for-compiler: CLANG        # for CLANG LLVM based compiler
-```
-
-```yml
-linker:
-  - script:   MyLinker.scf     # linker script file
-    for-compiler: AC6          # for Arm Compiler 6
-    regions:  MyRegions.h      # pre-processed using header file
-
-  - script:   MyLinker.ld      # linker script file
-    for-compiler: CLANG        # for CLANG LLVM based compiler
-    regions:  MyRegions.h      # pre-processed using header file
-    define:                    # with define setting 
-      - Setup: 1               # define with value
-```
+> If no `script:` file is specified, compiler specific [linker script template files](Linker-Script-Management.md#linker-script-templates) are used.
 
 ### `output:`
 
@@ -832,7 +805,7 @@ Configure the generated output files.
 
 `output:`                              |            | Content
 :--------------------------------------|:-----------|:--------------------------------
-&nbsp;&nbsp;&nbsp; `base-name:`        |  Optional  | Specify a common base name for all output files.
+&nbsp;&nbsp;&nbsp; `base-name:`        |  Optional  | Specify a base name for all output files.
 &nbsp;&nbsp;&nbsp; `type:`             |  Optional  | A list of output types for code generation (see list below).
 
 `type:`           | Description
@@ -861,11 +834,11 @@ output:                  # configure output files
   - bin                  # generate a BIN file 
 ```
 
-Generate a **library**:
+Gnerate a **library**:
 
 ```yml
 output:                  # configure output files
-  type: lib              # Generate library file.
+  type: lib              # Generate executeable file.
 ```
 
 ## Translation Control
@@ -1158,7 +1131,7 @@ The `pack:` definition may be specific to a [`context`](#context) that specifies
 
 >**Notes:** 
 >
-> - By default, the **`csolution` Project Manager** only loads the latest version of the installed software packs. It is however possible to request specific versions using the `- pack:` node.
+> - By default, the **csolution - CMSIS Project Manager** only loads the latest version of the installed software packs. It is however possible to request specific versions using the `- pack:` node.
 >
 > - An attempt to add two different versions of the same software pack results in an error.
 
@@ -1354,6 +1327,8 @@ target-types:
 ```
 
 ### `context-map:`
+
+>**Scheduled for CMSIS-Toolbox 2.0 - Q2**
 
 The `context-map:` node allows for a specific `project-name` the remapping of `target-types:` and/or `build-types:` to a different `context:` which enables: 
 
@@ -1887,7 +1862,7 @@ The `connect:` node describes one or more functionalities that belong together.
 
 ### `set:`
 
-Some hardware boards have configuration settings (DIP switch or jumper) that configure interfaces. These settings have impact to the functionality (for example hardware interfaces). With `set:` *config-id*.*select* the possible configration options are considered when evaluating compatible `*.cproject.yml` and `*.clayer.yml` project parts. The **`csolution` Project Manager** iterates the `connect:` node with a `set:` *config-id*.*select* as described below:
+Some hardware boards have configuration settings (DIP switch or jumper) that configure interfaces. These settings have impact to the functionality (for example hardware interfaces). With `set:` *config-id*.*select* the possible configration options are considered when evaluating compatible `*.cproject.yml` and `*.clayer.yml` project parts. The **csolution - CMSIS Project Manager** iterates the `connect:` node with a `set:` *config-id*.*select* as described below:
 
 - For each *config-id* only one `connect:` node with a *select* value is active at a time. Each possible *select* value is checked for a matching configuration.
 
@@ -1899,7 +1874,7 @@ Refer to [Example: Sensor Shield](#example-sensor-shield) for a usage example.
 
 A user-defined *key*/*value* pair list of functionality that is implemented or provided by a `project:` or `layer:`. 
 
-The **`csolution` Project Manager** combines all the *key*/*value* pairs that listed under `provides:` and matches it with the *key*/*value* pairs that are listed under `consumes:`. For *key*/*value* pairs listed under `provides:` the following rules exist for a match with `consumes:` *key*/*value* pair:
+The **csolution - CMSIS Project Manager** combines all the *key*/*value* pairs that listed under `provides:` and matches it with the *key*/*value* pairs that are listed under `consumes:`. For *key*/*value* pairs listed under `provides:` the following rules exist for a match with `consumes:` *key*/*value* pair:
 
 - It is possible to omit the *value*. It matches with an identical *key* listed in `consumes:`
 - A *value* is interpreted as number. Depending on the value prefix, this number must be:
@@ -2026,4 +2001,269 @@ This sensor shield layer provides a set of interfaces that are configurable.
         - Sensor_IRQ:
       consumes:
         - Ardunio_Uno_D3:
+```
+
+## Generator (Proposal)
+
+>Note: Superseeded by [Generator%20(Proposal).md](Generator%20(Proposal).md)
+
+--> Requires Review
+
+### Workflow assumptions
+
+The composition of a solution of a solution should have the following steps:
+
+- Create `*.cproject.yml` files and the `*.csolution.yml` container that refers the projects.
+- Select `device:` or `board:` (optionally by using `target-types:`)
+- Add `components:` or `layers:` to the `*.cproject.yml` file
+- For components that have configuration, run the generator in configuration mode
+  - change pinout, clock, resources, etc.
+  - reflect configuration in *.gpdsc file (and related settings files)
+
+> **Note:**
+>
+> Components can have multiple [instances](#instances).
+
+### Steps for component selection and configuration
+
+The following explains the generator workflow of CSolution / CBuild for configuration of components:
+
+1. User selects components in `*.cproject.yml` under `components:`
+   - When these components require generation, user is notified to run a generator.
+   - "CSolution Run GenID” is invoked for a list of components.
+   - CSolution generates `*.cgen.json` file that provides project context and a list of user-selected components.
+  
+2. Running the Generator (for Component Configuration, i.e. pin selection)
+   - Generator reads `*.cgen.json` file
+   - User performs the configuration is done.
+     - Interactive mode (where a settings file is generated)
+     - Remote mode (where a settings file is an input) **IS THIS REALLY REQUIRED**
+   - Generator creates a `*.gpdsc` file that informs the CSolution tool about
+     - (a) the fact that a component is configured and has generated code,
+     - (b) additional components that are the result of some user configuration.
+
+   Discussions:
+   - is a component list or a dependency list
+   - Generator might be VS Code plugin or web based
+
+3. User creates CBuild output with CSolution Convert command
+   - Both `*.cproject.yml` and `*.gpdsc` are read by Csolution and create the complete list of selected components.
+   - If `*.gpdsc` does not contain component information about a component that has `genId` and selected in
+     `*.cproject.yml` the generator configuration is incomplete. This can happen when a component is added at a later
+     step.
+   - Likewise the Generator can detect with the `<component User="1">` attribute that a component is longer required.
+     In this case the user is notified to run a generator.
+
+### Enhance Usability
+
+Add Run Generator buttons to Cclass descriptions.
+
+![Add Run Generator buttons to Cclass](./images/gen.png "Add Run Generator buttons to Cclass")
+
+### Workflow
+
+1. For `*.cproject.yml` files that contain selected `<components>` with a `generator` or `genid` attribute the
+   `csolution` manager checks if a file with the name `./<project>/RTE+<target>/<genid>.cgen.json` exists.
+   - When this file is missing, it is required to use the command `csolution run genid` to start the generator.
+   - When this file exists, the `csolution` manager checks if the list of components with `genid` has changed. If this
+     is the case it is required to use the command `csolution run genid` to reconfigure generated components.
+2. The command `csolution run genid` creates the file `./<project>/RTE+<target>/<genid>.cgen.json` and starts the
+   generator. The generator creates a `*.GDPSC` file along with other source files that are required
+   [as specified](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_generators_pg.html#element_generators).
+
+#### Example Content of `*.cgen.json` (in this case `STM32CubeMX.cgen.json`)
+
+The `*.cgen.json` file is passed to generator as argument.
+
+> **Note:**
+>
+> Shown is still a `*.yml` file, but the equivalent data would be formatted in `*.json` format.
+
+```yml
+cgenerator:
+  device: STM32F407IGHx
+  board: NucleoF407
+  solution: C:/tmp/MySolution/MySolution.csolution.yml 
+  project: C:/tmp//MySolution/Blinky/Blinky.cproject.yml 
+  context: .Debug+Nucelo    # build-type and target-type of the current generated context
+  destination: C:/tmp/MySolution/Blinky/RTE+Nucelo/
+
+  packs:                     # packs that are used for the project
+    - pack: Keil::STM32F4xx_DFP@2.16.1
+      path: C:/CMSIS-PACKS/Keil/STM32F4xx_DFP/2.16.1/
+    - pack: Keil::STM32F4xx_BSP@2.1.1
+      path: C:/CMSIS-PACKS/Keil/STM32F4xx_BSP/2.1.1/
+
+  components:               # components that have a genid and are specified in *.cproject.yml
+    - component: Device:STM32Cube HAL:Common
+    - component: Board:LED
+    - component: Device:HAL:UART
+      instances:
+        - WiFi: 0
+          setup: wifi-config.json
+          baudrate: 19200 
+        - Debug: 2
+          baudrate: 57600
+```
+
+### Changes to the *.GPDSC file
+
+To indicate that a component was generated due to a user selection in `*.cproject.yml`, the `component` element is
+extended with `User` attribute. When set to `1` it indicates that a component is included due to the selection in
+`*.cproject.yml`.
+
+When a user removes this component in the `*.cproject.yml`, the CSolution could detect that a Run command should be
+executed.
+
+### Changes to the *.PDSC file
+
+- Add `<key>` to `<generator>` element. The `key` is used to invoke the generator and pass the `<genid>.cgen.json` file.
+  - on Windows to a registry key to invoke the generator tool
+  - on Linux and MacOS to an environment variable that specifies how to invoke the generator tool
+  - todo: Web based tools?
+- Add `genId` to `component` element. Indicates that a component is managed by the `<generator>`.
+- Add `inherent` to `component` element. Indicates that a component is managed by the `<generator>`
+  Components with inherent attribute are not selectable by the user (and could be managed by the `<generator>`).
+  Components with `inherent` attribute have the following behavior:
+  - Are selected when a condition requires this component.
+  - Are de-selected when a no condition requires this component.
+  - IDE's may choose to hide such components in the RTE selection (default might be to show it).
+- Add new file category:
+  - `genParms` template parameters
+  - `genInput` source templates for the generator and other related input files for the generator
+
+**Example:**
+
+```xml
+ <generators>
+    <!-- This generator is launched if any component referencing this generator by 'id' is selected and the specified <gpdsc> file does not exist -->
+    <generator id="STM32CubeMX">
+      <description>ST Microelectronics: STCubeMX Environment</description>
+      <key>STCubeMX_CGENFILE</key>          <!-- for windows registry key that opens a *.cgenerator.yml file -->
+                                            <!-- for Linux / MacOS the key is an environment variable that can start the tool -->
+      <web>url</web>                        <!-- for web based tools the url is used and appended by &Cgen=file -->
+      <workingDir>$PRTE/Device</workingDir> <!-- path is specified either absolute or relative to gpdsc file -->
+      <gpdsc name ="myGen.gpdsc"/>  <!-- PDSC or GPDSC file. If not specified it is the project directory configured by the environment -->
+      <files>   <!-- does this make sense? -->
+        <file category="genHelper" name="Drivers/STM32F4xx_HAL_Driver/Src/common-file-for-gen.xyz"/>
+      </files>
+    </generator>
+  </generators>
+
+  <taxonomy>
+    <description Cclass="Device" generator="STM32CubeMX" doc="Documentation/DM00105879.pdf" >STM32F4xx Hardware Abstraction Layer (HAL) and Drivers</description>
+    <description Cclass="Board" generator="STM32CubeMX" doc="Documentation/DM00105879.pdf" >STM32F412 Board Abstraction Layer (HAL) and Drivers</description>
+  </taxonomy>
+
+
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="Common"    Cversion="1.7.9" condition="STM32F4 HAL Common"  genid="STM32CubeMX" >
+      <description>Common HAL driver</description>
+      <RTE_Components_h>
+        #define RTE_DEVICE_HAL_COMMON
+      </RTE_Components_h>
+      <files>
+        <file category="include" name="Drivers/STM32F4xx_HAL_Driver/Inc/"/>
+        <file category="header"  name="Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h"/>
+        <file category="source"  name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c"/>
+        <file category="genParams" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.json"/>
+        <file category="genHeader" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.h.template"/>
+        <file category="genSource" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c.template"/>
+      </files>
+    </component>
+    <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="ADC"       Cversion="1.7.9" condition="STM32F4 HAL DMA"  genid="STM32CubeMX">
+      <description>Analog-to-digital converter (ADC) HAL driver</description>
+      <RTE_Components_h>
+        #define RTE_DEVICE_HAL_ADC
+      </RTE_Components_h>
+      <files>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c"/>
+        <file category="source" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c"/>
+        <file category="genParameter" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.json"/>
+        <file category="genHeader" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.h.template"/>
+        <file category="genSource" name="Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c.template"/>
+      </files>
+    </component>
+      :
+    <bundle Cbundle="STM32F4-Discovery" Cclass="Board Support" Cversion="2.0.0">
+      <description>STMicroelectronics STM32F4 Discovery Kit</description>
+      <doc>http://www.st.com/st-web-ui/static/active/en/resource/technical/document/data_brief/DM00037955.pdf</doc>
+      <component Cgroup="LED" Capiversion="1.0.0" condition="STM32F4 HAL GPIO" genid="STM32CubeMX">
+        <description>LED Interface for STMicroelectronics STM32F4-Discovery Kit</description>
+        <files>
+          <file category="source"  name="MDK/Boards/ST/STM32F4-Discovery/Common/LED_F4Discovery.c"/>
+          <file category="genParams" name="MDK/Boards/ST/STM32F4-Discovery/Common/LED_F4Discovery.json"/>
+          <file category="genHeader" name="MDK/Boards/ST/STM32F4-Discovery/Common/LED_F4Discovery.h.template"/>
+          <file category="genSource" name="MDK/Boards/ST/STM32F4-Discovery/Common/LED_F4Discovery.c.template"/>
+        </files>
+      </component>
+```
+
+**Example *.gpdsc file**
+
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- ******************************************************************************
+ * File Name   : FrameworkCubeMX.gpdsc
+ * Date        : 23/09/2021 14:18:05
+ * Description : Generator PDSC File generated by STM32CubeMX (DO NOT EDIT!)
+ ****************************************************************************** -->
+<package xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.0" xs:noNamespaceSchemaLocation="PACK.xsd">
+  <vendor>Keil</vendor>
+  <name>FrameworkCubeMX</name>
+  <description>STM32CubeMX generated pack description</description>
+  <url>project-path</url>
+  <releases>
+    <release version="1.0.0">
+     - Generated: 23/09/2021 14:18:05
+    </release>
+  </releases>
+  <generators>
+    <generator id="STM32CubeMX" Gvendor="STMicroelectronics" Gtool="STM32CubeMX" Gversion="4.10.0">
+      <description>STM32CubeMX Environment</description>
+      <select Dname="STM32G474RETx" Dvendor="STMicroelectronics:13"/>
+      <command>$SMDK/CubeMX/STM32CubeMXLauncher</command>
+      <workingDir>$PRTE/Device/STM32G474RETx</workingDir>
+      <project_files>
+        <file category="include" name="STCubeGenerated/Inc/"/>
+        <file category="source" name="STCubeGenerated/Src/main.c" />
+        <file category="header" name="STCubeGenerated/Inc/stm32g4xx_it.h"/>
+        <file category="source" name="STCubeGenerated/Src/stm32g4xx_it.c"/>
+      </project_files>
+    </generator>
+  </generators>
+  <taxonomy>
+    <description Cclass="Device" Cgroup="STM32Cube Framework" generator="STM32CubeMX">STM32Cube Framework</description>
+  </taxonomy>
+  <conditions>
+    <condition id="STCubeMX">
+      <description>Condition to include CMSIS core, Device Startup and HAL Drivers components</description>
+      <require Dvendor="STMicroelectronics:13" Dname="STM32G4*"/>
+      <require Cclass="CMSIS"  Cgroup="CORE"/>
+      <require Cclass="Device" Cgroup="Startup"/>
+      <require Cclass="Device" Cgroup="STM32Cube HAL"/>
+    </condition>
+  </conditions>
+  <components>
+    <bundle Cbundle="STM32CubeMX" Cclass="Device" Cversion="1.4.0">
+      <component generator="STM32CubeMX" Cvendor="Keil" Cgroup="STM32Cube Framework" Csub="STM32CubeMX" condition="STCubeMX">
+        <description>Configuration via STM32CubeMX</description>
+        <RTE_Components_h>
+          #define RTE_DEVICE_FRAMEWORK_CUBE_MX
+        </RTE_Components_h>
+        <files>
+          <file category="header" name="MX_Device.h"/>
+          <file category="header" name="STCubeGenerated/Inc/stm32g4xx_hal_conf.h"/>
+          <file category="source" name="STCubeGenerated/Src/stm32g4xx_hal_msp.c"/>
+        </files>
+      </component>
+      <component  Cgroup="Startup" User="1">  <!-- user selected component in *.cproject.yml -->
+        <description>System Startup for STMicroelectronics</description>
+        <files>
+          <file category="source" name="STCubeGenerated/MDK-ARM/startup_stm32g474xx.s" />
+          <file category="source" name="STCubeGenerated/Src/system_stm32g4xx.c" />
+        </files>
+      </component>
+    </bundle>
+  </components>
+</package>
 ```
