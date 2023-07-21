@@ -141,6 +141,7 @@ jobs:
           cp distribution/LICENSE.txt             zip/cmsis-toolbox-linux-arm64/LICENSE.txt
           cp distribution/LICENSE.txt             zip/cmsis-toolbox-darwin-amd64/LICENSE.txt
           cp distribution/LICENSE.txt             zip/cmsis-toolbox-darwin-arm64/LICENSE.txt
+          rm distribution/etc/setup
           cp -r distribution/etc/*                zip/cmsis-toolbox-windows-amd64/etc
           cp -r distribution/etc/*                zip/cmsis-toolbox-windows-arm64/etc
           cp -r distribution/etc/*                zip/cmsis-toolbox-linux-amd64/etc
