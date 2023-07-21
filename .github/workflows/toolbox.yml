@@ -5,18 +5,16 @@ on:
       - main
     paths:
       - '.github/workflows/toolbox.yml'
-      - 'CMakeLists.txt'
       - '**'
   pull_request:
     paths:
       - '.github/workflows/toolbox.yml'
-      - 'CMakeLists.txt'
       - '**'
   release:
     types: [published]
 
 jobs:
-  create_installer:
+  create_archives:
     if: |
       ${{ github.event_name == 'pull_request' || github.event_name == 'release' }}
     runs-on: ubuntu-20.04
@@ -24,12 +22,13 @@ jobs:
 
     steps:
       - name: Checkout devtools
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Create folders
         run: |
           mkdir -p toolbox/cbuild
           mkdir -p toolbox/packchk
+          mkdir -p toolbox/svdconv
           mkdir -p toolbox/distribution/bin
           mkdir -p toolbox/distribution/etc
           mkdir -p toolbox/distribution/doc
@@ -86,147 +85,6 @@ jobs:
           cp ../docs/index.html distribution/doc
         working-directory: toolbox
 
-      - name: Add execution permission to the binaries and set files ownership
-        run: |
-          sudo chmod -R +x bin/*
-          sudo chown -R root:root *
-        working-directory: toolbox/distribution
-
-      - name: Create installer
-        id: installer
-        run: |
-          export VERSION=$(echo ${{ github.ref }} | cut -d/ -f5)
-          ./create_installer.sh --input=../toolbox/distribution --output=. --version=$VERSION
-        working-directory: installer
-
-      - name: Archive cmsis-toolbox installer
-        uses: actions/upload-artifact@v2
-        with:
-          name: cmsis-toolbox
-          path: installer/cmsis-toolbox.sh
-          retention-days: 1
-          if-no-files-found: error
-
-  tests:
-    if: |
-      ${{ github.event_name == 'pull_request' || github.event_name == 'release' }}
-    needs: [ create_installer ]
-    timeout-minutes: 15
-    runs-on: ${{ matrix.config.os }}
-    env:
-      CI_TOOLBOX_INSTALLER: ${{ github.workspace }}/cmsis-toolbox.sh
-    strategy:
-      fail-fast: true
-      matrix:
-        config:
-          - { os: macos-12, target: darwin64, arch: amd64 }
-          - { os: macos-12, target: darwin64, arch: arm64 }
-          - { os: windows-2019, target: windows64, arch: amd64}
-          - { os: windows-2019, target: windows64, arch: arm64}
-          - { os: ubuntu-20.04, target: linux64, arch: amd64}
-          - { os: ubuntu-20.04, target: linux64, arch: arm64}
-    steps:
-      - name: Install macos deps
-        if: ${{ startsWith(matrix.config.os, 'macos') }}
-        run: |
-          brew install \
-            ninja
-
-      - name: Install linux deps
-        if: ${{ startsWith(matrix.config.os, 'ubuntu') }}
-        run: |
-          sudo apt update
-          sudo apt-get install \
-            bc \
-            build-essential \
-            ninja-build
-
-      - name: Install windows deps
-        if: ${{ startsWith(matrix.config.os, 'windows') }}
-        run: choco install -y ninja
-
-      - name: Checkout cmsis-toolbox
-        uses: actions/checkout@v2
-        with:
-          submodules: recursive
-
-      - name: Create build folder
-        run: |
-          mkdir build
-
-      - name: Download cmsis-toolbox installer
-        uses: actions/download-artifact@v2
-        with:
-          name: cmsis-toolbox
-          path: ${{ github.workspace }}
-
-      - name: Set correct cmsis-toolbox file permission
-        if: ${{ startsWith(matrix.config.os, 'macos') || startsWith(matrix.config.os, 'ubuntu') }}
-        run: chmod +x cmsis-toolbox.sh
-
-      - name: Configure windows build for amd64
-        if: ${{ startsWith(matrix.config.os, 'windows') }}
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: amd64
-
-      - uses: ammaraskar/gcc-problem-matcher@master
-        if: ${{ startsWith(matrix.config.os, 'macos') || startsWith(matrix.config.os, 'ubuntu') }}
-      - uses: ammaraskar/msvc-problem-matcher@master
-        if: ${{ startsWith(matrix.config.os, 'windows') }}
-
-      - name: Build and run Toolbox tests
-        run: |
-          cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug ..
-          cmake --build . --target ToolboxTest1
-          ctest -V -C Debug -R ToolboxTest1
-        working-directory: ./build
-
-      - name: Archive tests results
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: toolboxtest-${{ matrix.config.target }}-${{ matrix.config.arch }}
-          path: ./build/Testing/Temporary/LastTest.log
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Archive gtest report
-        if: ${{ always() }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: toolbox_test-${{ matrix.config.target }}-${{ matrix.config.arch }}
-          path: ./build/test_reports/toolboxtest1-*.xml
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Publish Toolbox Test Results
-        uses: mikepenz/action-junit-report@v2
-        with:
-          check_name: toolbox_test-${{ matrix.config.target }}-${{ matrix.config.arch }}
-          report_paths: build/test_reports/toolboxtest1-${{ matrix.config.target }}.xml
-
-  release:
-    if: ${{ github.event_name == 'release' }}
-    needs: [ create_installer ]
-    runs-on: ubuntu-20.04
-    timeout-minutes: 15
-
-    steps:
-      - name: Checkout devtools
-        uses: actions/checkout@v2
-
-      - name: Download cmsis-toolbox installer
-        uses: actions/download-artifact@v2
-        with:
-          name: cmsis-toolbox
-          path: ${{ github.workspace }}
-
-      - name: Extract cmsis-toolbox installer files
-        run: |
-          chmod +x cmsis-toolbox.sh
-          ./cmsis-toolbox.sh -x toolbox/zip
-
       - name: Copy files separated by target for archiving
         run: |
           mkdir -p zip/cmsis-toolbox-windows-amd64/bin zip/cmsis-toolbox-windows-amd64/etc zip/cmsis-toolbox-windows-amd64/doc
@@ -235,61 +93,61 @@ jobs:
           mkdir -p zip/cmsis-toolbox-linux-arm64/bin   zip/cmsis-toolbox-linux-arm64/etc   zip/cmsis-toolbox-linux-arm64/doc
           mkdir -p zip/cmsis-toolbox-darwin-amd64/bin  zip/cmsis-toolbox-darwin-amd64/etc  zip/cmsis-toolbox-darwin-amd64/doc
           mkdir -p zip/cmsis-toolbox-darwin-arm64/bin  zip/cmsis-toolbox-darwin-arm64/etc  zip/cmsis-toolbox-darwin-arm64/doc
-          cp zip/bin/cbuild.exe-amd64    zip/cmsis-toolbox-windows-amd64/bin/cbuild.exe
-          cp zip/bin/cbuildgen.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/cbuildgen.exe
-          cp zip/bin/cpackget.exe-amd64  zip/cmsis-toolbox-windows-amd64/bin/cpackget.exe
-          cp zip/bin/csolution.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/csolution.exe
-          cp zip/bin/packchk.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/packchk.exe
-          cp zip/bin/svdconv.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/svdconv.exe
-          cp zip/bin/cbuild.exe-arm64    zip/cmsis-toolbox-windows-arm64/bin/cbuild.exe
-          cp zip/bin/cbuildgen.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/cbuildgen.exe
-          cp zip/bin/cpackget.exe-arm64  zip/cmsis-toolbox-windows-arm64/bin/cpackget.exe
-          cp zip/bin/csolution.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/csolution.exe
-          cp zip/bin/packchk.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/packchk.exe
-          cp zip/bin/svdconv.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/svdconv.exe
-          cp zip/bin/cbuild.lin-amd64    zip/cmsis-toolbox-linux-amd64/bin/cbuild
-          cp zip/bin/cbuildgen.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuildgen
-          cp zip/bin/cpackget.lin-amd64  zip/cmsis-toolbox-linux-amd64/bin/cpackget
-          cp zip/bin/csolution.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/csolution
-          cp zip/bin/packchk.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/packchk
-          cp zip/bin/svdconv.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/svdconv
-          cp zip/bin/cbuild.lin-arm64    zip/cmsis-toolbox-linux-arm64/bin/cbuild
-          cp zip/bin/cbuildgen.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/cbuildgen
-          cp zip/bin/cpackget.lin-arm64  zip/cmsis-toolbox-linux-arm64/bin/cpackget
-          cp zip/bin/csolution.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/csolution
-          cp zip/bin/packchk.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/packchk
-          cp zip/bin/svdconv.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/svdconv
-          cp zip/bin/cbuild.mac-amd64    zip/cmsis-toolbox-darwin-amd64/bin/cbuild
-          cp zip/bin/cbuildgen.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/cbuildgen
-          cp zip/bin/cpackget.mac-amd64  zip/cmsis-toolbox-darwin-amd64/bin/cpackget
-          cp zip/bin/csolution.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/csolution
-          cp zip/bin/packchk.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/packchk
-          cp zip/bin/svdconv.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/svdconv
-          cp zip/bin/cbuild.mac-arm64    zip/cmsis-toolbox-darwin-arm64/bin/cbuild
-          cp zip/bin/cbuildgen.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/cbuildgen
-          cp zip/bin/cpackget.mac-arm64  zip/cmsis-toolbox-darwin-arm64/bin/cpackget
-          cp zip/bin/csolution.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/csolution
-          cp zip/bin/packchk.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/packchk
-          cp zip/bin/svdconv.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/svdconv
-          cp zip/LICENSE.txt             zip/cmsis-toolbox-windows-amd64/LICENSE.txt
-          cp zip/LICENSE.txt             zip/cmsis-toolbox-windows-arm64/LICENSE.txt
-          cp zip/LICENSE.txt             zip/cmsis-toolbox-linux-amd64/LICENSE.txt
-          cp zip/LICENSE.txt             zip/cmsis-toolbox-linux-arm64/LICENSE.txt
-          cp zip/LICENSE.txt             zip/cmsis-toolbox-darwin-amd64/LICENSE.txt
-          cp zip/LICENSE.txt             zip/cmsis-toolbox-darwin-arm64/LICENSE.txt
-          rm zip/etc/setup
-          cp -r zip/etc/*                zip/cmsis-toolbox-windows-amd64/etc
-          cp -r zip/etc/*                zip/cmsis-toolbox-windows-arm64/etc
-          cp -r zip/etc/*                zip/cmsis-toolbox-linux-amd64/etc
-          cp -r zip/etc/*                zip/cmsis-toolbox-linux-arm64/etc
-          cp -r zip/etc/*                zip/cmsis-toolbox-darwin-amd64/etc
-          cp -r zip/etc/*                zip/cmsis-toolbox-darwin-arm64/etc
-          cp -r zip/doc/*                zip/cmsis-toolbox-windows-amd64/doc
-          cp -r zip/doc/*                zip/cmsis-toolbox-windows-arm64/doc
-          cp -r zip/doc/*                zip/cmsis-toolbox-linux-amd64/doc
-          cp -r zip/doc/*                zip/cmsis-toolbox-linux-arm64/doc
-          cp -r zip/doc/*                zip/cmsis-toolbox-darwin-amd64/doc
-          cp -r zip/doc/*                zip/cmsis-toolbox-darwin-arm64/doc
+          cp distribution/bin/cbuild.exe-amd64    zip/cmsis-toolbox-windows-amd64/bin/cbuild.exe
+          cp distribution/bin/cbuildgen.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/cbuildgen.exe
+          cp distribution/bin/cpackget.exe-amd64  zip/cmsis-toolbox-windows-amd64/bin/cpackget.exe
+          cp distribution/bin/csolution.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/csolution.exe
+          cp distribution/bin/packchk.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/packchk.exe
+          cp distribution/bin/svdconv.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/svdconv.exe
+          cp distribution/bin/cbuild.exe-arm64    zip/cmsis-toolbox-windows-arm64/bin/cbuild.exe
+          cp distribution/bin/cbuildgen.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/cbuildgen.exe
+          cp distribution/bin/cpackget.exe-arm64  zip/cmsis-toolbox-windows-arm64/bin/cpackget.exe
+          cp distribution/bin/csolution.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/csolution.exe
+          cp distribution/bin/packchk.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/packchk.exe
+          cp distribution/bin/svdconv.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/svdconv.exe
+          cp distribution/bin/cbuild.lin-amd64    zip/cmsis-toolbox-linux-amd64/bin/cbuild
+          cp distribution/bin/cbuildgen.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuildgen
+          cp distribution/bin/cpackget.lin-amd64  zip/cmsis-toolbox-linux-amd64/bin/cpackget
+          cp distribution/bin/csolution.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/csolution
+          cp distribution/bin/packchk.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/packchk
+          cp distribution/bin/svdconv.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/svdconv
+          cp distribution/bin/cbuild.lin-arm64    zip/cmsis-toolbox-linux-arm64/bin/cbuild
+          cp distribution/bin/cbuildgen.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/cbuildgen
+          cp distribution/bin/cpackget.lin-arm64  zip/cmsis-toolbox-linux-arm64/bin/cpackget
+          cp distribution/bin/csolution.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/csolution
+          cp distribution/bin/packchk.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/packchk
+          cp distribution/bin/svdconv.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/svdconv
+          cp distribution/bin/cbuild.mac-amd64    zip/cmsis-toolbox-darwin-amd64/bin/cbuild
+          cp distribution/bin/cbuildgen.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/cbuildgen
+          cp distribution/bin/cpackget.mac-amd64  zip/cmsis-toolbox-darwin-amd64/bin/cpackget
+          cp distribution/bin/csolution.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/csolution
+          cp distribution/bin/packchk.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/packchk
+          cp distribution/bin/svdconv.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/svdconv
+          cp distribution/bin/cbuild.mac-arm64    zip/cmsis-toolbox-darwin-arm64/bin/cbuild
+          cp distribution/bin/cbuildgen.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/cbuildgen
+          cp distribution/bin/cpackget.mac-arm64  zip/cmsis-toolbox-darwin-arm64/bin/cpackget
+          cp distribution/bin/csolution.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/csolution
+          cp distribution/bin/packchk.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/packchk
+          cp distribution/bin/svdconv.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/svdconv
+          cp distribution/LICENSE.txt             zip/cmsis-toolbox-windows-amd64/LICENSE.txt
+          cp distribution/LICENSE.txt             zip/cmsis-toolbox-windows-arm64/LICENSE.txt
+          cp distribution/LICENSE.txt             zip/cmsis-toolbox-linux-amd64/LICENSE.txt
+          cp distribution/LICENSE.txt             zip/cmsis-toolbox-linux-arm64/LICENSE.txt
+          cp distribution/LICENSE.txt             zip/cmsis-toolbox-darwin-amd64/LICENSE.txt
+          cp distribution/LICENSE.txt             zip/cmsis-toolbox-darwin-arm64/LICENSE.txt
+          rm distribution/etc/setup
+          cp -r distribution/etc/*                zip/cmsis-toolbox-windows-amd64/etc
+          cp -r distribution/etc/*                zip/cmsis-toolbox-windows-arm64/etc
+          cp -r distribution/etc/*                zip/cmsis-toolbox-linux-amd64/etc
+          cp -r distribution/etc/*                zip/cmsis-toolbox-linux-arm64/etc
+          cp -r distribution/etc/*                zip/cmsis-toolbox-darwin-amd64/etc
+          cp -r distribution/etc/*                zip/cmsis-toolbox-darwin-arm64/etc
+          cp -r distribution/doc/*                zip/cmsis-toolbox-windows-amd64/doc
+          cp -r distribution/doc/*                zip/cmsis-toolbox-windows-arm64/doc
+          cp -r distribution/doc/*                zip/cmsis-toolbox-linux-amd64/doc
+          cp -r distribution/doc/*                zip/cmsis-toolbox-linux-arm64/doc
+          cp -r distribution/doc/*                zip/cmsis-toolbox-darwin-amd64/doc
+          cp -r distribution/doc/*                zip/cmsis-toolbox-darwin-arm64/doc
         working-directory: toolbox
 
       - name: Set toolchain default paths
@@ -310,6 +168,257 @@ jobs:
           tar -czvf cmsis-toolbox-darwin-amd64.tar.gz  cmsis-toolbox-darwin-amd64
           tar -czvf cmsis-toolbox-darwin-arm64.tar.gz  cmsis-toolbox-darwin-arm64
         working-directory: toolbox/zip
+
+      - name: Archive windows amd64 binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: cmsis-toolbox-windows-amd64
+          path: ./toolbox/zip/cmsis-toolbox-windows-amd64.zip
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Archive windows arm64 binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: cmsis-toolbox-windows-arm64
+          path: ./toolbox/zip/cmsis-toolbox-windows-arm64.zip
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Archive linux amd64 binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: cmsis-toolbox-linux-amd64
+          path: ./toolbox/zip/cmsis-toolbox-linux-amd64.tar.gz
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Archive linux arm64 binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: cmsis-toolbox-linux-arm64
+          path: ./toolbox/zip/cmsis-toolbox-linux-arm64.tar.gz
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Archive darwin amd64 binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: cmsis-toolbox-darwin-amd64
+          path: ./toolbox/zip/cmsis-toolbox-darwin-amd64.tar.gz
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Archive darwin arm64 binaries
+        uses: actions/upload-artifact@v3
+        with:
+          name: cmsis-toolbox-darwin-arm64
+          path: ./toolbox/zip/cmsis-toolbox-darwin-arm64.tar.gz
+          retention-days: 1
+          if-no-files-found: error
+
+  tests:
+    if: |
+      ${{ github.event_name == 'pull_request' || github.event_name == 'release' }}
+    needs: [ create_archives ]
+    timeout-minutes: 15
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        config:
+          - { os: macos-12, target: darwin, arch: amd64 }
+          - { os: macos-12, target: darwin, arch: arm64 }
+          - { os: windows-2019, target: windows, arch: amd64}
+          - { os: windows-2019, target: windows, arch: arm64}
+          - { os: ubuntu-20.04, target: linux, arch: amd64}
+          - { os: ubuntu-20.04, target: linux, arch: arm64}
+    steps:
+      - name: Checkout cmsis-toolbox
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Download cmsis toolbox ${{ matrix.config.target }} ${{ matrix.config.arch }}
+        uses: actions/download-artifact@v3
+        with:
+          name: cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }}
+          path: archive
+
+      - name: Create directory
+        run: |
+          mkdir -p toolbox
+
+      - name: unzip cmsis-toolbox windows archive
+        if: ${{ startsWith(matrix.config.os, 'windows') }}
+        run: unzip archive/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }}.zip -d toolbox  
+
+      - name: unzip cmsis-toolbox macos/linux archive
+        if: ${{ startsWith(matrix.config.os, 'macos') || startsWith(matrix.config.os, 'ubuntu') }}
+        run: tar -xvf archive/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }}.tar.gz -C toolbox
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      - name: Test with pytest
+        run: |
+          pytest --base-path=toolbox/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }} test/tests.py -rA --junitxml=test-results-${{ matrix.config.target }}-${{ matrix.config.arch }}.xml
+
+      - name: Archive test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: toolbox-test-${{ matrix.config.target }}-${{ matrix.config.arch }}
+          path: ./test-results-*.xml
+          retention-days: 1
+          if-no-files-found: error
+
+  publish-test-results:
+    if: github.event_name != 'release'
+    name: "Publish Tests Results"
+    needs: [ tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download test report windows-amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-windows-amd64
+          path: testreports/
+
+      - name: Download test report windows-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-windows-arm64
+          path: testreports/
+
+      - name: Download unit test report linux-amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-linux-amd64
+          path: testreports/
+
+      - name: Download unit test report linux-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-linux-arm64
+          path: testreports/
+
+      - name: Download unit test report darwin-amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-darwin-amd64
+          path: testreports/
+
+      - name: Download unit test report darwin-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-darwin-arm64
+          path: testreports/
+
+      - name: publish test results
+        uses: EnricoMi/publish-unit-test-result-action/composite@v2
+        with:
+          commit: ${{ github.event.workflow_run.head_sha }}
+          report_individual_runs: true
+          junit_files: "testreports/*.xml"
+
+  release:
+    if: ${{ github.event_name == 'release' }}
+    needs: [ tests ]
+    runs-on: ubuntu-20.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Download cmsis toolbox windows amd64 zip
+        uses: actions/download-artifact@v3
+        with:
+          name: cmsis-toolbox-windows-amd64
+          path: toolbox/zip
+
+      - name: Download cmsis toolbox windows arm64 zip
+        uses: actions/download-artifact@v3
+        with:
+          name: cmsis-toolbox-windows-arm64
+          path: toolbox/zip
+
+      - name: Download cmsis toolbox linux amd64 zip
+        uses: actions/download-artifact@v3
+        with:
+          name: cmsis-toolbox-linux-amd64
+          path: toolbox/zip
+
+      - name: Download cmsis toolbox linux arm64 zip
+        uses: actions/download-artifact@v3
+        with:
+          name: cmsis-toolbox-linux-arm64
+          path: toolbox/zip
+
+      - name: Download cmsis toolbox darwin amd64 zip
+        uses: actions/download-artifact@v3
+        with:
+          name: cmsis-toolbox-darwin-amd64
+          path: toolbox/zip
+
+      - name: Download cmsis toolbox darwin arm64 zip
+        uses: actions/download-artifact@v3
+        with:
+          name: cmsis-toolbox-darwin-arm64
+          path: toolbox/zip
+
+      - name: Download test report windows-amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-windows-amd64
+          path: testreports/
+
+      - name: Download test report windows-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-windows-arm64
+          path: testreports/
+
+      - name: Download unit test report linux-amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-linux-amd64
+          path: testreports/
+
+      - name: Download unit test report linux-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-linux-arm64
+          path: testreports/
+
+      - name: Download unit test report darwin-amd64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-darwin-amd64
+          path: testreports/
+
+      - name: Download unit test report darwin-arm64
+        uses: actions/download-artifact@v3
+        with:
+          name: toolbox-test-darwin-arm64
+          path: testreports/
+
+      - name: Zip test reports
+        run: zip -r testreports.zip *
+        working-directory: testreports
+
+      - name: Attach test report archive to release assets
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: testreports/testreports.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+          asset_name: testreports.zip
 
       - name: Calculate checksums
         run: |
