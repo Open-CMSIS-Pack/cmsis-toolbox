@@ -85,12 +85,6 @@ jobs:
           cp ../docs/index.html distribution/doc
         working-directory: toolbox
 
-      - name: Add execution permission to the binaries and set files ownership
-        run: |
-          sudo chmod -R +x bin/*
-          sudo chown -R root:root *
-        working-directory: toolbox/distribution
-
       - name: Copy files separated by target for archiving
         run: |
           mkdir -p zip/cmsis-toolbox-windows-amd64/bin zip/cmsis-toolbox-windows-amd64/etc zip/cmsis-toolbox-windows-amd64/doc
@@ -141,6 +135,7 @@ jobs:
           cp distribution/LICENSE.txt             zip/cmsis-toolbox-linux-arm64/LICENSE.txt
           cp distribution/LICENSE.txt             zip/cmsis-toolbox-darwin-amd64/LICENSE.txt
           cp distribution/LICENSE.txt             zip/cmsis-toolbox-darwin-arm64/LICENSE.txt
+          rm distribution/etc/setup
           cp -r distribution/etc/*                zip/cmsis-toolbox-windows-amd64/etc
           cp -r distribution/etc/*                zip/cmsis-toolbox-windows-arm64/etc
           cp -r distribution/etc/*                zip/cmsis-toolbox-linux-amd64/etc
