@@ -71,6 +71,7 @@ Environment Variable     | Description
 **CMSIS_PACK_ROOT**      | Path to the [CMSIS-Pack Root Directory](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory) that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
 **CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. /c/cmsis-toolbox/etc)
 **Path**                 | Add to the system path the CMSIS-Toolbox 'bin' directory (i.e. /c/cmsis-toolbox/bin) as well as CMake and Ninja.
+**CMSIS_BUILD_ROOT**     | ** DEPRECATED **: Ensure that no environment variable with this name is defined in your environment, otherwise `cbuild` will use tools from the directory specified instead of the tools located side by side.
 
 #### Default Values
 
@@ -252,8 +253,6 @@ https://github.com/Open-CMSIS-Pack/vscode-get-started) with a vcpkg-configuratio
 >
 > - In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
 >
-> - In case of `Error: Unable to resolve dependency ... in \<registry\>` you may need to update the registry with the menu `View` option `Command Palette...`, select `vcpkg: Run vcpkg command` and enter: `z-ce update <registry>`. Newer versions of vcpkg support `x-update-registry --all` to update all registries.
-
 Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal. 
 
 Alternatively use `View` and open the `CMSIS` Extension. Then use the `Build` buttons to translate the project, flash your connected board and/or launch a debug connection.
