@@ -24,7 +24,7 @@ def test_check_archive(base_path):
         "common.schema.json",
         "CPRJ.xsd",
         "cproject.schema.json",
-        "csolution.schema.json"
+        "csolution.schema.json",
         "GCC.10.3.1.cmake",
         "gcc_linker_script.ld",
         "IAR.9.32.1.cmake",
