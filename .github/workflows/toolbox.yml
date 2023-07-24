@@ -150,6 +150,12 @@ jobs:
           cp -r distribution/doc/*                zip/cmsis-toolbox-darwin-arm64/doc
         working-directory: toolbox
 
+      - name: Add execution permission to the binaries and set files ownership
+        run: |
+          sudo chmod -R +x */bin/*
+          sudo chown -R root:root *
+        working-directory: toolbox/zip
+        
       - name: Set toolchain default paths
         run: |
           ./scripts/set-default.sh Windows toolbox/zip/cmsis-toolbox-windows-amd64/etc
