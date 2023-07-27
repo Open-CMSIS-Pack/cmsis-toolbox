@@ -149,12 +149,6 @@ jobs:
           cp -r distribution/doc/*                zip/cmsis-toolbox-darwin-amd64/doc
           cp -r distribution/doc/*                zip/cmsis-toolbox-darwin-arm64/doc
         working-directory: toolbox
-
-      - name: Add execution permission to the binaries and set files ownership
-        run: |
-          sudo chmod -R +x */bin/*
-          sudo chown -R root:root *
-        working-directory: toolbox/zip
         
       - name: Set toolchain default paths
         run: |
@@ -164,6 +158,12 @@ jobs:
           ./scripts/set-default.sh Linux toolbox/zip/cmsis-toolbox-linux-arm64/etc
           ./scripts/set-default.sh Darwin toolbox/zip/cmsis-toolbox-darwin-amd64/etc
           ./scripts/set-default.sh Darwin toolbox/zip/cmsis-toolbox-darwin-arm64/etc
+
+      - name: Add execution permission to the binaries and set files ownership
+        run: |
+          sudo chmod -R +x */bin/*
+          sudo chown -R root:root *
+        working-directory: toolbox/zip
 
       - name: Zip folders
         run: |
