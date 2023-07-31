@@ -7,11 +7,13 @@ on:
       - '.github/workflows/toolbox.yml'
       - 'CMakeLists.txt'
       - '**'
+      - '!docs/**'
   pull_request:
     paths:
       - '.github/workflows/toolbox.yml'
       - 'CMakeLists.txt'
       - '**'
+      - '!docs/**'
   release:
     types: [published]
 
