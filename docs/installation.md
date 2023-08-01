@@ -67,7 +67,7 @@ The various tools use the following environment variables.
 
 Environment Variable     | Description
 :------------------------|:------------
-`<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries
+`<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries where `<name>` is one of AC6, GCC, IAR, CLANG
 **CMSIS_PACK_ROOT**      | Path to the [CMSIS-Pack Root Directory](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory) that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
 **CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. /c/cmsis-toolbox/etc)
 **Path**                 | Add to the system path the CMSIS-Toolbox 'bin' directory (i.e. /c/cmsis-toolbox/bin) as well as CMake and Ninja.
