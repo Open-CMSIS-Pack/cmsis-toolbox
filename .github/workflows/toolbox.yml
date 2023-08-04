@@ -7,6 +7,7 @@ on:
       - '.github/workflows/toolbox.yml'
       - '**'
       - '!docs/**'
+      - '!README.md'
   pull_request:
     paths:
       - '.github/workflows/toolbox.yml'
@@ -231,6 +232,7 @@ jobs:
     needs: [ create_archives ]
     timeout-minutes: 15
     runs-on: ${{ matrix.config.os }}
+    name: 'Test (${{ matrix.config.target }}, ${{ matrix.config.arch }})'
     strategy:
       fail-fast: true
       matrix:
@@ -293,48 +295,17 @@ jobs:
     needs: [ tests ]
     runs-on: ubuntu-latest
     steps:
-      - name: Download test report windows-amd64
+      - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
-          name: toolbox-test-windows-amd64
-          path: testreports/
-
-      - name: Download test report windows-arm64
-        uses: actions/download-artifact@v3
-        with:
-          name: toolbox-test-windows-arm64
-          path: testreports/
-
-      - name: Download unit test report linux-amd64
-        uses: actions/download-artifact@v3
-        with:
-          name: toolbox-test-linux-amd64
-          path: testreports/
-
-      - name: Download unit test report linux-arm64
-        uses: actions/download-artifact@v3
-        with:
-          name: toolbox-test-linux-arm64
-          path: testreports/
-
-      - name: Download unit test report darwin-amd64
-        uses: actions/download-artifact@v3
-        with:
-          name: toolbox-test-darwin-amd64
-          path: testreports/
-
-      - name: Download unit test report darwin-arm64
-        uses: actions/download-artifact@v3
-        with:
-          name: toolbox-test-darwin-arm64
-          path: testreports/
+          path: artifacts
 
       - name: publish test results
         uses: EnricoMi/publish-unit-test-result-action/composite@v2
         with:
           commit: ${{ github.event.workflow_run.head_sha }}
           report_individual_runs: true
-          junit_files: "testreports/*.xml"
+          files: "artifacts/**/test-results-*.xml"
 
   release:
     if: ${{ github.event_name == 'release' }}
