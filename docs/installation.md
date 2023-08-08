@@ -163,6 +163,18 @@ chmod +x <cmsis-toolbox-installation-dir>/bin/cbuild
 ...
 ```
 
+### Registering CMSIS_PACK_ROOT with cpackget
+
+Once you are done with setting up the environment variables, run the following on the command line:
+
+```Shell
+cpackget init https://www.keil.com/pack/index.pidx
+```
+
+> **Note:**
+>
+> Arm is running a public indexing server at the URL provided. You can specify any indexing server URL if not using this service.
+
 ## vcpkg - Setup using CLI
 
 The following setups describe how to setup the CMSIS-Toolbox using a command line (CLI) environment.
