@@ -168,14 +168,12 @@ chmod +x <cmsis-toolbox-installation-dir>/bin/cbuild
 Once you are done with setting up the environment variables, run the following on the command line:
 
 ```Shell
-cpackget init --pack-root path/to/mypackroot https://www.keil.com/pack/index.pidx
+cpackget init https://www.keil.com/pack/index.pidx
 ```
 
-> **Notes:**
+> **Note:**
 >
-> The path/to/mypackroot should be the same as you have added to your environment in the steps before.
->
-> Use the URL of your favorite indexing server if not using the one provided by Arm.
+> Arm is running a public indexing server at the URL provided. You can specify any indexing server URL if not using this service.
 
 ## vcpkg - Setup using CLI
 
