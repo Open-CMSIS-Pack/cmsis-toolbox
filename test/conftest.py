@@ -1,3 +1,9 @@
+# -------------------------------------------------------
+# Copyright (c) 2023 Arm Limited. All rights reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+# -------------------------------------------------------
+
 import pytest
 
 def pytest_addoption(parser):
