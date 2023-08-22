@@ -85,7 +85,7 @@ The environment variable **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are opt
   MacOS       | `${HOME}/.cache/arm/packs`
   WSL_Windows | `${LOCALAPPDATA}/Arm/Packs`
 
-- **CMSIS_COMPILER_ROOT** default is `<toolbox>/bin/../etc`, i.e., `etc` folder relative the the toolbox executables.
+- **CMSIS_COMPILER_ROOT** default is `<toolbox>/bin/../etc`, i.e., `etc` folder relative to the toolbox executables.
 
 #### TOOLCHAIN Registration
 
