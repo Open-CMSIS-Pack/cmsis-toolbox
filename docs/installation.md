@@ -67,10 +67,10 @@ The various tools use the following environment variables.
 
 Environment Variable     | Description
 :------------------------|:------------
-`<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries
+`<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries where `<name>` is one of AC6, GCC, IAR, CLANG
 **CMSIS_PACK_ROOT**      | Path to the [CMSIS-Pack Root Directory](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory) that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
-**CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. /c/cmsis-toolbox/etc)
-**Path**                 | Add to the system path the CMSIS-Toolbox 'bin' directory (i.e. /c/cmsis-toolbox/bin) as well as CMake and Ninja.
+**CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. `/c/cmsis-toolbox/etc`)
+**Path**                 | Add to the system path the CMSIS-Toolbox `bin` directory (i.e. `/c/cmsis-toolbox/bin`) as well as CMake and Ninja.
 **CMSIS_BUILD_ROOT**     | ** DEPRECATED **: Ensure that no environment variable with this name is defined in your environment, otherwise `cbuild` will use tools from the directory specified instead of the tools located side by side.
 
 #### Default Values
@@ -80,12 +80,12 @@ The environment variable **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are opt
 - **CMSIS_PACK_ROOT** default values:
   Platform    | Default path
   :-----------|:------------
-  Linux       | ${HOME}/.cache/arm/packs
-  Windows     | ${LOCALAPPDATA}/Arm/Packs
-  MacOS       | ${HOME}/.cache/arm/packs
-  WSL_Windows | ${LOCALAPPDATA}/Arm/Packs
+  Linux       | `${HOME}/.cache/arm/packs`
+  Windows     | `${LOCALAPPDATA}/Arm/Packs`
+  MacOS       | `${HOME}/.cache/arm/packs`
+  WSL_Windows | `${LOCALAPPDATA}/Arm/Packs`
 
-- **CMSIS_COMPILER_ROOT** default is `
+- **CMSIS_COMPILER_ROOT** default is `<toolbox>/bin/../etc`, i.e., `etc` folder relative to the toolbox executables.
 
 #### TOOLCHAIN Registration
 
@@ -162,6 +162,18 @@ chmod +x <cmsis-toolbox-installation-dir>/bin/cbuildgen
 chmod +x <cmsis-toolbox-installation-dir>/bin/cbuild
 ...
 ```
+
+### Registering CMSIS_PACK_ROOT with cpackget
+
+Once you are done with setting up the environment variables, run the following on the command line:
+
+```Shell
+cpackget init https://www.keil.com/pack/index.pidx
+```
+
+> **Note:**
+>
+> Arm is running a public indexing server at the URL provided. You can specify any indexing server URL if not using this service.
 
 ## vcpkg - Setup using CLI
 

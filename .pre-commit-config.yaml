@@ -7,5 +7,5 @@ repos:
       entry: python3 scripts/check_copyright_notice.py
       language: system
       files: ^(libs\/|tools\/)
-      types_or: [c++, c, shell]
+      types_or: [python, shell]
 
