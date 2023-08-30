@@ -18,13 +18,14 @@ This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects)
     - [List Environment](#list-environment)
     - [List Available Toolchains](#list-available-toolchains)
     - [Update Pack Index File](#update-pack-index-file)
+    - [Build Project](#build-project)
+    - [Update RTE Configuration Files](#update-rte-configuration-files)
     - [Add Software Packs](#add-software-packs)
     - [List Installed Packs](#list-installed-packs)
     - [Install Missing Packs](#install-missing-packs)
     - [List Devices or Boards](#list-devices-or-boards)
     - [List Unresolved Dependencies](#list-unresolved-dependencies)
     - [Create Build Information](#create-build-information)
-    - [Select a Toolchain](#select-a-toolchain)
     - [List Compatible Layers](#list-compatible-layers)
     - [Use Generators (i.e. CubeMX)](#use-generators-ie-cubemx)
   - [`cpackget` Details](#cpackget-details)
@@ -188,6 +189,34 @@ When new software packs are available in on a public web service, the local copy
 cpackget update-index
 ```
 
+### Build Project
+
+This command builds a project that is defined in the file `example.csolution.yml`:
+
+```bash
+cbuild example.csolution.yml
+```
+
+Options allow to rebuild and download missing software packs or to select specific context settings
+
+```bash
+cbuild example.csolution.yml --rebuild --packs --context .Release
+```
+
+It is also possible to overwrite the toolchain selection and use a different toolchain for translation:
+
+```bash
+cbuild example.csolution.yml --toolchain GCC
+```
+
+### Update RTE Configuration Files
+
+The [Component Configuration​](build-overview.md#project-structure) is stored in the [RTE directory](build-overview.md#rte-directory-structure). When files are missing or new software pack versions are installed it might be required to update the RTE configuration files with this command:
+
+```bash
+csolution example.csolution.yml --update-rte
+```
+
 ### Add Software Packs
 
 To install software packs from a public web service use the following command:
@@ -195,7 +224,6 @@ To install software packs from a public web service use the following command:
 ```bash
 cpackget add Arm::CMSIS
 cpackget add Arm::CMSIS@5.9.0     # optional with version specification
-
 ```
 
 ### List Installed Packs
@@ -253,15 +281,6 @@ Convert specific contexts of a `*.csolution.yml` file into build information fil
 
 ```bash
 csolution convert SimpleTZ.csolution.yml -c CM33_s.Debug -c CM33_ns.Release+AVH
-```
-
-### Select a Toolchain
-
-List and select a specific toolchain (in this case AC6 for Arm Compiler version 6) for the compilation of a project. The `--verbose` option provides additional details.
-
-```bash
-cbuild list toolchains -v
-cbuild example.csolution.yml -t AC6
 ```
 
 ### List Compatible Layers

@@ -20,7 +20,7 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
     - [GitHub repositories](#github-repositories)
     - [Project Templates](#project-templates)
     - [Minimal Project Setup](#minimal-project-setup)
-    - [context](#context)
+    - [Context](#context)
     - [Toolchain Agnostic Project](#toolchain-agnostic-project)
     - [Reproducible builds](#reproducible-builds)
     - [Software Layers](#software-layers)
@@ -211,7 +211,7 @@ project:
     - component: Device:Startup
 ```
 
-### context
+### Context
 
 A [`context:`](YML-Input-Format.md#context-name-conventions) identifies a configuration with `project-name`, `built-type`, and `target-type` and is used on various places in the CMSIS-Toolbox.  The following syntax is used to specify a `context:` name.
 

@@ -1,16 +1,16 @@
-# User Input Files
+# Project File Format
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **> User Input Files**
+[**CMSIS-Toolbox**](README.md) **> Project File Format**
 
 The following chapter explains the YAML format of the *user input files* that describes the software of an embedded application.
 
 **Table of Contents**
 
-- [User Input Files](#user-input-files)
+- [Project File Format](#project-file-format)
   - [Name Conventions](#name-conventions)
     - [Filename Extensions](#filename-extensions)
     - [`pack:` Name Conventions](#pack-name-conventions)
