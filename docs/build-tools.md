@@ -211,7 +211,7 @@ cbuild example.csolution.yml --toolchain GCC
 
 ### Update RTE Configuration Files
 
-The [Component Configuration​](build-overview.md#project-structure) is stored in the [RTE directory](build-overview.md#rte-directory-structure). When files are missing or new software packs are installed in might be required to update the RTE configuration files with this command:
+The [Component Configuration​](build-overview.md#project-structure) is stored in the [RTE directory](build-overview.md#rte-directory-structure). When files are missing or new software pack versions are installed it might be required to update the RTE configuration files with this command:
 
 ```bash
 csolution example.csolution.yml --update-rte
