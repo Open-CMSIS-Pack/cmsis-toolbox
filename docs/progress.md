@@ -75,6 +75,10 @@ support for standard language options in csolution                              
 support for `language` and `scope` component file attributes in csolution                | :heavy_check_mark:       | csolution 2.0.0-dev3
 alpha support for LLVM/Clang in cbuild                                                   | :heavy_check_mark:       | cbuild 2.0.0
 alpha support for LLVM/Clang in csolution                                                | :heavy_check_mark:       | csolution 2.0.0
+add `list configs` command to list configuration files                                   | :heavy_check_mark:       | csolution 2.1.0
+add license information to `cbuild.yml`                                                  | :heavy_check_mark:       | csolution 2.1.0
+support dry-running generators                                                           | :heavy_check_mark:       | csolution 2.1.0
+add option `--context-replacement` to refine context selection                           | :heavy_check_mark:       | cbuild 2.1.0
 resources management                                                                     | :x:                      |
 execution groups/phases                                                                  | :x:                      |
 pre/post build steps in csolution                                                        | :x:                      |
