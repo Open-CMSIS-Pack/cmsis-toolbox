@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout devtools
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create folders
         run: |
@@ -245,7 +245,7 @@ jobs:
           - { os: ubuntu-20.04, target: linux, arch: arm64}
     steps:
       - name: Checkout cmsis-toolbox
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
