@@ -294,6 +294,11 @@ jobs:
     name: "Publish Tests Results"
     needs: [ tests ]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
     steps:
       - name: Download Artifacts
         uses: actions/download-artifact@v3
