@@ -33,12 +33,46 @@ File                | Description
 :-------------------|:----------------------
 `*.cbuild-idx.yml`  | Index file of all `*.cbuild.yml` build descriptions; contains also overall information for the application.
 `*.cbuild.yml`      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file.
+`*.cbuild-pack.yml` | Pack descriptions recorded for the entire [`*.csolution.yml`](YML-Input-Format.md#project-file-structure) input file.
 
 The `*.cbuild.yml` output file has the following usage:
 
 - It contains all information for the build step of a project that is part of an application.
-- As it contains information about all software packs used including version information, this file can be used as `lock-file` to ensure that subsequent runs of `csolution` use the very same software packs.
 - It can be used as input file for a generator as it contains explicit information about source files and avoids the complexity of a pack data management at the generator level.
+
+The `*.cbuild-pack.yml` file has the following usage:
+
+- It contains strict list of software packs used including version information and ranges from `.csolution.yml` and all subsequent potentially included `.cproject.yml` and `.clayer.yml` files.
+- This file is used as `lock-file` to ensure that subsequent runs of `csolution` use the very same packs and pack versions on all computers / setups / runs / environments.
+
+### Pack locking
+
+An application contains a set of packs coming from different places, e.g. from the `csolution` directly, or indirectly from `cprojects` or `clayers`.
+In order to have consistent pack usage in the application, as well as allowing projects to evolve and add new `target-types` or `build-types` but still remain on the same shared pack versions, the `cbuild-pack.yml` is introduced.
+
+It works in the following way. An entire application has a set of `pack requirements`. These requirements can come from many different locations or contexts, and may be:
+- specified exactly, e.g. `ARM::CMSIS@5.9.0`
+- specified with range, e.g. `ARM::CMSIS@>=5.8.0`
+- specified without version, e.g. `ARM::CMSIS`
+- specified with wildcards on the pack name, e.g. `ARM::CMSI*`
+- specified without pack name, e.g. `ARM`
+
+All these `pack requirements` are `resolved` into exact versions in the `cbuild-pack.yml` file as a list of items on the following format:
+```yml
+cbuild-pack:
+  resolved-packs:
+    - resolved-pack: ARM::CMSIS@5.9.0
+      selected-by:
+        - ARM
+        - ARM::CMSI*
+        - ARM::CMSIS
+        - ARM::CMSIS@>=5.8.0
+        - ARM::CMSIS@5.9.0
+```
+
+If a context is added or changed, the `selected-by` is used to ensure that the `pack requirements` are resolved to a `consistent` pack version, reducing surprising versions being selected in the entire application.
+
+The location of the `cbuild-pack.yml` file follows the `csolution.yml` file.
 
 ### Directory Structure
 
