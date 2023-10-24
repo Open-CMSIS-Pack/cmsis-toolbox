@@ -27,7 +27,7 @@ sed -e "s|^  set(EXT.*|  set(EXT ${extension})|" "${script}" > temp.$$ && mv tem
 script="$2/IAR.9.32.1.cmake"
 sed -e "s|^  set(EXT.*|  set(EXT ${extension})|" "${script}" > temp.$$ && mv temp.$$ "${script}"
 
-script="$2/CLANG.16.0.0.cmake"
+script="$2/CLANG.17.0.1.cmake"
 sed -e "s|^  set(EXT.*|  set(EXT ${extension})|" "${script}" > temp.$$ && mv temp.$$ "${script}"
 
 exit 0
