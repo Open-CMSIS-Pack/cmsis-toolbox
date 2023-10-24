@@ -22,7 +22,7 @@ def test_check_archive(base_path):
         "cbuild.schema.json",
         "cdefault.schema.json",
         "cdefault.yml",
-        "CLANG.16.0.0.cmake",
+        "CLANG.17.0.1.cmake",
         "clang_linker_script.ld",
         "clayer.schema.json",
         "CMakeASM",
