@@ -316,15 +316,53 @@ Software layers collect source files and software components along with configur
 
 ![Project Layers](./images/Layers.png "Project Layers")
 
-An application could be composed of various layers, for example to compose an IoT cloud application:
+**Simple Example:**
+
+This example uses a layer to include an RTOS kernel.  Using a layer has several benefits, for example that the configuration can be shared across many projects.
+
+The file `MyProject.cproject.yml` includes the file `RTOS.clayer.yml` using the [`layers:`](YML-Input-Format.md#linker) node:
+
+```yml
+project:
+  groups:
+    - group: App
+      files:
+        - file: ./main.c
+
+  components:
+    - component: ARM::CMSIS:CORE
+    - component: Device:Startup
+
+  layers:
+    - layer: ../Layer/RTOS.clayer.yml
+```
+
+The `RTOS.clayer.yml` file defines the kernel along with configuration settings.
+
+```yml
+layer:
+  description: RTX RTOS with configuration settings
+
+  packs:
+    - pack: ARM:CMSIS-RTX
+
+  components:
+    - component: CMSIS:RTOS2:Keil RTX5&Source
+```
+
+**Re-target Example:**
+
+The project [AVH-MLOps-Main](https://github.com/ARM-software/AVH-MLOps/tree/main/AVH-MLOps-main) is a test project that shows retargeting to different processors using a layer.
+
+**IoT Example:**
+
+The project [AWS_MQTT_MutualAuth_SW_Framework](https://github.com/Open-CMSIS-Pack/AWS_MQTT_MutualAuth_SW_Framework) provides an IoT cloud application that is composed of various layers:
 
 - **Demo.cproject.yml**: Implements the IoT Reference example.
 - **Socket.clayer.yml**: A software layer that provides the Socket interface for internet connectivity.
 - **Board.clayer.yml**: A software layer that provides the hardware interfaces to the device hardware.
 
 **Example:**
-
-The project [AWS_MQTT_MutualAuth_SW_Framework](https://github.com/Open-CMSIS-Pack/AWS_MQTT_MutualAuth_SW_Framework) provides an example for software layers.
 
 #### Configuration Settings
 
@@ -334,7 +372,7 @@ can share a `layer` with common configuration settings.
 
 #### Software Layers in Packs
 
-A collection of software layers can be stored in software packs using the element [`<csolution>`](todo-link). Using the `csolution` command `list layers` it is possible to identify compatible software by iterating the [`layers:` - `type:`](YML-Input-Format.md#layers---type)
+A collection of software layers can be stored in software packs using the element [`<clayers>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_clayers_pg.html). Using the `csolution` command `list layers` it is possible to identify compatible software by iterating the [`layers:` - `type:`](YML-Input-Format.md#layers---type)
  [`connections`](YML-Input-Format.md#connections).
 filter conditions to it. In combination with interfaces specifications, an interactive IDE should be able to display suitable layers that could be added to an application.
 

@@ -1181,6 +1181,10 @@ have also the format `@~1.2`/`@~1` that matches with semantic versioning.
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)           | Include pack for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context)   | Exclude pack for a list of *build* and *target* types.
 
+> **Note:**
+>
+> - When an explicit `path:` to the pack is specified, an explicit pack version cannot be specified as the path directly specifies the pack to include.
+
 **Example:**
 
 ```yml
@@ -1796,7 +1800,7 @@ the `%Instance%` with the instance number `n`.
 
 ## Pre/Post build steps
 
->**Scheduled for CMSIS-Toolbox 2.1 - Q3'23**
+>**Scheduled for CMSIS-Toolbox 2.3 - Q1'24**
 Tbd: potentially map to CMake add_custom_command.
 
 ### `execute:`
