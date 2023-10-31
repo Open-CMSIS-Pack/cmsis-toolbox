@@ -1360,13 +1360,13 @@ The `context-map:` node allows for a specific `project-name` the remapping of `t
 - Integrating an existing `*.cproject.yml` file in a different `*.csolution.yml` file that uses different `build-types:` and/or `target-types:` for the overall application.
 - Defines how different `*.cproject.yml` files of a `*.csolution.yml` are to the binary image of the final target (needs reflection in cbuild-idx.yml).
 
-The `context-map:` node lists the remapping the [`context:`](#context-name-conventions) of a `project-name` for specific `target-types:` and `build-types:`.
+The `context-map:` node lists a remapping of the [`context-name`](#context-name-conventions) for a `project-name` and specific `target-types:` and `build-types:`.
 
 `context-map:`                                     |              | Content
 :--------------------------------------------------|--------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `- context:`                    | **Required** | Specify a next context for a project
+&nbsp;&nbsp;&nbsp; `- <context-name>`              | **Required** | Specify an alternative [`context-name`](#context-name-conventions) for a project.
 
-For the `context-map:` it is required to specify the `project-name` in the `context:` list. This project will use a different `.build-type` and/or `+target-type` as applied in the `context:`. This remapping of the context applies for the specific type in the `build-types:` or `target-types:` list.
+For the `context-map:` it is required to specify the `<project-name>` as part of the [`context-name`](#context-name-conventions). This project will use a different `.build-type` and/or `+target-type` as applied in the [`context-name`](#context-name-conventions). This remapping of the context applies for the specific type in the `build-types:` or `target-types:` list.
 
 **Example 1:**
 
@@ -1380,7 +1380,7 @@ This application combines two projects for a multi-processor device, but the pro
   build-types:
     - type: Release                        # When applying build-type name 'release':
       context-map:
-        - context: HelloCM7.flex_release   # project HelloCM7 uses build-type name "flex_release" instead of "release"
+        - HelloCM7.flex_release            # project HelloCM7 uses build-type name "flex_release" instead of "release"
      
   projects:
     - project: ./CM7/HelloCM7.cproject.yml
@@ -1395,8 +1395,8 @@ The following example uses three projects `Demo`, `TFM` and `Boot`. The project 
   target-types:
     - type: Board                          # When applying target-type: 'Board':
       context-map:
-        - context: TFM.Release+LibMode     # for project TFM use build-type: Release, target-type: LibMode
-        - context: Boot+Flash              # for project Boot use target-type: Flash
+        - TFM.Release+LibMode              # for project TFM use build-type: Release, target-type: LibMode
+        - Boot+Flash                       # for project Boot use target-type: Flash
       board: B-U585I-IOT02A
     - type: AVH                            # When applying target-type: 'AVH':
       context-map:
