@@ -71,8 +71,48 @@ cbuild-pack:
 ```
 
 If a context is added or changed, the `selected-by` is used to ensure that the `pack requirements` are resolved to a `consistent` pack version, reducing surprising versions being selected in the entire application.
+If a `pack requirement` is no longer present in the application, then the `cbuild-pack.yml` file will be *cleaned* from the relevant entries during the `cbuild-pack.yml`-generation step.
 
 The location of the `cbuild-pack.yml` file follows the `csolution.yml` file.
+
+* `convert` - `Uses` **and updates** cbuild-pack.yml
+* `list ...` - `Uses` cbuild-pack.yml
+* `run` - `Uses` cbuild-pack.yml
+* `update-rte` - `Uses` **and updates** cbuild-pack.yml
+
+```mermaid
+graph TD;
+  csolution.yml
+  cbuild-pack.yml
+  cproject.yml
+
+subgraph Loading
+  res1["<center><u>Resolving step 1 (PopulateContexts)</u></center><ul><li>Reading the files</li><li>Adds cbuild-pack.yml\npack requirements to the solution</li></ul>"]
+  res2["<center><u>Resolving step 2 (AddPackRequirements)</u></center><ul><li>Pack version ranges are matched to fully qualified versions using cbuild-pack.yml</li><li>Pack wildcards are matched to fully qualified versions using cbuild-pack.yml</li><li>Pack wildcards are kept for further expansion in the model</li><li>Local packs are left as-is</li></ul>"]
+  style res1 text-align:left
+  style res2 text-align:left
+end
+
+  action["<u>Some action</u>\ne.g. convert, list, run, update-rte, ..."]
+
+subgraph Saving
+  res3["<center><u>Resolving step 3 (GenerateCbuildPack)</u></center><ul><li>Rebuild list of packs required by all contexts</li><li>Ensure that original 'pack expression' are kept in cbuild-pack.yml</li></ul>"]
+  write["<center><u>Potentially write cbuild-pack.yml</u></center><ul><li>Only done for the [convert, update-rte] commands</li></ul>"]
+  style res3 text-align:left
+end
+
+  csolution.yml --> res1
+  cbuild-pack.yml --> res1
+  cproject.yml --> res1
+
+  res1 --> res2
+  res2 --> action
+  action --> res3
+  res3 --> write
+```
+
+This means that the cbuild-pack.yml information is used to load the appropriate fully qualified pack versions, matching previously used version ranges and pack wildcards.
+Subsequent runs, and newly added contexts, can therefore use the least surprising versions.
 
 ### Directory Structure
 
