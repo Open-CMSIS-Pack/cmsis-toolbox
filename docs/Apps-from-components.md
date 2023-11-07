@@ -5,7 +5,8 @@
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD032 -->
 
-[**CMSIS-Toolbox**](README.md) **> Generate Application form Components**
+[**CMSIS-Toolbox**](README.md) **> Generate Application from Components**
+
 
 The following chapter explains the structure of a software pack and how it can be used in an application.
 
