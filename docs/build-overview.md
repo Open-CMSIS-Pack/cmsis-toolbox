@@ -800,12 +800,12 @@ The file `regions_<device_or_board>.h` can be modified by the user as it might b
 
 The following compiler specific Linker Script files are used when no explicit file is specified.  The files are located in the directory `<cmsis-toolbox-installation-dir>/etc` of the CMSIS-Toolbox.
 
-Linker Script Template  | Linker control file for ...
-:-----------------------|:-----------------------------
-ac6_linker_script.sct   | Arm Compiler
-gcc_linker_script.ld    | GCC Compiler
-iar_linker_script.icf   | IAR Compiler
-clang_linker_script.ld  | CLANG Compiler (experimental)
+Linker Script Template      | Linker control file for ...
+:---------------------------|:-----------------------------
+ac6_linker_script.sct.src   | Arm Compiler
+gcc_linker_script.ld.src    | GCC Compiler
+iar_linker_script.icf.src   | IAR Compiler
+clang_linker_script.ld.src  | CLANG Compiler (experimental)
 
 ## Generator Support
 
