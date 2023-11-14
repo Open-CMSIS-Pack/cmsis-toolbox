@@ -33,12 +33,86 @@ File                | Description
 :-------------------|:----------------------
 `*.cbuild-idx.yml`  | Index file of all `*.cbuild.yml` build descriptions; contains also overall information for the application.
 `*.cbuild.yml`      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file.
+`*.cbuild-pack.yml` | Pack descriptions recorded for the entire [`*.csolution.yml`](YML-Input-Format.md#project-file-structure) input file.
 
 The `*.cbuild.yml` output file has the following usage:
 
 - It contains all information for the build step of a project that is part of an application.
-- As it contains information about all software packs used including version information, this file can be used as `lock-file` to ensure that subsequent runs of `csolution` use the very same software packs.
 - It can be used as input file for a generator as it contains explicit information about source files and avoids the complexity of a pack data management at the generator level.
+
+The `*.cbuild-pack.yml` file has the following usage:
+
+- It contains strict list of software packs used including version information and ranges from `.csolution.yml` and all subsequent potentially included `.cproject.yml` and `.clayer.yml` files.
+- This file is used as `lock-file` to ensure that subsequent runs of `csolution` use the very same packs and pack versions on all computers / setups / runs / environments.
+
+### Pack locking
+
+An application contains a set of packs coming from different places, e.g. from the `csolution` directly, or indirectly from `cprojects` or `clayers`.
+In order to have consistent pack usage in the application, as well as allowing projects to evolve and add new `target-types` or `build-types` but still remain on the same shared pack versions, the `cbuild-pack.yml` is introduced.
+
+It works in the following way. An entire application has a set of `pack requirements`. These requirements can come from many different locations or contexts, and may be:
+- specified exactly, e.g. `ARM::CMSIS@5.9.0`
+- specified with range, e.g. `ARM::CMSIS@>=5.8.0`
+- specified without version, e.g. `ARM::CMSIS`
+- specified with wildcards on the pack name, e.g. `ARM::CMSI*`
+- specified without pack name, e.g. `ARM`
+
+All these `pack requirements` are `resolved` into exact versions in the `cbuild-pack.yml` file as a list of items on the following format:
+```yml
+cbuild-pack:
+  resolved-packs:
+    - resolved-pack: ARM::CMSIS@5.9.0
+      selected-by:
+        - ARM
+        - ARM::CMSI*
+        - ARM::CMSIS
+        - ARM::CMSIS@>=5.8.0
+        - ARM::CMSIS@5.9.0
+```
+
+If a context is added or changed, the `selected-by` is used to ensure that the `pack requirements` are resolved to a `consistent` pack version, reducing surprising versions being selected in the entire application.
+If a `pack requirement` is no longer present in the application, then the `cbuild-pack.yml` file will be *cleaned* from the relevant entries during the `cbuild-pack.yml`-generation step.
+
+The location of the `cbuild-pack.yml` file follows the `csolution.yml` file.
+
+* `convert` - `Uses` **and updates** cbuild-pack.yml
+* `list ...` - `Uses` cbuild-pack.yml
+* `run` - `Uses` cbuild-pack.yml
+* `update-rte` - `Uses` **and updates** cbuild-pack.yml
+
+```mermaid
+graph TD;
+  csolution.yml
+  cbuild-pack.yml
+  cproject.yml
+
+subgraph Loading
+  res1["<center><u>Resolving step 1 (PopulateContexts)</u></center><ul><li>Reading the files</li><li>Adds cbuild-pack.yml\npack requirements to the solution</li></ul>"]
+  res2["<center><u>Resolving step 2 (AddPackRequirements)</u></center><ul><li>Pack version ranges are matched to fully qualified versions using cbuild-pack.yml</li><li>Pack wildcards are matched to fully qualified versions using cbuild-pack.yml</li><li>Pack wildcards are kept for further expansion in the model</li><li>Local packs are left as-is</li></ul>"]
+  style res1 text-align:left
+  style res2 text-align:left
+end
+
+  action["<u>Some action</u>\ne.g. convert, list, run, update-rte, ..."]
+
+subgraph Saving
+  res3["<center><u>Resolving step 3 (GenerateCbuildPack)</u></center><ul><li>Rebuild list of packs required by all contexts</li><li>Ensure that original 'pack expression' are kept in cbuild-pack.yml</li></ul>"]
+  write["<center><u>Potentially write cbuild-pack.yml</u></center><ul><li>Only done for the [convert, update-rte] commands</li></ul>"]
+  style res3 text-align:left
+end
+
+  csolution.yml --> res1
+  cbuild-pack.yml --> res1
+  cproject.yml --> res1
+
+  res1 --> res2
+  res2 --> action
+  action --> res3
+  res3 --> write
+```
+
+This means that the cbuild-pack.yml information is used to load the appropriate fully qualified pack versions, matching previously used version ranges and pack wildcards.
+Subsequent runs, and newly added contexts, can therefore use the least surprising versions.
 
 ### Directory Structure
 
