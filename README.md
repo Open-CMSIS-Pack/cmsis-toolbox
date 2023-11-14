@@ -16,6 +16,14 @@ Tool           | Description
 **cbuild**     | **Build Invocation:** orchestrate the build steps utilizing CMSIS tools and a CMake compilation process.
 **csolution**  | **Project Manager:** create build information for embedded applications that consist of one or more related projects.
 
+## Example Projects
+
+Repository            | Description
+:---------------------|:-------------------------------------
+[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains several `Hello World` examples that show single-core, multi-core, and TrustZone setup.
+[vscode-get-started](https://github.com/Open-CMSIS-Pack/vscode-get-started) | Contains the setup for a VS Code development environment including an example project.
+[github.com/Arm-Examples](https://github.com/Arm-Examples) | Contains many examples that include CMSIS-Toolbox setup.
+
 ## Software Pack Creation
 
 The following tools support the creation of Software Packs in [CMSIS-Pack format](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html):

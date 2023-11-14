@@ -28,6 +28,7 @@ This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects)
     - [Create Build Information](#create-build-information)
     - [List Compatible Layers](#list-compatible-layers)
     - [Use Generators (i.e. CubeMX)](#use-generators-ie-cubemx)
+    - [Use context set](#use-context-set)
   - [`cpackget` Details](#cpackget-details)
     - [Specify CMSIS-Pack root directory](#specify-cmsis-pack-root-directory)
     - [Initialize CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory)
@@ -56,8 +57,10 @@ There are several ways to configure the CMSIS-Pack repository:
 
 ## `cbuild` Invocation
 
+Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
+
 ```txt
-cbuild: Build Invocation 2.0.0 (C) 2023 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.2.0 (C) 2023 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -93,43 +96,47 @@ Use "cbuild [command] --help" for more information about a command.
 
 ## `csolution` Invocation
 
+Create build information for embedded applications that consist of one or more related projects.
+
 ```text
-csolution: Project Manager 2.0.0 (C) 2023 Arm Ltd. and Contributors
+csolution: Project Manager 2.2.0 (C) 2023 Arm Ltd. and Contributors
 
 Usage:
   csolution <command> [<name>.csolution.yml] [options]
 
 Commands:
-  convert                  Convert user input *.yml files to *.cprj files
-  list boards              Print list of available board names
-  list contexts            Print list of contexts in a <name>.csolution.yml
-  list components          Print list of available components
-  list dependencies        Print list of unresolved project dependencies
-  list devices             Print list of available device names
-  list environment         Print list of environment configurations
-  list generators          Print list of code generators of a given context
-  list layers              Print list of available, referenced and compatible layers
-  list packs               Print list of used packs from the pack repository
-  list toolchains          Print list of supported toolchains
-  run                      Run code generator
-  update-rte               Create/update configuration files and validate solution
+  convert                       Convert user input *.yml files to *.cprj files
+  list boards                   Print list of available board names
+  list configs                  Print list of configuration files
+  list contexts                 Print list of contexts in a <name>.csolution.yml
+  list components               Print list of available components
+  list dependencies             Print list of unresolved project dependencies
+  list devices                  Print list of available device names
+  list environment              Print list of environment configurations
+  list generators               Print list of code generators of a given context
+  list layers                   Print list of available, referenced and compatible layers
+  list packs                    Print list of used packs from the pack repository
+  list toolchains               Print list of supported toolchains
+  run                           Run code generator
+  update-rte                    Create/update configuration files and validate solution
 
 Options:
-  -c, --context arg [...]  Input context names [<project-name>][.<build-type>][+<target-type>]
-  -d, --debug              Enable debug messages
-  -e, --export arg         Set suffix for exporting <context><suffix>.cprj retaining only specified versions
-  -f, --filter arg         Filter words
-  -g, --generator arg      Code generator identifier
-  -l, --load arg           Set policy for packs loading [latest | all | required]
-  -L, --clayer-path arg    Set search path for external clayers
-  -m, --missing            List only required packs that are missing in the pack repository
-  -n, --no-check-schema    Skip schema check
-  -N, --no-update-rte      Skip creation of RTE directory and files
-  -o, --output arg         Output directory
-  -t, --toolchain arg      Selection of the toolchain used in the project optionally with version
-  -S, --context-set        Use context set
-  -v, --verbose            Enable verbose messages
-  -V, --version            Print version
+  -c, --context arg [...]       Input context names [<project-name>][.<build-type>][+<target-type>]
+  -d, --debug                   Enable debug messages
+  -D, --dry-run                 Enable dry-run
+  -e, --export arg              Set suffix for exporting <context><suffix>.cprj retaining only specified versions
+  -f, --filter arg              Filter words
+  -g, --generator arg           Code generator identifier
+  -l, --load arg                Set policy for packs loading [latest | all | required]
+  -L, --clayer-path arg         Set search path for external clayers
+  -m, --missing                 List only required packs that are missing in the pack repository
+  -n, --no-check-schema         Skip schema check
+  -N, --no-update-rte           Skip creation of RTE directory and files
+  -o, --output arg              Output directory
+  -S, --context-set             Use context set
+  -t, --toolchain arg           Selection of the toolchain used in the project optionally with version
+  -v, --verbose                 Enable verbose messages
+  -V, --version                 Print version
 
 Use 'csolution <command> -h' for more information about a command.
 ```
@@ -297,17 +304,32 @@ Refer to [Working with Layers](build-overview#working-with-layers) for more info
 
 ### Use Generators (i.e. CubeMX)
 
-List external code generators that are used to create software components in `*.gpdsc` format. It outputs the generator
-ID that is required for the `run` command.
+List external code generators that are used to create software components. It outputs the generator ID that is required for the `run` command. When using the option `--verbose` the generator out directory is listed.
 
 ```bash
-csolution list generators mysolution.csolution.yml
+csolution list generators mysolution.csolution.yml -v
 ```
 
-Run a generator (in this case STCubeMX) for a specific project context.
+Run a generator (in this case STM32 CubeMX) for a specific project context.  Note that the context can be omitted when the same generator output directory is used.
 
 ```bash
-csolution run -g STCubeMX mysolution.csolution.yml -c Blinky.Debug+STM32L4
+csolution run -g CubeMX mysolution.csolution.yml -c Blinky.Debug+STM32L4
+```
+
+### Use context set
+
+When working with [multiple related projects](build-overview.md#project-setup-for-related-projects), it might be necessary to combine different build types for debug and download in the target hardware. With the option `--context-set` the selected `--context` options can be saved and re-used.
+
+Write to the file `SimpleTZ.cbuild-set.yml` the selected `--context` options . Refer to [file structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-setyml) for details.
+
+```bash
+cbuild SimpleTZ.csolution.yml -S -c CM33_s.Release -c CM33_ns.Debug
+```
+
+Read from the file `SimpleTZ.cbuild-set.yml` to previous stored `--context` setup.
+
+```bash
+cbuild SimpleTZ.csolution.yml -S
 ```
 
 ## `cpackget` Details

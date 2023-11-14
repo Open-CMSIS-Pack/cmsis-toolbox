@@ -24,6 +24,7 @@ There are three different ways to setup the CMSIS-Toolbox:
       - [Setup Win64](#setup-win64)
       - [Setup Linux or Bash](#setup-linux-or-bash)
       - [Setup MacOS](#setup-macos)
+    - [Registering CMSIS\_PACK\_ROOT with cpackget](#registering-cmsis_pack_root-with-cpackget)
   - [vcpkg - Setup using CLI](#vcpkg---setup-using-cli)
   - [vcpgk - Setup in VS Code](#vcpgk---setup-in-vs-code)
   
@@ -57,7 +58,7 @@ The CMSIS-Toolbox works with the following toolchains. Install one or more toolc
 
 - [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
 
-- [**CLANG**](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest) version 16.0.0 or higher (experimental).
+- [**CLANG**](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest) version 16.0.0 or higher.
 
 ### Environment Variables
 
@@ -177,7 +178,9 @@ cpackget init https://www.keil.com/pack/index.pidx
 
 ## vcpkg - Setup using CLI
 
-The following setups describe how to setup the CMSIS-Toolbox using a command line (CLI) environment.
+The [vcpkg](https://vcpkg.io/en/) is a management tool for packages and includes features to manage tool artifacts. Arm provides a artifactory system for tools. Refer to [Arm Tools Available in vcpkg](https://www.keil.arm.com/packages/) for more information.
+
+The following setups describe how to setup the CMSIS-Toolbox using a command line (CLI) environment. In many examples there is already the file `vcpkg-configuration.json` which describes the tool environment required for the example. Refer to the last step to create an new `vcpkg-configuration.json` file.
 
 1. Install and enable vcpkg; the command depends on the shell.
 
@@ -216,11 +219,13 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
    vcpkg activate --project mypath/vcpkg-configuration.json
    ```
 
-   - with explict commands
-
-   ```txt
-   vcpkg use arm:cmsis-toolbox microsoft:cmake microsoft:ninja arm:arm-none-eabi-gcc
-   ```
+   > **Note:**
+   >
+   > - In case that activate fails, update registries to access latest versions of the tools artifacts.
+   >
+   >   ```txt
+   >   vcpkg  x-update-registry --all
+   >   ```
 
 3. Deactivate previous configuration
 
@@ -228,13 +233,7 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
    vcpkg deactivate
    ```
 
-4. Update registries to access latest versions of the tools artifacts.
-
-   ```txt
-   vcpkg  x-update-registry --all
-   ```
-
-5. Create a new vcpkg configuration file with these commands:
+4. Create a new `vcpkg-configuration.json` file with these commands:
 
    ```txt
    vcpkg new --application
@@ -256,7 +255,7 @@ https://github.com/Open-CMSIS-Pack/vscode-get-started) with a vcpkg-configuratio
 4. Specify the destination folder to clone to and select 'Open' when asked 'Would you like to open the cloned directory?'
 5. Use `View` menu 'Explorer' and select the file `vcpkg-configuration.json`. This file instructs [Microsoft vcpkg](https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts) to install the prerequisite artifacts required for building the solution and installs therefore:
 
-    - CMSIS-Toolbox 2.0.0
+    - CMSIS-Toolbox 2.2.0
     - cmake 3.25.2
     - ninja 1.10.2
     - arm-none-eabi-gcc 12.2.1-mpacbti (GNU Arm Embedded Toolchain 12.2.1)
