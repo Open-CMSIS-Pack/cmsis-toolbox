@@ -28,6 +28,7 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
       - [Software Layers in Packs](#software-layers-in-packs)
     - [Project Setup for Multiple Targets and Builds](#project-setup-for-multiple-targets-and-builds)
     - [Project Setup for Related Projects](#project-setup-for-related-projects)
+      - [Working with `context-set:`](#working-with-context-set)
   - [Project Structure](#project-structure)
     - [Working Areas](#working-areas)
     - [Project Area](#project-area)
@@ -42,6 +43,10 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
       - [File locations](#file-locations)
       - [User Modifications to Memory Regions](#user-modifications-to-memory-regions)
       - [Linker Script Templates](#linker-script-templates)
+  - [Generator Support](#generator-support)
+    - [Project Types](#project-types)
+      - [Project-Type: `single-core`](#project-type-single-core)
+      - [Project-Type: `multi-core` or `trustzone`](#project-type-multi-core-or-trustzone)
   - [Reference Application Framework](#reference-application-framework)
     - [Interface Definitions](#interface-definitions)
     - [Target Hardware Abstraction](#target-hardware-abstraction)
@@ -101,10 +106,15 @@ Input Files              | Description
 [*.cproject.yml](YML-Input-Format.md#project)           | Content of an independent build (linker or archiver run) - directly relates to a `*.cprj` file.
 [*.clayer.yml](YML-Input-Format.md#layer)               | Set of source files along with pre-configured components for reuse in different applications.
 
+Input/Output Files       | Description
+:------------------------|:---------------------------------
+[*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml)  | Exact list of the packs that are used by the application; allows to lock the pack versions.
+[*.cbuild-set.yml](YML-CBuild-Format.md#file-structure-of-cbuild-setyml)    | Specifies the [context set](#working-with-context-set) of projects, target-types, and build-types that are used to generate the application image.
+
 Output Files             | Description
 :------------------------|:---------------------------------
 [*.cbuild-idx.yml](YML-CBuild-Format.md#file-structure-of-cbuild-idxyml)  | Index file of all `*.cbuild.yml` build descriptions; contains also overall information for the application.
-[*.cbuild.yml](YML-CBuild-Format.md#file-structure-of-cbuild-yml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file (replaces *.CPRJ in CMSIS-Toolbox 2.1 - schedule for Q3'23)
+[*.cbuild.yml](YML-CBuild-Format.md#file-structure-of-cbuild-yml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file (replaces *.CPRJ in CMSIS-Toolbox 2.3 - schedule for Q1'24)
 [Project Build Files *.cprj](https://arm-software.github.io/CMSIS_5/Build/html/cprjFormat_pg.html) | Project build information in legacy format.
 [Run-Time Environment (RTE)](#rte-directory-structure)  | Contains the user configured files of a project along with RTE_Components.h inventory file.
 [Linker Script Files](Linker-Script-Management.md#automatic-linker-script-generation) | Header file that describes the memory resources.
@@ -135,8 +145,9 @@ The following repositories provide several working examples:
 
 Repository            | Description
 :---------------------|:-------------------------------------
-[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains a simple Hello World example and links to other working examples.  
+[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains several `Hello World` examples that show single-core, multi-core, and TrustZone setup.
 [vscode-get-started](https://github.com/Open-CMSIS-Pack/vscode-get-started) | Contains the setup for a VS Code development environment including an example project.
+[github.com/Arm-Examples](https://github.com/Arm-Examples) | Contains many examples that include CMSIS-Toolbox setup.
 
 The section below explains the overall concepts consider by the **`csolution` Project Manager** based on examples.
 
@@ -303,6 +314,8 @@ project:
 ```
 
 ### Reproducible builds
+
+**todo add cbuild-pack.yml** revice content below.
 
 It is required to generate reproducible builds that can deployed on independent CI/CD test systems. To achieve that, the **`csolution` Project Manager** generates *.cprj output files with the following naming conventions:
 
@@ -512,7 +525,7 @@ solution:
 
   target-types:
     - type: Board
-      board: NUCLEO-L552ZE-Q
+      board: NUCLEO-L552ZE-Q    # uses device defined by the board
 
     - type: Production-HW
       device: STM32U5X          # specifies device
@@ -522,16 +535,34 @@ solution:
       optimize: none
       debug: on
 
+    - type: Release
+      optimize: balanced
+      debug: on
+
     - type: Test
       optimize: size
       debug: on
     
   projects:
-    - project: ./security/TFM.cproject.yml
+    - project: ./security/TFM.cproject.yml           # Only generated for build type: Release
       for-context: .Release
     - project: ./application/MQTT_AWS.cproject.yml
-    - project: ./bootloader/Bootloader.cproject.yml
-      not-for-context: +Virtual
+    - project: ./bootloader/Bootloader.cproject.yml  # Not generated for target type: Board
+      not-for-context: +Board
+```
+
+#### Working with `context-set:`
+
+Frequently it is required to build applications with different context types. The following command line example generates the `iot-product.csolution.yml` with build type `Debug` for the project `MQTT_AWS.cproject.yml` while the other projects use the build type `Release`. This selection can be saved to the file `iot-product.cbuild-set.yml` by using the option `-S` or `--context-set`.  Refer to [file structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-setyml) for details.
+
+```txt
+cbuild iot-product.csolution.yml -c TFM.Release+Board -c MQTT_AWS.Debug+Board -c Bootloader.Release+Board -S
+```
+
+To use the saved context-set of the file `iot-product.cbuild-set.yml`, apply the option `-S` or `--context-set` without any context option `--context` or `-c`.  This uses the previously saved context set.
+
+```txt
+cbuild iot-product.csolution.yml -S
 ```
 
 ## Project Structure
@@ -776,6 +807,80 @@ ac6_linker_script.sct   | Arm Compiler
 gcc_linker_script.ld    | GCC Compiler
 iar_linker_script.icf   | IAR Compiler
 clang_linker_script.ld  | CLANG Compiler (experimental)
+
+## Generator Support
+
+The user steps for creating a `csolution` based application with a Generator are:
+
+- Create the `*.csolution.yml` container that refers the projects and selects `device:` or `board:`  (by using `target-types:`)
+- Create `*.cproject.yml` files that are referred by the `*.csolution.yml` container.
+- Add `components:` and/or `layers:` to the `*.cproject.yml` file
+- For components that have a `<generator-id>`, run the related generator.
+
+Typically generators are used to:
+
+- Configure device and/or board settings, for example clock configuration or pinout.
+- Add and configure software drivers, for example for UART, SPI, or I/O ports.
+- Configure parameters of an algorithm, for example DSP filter design or motor control parameters.
+
+**todo rewrite below once examples are available**
+
+### Project Types
+
+The following is an analysis of the different project scenarios, again exemplified with STM32CubeMX.
+For a CubeMX integration two different project types should be considered:
+
+- `project-type`: **single-core**: one `*.ioc` project file maps to one `*.cproject.yml` (potentially to one or more `target-types:`). In case that a device layer is used, it maps to one `*.clayer.yml` file.
+- `project-type`: **multi-core** or **trustzone**: one `*.ioc` project file maps to several processors or to secure/non-secure projects. In csolution this is requires that multiple `*.cproject.yml` (or in case of layers multiple `*.clayer.yml`) files are considered.
+
+CubeMX requires a generator output directory (that stores the *.ioc project along with generated files).
+
+> **Note:**
+>
+> The generator output directory can be controlled at `csolution` level with [`generators:`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#generators).
+
+To integrate the generated files in a `csolution` based project a `<generator-id>.cgen.yml` is generated. As the generator is associated with one `generator component`, the location of this file is in the [`RTE` directory](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/build-overview.md#rte-directory-structure) of the related `Cclass`.  The `<generator-id>.cgen.yml` should use relative paths, which requires that the relationship to the generator output directory is somewhat defined.
+
+> **Note:**
+>
+> - Generator output directory can be controlled at `csolution` level with [`generators:`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#generators).
+> - RTE directory can be controlled at `cproject` level with [`rte:`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#rte)
+> - This proposal recommends to make the generator directory configurable via a generator registration file. In case of missing functionality, the existing options should be reviewed.
+
+The proposed directory structure for CubeMX is:
+
+#### Project-Type: `single-core`
+
+The `generator component` belongs to `cproject.yml`:
+
+- `CubeMX.cgen.yml` file: `$ProjectDir()$/RTE/Device/$Dname$`
+- Generator output files: `$ProjectDir()$/RTE/Device/$Dname$/generated/CubeMX`
+
+The `generator component` belongs to `clayer.yml` (`<layer-dir>` refers to the directory that contains the `clayer.yml` file):
+
+- `CubeMX.cgen.yml` file: `<layer-dir>/RTE/Device/$Dname$`
+- Generator output files: `<layer-dir>/RTE/Device/$Dname$/generated/CubeMX`
+
+#### Project-Type: `multi-core` or `trustzone`
+
+Generator files belong to `csolution.yml` (or to a `<layer-base-dir>` file that needs to be defined).
+
+The `generator component` belongs to `cproject.yml`:
+
+- In each related `cproject.yml` a `CubeMX.cgen.yml` file is added in: `$ProjectDir()$/RTE/Device/$Dname$`
+- Generator output files: `$SolutionDir()$/RTE/Device/$Dname$/generated/CubeMX`
+
+The `generator component` belongs to `clayer.yml`. A fixed directory structure is assumed with:
+
+```txt
+<layer-base-dir>            # stores multiple layers
+<layer-base-dir>/layer1     # stores multiple layer1
+<layer-base-dir>/layer2     # stores multiple layer2
+```
+
+> **Note:**
+>
+> The directory structure for multiple related layers needs potentially more work.
 
 ## Reference Application Framework
 
@@ -1067,11 +1172,11 @@ The following section explains how to operate with layers. It uses the projects:
    ```txt
    csolution list layers -s Demo.csolution.yml -c Demo.Release+test verbose -L ./framework -l all
    
-   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Board/B-U585I-IOT02A/IoT/Board.clayer.yml (layer type:    Board)
-   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Inventek_ISMART43362-E/Shield.clayer.yml    (layer type: Shield)
-   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Sparkfun_DA16200/Shield.clayer.yml (layer    type: Shield)
-   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Sparkfun_ESP8266/Shield.clayer.yml (layer    type: Shield)
-   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/WizNet_WizFi360-EVB/Shield.clayer.yml (layer    type: Shield)
+   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Board/B-U585I-IOT02A/IoT/Board.clayer.yml (layer type: Board)
+   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Inventek_ISMART43362-E/Shield.clayer.yml (layer type: Shield)
+   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Sparkfun_DA16200/Shield.clayer.yml (layer type: Shield)
+   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Sparkfun_ESP8266/Shield.clayer.yml (layer type: Shield)
+   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/WizNet_WizFi360-EVB/Shield.clayer.yml (layer type: Shield)
    ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Socket/WiFi/Socket.clayer.yml (layer type: Socket)
    ```
 
