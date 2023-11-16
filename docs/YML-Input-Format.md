@@ -373,7 +373,7 @@ The example below uses the `build-type: Debug`. The `target-type` of the current
 
 > **Note:** 
 > 
-> `-execute` is scheduled for implementation in CMSIS-Toolbox 2.1 (Q3'23)
+> `-execute` is scheduled for implementation in CMSIS-Toolbox 2.3 (Q1'24)
 
 ```yml
   - execute: Generate Image
@@ -717,7 +717,7 @@ generators:
   base-dir: $SolutionDir()$/MyGenerators      # Path for all generators extended by '/<generator-id>'
 
   options:
-  - generator: Cube                           # for the generator `Cube` use this path
+  - generator: CubeMX                         # for the generator id `CubeMX` use this path
     path:  ./CubeFiles                        # relative path to the *.yml file that contains this setting
 ```
 
@@ -1231,7 +1231,8 @@ The `processor:` keyword specifies the usage of processor features for this proj
 
 `processor:`                            | Content
 :---------------------------------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `fpu:`               | Select usage of FPU: `dp` (double precision) \| `sp` (single precision) \| `off` (disabled).
+&nbsp;&nbsp;&nbsp; `fpu:`               | Select usage of FPU instructions: `dp` (double precision) \| `sp` (single precision) \| `off` (disabled).
+&nbsp;&nbsp;&nbsp; `dsp:`               | Select usage of SIMD instructions: `on` (enabled) \| `off` (disabled).
 &nbsp;&nbsp;&nbsp; `mve:`               | Select usage of M-Profile vector extension: `fp` (floating point and integer instructions) \| `int` (integer instructions) \| `off` (disabled).
 &nbsp;&nbsp;&nbsp; `trustzone:`         | Select TrustZone mode: `secure` \| `non-secure` \| `off`.
 &nbsp;&nbsp;&nbsp; `branch-protection:` | Select Branch Protection mode: `bti` (branch target identification) \| `bit-signret` (branch target identification and pointer authentication) \| `off` (disabled).
@@ -1249,8 +1250,8 @@ For `trustzone:` the default setting is:
 project:
   processor:
     trustzone: secure
-    fpu: off
-    mve: off
+    fpu: off             # do not use FPU instructions
+    mve: off             # do not use vector instructions.  
 ```
 
 ## Context
