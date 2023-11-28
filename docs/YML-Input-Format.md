@@ -373,7 +373,7 @@ The example below uses the `build-type: Debug`. The `target-type` of the current
 
 > **Note:** 
 > 
-> `-execute` is scheduled for implementation in CMSIS-Toolbox 2.1 (Q3'23)
+> `-execute` is scheduled for implementation in CMSIS-Toolbox 2.3 (Q1'24)
 
 ```yml
   - execute: Generate Image
@@ -496,7 +496,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 `solution:`                                          |            | Content
 :----------------------------------------------------|:-----------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `created-by:`                     |  Optional  | Identifies the tool that created this solution.
-&nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this solution, i.e. **CMSIS-Toolbox@1.5.0**
+&nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this solution, i.e. **CMSIS-Toolbox@2.2.0**
 &nbsp;&nbsp;&nbsp; `description:`                    |  Optional  | Brief description text of this solution.
 &nbsp;&nbsp;&nbsp; `cdefault:`                       |  Optional  | When specified, the [`cdefault.yml`](#default) file is used to setup compiler specific controls. 
 &nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
@@ -717,7 +717,7 @@ generators:
   base-dir: $SolutionDir()$/MyGenerators      # Path for all generators extended by '/<generator-id>'
 
   options:
-  - generator: Cube                           # for the generator `Cube` use this path
+  - generator: CubeMX                         # for the generator id `CubeMX` use this path
     path:  ./CubeFiles                        # relative path to the *.yml file that contains this setting
 ```
 
@@ -1227,13 +1227,19 @@ At the level of a `cproject.yml` file, only the `pname` can be specified as the 
 
 ### `processor:`
 
-The `processor:` keyword specifies the TrustZone configuration for this project.
+The `processor:` keyword specifies the usage of processor features for this project.
 
-`processor:`                         | Content
-:------------------------------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `trustzone:`      | TrustZone mode: `secure` \| `non-secure` \| `off`.
+`processor:`                            | Content
+:---------------------------------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `fpu:`               | Select usage of FPU instructions: `dp` (double precision) \| `sp` (single precision) \| `off` (disabled).
+&nbsp;&nbsp;&nbsp; `dsp:`               | Select usage of SIMD instructions: `on` (enabled) \| `off` (disabled).
+&nbsp;&nbsp;&nbsp; `mve:`               | Select usage of M-Profile vector extension: `fp` (floating point and integer instructions) \| `int` (integer instructions) \| `off` (disabled).
+&nbsp;&nbsp;&nbsp; `trustzone:`         | Select TrustZone mode: `secure` \| `non-secure` \| `off`.
+&nbsp;&nbsp;&nbsp; `branch-protection:` | Select Branch Protection mode: `bti` (branch target identification) \| `bit-signret` (branch target identification and pointer authentication) \| `off` (disabled).
 
-The default setting for `trustzone:` is:
+The default setting enables the available features of the device. For example `fpu: dp` is selected for devices that offer double precision floating point hardware.  
+
+For `trustzone:` the default setting is:
 
 - `off` for devices that support this option, but TrustZone is configurable.
 - `non-secure` for devices that have TrustZone enabled.
@@ -1244,6 +1250,8 @@ The default setting for `trustzone:` is:
 project:
   processor:
     trustzone: secure
+    fpu: off             # do not use FPU instructions
+    mve: off             # do not use vector instructions.  
 ```
 
 ## Context

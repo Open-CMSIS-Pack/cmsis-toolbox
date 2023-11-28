@@ -18,12 +18,12 @@ def test_check_archive(base_path):
         "{{ProjectName}}.cproject.yml",
         "{{SolutionName}}.csolution.yml",
         "AC6.6.18.0.cmake",
-        "ac6_linker_script.sct",
+        "ac6_linker_script.sct.src",
         "cbuild.schema.json",
         "cdefault.schema.json",
         "cdefault.yml",
         "CLANG.17.0.1.cmake",
-        "clang_linker_script.ld",
+        "clang_linker_script.ld.src",
         "clayer.schema.json",
         "CMakeASM",
         "CMSIS-Build-Utils.cmake",
@@ -32,9 +32,9 @@ def test_check_archive(base_path):
         "cproject.schema.json",
         "csolution.schema.json",
         "GCC.10.3.1.cmake",
-        "gcc_linker_script.ld",
+        "gcc_linker_script.ld.src",
         "IAR.9.32.1.cmake",
-        "iar_linker_script.icf",
+        "iar_linker_script.icf.src",
         "PACK.xsd"}
 
     assert(True == path.isfile(path.join(base_path,"LICENSE.txt")))
