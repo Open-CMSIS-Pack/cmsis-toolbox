@@ -163,7 +163,7 @@ Template    | Description
 
 To use these templates, copy the content of the folder to your own application folder. Then adapt the names accordingly and add missing information.
 
-Refer to [Overall Workflow](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates#overall-workflow) for more details.
+Refer to [CMSIS-Toolbox Templates](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) for more details.
 
 ### Minimal Project Setup
 
