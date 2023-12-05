@@ -39,7 +39,7 @@ This user's guide assumes some top-level knowledge about Cortex-M software devel
 - Arm Compiler version 6.18 or higher
 - GCC Compiler version 10.3.1 or higher
 - IAR Compiler version 9.32.1 or higher
-- [CLANG Compiler version 16.0.0](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases) or higher based on LLVM technology
+- [CLANG Compiler version 17.0.1](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases) or higher based on LLVM technology
 
 ## Benefits
 
@@ -64,5 +64,5 @@ The overall benefits are:
 
 Version            | Description
 :------------------|:-------------------------
-2.0.0              | Initial release for CMSIS-Toolbox 2.0.0
-2.2.0 (WiP)        | Added description for CMSIS-Toolbox 2.2.0 (todo add link to release notes)
+2.0.0              | Initial release for CMSIS-Toolbox [2.0.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.0.0)
+2.2.0              | Added description for CMSIS-Toolbox [2.2.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.2.0)
