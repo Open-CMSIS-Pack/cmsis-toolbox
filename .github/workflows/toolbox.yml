@@ -274,7 +274,7 @@ jobs:
         run: tar -xvf archive/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }}.tar.gz -C toolbox
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
