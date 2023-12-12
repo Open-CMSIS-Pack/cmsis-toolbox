@@ -30,7 +30,7 @@ There are three different ways to setup the CMSIS-Toolbox:
   
 ## Manual Setup
 
-Download the CMSIS-Toolbox from the [**release page**](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases). It is provided for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (amd64, arm64) in an archive file.
+Download the CMSIS-Toolbox from the [**Arm tools artifactory**](https://artifacts.keil.arm.com/cmsis-toolbox/). Signed binaries are provided for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (amd64, arm64) in an archive file.
 
 To setup the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example to `/c/cmsis-toolbox`.
 
@@ -54,11 +54,11 @@ The CMSIS-Toolbox works with the following toolchains. Install one or more toolc
 
 - [**Keil MDK**](http://www.keil.com/mdk5/install) version 5.36 or higher.
 
-- [**Arm Compiler**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18 or higher.
+- [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18 or higher.
 
 - [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
 
-- [**CLANG**](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest) version 16.0.0 or higher.
+- [**CLANG**](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest) version 17.0.1 or higher.
 
 ### Environment Variables
 
@@ -114,7 +114,7 @@ For Windows, use the dialog **System Properties - Advanced** and add the **Envir
 
 **Keil MDK**
 
-When using Keil MDK version 5, the CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\cmsis-toolbox` (in older versions `ARM\ctools`) directory of the MDK installation.
+When using Keil MDK version 5, the CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\cmsis-toolbox` directory of the MDK installation.
 
 Adding the binary directory of the cmsis-toolbox directory to your **PATH** environment variable allows you to invoke the tools at the
 command line without the need to specify the full path (default: `C:\Keil_v5\ARM\cmsis-toolbox\bin`)
@@ -130,7 +130,11 @@ The **CMSIS_COMPILER_ROOT** environment varible is not required if the compiler 
 >
 > At the Windows command prompt, use `set` to list all environment variables.
 >
-> Keil MDK may be used to [*import*](https://www.keil.com/support/man/docs/uv4/uv4_ui_import.htm) and [*export*](https://www.keil.com/support/man/docs/uv4/uv4_ui_export.htm) project files in `*.CPRJ` format.
+> Keil µVision may be used to:
+>
+> - [*import*](https://www.keil.com/support/man/docs/uv4/uv4_ui_import.htm) project files in `*.CPRJ` format.
+> - [*export*](https://www.keil.com/support/man/docs/uv4/uv4_ui_export.htm) project files in `*.csolution.yml` format.
+> - [*open*](https://developer.arm.com/documentation/101407/0539/User-Interface/Project-Menu-and-Commands) CMSIS-Toolbox build information files for debug start (experimental in MDK v5.39).
 
 #### Setup Linux or Bash
 

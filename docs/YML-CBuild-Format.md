@@ -181,7 +181,9 @@ The `cbuild.yml` file is structured into several sections.  The top-level struct
 &nbsp;&nbsp; `context:`                            | Project [context](YML-Input-Format.md#context-name-conventions) of this build description.
 &nbsp;&nbsp; `compiler:`                           | [Compiler toolchain](YML-Input-Format.md#compiler) used for code generation.
 &nbsp;&nbsp; `board:`                              | [Board name](YML-Input-Format.md#board) used for this context.
+&nbsp;&nbsp; `board-pack:`                         | BSP that is defining the [Board name](YML-Input-Format.md#board) used for this context.
 &nbsp;&nbsp; `device:`                             | [Device name](YML-Input-Format.md#device) with processor core selection used in this  project context.
+&nbsp;&nbsp; `device-pack:`                        | DFP that is defining the [Device name](YML-Input-Format.md#device) with processor core selection used in this  project context.
 &nbsp;&nbsp; `processor:`                          | List of [processor attributes](YML-Input-Format.md#processor) used in this project context.
 &nbsp;&nbsp; [`packs:`](#packs)                    | List of software [packs](#packs) along with path information used to generate this project context.
 &nbsp;&nbsp; `optimize:`                           | Generic [optimize](YML-Input-Format.md#optimize) level for code generation.

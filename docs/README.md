@@ -45,7 +45,7 @@ This user's guide assumes some top-level knowledge about Cortex-M software devel
 
 ## Overall Workflow
 
-The CMSIS-Toolbox uses Software Packs for device/board support and access reusable software components.  The overall operation is controlled with intuitive [User Input files in YAML format](YML-Input-Format.md). The overall application is defined in the `*.csolution.yml` file and contains one or more projects that can utilize pre-configured software layers. The build engine CMake/Ninja calls the C/C++ compiler toolchain that generates the Build Output.
+The CMSIS-Toolbox uses Software Packs for device/board support and access reusable software components.  The operation is controlled via intuitive [User Input files in YAML format](YML-Input-Format.md). The overall application is defined in the `*.csolution.yml` file and contains one or more projects that can utilize pre-configured software layers. The build engine CMake/Ninja calls the C/C++ compiler toolchain that generates the Build Output.
 
 The [**cbuild: Build Invocation**](build-tools.md#cbuild-invocation) command orchestrates the overall build steps. This command calls individual command line tools to generate the application as outlined in the following diagram.
 

@@ -40,8 +40,6 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
   - [Linker Script Management](#linker-script-management)
     - [Linker Script Preprocessing](#linker-script-preprocessing)
     - [Automatic Linker Script generation](#automatic-linker-script-generation)
-      - [File locations](#file-locations)
-      - [User Modifications to Memory Regions](#user-modifications-to-memory-regions)
       - [Linker Script Templates](#linker-script-templates)
   - [Generator Support](#generator-support)
     - [Use a Generator](#use-a-generator)
@@ -231,7 +229,7 @@ This output file convention is identical with the [context: name conventions](YM
 
 ### Toolchain Agnostic Project
 
-With generic [**Translation Control**](YML-Input-Format.md#translation-control) settings it is possible to create projects that work across the range of supported compilers (AC6, GCC, IAR).  The compiler selection and potential compiler specific settings are stored in the file `cdefault.yml`. By replacing the `cdefault.yml` file it is possible to re-target application projects.  [**Translation Control**](YML-Input-Format.md#translation-control) settings are mapped to specify compiler by the build tools.
+With generic [**Translation Control**](YML-Input-Format.md#translation-control) settings it is possible to create projects that work across the range of supported compilers (AC6, GCC, IAR, CLANG).  The compiler selection and potential compiler specific settings are stored in the file `cdefault.yml`. By replacing the `cdefault.yml` file it is possible to re-target application projects.  [**Translation Control**](YML-Input-Format.md#translation-control) settings are mapped to specify compiler by the build tools.
 
 **Default settings for multiple compiler toolchains**
 
@@ -762,50 +760,51 @@ to other components of the same software pack.
 
 A Linker Script contains a series of Linker directives that specify the available memory and how it should be used by a project. The Linker directives reflect exactly the available memory resources and memory map for the project context.
 
-The following sequence describes the Linker Script management of the **`csolution` Project Manager**:
+This section describes the Linker Script management of the **`csolution` Project Manager**:
 
-1. The [`linker:`](YML-Input-Format.md#linker) node specifies an explicit linker script and/or memory regions header file. This overrules linker scripts that are part of software components or specified using the `file:` notation.
+1. The [`linker:`](YML-Input-Format.md#linker) node specifies an explicit Linker Script and/or memory regions header file. This overrules Linker Scripts that are part of software components or specified using the `file:` notation.
 
-2. If no [`linker:`](YML-Input-Format.md#linker) node is used, a linker script file can be provided as part of software components. The extensions `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
+1. The [`linker:`](YML-Input-Format.md#linker) `auto:` enables the [automatic Linker Script generation](#automatic-linker-script-generation).
+  
+1. If no [`linker:`](YML-Input-Format.md#linker) node is used, a Linker Script file can be provided as part of software components. The extensions `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
 
-3. If no Linker script is found, a [Linker Script is generated](#automatic-linker-script-generation) based on information that is provided by the `<memory>` element in Device Family Packs (DFP) and Board Support Packs (BSP).
+1. If no Linker Script is found, the [automatic Linker Script generation](#automatic-linker-script-generation) is used.
 
 ### Linker Script Preprocessing
 
-A Linker Script file is preprocessed when a `regions:` header file or a `define:` is specified in the [`linker:`](YML-Input-Format.md#linker) node or when the [Linker Script file is automatically generated](#automatic-linker-script-generation). A standard C preprocessor is used to create the final linker script as shown below.
-
 ![Linker Script File Generation](./images/linker-script-file.png "Linker Script File Generation")
+
+A standard C processors is used for the Linker Script file when:
+
+- the linker script file extension is `*.src`.
+- the [`linker:`](YML-Input-Format.md#linker) node contains a `regions:` header file or a `define:`.
+
+Otherwise, no preprocessor is used and the Linker Script file is directly passed to the linker.
 
 ### Automatic Linker Script generation
 
-If a project context does not specify any linker script a `regions_<device_or_board>.h` is generated and a toolchain specific linker script template is used.
-
-If `regions_<device_or_board>.h` is **not** available, it is generated based on information of the software packs using the:
+The automatic Linker Script generation uses Linker Script template and generates a `<regions>.h` file based on information of the software packs using the:
 
 - [`<device>` - `<memory>` element in the DFP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_boards_pg.html#element_board_memory)
 - [`<board>` - `<memory>` element in the BSP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory)
 
-#### File locations
+Both files, the Linker Script template and the `<regions>.h` are located in the [RTE directory](Overview.md#rte-directory-structure) path `\RTE\Device\<device>`. The `<regions>.h` file name is extended with:
 
-The file `regions_<device_or_board>.h` is generated in the [RTE directory](Overview.md#rte-directory-structure) path `\RTE\Device\<device>`. The actual file name is extended with:
-
-- `Bname` when the `*.cproject.yml` file uses in the project context a [`board:`](YML-Input-Format.md#board-name-conventions) specification, i.e. `regions_IMXRT1050-EVKB.h`
-- `Dname` name when the `*.cproject.yml` file uses in the project context only a [`device:`](YML-Input-Format.md#device-name-conventions) specification, i.e. `regions_stm32u585xx.h`.
+- `Bname` when the project context uses a [`board:`](YML-Input-Format.md#board-name-conventions) specification, i.e. `regions_IMXRT1050-EVKB.h`
+- `Dname` when the project context only uses a [`device:`](YML-Input-Format.md#device-name-conventions) specification, i.e. `regions_stm32u585xx.h`.
   
-#### User Modifications to Memory Regions
-
-The file `regions_<device_or_board>.h` can be modified by the user as it might be required to adjust the memory regions or give additional attributes (such as `noinit`).  Therefore this file should have [Configuration Wizard Annotations](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/configWizard.html).
+Both files, the Linker Script template and the `<regions>.h` can be modified by the user as it might be required to adjust the memory regions or give additional attributes (such as `noinit`).
 
 #### Linker Script Templates
 
-The following compiler specific Linker Script files are used when no explicit file is specified.  The files are located in the directory `<cmsis-toolbox-installation-dir>/etc` of the CMSIS-Toolbox.
+The following compiler specific Linker Script template files are copied to the `\RTE\Device\<device>` directory when no Linker Script exists. The files are located in the directory `<cmsis-toolbox-installation-dir>/etc` of the CMSIS-Toolbox.
 
-Linker Script Template      | Linker control file for ...
-:---------------------------|:-----------------------------
-ac6_linker_script.sct.src   | Arm Compiler
-gcc_linker_script.ld.src    | GCC Compiler
-iar_linker_script.icf.src   | IAR Compiler
-clang_linker_script.ld.src  | CLANG Compiler (experimental)
+Linker Script Template       | Linker control file for ...
+:----------------------------|:-----------------------------
+`ac6_linker_script.sct.src`  | Arm Compiler
+`gcc_linker_script.ld.src`   | GCC Compiler
+`iar_linker_script.icf.src`  | IAR Compiler
+`clang_linker_script.ld.src` | CLANG Compiler (LLVM)
 
 ## Generator Support
 
@@ -991,7 +990,7 @@ Provides system startup, board/device hardware initialization, and transfers con
 - `main.c` source module that implements the function `main`.
 - Optional drivers and interfaces (CMSIS-Drivers, GPIO, STDIO).
 - Files that relate to the device and/or board configuration (i.e. generated by MCUXpresso or STM32CubeMX)
-- Linker script definition
+- Linker Script definition
 
 The `main.c` source module of the Board software layer uses the following entry points to the application code:
 
