@@ -80,6 +80,7 @@ An application contains a set of packs coming from different places, e.g. from t
 In order to have consistent pack usage in the application, as well as allowing projects to evolve and add new `target-types` or `build-types` but still remain on the same shared pack versions, the `cbuild-pack.yml` is introduced.
 
 It works in the following way. An entire application has a set of `pack requirements`. These requirements can come from many different locations or contexts, and may be:
+
 - specified exactly, e.g. `ARM::CMSIS@5.9.0`
 - specified with range, e.g. `ARM::CMSIS@>=5.8.0`
 - specified without version, e.g. `ARM::CMSIS`
@@ -87,6 +88,7 @@ It works in the following way. An entire application has a set of `pack requirem
 - specified without pack name, e.g. `ARM`
 
 All these `pack requirements` are `resolved` into exact versions in the `cbuild-pack.yml` file as a list of items on the following format:
+
 ```yml
 cbuild-pack:
   resolved-packs:
@@ -104,10 +106,10 @@ If a `pack requirement` is no longer present in the application, then the `cbuil
 
 The location of the `cbuild-pack.yml` file follows the `csolution.yml` file.
 
-* `convert` - `Uses` **and updates** cbuild-pack.yml
-* `list ...` - `Uses` cbuild-pack.yml
-* `run` - `Uses` cbuild-pack.yml
-* `update-rte` - `Uses` **and updates** cbuild-pack.yml
+- `convert` - `Uses` **and updates** cbuild-pack.yml
+- `list ...` - `Uses` cbuild-pack.yml
+- `run` - `Uses` cbuild-pack.yml
+- `update-rte` - `Uses` **and updates** cbuild-pack.yml
 
 ```mermaid
 graph TD;
@@ -147,11 +149,11 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 
 `build-idx:`                                       | Content
 :--------------------------------------------------|:------------------------------------
-&nbsp;&nbsp; `generated-by:`                       | Reference to csolution tool along with version information used to generate this application.
-&nbsp;&nbsp; `cdefault:`                           | Relative path and name of the [`*.cdefault.yml`](YML-Input-Format.md#default) input file used to generate this application.
-&nbsp;&nbsp; `csolution:`                          | Relative path and name of the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
-&nbsp;&nbsp; [`cprojects:`](#cprojects)            | List of `*.cproject.yml` and `*.clayer.yml` input files used to generate this application.
-&nbsp;&nbsp; `cbuilds:`                            | List of `*.cbuild.yml` output files that are generated for this application.
+&nbsp;&nbsp;&nbsp; `generated-by:`                 | Reference to csolution tool along with version information used to generate this application.
+&nbsp;&nbsp;&nbsp; `cdefault:`                     | Relative path and name of the [`*.cdefault.yml`](YML-Input-Format.md#default) input file used to generate this application.
+&nbsp;&nbsp;&nbsp; `csolution:`                    | Relative path and name of the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
+&nbsp;&nbsp;&nbsp; [`cprojects:`](#cprojects)      | List of `*.cproject.yml` and `*.clayer.yml` input files used to generate this application.
+&nbsp;&nbsp;&nbsp; `cbuilds:`                      | List of `*.cbuild.yml` output files that are generated for this application.
 
 **Example:**
 
@@ -175,29 +177,29 @@ build-idx:
 
 The `cbuild.yml` file is structured into several sections.  The top-level structure is outlined below.
 
-`build:`                                           | Content
-:--------------------------------------------------|:------------------------------------
-&nbsp;&nbsp; `generated-by:`                       | Reference to csolution tool along with version information used to generate this application.
-&nbsp;&nbsp; `context:`                            | Project [context](YML-Input-Format.md#context-name-conventions) of this build description.
-&nbsp;&nbsp; `compiler:`                           | [Compiler toolchain](YML-Input-Format.md#compiler) used for code generation.
-&nbsp;&nbsp; `board:`                              | [Board name](YML-Input-Format.md#board) used for this context.
-&nbsp;&nbsp; `board-pack:`                         | BSP that is defining the [Board name](YML-Input-Format.md#board) used for this context.
-&nbsp;&nbsp; `device:`                             | [Device name](YML-Input-Format.md#device) with processor core selection used in this  project context.
-&nbsp;&nbsp; `device-pack:`                        | DFP that is defining the [Device name](YML-Input-Format.md#device) with processor core selection used in this  project context.
-&nbsp;&nbsp; `processor:`                          | List of [processor attributes](YML-Input-Format.md#processor) used in this project context.
-&nbsp;&nbsp; [`packs:`](#packs)                    | List of software [packs](#packs) along with path information used to generate this project context.
-&nbsp;&nbsp; `optimize:`                           | Generic [optimize](YML-Input-Format.md#optimize) level for code generation.
-&nbsp;&nbsp; `debug:`                              | Global control the generation of [debug](YML-Input-Format.md#debug) information.
-&nbsp;&nbsp; `warnings:`                           | Global control [warning](YML-Input-Format.md#warnings) level for compiler diagnostics.
-&nbsp;&nbsp; `misc:`                               | Global control of [miscellaneous](YML-Input-Format.md#misc) literal tool-specific controls.
-&nbsp;&nbsp; `define:`                             | List of global [define](YML-Input-Format.md#define) symbol settings.
-&nbsp;&nbsp; `add-path:`                           | List of global [include path](YML-Input-Format.md#add-path) settings.
-&nbsp;&nbsp; `output-type:`                        | Select the [output type](YML-Input-Format.md#output-type) (exe or lib) for this project context.
-&nbsp;&nbsp; `output-dirs:`                        | Specifies the [directories](YML-Input-Format.md#output-dirs) used to generate the output files.
-&nbsp;&nbsp; `linker:`                             | Specifies the [linker script processing](#linker) used to generate the output files.
-&nbsp;&nbsp; [`components:`](#components)          | List of software components used.
-&nbsp;&nbsp; [`groups:`](#groups)                  | List of source file groups along with source files.
-&nbsp;&nbsp; [`constructed-files:`](#constructed-files) | List of files that are generated by RTE management of `csolution` tool.
+`build:`                                                 | Content
+:--------------------------------------------------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `generated-by:`                       | Reference to csolution tool along with version information used to generate this application.
+&nbsp;&nbsp;&nbsp; `context:`                            | Project [context](YML-Input-Format.md#context-name-conventions) of this build description.
+&nbsp;&nbsp;&nbsp; `compiler:`                           | [Compiler toolchain](YML-Input-Format.md#compiler) used for code generation.
+&nbsp;&nbsp;&nbsp; `board:`                              | [Board name](YML-Input-Format.md#board) used for this context.
+&nbsp;&nbsp;&nbsp; `board-pack:`                         | BSP that is defining the [Board name](YML-Input-Format.md#board) used for this context.
+&nbsp;&nbsp;&nbsp; `device:`                             | [Device name](YML-Input-Format.md#device) with processor core selection used in this  project context.
+&nbsp;&nbsp;&nbsp; `device-pack:`                        | DFP that is defining the [Device name](YML-Input-Format.md#device) with processor core selection used in this  project context.
+&nbsp;&nbsp;&nbsp; `processor:`                          | List of [processor attributes](YML-Input-Format.md#processor) used in this project context.
+&nbsp;&nbsp;&nbsp; [`packs:`](#packs)                    | List of software [packs](#packs) along with path information used to generate this project context.
+&nbsp;&nbsp;&nbsp; `optimize:`                           | Generic [optimize](YML-Input-Format.md#optimize) level for code generation.
+&nbsp;&nbsp;&nbsp; `debug:`                              | Global control the generation of [debug](YML-Input-Format.md#debug) information.
+&nbsp;&nbsp;&nbsp; `warnings:`                           | Global control [warning](YML-Input-Format.md#warnings) level for compiler diagnostics.
+&nbsp;&nbsp;&nbsp; `misc:`                               | Global control of [miscellaneous](YML-Input-Format.md#misc) literal tool-specific controls.
+&nbsp;&nbsp;&nbsp; `define:`                             | List of global [define](YML-Input-Format.md#define) symbol settings.
+&nbsp;&nbsp;&nbsp; `add-path:`                           | List of global [include path](YML-Input-Format.md#add-path) settings.
+&nbsp;&nbsp;&nbsp; `output-type:`                        | Select the [output type](YML-Input-Format.md#output-type) (exe or lib) for this project context.
+&nbsp;&nbsp;&nbsp; `output-dirs:`                        | Specifies the [directories](YML-Input-Format.md#output-dirs) used to generate the output files.
+&nbsp;&nbsp;&nbsp; `linker:`                             | Specifies the [linker script processing](#linker) used to generate the output files.
+&nbsp;&nbsp;&nbsp; [`components:`](#components)          | List of software components used.
+&nbsp;&nbsp;&nbsp; [`groups:`](#groups)                  | List of source file groups along with source files.
+&nbsp;&nbsp;&nbsp; [`constructed-files:`](#constructed-files) | List of files that are generated by RTE management of `csolution` tool.
 
 **Example:**
 
@@ -296,12 +298,12 @@ The `cbuild-pack.yml` file is structured into several sections.  The top-level s
 
 `cbuild-pack:`                                                     | Content
 :------------------------------------------------------------------|:------------------------------------
-&nbsp;&nbsp; `resolved-packs:`                                     | List of packs used to create the project contexts.
+&nbsp;&nbsp;&nbsp; `resolved-packs:`                                     | List of packs used to create the project contexts.
 
 `resolved-packs:`                                                  | Content
 :------------------------------------------------------------------|:------------------------------------
 `- resolved-pack:`                                                 | [pack name](YML-Input-Format.md#pack-name-conventions) used.
-&nbsp;&nbsp; `selected-by:`                                        | List of [components](YML-Input-Format.md#component-name-conventions) included from the pack.
+&nbsp;&nbsp;&nbsp; `selected-by:`                                        | List of [components](YML-Input-Format.md#component-name-conventions) included from the pack.
 
 **Example:**
 
@@ -325,8 +327,8 @@ The `cbuild-set.yml` file is structured into several sections.  The top-level st
 
 `cbuild-set:`                                                      | Content
 :------------------------------------------------------------------|:------------------------------------
-&nbsp;&nbsp; `generated-by:`                                       | Reference to tool along with version information that generated this file.
-&nbsp;&nbsp; `contexts:`                                           | List of [context](YML-Input-Format.md#context-name-conventions) names for the [context-set:](build-tools.md#use-context-set) option.
+&nbsp;&nbsp;&nbsp; `generated-by:`                                 | Reference to tool along with version information that generated this file.
+&nbsp;&nbsp;&nbsp; `contexts:`                                     | List of [context](YML-Input-Format.md#context-name-conventions) names for the [context-set:](build-tools.md#use-context-set) option.
 
 **Example:**
 
@@ -394,9 +396,9 @@ The `generators:` node contains information for calling a generator.
 `generators:`                                                       | Content
 :-------------------------------------------------------------------|:------------------------------------
 `- generator:`                                                      | Section for a specific generator.
-&nbsp;&nbsp; [`path:`](YML-Input-Format.md#generators)              | Path name for storing the files generated.
-&nbsp;&nbsp; `gdpsc:`                                               | File name of the *.GDPSC file that stores the information in `path:`.
-&nbsp;&nbsp; `command:`                                             | Section for invoking the generator on different Host operating systems.
+&nbsp;&nbsp;&nbsp; [`path:`](YML-Input-Format.md#generators)        | Path name for storing the files generated.
+&nbsp;&nbsp;&nbsp; `gdpsc:`                                         | File name of the *.GDPSC file that stores the information in `path:`.
+&nbsp;&nbsp;&nbsp; `command:`                                       | Section for invoking the generator on different Host operating systems.
 
 **Example:**
 
@@ -431,57 +433,57 @@ Keyword          | Description
 
 ### `groups:`
 
-`groups:`                                                | Content
-:--------------------------------------------------------|:------------------------------------
-`- group:`                                               | Name of the group.
-&nbsp;&nbsp; [`optimize:`](YML-Input-Format.md#optimize) | Optimize level for code generation.
-&nbsp;&nbsp; [`debug:`](YML-Input-Format.md#debug)       | Generation of debug information.
-&nbsp;&nbsp; [`warnings:`](YML-Input-Format.md#warnings) | Control generation of compiler diagnostics.
-&nbsp;&nbsp; [`define:`](YML-Input-Format.md#define)     | Define symbol settings for code generation.
-&nbsp;&nbsp; [`add-path:`](YML-Input-Format.md#add-path) | Additional include file paths.
-&nbsp;&nbsp; [`misc:`](YML-Input-Format.md#misc)         | Literal tool-specific controls.
-&nbsp;&nbsp; [`groups:`](#groups)                        | Start a nested list of groups.
-&nbsp;&nbsp; [`files:`](#files-of-a-group)               | List of files that belong to a group
+`groups:`                                                      | Content
+:--------------------------------------------------------------|:------------------------------------
+`- group:`                                                     | Name of the group.
+&nbsp;&nbsp;&nbsp; [`optimize:`](YML-Input-Format.md#optimize) | Optimize level for code generation.
+&nbsp;&nbsp;&nbsp; [`debug:`](YML-Input-Format.md#debug)       | Generation of debug information.
+&nbsp;&nbsp;&nbsp; [`warnings:`](YML-Input-Format.md#warnings) | Control generation of compiler diagnostics.
+&nbsp;&nbsp;&nbsp; [`define:`](YML-Input-Format.md#define)     | Define symbol settings for code generation.
+&nbsp;&nbsp;&nbsp; [`add-path:`](YML-Input-Format.md#add-path) | Additional include file paths.
+&nbsp;&nbsp;&nbsp; [`misc:`](YML-Input-Format.md#misc)         | Literal tool-specific controls.
+&nbsp;&nbsp;&nbsp; [`groups:`](#groups)                        | Start a nested list of groups.
+&nbsp;&nbsp;&nbsp; [`files:`](#files-of-a-group)               | List of files that belong to a group
 
 ### `files:` of a group
 
-`files:`                                                 | Content
-:--------------------------------------------------------|:------------------------------------
-`- file:`                                                | Name of the file.
-&nbsp;&nbsp; [`category:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) | File category according Open-CMSIS-Pack specification
-&nbsp;&nbsp; [`optimize:`](YML-Input-Format.md#optimize) | Optimize level for code generation.
-&nbsp;&nbsp; [`debug:`](YML-Input-Format.md#debug)       | Generation of debug information.
-&nbsp;&nbsp; [`warnings:`](YML-Input-Format.md#warnings) | Control generation of compiler diagnostics.
-&nbsp;&nbsp; [`define:`](YML-Input-Format.md#define)     | Define symbol settings for code generation.
-&nbsp;&nbsp; [`add-path:`](YML-Input-Format.md#add-path) | Additional include file paths.
-&nbsp;&nbsp; [`misc:`](YML-Input-Format.md#misc)         | Literal tool-specific controls.
+`files:`                                                       | Content
+:--------------------------------------------------------------|:------------------------------------
+`- file:`                                                      | Name of the file.
+&nbsp;&nbsp;&nbsp; [`category:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) | File category according Open-CMSIS-Pack specification
+&nbsp;&nbsp;&nbsp; [`optimize:`](YML-Input-Format.md#optimize) | Optimize level for code generation.
+&nbsp;&nbsp;&nbsp; [`debug:`](YML-Input-Format.md#debug)       | Generation of debug information.
+&nbsp;&nbsp;&nbsp; [`warnings:`](YML-Input-Format.md#warnings) | Control generation of compiler diagnostics.
+&nbsp;&nbsp;&nbsp; [`define:`](YML-Input-Format.md#define)     | Define symbol settings for code generation.
+&nbsp;&nbsp;&nbsp; [`add-path:`](YML-Input-Format.md#add-path) | Additional include file paths.
+&nbsp;&nbsp;&nbsp; [`misc:`](YML-Input-Format.md#misc)         | Literal tool-specific controls.
 
 ### `components:`
 
-`components:`                                            | Content
-:--------------------------------------------------------|:------------------------------------
-`- component:`                                           | Name of the software component.
-&nbsp;&nbsp; [`condition:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_conditions_pg.html#element_condition) | Reference to the condition ID of the software pack that triggered inclusion of this component.
-&nbsp;&nbsp; `from-pack:`                                | Pack that defines this component.
-&nbsp;&nbsp; `selected-by:`                              | The original component name used in `cproject/clayer.YML`.
-&nbsp;&nbsp; [`optimize:`](YML-Input-Format.md#optimize) | Optimize level for code generation.
-&nbsp;&nbsp; [`debug:`](YML-Input-Format.md#debug)       | Generation of debug information.
-&nbsp;&nbsp; [`warnings:`](YML-Input-Format.md#warnings) | Control generation of compiler diagnostics.
-&nbsp;&nbsp; [`define:`](YML-Input-Format.md#define)     | Define symbol settings for code generation.
-&nbsp;&nbsp; [`add-path:`](YML-Input-Format.md#add-path) | Additional include file paths.
-&nbsp;&nbsp; [`misc:`](YML-Input-Format.md#misc)         | Literal tool-specific controls.
-&nbsp;&nbsp; `instances:`                                | Configure component instances.
-&nbsp;&nbsp; [`generator:`]                              | Generator ID for components that are configurable via a generator.
-&nbsp;&nbsp; [`files:`](#files-of-a-component)           | List of files that belong to this component.
+`components:`                                                  | Content
+:--------------------------------------------------------------|:------------------------------------
+`- component:`                                                 | Name of the software component.
+&nbsp;&nbsp;&nbsp; [`condition:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_conditions_pg.html#element_condition) | Reference to the condition ID of the software pack that triggered inclusion of this component.
+&nbsp;&nbsp;&nbsp; `from-pack:`                                | Pack that defines this component.
+&nbsp;&nbsp;&nbsp; `selected-by:`                              | The original component name used in `cproject/clayer.YML`.
+&nbsp;&nbsp;&nbsp; [`optimize:`](YML-Input-Format.md#optimize) | Optimize level for code generation.
+&nbsp;&nbsp;&nbsp; [`debug:`](YML-Input-Format.md#debug)       | Generation of debug information.
+&nbsp;&nbsp;&nbsp; [`warnings:`](YML-Input-Format.md#warnings) | Control generation of compiler diagnostics.
+&nbsp;&nbsp;&nbsp; [`define:`](YML-Input-Format.md#define)     | Define symbol settings for code generation.
+&nbsp;&nbsp;&nbsp; [`add-path:`](YML-Input-Format.md#add-path) | Additional include file paths.
+&nbsp;&nbsp;&nbsp; [`misc:`](YML-Input-Format.md#misc)         | Literal tool-specific controls.
+&nbsp;&nbsp;&nbsp; `instances:`                                | Configure component instances.
+&nbsp;&nbsp;&nbsp; [`generator:`]                              | Generator ID for components that are configurable via a generator.
+&nbsp;&nbsp;&nbsp; [`files:`](#files-of-a-component)           | List of files that belong to this component.
 
 ### `files:` of a component
 
-`files:`                                                 | Content
-:--------------------------------------------------------|:------------------------------------
-`- file:`                                                | Name and path to the file.
-&nbsp;&nbsp; [`category:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) | File category according Open-CMSIS-Pack specification
-&nbsp;&nbsp; [`attr:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileAttributeEnum) | File category according Open-CMSIS-Pack specification
-&nbsp;&nbsp; [`condition:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_conditions_pg.html#element_condition)                                  | Reference to the condition ID of the software pack that triggered inclusion of this file.
+`files:`                                                       | Content
+:--------------------------------------------------------------|:------------------------------------
+`- file:`                                                      | Name and path to the file.
+&nbsp;&nbsp;&nbsp; [`category:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) | File category according Open-CMSIS-Pack specification
+&nbsp;&nbsp;&nbsp; [`attr:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileAttributeEnum) | File category according Open-CMSIS-Pack specification
+&nbsp;&nbsp;&nbsp; [`condition:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_conditions_pg.html#element_condition)                                  | Reference to the condition ID of the software pack that triggered inclusion of this file.
 
 ### `constructed-files:`
 
@@ -490,7 +492,7 @@ A list of files that are generated by the RTE management of the `csolution` tool
 `constructed-files:`                                     | Content
 :--------------------------------------------------------|:------------------------------------
 `- file:`                                                | Name and path to the file.
-&nbsp;&nbsp; [`category:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) | File category according Open-CMSIS-Pack specification
+&nbsp;&nbsp;&nbsp; [`category:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) | File category according Open-CMSIS-Pack specification
 
 ## Generator Information Files
 
@@ -505,31 +507,31 @@ File                    | Description
 
 `build-gen-idx:`                                   | Content
 :--------------------------------------------------|:------------------------------------
-&nbsp;&nbsp; `generated-by:`                       | Reference to csolution tool along with version information used to generate this application.
-&nbsp;&nbsp; `generators:`                         | List of generators that are called with the `run` command
+&nbsp;&nbsp;&nbsp; `generated-by:`                 | Reference to csolution tool along with version information used to generate this application.
+&nbsp;&nbsp;&nbsp; `generators:`                   | List of generators that are called with the `run` command
 
 `generators:`                                      | Content
 :--------------------------------------------------|:------------------------------------
 `- id:`                                            | `<generator-id>` referred in the `run` command
-&nbsp;&nbsp; `output:`                             | Specifies the directory for generated files
-&nbsp;&nbsp; `board:`                              | [Board name](YML-Input-Format.md#board) used for the generator
-&nbsp;&nbsp; `device:`                             | [Device name](YML-Input-Format.md#device) used for the generator
-&nbsp;&nbsp; `project-type:`                       | Describes the project type "single-core", "multi-core", "trustzone"
-&nbsp;&nbsp; `cbuild-gens:`                        | List of `*.cbuild-gen.yml` files that are generated for the generator run
+&nbsp;&nbsp;&nbsp; `output:`                       | Specifies the directory for generated files
+&nbsp;&nbsp;&nbsp; `board:`                        | [Board name](YML-Input-Format.md#board) used for the generator
+&nbsp;&nbsp;&nbsp; `device:`                       | [Device name](YML-Input-Format.md#device) used for the generator
+&nbsp;&nbsp;&nbsp; `project-type:`                 | Describes the project type "single-core", "multi-core", "trustzone"
+&nbsp;&nbsp;&nbsp; `cbuild-gens:`                  | List of `*.cbuild-gen.yml` files that are generated for the generator run
 
 ### File Structure of `*.cgen.yml`
 
 The `*.cgen.yml` file starts with the node `generator-import:`. It defines similar to a [Software Layer](./Overview.md#software-layers) additional paramenters, files, and components that are included in the project.
 
-`generator-import:`                                                       | Content
-:-------------------------------------------------------------------------|:------------------------------------
-&nbsp;&nbsp; `generated-by:`                                              | Tool name that generated this file
-&nbsp;&nbsp; [`for-device:`](YML-Input-Format.md#device-name-conventions) | Device information, used for consistency check (device selection is in `*.csolution.yml`).
-&nbsp;&nbsp; [`for-board:`](YML-Input-Format.md#board-name-conventions)   | Board information, used for consistency check (board selection is in `*.csolution.yml`).
-&nbsp;&nbsp; [`packs:`](YML-Input-Format.md#packs)                        | Defines packs that are required for this layer.
-&nbsp;&nbsp; [`define:`](YML-Input-Format.md#define)                      | Define symbol settings for code generation.
-&nbsp;&nbsp; [`undefine:`](YML-Input-Format.md#undefine)                  | Remove define symbol settings for code generation.
-&nbsp;&nbsp; [`add-path:`](YML-Input-Format.md#add-path)                  | Additional include file paths.
-&nbsp;&nbsp; [`del-path:`](YML-Input-Format.md#del-path)                  | Remove specific include file paths.
-&nbsp;&nbsp; [`groups:`](YML-Input-Format.md#groups)                      | List of source file groups along with source files.
-&nbsp;&nbsp; [`components:`](YML-Input-Format.md#components)              | List of software components used.
+`generator-import:`                                                             | Content
+:-------------------------------------------------------------------------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `generated-by:`                                              | Tool name that generated this file
+&nbsp;&nbsp;&nbsp; [`for-device:`](YML-Input-Format.md#device-name-conventions) | Device information, used for consistency check (device selection is in `*.csolution.yml`).
+&nbsp;&nbsp;&nbsp; [`for-board:`](YML-Input-Format.md#board-name-conventions)   | Board information, used for consistency check (board selection is in `*.csolution.yml`).
+&nbsp;&nbsp;&nbsp; [`packs:`](YML-Input-Format.md#packs)                        | Defines packs that are required for this layer.
+&nbsp;&nbsp;&nbsp; [`define:`](YML-Input-Format.md#define)                      | Define symbol settings for code generation.
+&nbsp;&nbsp;&nbsp; [`undefine:`](YML-Input-Format.md#undefine)                  | Remove define symbol settings for code generation.
+&nbsp;&nbsp;&nbsp; [`add-path:`](YML-Input-Format.md#add-path)                  | Additional include file paths.
+&nbsp;&nbsp;&nbsp; [`del-path:`](YML-Input-Format.md#del-path)                  | Remove specific include file paths.
+&nbsp;&nbsp;&nbsp; [`groups:`](YML-Input-Format.md#groups)                      | List of source file groups along with source files.
+&nbsp;&nbsp;&nbsp; [`components:`](YML-Input-Format.md#components)              | List of software components used.

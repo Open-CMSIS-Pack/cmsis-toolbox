@@ -312,7 +312,7 @@ project:
 
 ### Reproducible builds
 
-Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file that is created and read by the **csolution** project manager. This file: 
+Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file that is created and read by the **csolution** project manager. This file:
 
 - Records the exact list of the pack versions used during creation of an application.
 - Ensures that pack versions do not change during development even when new packs are installed on the host computer, for example to develop other applications.

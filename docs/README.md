@@ -85,5 +85,5 @@ The overall benefits of the CMSIS-Toolbox are:
 
 Version            | Description
 :------------------|:-------------------------
-2.0.0              | Initial release for CMSIS-Toolbox 2.0.0
-2.2.0              | CMSIS-Toolbox 2.2.0 adds [generator integration](build-operation.md#generator-integration), extends [translation controls](YML-Input-Format.md#translation-control), adds [context set](build-overview.md#working-with-context-set), adds [pack locking](YML-CBuild-Format.md#pack-locking), and improves [linker script management](build-overview.md#linker-script-management). Refer to [release information](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.2.0) for more details.
+2.0.0              | Initial release for CMSIS-Toolbox [2.0.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.0.0)
+2.2.0              | CMSIS-Toolbox [2.2.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.2.0) adds [generator integration](build-operation.md#generator-integration), extends [translation controls](YML-Input-Format.md#translation-control), adds [context set](build-overview.md#working-with-context-set), adds [pack locking](YML-CBuild-Format.md#pack-locking), and improves [linker script management](build-overview.md#linker-script-management). Refer to [release information](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.2.0) for more details.
