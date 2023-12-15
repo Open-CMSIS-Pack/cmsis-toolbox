@@ -105,7 +105,7 @@ Input Files              | Description
 
 Input/Output Files       | Description
 :------------------------|:---------------------------------
-[*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml)  | Exact list of the packs that are used by the application; allows to lock the pack versions.
+[*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml)  | Exact list of the packs that are used by the application; enables [reproducible builds](#reproducible-builds) as it locks the pack versions.
 [*.cbuild-set.yml](YML-CBuild-Format.md#file-structure-of-cbuild-setyml)    | Specifies the [context set](#working-with-context-set) of projects, target-types, and build-types that are used to generate the application image.
 
 Output Files             | Description
@@ -312,13 +312,16 @@ project:
 
 ### Reproducible builds
 
-**todo add cbuild-pack.yml** revice content below.
+Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file that is created and read by the **csolution** project manager. This file: 
 
-It is required to generate reproducible builds that can deployed on independent CI/CD test systems. To achieve that, the **`csolution` Project Manager** generates *.cprj output files with the following naming conventions:
+- Records the exact list of the pack versions used during creation of an application.
+- Ensures that pack versions do not change during development even when new packs are installed on the host computer, for example to develop other applications.
 
-`<project-name>[.<build-type>][+target-type].cprj` this would generate for example: `Multi.Debug+Production-HW.cprj`
-
-This output file convention is identical with the [context: name conventions](YML-Input-Format.md#context-name-conventions) and enables that each `target-type:` and/or `build-type:` can be identified and independently generated which provides the support for test automation. It is however not required to build every possible combination, this should be under user control.
+> **Notes:**
+>
+> - The [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file should be committed to a repository to ensure reproducible builds.
+> - With CMSIS-Toolbox Version 2.3.0, the `cbuild` option `--freeze-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file exists and reports an error if any pack is changed or not available.
+> - To update to pack versions, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) and use the command `csolution convert` to generate the build information.
 
 ### Software Layers
 

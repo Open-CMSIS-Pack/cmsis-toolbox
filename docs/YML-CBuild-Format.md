@@ -294,7 +294,30 @@ build:
 
 The `cbuild-pack.yml` file is structured into several sections.  The top-level structure is outlined below.
 
-todo
+`cbuild-pack:`                                                     | Content
+:------------------------------------------------------------------|:------------------------------------
+&nbsp;&nbsp; `resolved-packs:`                                     | List of packs used to create the project contexts.
+
+`resolved-packs:`                                                  | Content
+:------------------------------------------------------------------|:------------------------------------
+`- resolved-pack:`                                                 | [pack name](YML-Input-Format.md#pack-name-conventions) used.
+&nbsp;&nbsp; `selected-by:`                                        | List of [components](YML-Input-Format.md#component-name-conventions) included from the pack.
+
+**Example:**
+
+```yml
+cbuild-pack:
+  resolved-packs:
+    - resolved-pack: ARM::CMSIS@5.9.0
+      selected-by:
+        - ARM::CMSIS
+    - resolved-pack: ARM::V2M_MPS3_SSE_300_BSP@1.2.0
+      selected-by:
+        - ARM::V2M_MPS3_SSE_300_BSP@1.2.0
+    - resolved-pack: Keil::ARM_Compiler@1.7.2
+      selected-by:
+        - Keil::ARM_Compiler
+```
 
 ### File Structure of `*.cbuild-set.yml`
 

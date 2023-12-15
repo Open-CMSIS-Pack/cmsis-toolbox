@@ -322,7 +322,7 @@ Access Sequence                                | Description
 `$Bpack$`                                      | Path to the pack that defines the selected board (BSP).
 `$Dpack$`                                      | Path to the pack that defines the selected device (DFP).
 `$PackRoot$`                                   | Path to the CMSIS Pack Root directory.
-`$Pack(vendor.name)$`                          | Path to specific pack [with latest version ToDo: revise wording]. Example: `$Pack(NXP.K32L3A60_DFP)$`.
+`$Pack(vendor.name)$`                          | Path to a specific pack. Example: `$Pack(NXP.K32L3A60_DFP)$`.
 
 **Example:**
 
