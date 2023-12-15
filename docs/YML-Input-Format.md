@@ -322,7 +322,7 @@ Access Sequence                                | Description
 `$Bpack$`                                      | Path to the pack that defines the selected board (BSP).
 `$Dpack$`                                      | Path to the pack that defines the selected device (DFP).
 `$PackRoot$`                                   | Path to the CMSIS Pack Root directory.
-`$Pack(vendor.name)$`                          | Path to specific pack [with latest version ToDo: revise wording]. Example: `$Pack(NXP.K32L3A60_DFP)$`.
+`$Pack(vendor.name)$`                          | Path to a specific pack. Example: `$Pack(NXP.K32L3A60_DFP)$`.
 
 **Example:**
 
@@ -757,7 +757,7 @@ Compiler Name                                         | Supported Compiler
 `AC6`                                                 | Arm Compiler version 6
 `GCC`                                                 | GCC Compiler
 `IAR`                                                 | IAR Compiler
-`CLANG`                                               | CLANG Compiler based on LLVM technlogy (experimental)
+`CLANG`                                               | CLANG Compiler based on LLVM technlogy
 
 **Example:**
 
@@ -778,6 +778,7 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 :-----------------------------------------------------------|:-----------|:--------------------------------
 `- regions:`                                                |  Optional  | Path and file name of `<regions_file>.h`, used to generate a Linker Script.
 &nbsp;&nbsp;&nbsp;`script:`                                 |  Optional  | Explicit file name of the Linker Script, overrules files provided with [`file:`](#files) or components.
+&nbsp;&nbsp;&nbsp;`auto:`                                   |  Optional  | Request [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation).
 &nbsp;&nbsp;&nbsp;[`define:`](#define)                      |  Optional  | Define symbol settings for the linker script file preprocessor.
 &nbsp;&nbsp;&nbsp;[`for-compiler:`](#for-compiler)         |  Optional  |  Include Linker Script for the specified toolchain.
 &nbsp;&nbsp;&nbsp;[`for-context:`](#for-context)           |  Optional  |  Include Linker Script for a list of *build* and *target* type names.
@@ -785,45 +786,43 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 
 > **Notes:** 
 > 
-> The `linker:` node must have at least `regions:`, `script:`, or `define:`.
-> 
-> If no `script:` file is specified, compiler specific [linker script template files](build-overview.md#linker-script-templates) are used.
->
-> A Linker Script file is preprocessed when `regions:` or a `define:` is specified in the `linker:` node. 
+> - The `linker:` node must have at least `regions:`, `script:`, `auto:`, or `define:`.
+> - If no `script:` file is specified, compiler specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
+> - A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`. 
 
 **Examples:**
 
 ```yml
 linker:
-  - script:   MyLinker.scf     # linker script file
-    regions:  MyRegions.h      # pre-processed using header file
+  - script:   MyLinker.scf.src   # linker script file
+    regions:  MyRegions.h        # pre-processed using header file
 ```
 
 ```yml
 linker:
-  - regions:  MyRegions.h      # Default linker script is used and pre-processed using header file
+  - regions:  MyRegions.h        # Default linker script is used and pre-processed using header file
 ```
 
 ```yml
 linker:
-  - script:   MyLinker.scf     # linker script file, not pre-processed
-    for-compiler: AC6          # for Arm Compiler 6 
+  - script:   MyLinker.scf.src   # linker script file, not pre-processed
+    for-compiler: AC6            # for Arm Compiler 6 
 
-  - script:   MyLinker.ld      # linker script file, not pre-processed
-    for-compiler: CLANG        # for CLANG LLVM based compiler
+  - script:   MyLinker.ld        # linker script file, not pre-processed
+    for-compiler: CLANG          # for CLANG LLVM based compiler
 ```
 
 ```yml
 linker:
-  - script:   MyLinker.scf     # linker script file
-    for-compiler: AC6          # for Arm Compiler 6
-    regions:  MyRegions.h      # pre-processed using header file
+  - script:   MyLinker.scf.src   # linker script file
+    for-compiler: AC6            # for Arm Compiler 6
+    regions:  MyRegions.h        # pre-processed using header file
 
-  - script:   MyLinker.ld      # linker script file
-    for-compiler: CLANG        # for CLANG LLVM based compiler
-    regions:  MyRegions.h      # pre-processed using header file
-    define:                    # with define setting 
-      - Setup: 1               # define with value
+  - script:   MyLinker.ld.src    # linker script file
+    for-compiler: CLANG          # for CLANG LLVM based compiler
+    regions:  MyRegions.h        # pre-processed using header file
+    define:                      # with define setting 
+      - Setup: 1                 # define with value
 ```
 
 ### `output:`
