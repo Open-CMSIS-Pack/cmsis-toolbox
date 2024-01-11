@@ -179,7 +179,7 @@ jobs:
         working-directory: toolbox/zip
 
       - name: Archive windows amd64 binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cmsis-toolbox-windows-amd64
           path: ./toolbox/zip/cmsis-toolbox-windows-amd64.zip
@@ -187,7 +187,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive windows arm64 binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cmsis-toolbox-windows-arm64
           path: ./toolbox/zip/cmsis-toolbox-windows-arm64.zip
@@ -195,7 +195,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive linux amd64 binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cmsis-toolbox-linux-amd64
           path: ./toolbox/zip/cmsis-toolbox-linux-amd64.tar.gz
@@ -203,7 +203,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive linux arm64 binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cmsis-toolbox-linux-arm64
           path: ./toolbox/zip/cmsis-toolbox-linux-arm64.tar.gz
@@ -211,7 +211,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive darwin amd64 binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cmsis-toolbox-darwin-amd64
           path: ./toolbox/zip/cmsis-toolbox-darwin-amd64.tar.gz
@@ -219,7 +219,7 @@ jobs:
           if-no-files-found: error
 
       - name: Archive darwin arm64 binaries
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cmsis-toolbox-darwin-arm64
           path: ./toolbox/zip/cmsis-toolbox-darwin-arm64.tar.gz
@@ -250,7 +250,7 @@ jobs:
           submodules: recursive
 
       - name: Download cmsis toolbox ${{ matrix.config.target }} ${{ matrix.config.arch }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }}
           path: archive
@@ -282,7 +282,7 @@ jobs:
           pytest --base-path=toolbox/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }} test/tests.py -rA --junitxml=test-results-${{ matrix.config.target }}-${{ matrix.config.arch }}.xml
 
       - name: Archive test report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: toolbox-test-${{ matrix.config.target }}-${{ matrix.config.arch }}
           path: ./test-results-*.xml
@@ -296,7 +296,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
 
@@ -315,73 +315,73 @@ jobs:
 
     steps:
       - name: Download cmsis toolbox windows amd64 zip
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: cmsis-toolbox-windows-amd64
           path: toolbox/zip
 
       - name: Download cmsis toolbox windows arm64 zip
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: cmsis-toolbox-windows-arm64
           path: toolbox/zip
 
       - name: Download cmsis toolbox linux amd64 zip
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: cmsis-toolbox-linux-amd64
           path: toolbox/zip
 
       - name: Download cmsis toolbox linux arm64 zip
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: cmsis-toolbox-linux-arm64
           path: toolbox/zip
 
       - name: Download cmsis toolbox darwin amd64 zip
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: cmsis-toolbox-darwin-amd64
           path: toolbox/zip
 
       - name: Download cmsis toolbox darwin arm64 zip
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: cmsis-toolbox-darwin-arm64
           path: toolbox/zip
 
       - name: Download test report windows-amd64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: toolbox-test-windows-amd64
           path: testreports/
 
       - name: Download test report windows-arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: toolbox-test-windows-arm64
           path: testreports/
 
       - name: Download unit test report linux-amd64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: toolbox-test-linux-amd64
           path: testreports/
 
       - name: Download unit test report linux-arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: toolbox-test-linux-arm64
           path: testreports/
 
       - name: Download unit test report darwin-amd64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: toolbox-test-darwin-amd64
           path: testreports/
 
       - name: Download unit test report darwin-arm64
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: toolbox-test-darwin-arm64
           path: testreports/
