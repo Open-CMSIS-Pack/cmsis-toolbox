@@ -19,7 +19,6 @@ access sequences handling in cbuild                                             
 list commands at csolution and context level                                             | :heavy_check_mark:       | csolution 0.9.1
 csolution `context` input parameter                                                      | :heavy_check_mark:       | csolution 0.9.1
 generator commands: `list generators` and `run --generator <id>`                         | :heavy_check_mark:       | csolution 0.9.1
-generator component extensions                                                           | :heavy_multiplication_x: | in progress
 automatic schema checking                                                                | :heavy_check_mark:       | csolution 0.9.1
 config files PLM                                                                         | :heavy_check_mark:       | csolution 0.9.2
 pack selection: `pack` keyword in csolution                                              | :heavy_check_mark:       | csolution 0.9.2
@@ -78,7 +77,14 @@ alpha support for LLVM/Clang in csolution                                       
 add `list configs` command to list configuration files                                   | :heavy_check_mark:       | csolution 2.1.0
 add license information to `cbuild.yml`                                                  | :heavy_check_mark:       | csolution 2.1.0
 support dry-running generators                                                           | :heavy_check_mark:       | csolution 2.1.0
-add option `--context-replacement` to refine context selection                           | :heavy_check_mark:       | cbuild 2.1.0
+support for simplified global generators                                                 | :heavy_check_mark:       | csolution 2.2.0
+support for `*.cbuild-pack.yml` lock file mechanism                                      | :heavy_check_mark:       | csolution 2.2.0
+support for branch protection (PACBTI)                                                   | :heavy_check_mark:       | csolution 2.2.0
+add option `--context-set` to handle selected contexts `*.cbuild-set.yml`                | :heavy_check_mark:       | csolution 2.2.0
+add `auto` node for automatic linker script generation                                   | :heavy_check_mark:       | csolution 2.2.0
+processor attributes `trustzone`, `fpu`, `dsp`, `mve`, `endian` and `branch-protection`  | :heavy_check_mark:       | csolution 2.2.0
+alpha support for LLVM/Clang updated to 17.0.1                                           | :heavy_check_mark:       | cbuild 2.2.0
+add `*.src` file extension as linker script source for pre-processing                    | :heavy_check_mark:       | cbuild 2.2.0
 resources management                                                                     | :x:                      |
 execution groups/phases                                                                  | :x:                      |
 pre/post build steps in csolution                                                        | :x:                      |

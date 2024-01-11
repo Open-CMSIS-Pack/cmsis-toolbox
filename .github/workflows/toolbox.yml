@@ -25,7 +25,7 @@ jobs:
 
     steps:
       - name: Checkout devtools
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create folders
         run: |
@@ -40,7 +40,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/buildmgr/2.1.0
+          version: tags/tools/buildmgr/2.2.1
           file: cbuild_install.sh
           target: toolbox/cbuild/cbuild_install.sh
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -99,36 +99,42 @@ jobs:
           cp distribution/bin/cbuild.exe-amd64    zip/cmsis-toolbox-windows-amd64/bin/cbuild.exe
           cp distribution/bin/cbuildgen.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/cbuildgen.exe
           cp distribution/bin/cpackget.exe-amd64  zip/cmsis-toolbox-windows-amd64/bin/cpackget.exe
+          cp distribution/bin/cbridge.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/cbridge.exe
           cp distribution/bin/csolution.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/csolution.exe
           cp distribution/bin/packchk.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/packchk.exe
           cp distribution/bin/svdconv.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/svdconv.exe
           cp distribution/bin/cbuild.exe-arm64    zip/cmsis-toolbox-windows-arm64/bin/cbuild.exe
           cp distribution/bin/cbuildgen.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/cbuildgen.exe
           cp distribution/bin/cpackget.exe-arm64  zip/cmsis-toolbox-windows-arm64/bin/cpackget.exe
+          cp distribution/bin/cbridge.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/cbridge.exe
           cp distribution/bin/csolution.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/csolution.exe
           cp distribution/bin/packchk.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/packchk.exe
           cp distribution/bin/svdconv.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/svdconv.exe
           cp distribution/bin/cbuild.lin-amd64    zip/cmsis-toolbox-linux-amd64/bin/cbuild
           cp distribution/bin/cbuildgen.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuildgen
           cp distribution/bin/cpackget.lin-amd64  zip/cmsis-toolbox-linux-amd64/bin/cpackget
+          cp distribution/bin/cbridge.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/cbridge
           cp distribution/bin/csolution.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/csolution
           cp distribution/bin/packchk.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/packchk
           cp distribution/bin/svdconv.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/svdconv
           cp distribution/bin/cbuild.lin-arm64    zip/cmsis-toolbox-linux-arm64/bin/cbuild
           cp distribution/bin/cbuildgen.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/cbuildgen
           cp distribution/bin/cpackget.lin-arm64  zip/cmsis-toolbox-linux-arm64/bin/cpackget
+          cp distribution/bin/cbridge.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/cbridge
           cp distribution/bin/csolution.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/csolution
           cp distribution/bin/packchk.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/packchk
           cp distribution/bin/svdconv.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/svdconv
           cp distribution/bin/cbuild.mac-amd64    zip/cmsis-toolbox-darwin-amd64/bin/cbuild
           cp distribution/bin/cbuildgen.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/cbuildgen
           cp distribution/bin/cpackget.mac-amd64  zip/cmsis-toolbox-darwin-amd64/bin/cpackget
+          cp distribution/bin/cbridge.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/cbridge
           cp distribution/bin/csolution.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/csolution
           cp distribution/bin/packchk.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/packchk
           cp distribution/bin/svdconv.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/svdconv
           cp distribution/bin/cbuild.mac-arm64    zip/cmsis-toolbox-darwin-arm64/bin/cbuild
           cp distribution/bin/cbuildgen.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/cbuildgen
           cp distribution/bin/cpackget.mac-arm64  zip/cmsis-toolbox-darwin-arm64/bin/cpackget
+          cp distribution/bin/cbridge.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/cbridge
           cp distribution/bin/csolution.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/csolution
           cp distribution/bin/packchk.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/packchk
           cp distribution/bin/svdconv.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/svdconv
@@ -245,7 +251,7 @@ jobs:
           - { os: ubuntu-20.04, target: linux, arch: arm64}
     steps:
       - name: Checkout cmsis-toolbox
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -268,7 +274,7 @@ jobs:
         run: tar -xvf archive/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }}.tar.gz -C toolbox
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -294,6 +300,11 @@ jobs:
     name: "Publish Tests Results"
     needs: [ tests ]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
     steps:
       - name: Download Artifacts
         uses: actions/download-artifact@v4

@@ -28,6 +28,7 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
       - [Software Layers in Packs](#software-layers-in-packs)
     - [Project Setup for Multiple Targets and Builds](#project-setup-for-multiple-targets-and-builds)
     - [Project Setup for Related Projects](#project-setup-for-related-projects)
+      - [Working with `context-set:`](#working-with-context-set)
   - [Project Structure](#project-structure)
     - [Working Areas](#working-areas)
     - [Project Area](#project-area)
@@ -39,9 +40,10 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
   - [Linker Script Management](#linker-script-management)
     - [Linker Script Preprocessing](#linker-script-preprocessing)
     - [Automatic Linker Script generation](#automatic-linker-script-generation)
-      - [File locations](#file-locations)
-      - [User Modifications to Memory Regions](#user-modifications-to-memory-regions)
       - [Linker Script Templates](#linker-script-templates)
+  - [Generator Support](#generator-support)
+    - [Use a Generator](#use-a-generator)
+    - [Configure Generator Output Directory](#configure-generator-output-directory)
   - [Reference Application Framework](#reference-application-framework)
     - [Interface Definitions](#interface-definitions)
     - [Target Hardware Abstraction](#target-hardware-abstraction)
@@ -101,10 +103,15 @@ Input Files              | Description
 [*.cproject.yml](YML-Input-Format.md#project)           | Content of an independent build (linker or archiver run) - directly relates to a `*.cprj` file.
 [*.clayer.yml](YML-Input-Format.md#layer)               | Set of source files along with pre-configured components for reuse in different applications.
 
+Input/Output Files       | Description
+:------------------------|:---------------------------------
+[*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml)  | Exact list of the packs that are used by the application; enables [reproducible builds](#reproducible-builds) as it locks the pack versions.
+[*.cbuild-set.yml](YML-CBuild-Format.md#file-structure-of-cbuild-setyml)    | Specifies the [context set](#working-with-context-set) of projects, target-types, and build-types that are used to generate the application image.
+
 Output Files             | Description
 :------------------------|:---------------------------------
 [*.cbuild-idx.yml](YML-CBuild-Format.md#file-structure-of-cbuild-idxyml)  | Index file of all `*.cbuild.yml` build descriptions; contains also overall information for the application.
-[*.cbuild.yml](YML-CBuild-Format.md#file-structure-of-cbuild-yml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file (replaces *.CPRJ in CMSIS-Toolbox 2.1 - schedule for Q3'23)
+[*.cbuild.yml](YML-CBuild-Format.md#file-structure-of-cbuild-yml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file (replaces *.CPRJ in CMSIS-Toolbox 2.3 - schedule for Q1'24)
 [Project Build Files *.cprj](https://arm-software.github.io/CMSIS_5/Build/html/cprjFormat_pg.html) | Project build information in legacy format.
 [Run-Time Environment (RTE)](#rte-directory-structure)  | Contains the user configured files of a project along with RTE_Components.h inventory file.
 [Linker Script Files](Linker-Script-Management.md#automatic-linker-script-generation) | Header file that describes the memory resources.
@@ -135,8 +142,9 @@ The following repositories provide several working examples:
 
 Repository            | Description
 :---------------------|:-------------------------------------
-[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains a simple Hello World example and links to other working examples.  
+[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains several `Hello World` examples that show single-core, multi-core, and TrustZone setup.
 [vscode-get-started](https://github.com/Open-CMSIS-Pack/vscode-get-started) | Contains the setup for a VS Code development environment including an example project.
+[github.com/Arm-Examples](https://github.com/Arm-Examples) | Contains many examples that include CMSIS-Toolbox setup.
 
 The section below explains the overall concepts consider by the **`csolution` Project Manager** based on examples.
 
@@ -153,7 +161,7 @@ Template    | Description
 
 To use these templates, copy the content of the folder to your own application folder. Then adapt the names accordingly and add missing information.
 
-Refer to [Overall Workflow](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates#overall-workflow) for more details.
+Refer to [CMSIS-Toolbox Templates](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) for more details.
 
 ### Minimal Project Setup
 
@@ -221,7 +229,7 @@ This output file convention is identical with the [context: name conventions](YM
 
 ### Toolchain Agnostic Project
 
-With generic [**Translation Control**](YML-Input-Format.md#translation-control) settings it is possible to create projects that work across the range of supported compilers (AC6, GCC, IAR).  The compiler selection and potential compiler specific settings are stored in the file `cdefault.yml`. By replacing the `cdefault.yml` file it is possible to re-target application projects.  [**Translation Control**](YML-Input-Format.md#translation-control) settings are mapped to specify compiler by the build tools.
+With generic [**Translation Control**](YML-Input-Format.md#translation-control) settings it is possible to create projects that work across the range of supported compilers (AC6, GCC, IAR, CLANG).  The compiler selection and potential compiler specific settings are stored in the file `cdefault.yml`. By replacing the `cdefault.yml` file it is possible to re-target application projects.  [**Translation Control**](YML-Input-Format.md#translation-control) settings are mapped to specify compiler by the build tools.
 
 **Default settings for multiple compiler toolchains**
 
@@ -304,11 +312,16 @@ project:
 
 ### Reproducible builds
 
-It is required to generate reproducible builds that can deployed on independent CI/CD test systems. To achieve that, the **`csolution` Project Manager** generates *.cprj output files with the following naming conventions:
+Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file that is created and read by the **csolution** project manager. This file:
 
-`<project-name>[.<build-type>][+target-type].cprj` this would generate for example: `Multi.Debug+Production-HW.cprj`
+- Records the exact list of the pack versions used during creation of an application.
+- Ensures that pack versions do not change during development even when new packs are installed on the host computer, for example to develop other applications.
 
-This output file convention is identical with the [context: name conventions](YML-Input-Format.md#context-name-conventions) and enables that each `target-type:` and/or `build-type:` can be identified and independently generated which provides the support for test automation. It is however not required to build every possible combination, this should be under user control.
+> **Notes:**
+>
+> - The [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file should be committed to a repository to ensure reproducible builds.
+> - With CMSIS-Toolbox Version 2.3.0, the `cbuild` option `--freeze-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file exists and reports an error if any pack is changed or not available.
+> - To update to pack versions, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) and use the command `csolution convert` to generate the build information.
 
 ### Software Layers
 
@@ -316,15 +329,53 @@ Software layers collect source files and software components along with configur
 
 ![Project Layers](./images/Layers.png "Project Layers")
 
-An application could be composed of various layers, for example to compose an IoT cloud application:
+**Simple Example:**
+
+This example uses a layer to include an RTOS kernel.  Using a layer has several benefits, for example that the configuration can be shared across many projects.
+
+The file `MyProject.cproject.yml` includes the file `RTOS.clayer.yml` using the [`layers:`](YML-Input-Format.md#linker) node:
+
+```yml
+project:
+  groups:
+    - group: App
+      files:
+        - file: ./main.c
+
+  components:
+    - component: ARM::CMSIS:CORE
+    - component: Device:Startup
+
+  layers:
+    - layer: ../Layer/RTOS.clayer.yml
+```
+
+The `RTOS.clayer.yml` file defines the kernel along with configuration settings.
+
+```yml
+layer:
+  description: RTX RTOS with configuration settings
+
+  packs:
+    - pack: ARM:CMSIS-RTX
+
+  components:
+    - component: CMSIS:RTOS2:Keil RTX5&Source
+```
+
+**Re-target Example:**
+
+The project [AVH-MLOps-Main](https://github.com/ARM-software/AVH-MLOps/tree/main/AVH-MLOps-main) is a test project that shows retargeting to different processors using a layer.
+
+**IoT Example:**
+
+The project [AWS_MQTT_MutualAuth_SW_Framework](https://github.com/Open-CMSIS-Pack/AWS_MQTT_MutualAuth_SW_Framework) provides an IoT cloud application that is composed of various layers:
 
 - **Demo.cproject.yml**: Implements the IoT Reference example.
 - **Socket.clayer.yml**: A software layer that provides the Socket interface for internet connectivity.
 - **Board.clayer.yml**: A software layer that provides the hardware interfaces to the device hardware.
 
 **Example:**
-
-The project [AWS_MQTT_MutualAuth_SW_Framework](https://github.com/Open-CMSIS-Pack/AWS_MQTT_MutualAuth_SW_Framework) provides an example for software layers.
 
 #### Configuration Settings
 
@@ -334,7 +385,7 @@ can share a `layer` with common configuration settings.
 
 #### Software Layers in Packs
 
-A collection of software layers can be stored in software packs using the element [`<csolution>`](todo-link). Using the `csolution` command `list layers` it is possible to identify compatible software by iterating the [`layers:` - `type:`](YML-Input-Format.md#layers---type)
+A collection of software layers can be stored in software packs using the element [`<clayers>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_clayers_pg.html). Using the `csolution` command `list layers` it is possible to identify compatible software by iterating the [`layers:` - `type:`](YML-Input-Format.md#layers---type)
  [`connections`](YML-Input-Format.md#connections).
 filter conditions to it. In combination with interfaces specifications, an interactive IDE should be able to display suitable layers that could be added to an application.
 
@@ -474,7 +525,7 @@ solution:
 
   target-types:
     - type: Board
-      board: NUCLEO-L552ZE-Q
+      board: NUCLEO-L552ZE-Q    # uses device defined by the board
 
     - type: Production-HW
       device: STM32U5X          # specifies device
@@ -484,16 +535,34 @@ solution:
       optimize: none
       debug: on
 
+    - type: Release
+      optimize: balanced
+      debug: on
+
     - type: Test
       optimize: size
       debug: on
     
   projects:
-    - project: ./security/TFM.cproject.yml
+    - project: ./security/TFM.cproject.yml           # Only generated for build type: Release
       for-context: .Release
     - project: ./application/MQTT_AWS.cproject.yml
-    - project: ./bootloader/Bootloader.cproject.yml
-      not-for-context: +Virtual
+    - project: ./bootloader/Bootloader.cproject.yml  # Not generated for target type: Board
+      not-for-context: +Board
+```
+
+#### Working with `context-set:`
+
+Frequently it is required to build applications with different context types. The following command line example generates the `iot-product.csolution.yml` with build type `Debug` for the project `MQTT_AWS.cproject.yml` while the other projects use the build type `Release`. This selection can be saved to the file `iot-product.cbuild-set.yml` by using the option `-S` or `--context-set`.  Refer to [file structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-setyml) for details.
+
+```txt
+cbuild iot-product.csolution.yml -c TFM.Release+Board -c MQTT_AWS.Debug+Board -c Bootloader.Release+Board -S
+```
+
+To use the saved context-set of the file `iot-product.cbuild-set.yml`, apply the option `-S` or `--context-set` without any context option `--context` or `-c`.  This uses the previously saved context set.
+
+```txt
+cbuild iot-product.csolution.yml -S
 ```
 
 ## Project Structure
@@ -694,50 +763,109 @@ to other components of the same software pack.
 
 A Linker Script contains a series of Linker directives that specify the available memory and how it should be used by a project. The Linker directives reflect exactly the available memory resources and memory map for the project context.
 
-The following sequence describes the Linker Script management of the **`csolution` Project Manager**:
+This section describes the Linker Script management of the **`csolution` Project Manager**:
 
-1. The [`linker:`](YML-Input-Format.md#linker) node specifies an explicit linker script and/or memory regions header file. This overrules linker scripts that are part of software components or specified using the `file:` notation.
+1. The [`linker:`](YML-Input-Format.md#linker) node specifies an explicit Linker Script and/or memory regions header file. This overrules Linker Scripts that are part of software components or specified using the `file:` notation.
 
-2. If no [`linker:`](YML-Input-Format.md#linker) node is used, a linker script file can be provided as part of software components. The extensions `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
+1. The [`linker:`](YML-Input-Format.md#linker) `auto:` enables the [automatic Linker Script generation](#automatic-linker-script-generation).
+  
+1. If no [`linker:`](YML-Input-Format.md#linker) node is used, a Linker Script file can be provided as part of software components. The extensions `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
 
-3. If no Linker script is found, a [Linker Script is generated](#automatic-linker-script-generation) based on information that is provided by the `<memory>` element in Device Family Packs (DFP) and Board Support Packs (BSP).
+1. If no Linker Script is found, the [automatic Linker Script generation](#automatic-linker-script-generation) is used.
 
 ### Linker Script Preprocessing
 
-A Linker Script file is preprocessed when a `regions:` header file or a `define:` is specified in the [`linker:`](YML-Input-Format.md#linker) node or when the [Linker Script file is automatically generated](#automatic-linker-script-generation). A standard C preprocessor is used to create the final linker script as shown below.
-
 ![Linker Script File Generation](./images/linker-script-file.png "Linker Script File Generation")
+
+A standard C processors is used for the Linker Script file when:
+
+- the linker script file extension is `*.src`.
+- the [`linker:`](YML-Input-Format.md#linker) node contains a `regions:` header file or a `define:`.
+
+Otherwise, no preprocessor is used and the Linker Script file is directly passed to the linker.
 
 ### Automatic Linker Script generation
 
-If a project context does not specify any linker script a `regions_<device_or_board>.h` is generated and a toolchain specific linker script template is used.
-
-If `regions_<device_or_board>.h` is **not** available, it is generated based on information of the software packs using the:
+The automatic Linker Script generation uses Linker Script template and generates a `<regions>.h` file based on information of the software packs using the:
 
 - [`<device>` - `<memory>` element in the DFP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_boards_pg.html#element_board_memory)
 - [`<board>` - `<memory>` element in the BSP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory)
 
-#### File locations
+Both files, the Linker Script template and the `<regions>.h` are located in the [RTE directory](Overview.md#rte-directory-structure) path `\RTE\Device\<device>`. The `<regions>.h` file name is extended with:
 
-The file `regions_<device_or_board>.h` is generated in the [RTE directory](Overview.md#rte-directory-structure) path `\RTE\Device\<device>`. The actual file name is extended with:
-
-- `Bname` when the `*.cproject.yml` file uses in the project context a [`board:`](YML-Input-Format.md#board-name-conventions) specification, i.e. `regions_IMXRT1050-EVKB.h`
-- `Dname` name when the `*.cproject.yml` file uses in the project context only a [`device:`](YML-Input-Format.md#device-name-conventions) specification, i.e. `regions_stm32u585xx.h`.
+- `Bname` when the project context uses a [`board:`](YML-Input-Format.md#board-name-conventions) specification, i.e. `regions_IMXRT1050-EVKB.h`
+- `Dname` when the project context only uses a [`device:`](YML-Input-Format.md#device-name-conventions) specification, i.e. `regions_stm32u585xx.h`.
   
-#### User Modifications to Memory Regions
-
-The file `regions_<device_or_board>.h` can be modified by the user as it might be required to adjust the memory regions or give additional attributes (such as `noinit`).  Therefore this file should have [Configuration Wizard Annotations](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/configWizard.html).
+Both files, the Linker Script template and the `<regions>.h` can be modified by the user as it might be required to adjust the memory regions or give additional attributes (such as `noinit`).
 
 #### Linker Script Templates
 
-The following compiler specific Linker Script files are used when no explicit file is specified.  The files are located in the directory `<cmsis-toolbox-installation-dir>/etc` of the CMSIS-Toolbox.
+The following compiler specific Linker Script template files are copied to the `\RTE\Device\<device>` directory when no Linker Script exists. The files are located in the directory `<cmsis-toolbox-installation-dir>/etc` of the CMSIS-Toolbox.
 
-Linker Script Template  | Linker control file for ...
-:-----------------------|:-----------------------------
-ac6_linker_script.sct   | Arm Compiler
-gcc_linker_script.ld    | GCC Compiler
-iar_linker_script.icf   | IAR Compiler
-clang_linker_script.ld  | CLANG Compiler (experimental)
+Linker Script Template       | Linker control file for ...
+:----------------------------|:-----------------------------
+`ac6_linker_script.sct.src`  | Arm Compiler
+`gcc_linker_script.ld.src`   | GCC Compiler
+`iar_linker_script.icf.src`  | IAR Compiler
+`clang_linker_script.ld.src` | CLANG Compiler (LLVM)
+
+## Generator Support
+
+Generators such as STM32CubeMX or MCUXpresso Config Tools simplify the configuration for devices and boards. The CMSIS-Toolbox implements a [generic interface for generators](build-operation.md#generator-integration). Generators may be used to:
+
+- Configure device and/or board settings, for example clock configuration or pinout.
+- Add and configure software drivers, for example for UART, SPI, or I/O ports.
+- Configure parameters of an algorithm, for example DSP filter design or motor control parameters.
+
+The steps for creating a `*.csolution.yml` application with a Generator are:
+
+1. Create the `*.csolution.yml` container that refers the projects and selects `device:` or `board:`  (by using `target-types:`)
+1. Create `*.cproject.yml` files that are referred by the `*.csolution.yml` container.
+1. Add `components:` and/or `layers:` to the `*.cproject.yml` file.
+1. For components that have a `<generator-id>`, run the related generator.
+
+### Use a Generator
+
+Examples that use STM32CubeMx are provided in [github.com/Open-CMSIS-Pack/generator-poc](https://github.com/Open-CMSIS-Pack/generator-poc). The `./Examples/Demo1` is used below.
+
+To list the generator configuration of a `*.csolution.yml` use:
+
+```bash
+>csolution test.csolution.yml list generators -v
+CubeMX (Global Registered Generator)
+  base-dir: STM32CubeMX/Target_H7        # Generator output directory for the contexts listed below
+    context: h7.Debug+Target_H7
+    context: h7.Release+Target_H7
+  base-dir: STM32CubeMX/Target_U5        # Generator output directory for the contexts listed below
+    context: u5.Debug+Target_U5
+    context: u5.Release+Target_U5
+```
+
+To run the generator (in this case CubeMX) use:
+
+```bash
+>csolution test.csolution.yml run -g CubeMX -c u5.Debug+Target_U5
+```
+
+> **Note:**
+>
+> STM32CubeMX can start from a `board` or a `device`. For boards a matching device configuration can be created quickly.
+
+### Configure Generator Output Directory
+
+The Generator output directory can be configured using the node [`generators:`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#generators) as shown below.
+
+```yml
+  generators:
+    options:
+    - generator: CubeMX
+      path: ../STM32CubeMX
+```
+
+A Generator output directory is useful for:
+
+- Using a [board layer](#software-layers) that is shareable across multiple projects (as in `./Examples/Demo2`).
+- Using different configurations across a `*.csolution.yml` project.
 
 ## Reference Application Framework
 
@@ -865,7 +993,7 @@ Provides system startup, board/device hardware initialization, and transfers con
 - `main.c` source module that implements the function `main`.
 - Optional drivers and interfaces (CMSIS-Drivers, GPIO, STDIO).
 - Files that relate to the device and/or board configuration (i.e. generated by MCUXpresso or STM32CubeMX)
-- Linker script definition
+- Linker Script definition
 
 The `main.c` source module of the Board software layer uses the following entry points to the application code:
 
@@ -1029,11 +1157,11 @@ The following section explains how to operate with layers. It uses the projects:
    ```txt
    csolution list layers -s Demo.csolution.yml -c Demo.Release+test verbose -L ./framework -l all
    
-   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Board/B-U585I-IOT02A/IoT/Board.clayer.yml (layer type:    Board)
-   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Inventek_ISMART43362-E/Shield.clayer.yml    (layer type: Shield)
-   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Sparkfun_DA16200/Shield.clayer.yml (layer    type: Shield)
-   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Sparkfun_ESP8266/Shield.clayer.yml (layer    type: Shield)
-   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/WizNet_WizFi360-EVB/Shield.clayer.yml (layer    type: Shield)
+   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Board/B-U585I-IOT02A/IoT/Board.clayer.yml (layer type: Board)
+   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Inventek_ISMART43362-E/Shield.clayer.yml (layer type: Shield)
+   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Sparkfun_DA16200/Shield.clayer.yml (layer type: Shield)
+   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/Sparkfun_ESP8266/Shield.clayer.yml (layer type: Shield)
+   ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Shield/WiFi/WizNet_WizFi360-EVB/Shield.clayer.yml (layer type: Shield)
    ./AWS_MQTT_MutualAuth_SW_Framework/framework/layer/Socket/WiFi/Socket.clayer.yml (layer type: Socket)
    ```
 

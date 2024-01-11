@@ -322,7 +322,7 @@ Access Sequence                                | Description
 `$Bpack$`                                      | Path to the pack that defines the selected board (BSP).
 `$Dpack$`                                      | Path to the pack that defines the selected device (DFP).
 `$PackRoot$`                                   | Path to the CMSIS Pack Root directory.
-`$Pack(vendor.name)$`                          | Path to specific pack [with latest version ToDo: revise wording]. Example: `$Pack(NXP.K32L3A60_DFP)$`.
+`$Pack(vendor.name)$`                          | Path to a specific pack. Example: `$Pack(NXP.K32L3A60_DFP)$`.
 
 **Example:**
 
@@ -373,7 +373,7 @@ The example below uses the `build-type: Debug`. The `target-type` of the current
 
 > **Note:** 
 > 
-> `-execute` is scheduled for implementation in CMSIS-Toolbox 2.1 (Q3'23)
+> `-execute` is scheduled for implementation in CMSIS-Toolbox 2.3 (Q1'24)
 
 ```yml
   - execute: Generate Image
@@ -496,7 +496,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 `solution:`                                          |            | Content
 :----------------------------------------------------|:-----------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `created-by:`                     |  Optional  | Identifies the tool that created this solution.
-&nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this solution, i.e. **CMSIS-Toolbox@1.5.0**
+&nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this solution, i.e. **CMSIS-Toolbox@2.2.0**
 &nbsp;&nbsp;&nbsp; `description:`                    |  Optional  | Brief description text of this solution.
 &nbsp;&nbsp;&nbsp; `cdefault:`                       |  Optional  | When specified, the [`cdefault.yml`](#default) file is used to setup compiler specific controls. 
 &nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
@@ -717,7 +717,7 @@ generators:
   base-dir: $SolutionDir()$/MyGenerators      # Path for all generators extended by '/<generator-id>'
 
   options:
-  - generator: Cube                           # for the generator `Cube` use this path
+  - generator: CubeMX                         # for the generator id `CubeMX` use this path
     path:  ./CubeFiles                        # relative path to the *.yml file that contains this setting
 ```
 
@@ -757,7 +757,7 @@ Compiler Name                                         | Supported Compiler
 `AC6`                                                 | Arm Compiler version 6
 `GCC`                                                 | GCC Compiler
 `IAR`                                                 | IAR Compiler
-`CLANG`                                               | CLANG Compiler based on LLVM technlogy (experimental)
+`CLANG`                                               | CLANG Compiler based on LLVM technlogy
 
 **Example:**
 
@@ -778,6 +778,7 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 :-----------------------------------------------------------|:-----------|:--------------------------------
 `- regions:`                                                |  Optional  | Path and file name of `<regions_file>.h`, used to generate a Linker Script.
 &nbsp;&nbsp;&nbsp;`script:`                                 |  Optional  | Explicit file name of the Linker Script, overrules files provided with [`file:`](#files) or components.
+&nbsp;&nbsp;&nbsp;`auto:`                                   |  Optional  | Request [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation).
 &nbsp;&nbsp;&nbsp;[`define:`](#define)                      |  Optional  | Define symbol settings for the linker script file preprocessor.
 &nbsp;&nbsp;&nbsp;[`for-compiler:`](#for-compiler)         |  Optional  |  Include Linker Script for the specified toolchain.
 &nbsp;&nbsp;&nbsp;[`for-context:`](#for-context)           |  Optional  |  Include Linker Script for a list of *build* and *target* type names.
@@ -785,45 +786,43 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 
 > **Notes:** 
 > 
-> The `linker:` node must have at least `regions:`, `script:`, or `define:`.
-> 
-> If no `script:` file is specified, compiler specific [linker script template files](build-overview.md#linker-script-templates) are used.
->
-> A Linker Script file is preprocessed when `regions:` or a `define:` is specified in the `linker:` node. 
+> - The `linker:` node must have at least `regions:`, `script:`, `auto:`, or `define:`.
+> - If no `script:` file is specified, compiler specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
+> - A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`. 
 
 **Examples:**
 
 ```yml
 linker:
-  - script:   MyLinker.scf     # linker script file
-    regions:  MyRegions.h      # pre-processed using header file
+  - script:   MyLinker.scf.src   # linker script file
+    regions:  MyRegions.h        # pre-processed using header file
 ```
 
 ```yml
 linker:
-  - regions:  MyRegions.h      # Default linker script is used and pre-processed using header file
+  - regions:  MyRegions.h        # Default linker script is used and pre-processed using header file
 ```
 
 ```yml
 linker:
-  - script:   MyLinker.scf     # linker script file, not pre-processed
-    for-compiler: AC6          # for Arm Compiler 6 
+  - script:   MyLinker.scf.src   # linker script file, not pre-processed
+    for-compiler: AC6            # for Arm Compiler 6 
 
-  - script:   MyLinker.ld      # linker script file, not pre-processed
-    for-compiler: CLANG        # for CLANG LLVM based compiler
+  - script:   MyLinker.ld        # linker script file, not pre-processed
+    for-compiler: CLANG          # for CLANG LLVM based compiler
 ```
 
 ```yml
 linker:
-  - script:   MyLinker.scf     # linker script file
-    for-compiler: AC6          # for Arm Compiler 6
-    regions:  MyRegions.h      # pre-processed using header file
+  - script:   MyLinker.scf.src   # linker script file
+    for-compiler: AC6            # for Arm Compiler 6
+    regions:  MyRegions.h        # pre-processed using header file
 
-  - script:   MyLinker.ld      # linker script file
-    for-compiler: CLANG        # for CLANG LLVM based compiler
-    regions:  MyRegions.h      # pre-processed using header file
-    define:                    # with define setting 
-      - Setup: 1               # define with value
+  - script:   MyLinker.ld.src    # linker script file
+    for-compiler: CLANG          # for CLANG LLVM based compiler
+    regions:  MyRegions.h        # pre-processed using header file
+    define:                      # with define setting 
+      - Setup: 1                 # define with value
 ```
 
 ### `output:`
@@ -1181,6 +1180,10 @@ have also the format `@~1.2`/`@~1` that matches with semantic versioning.
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)           | Include pack for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context)   | Exclude pack for a list of *build* and *target* types.
 
+> **Note:**
+>
+> - When an explicit `path:` to the pack is specified, an explicit pack version cannot be specified as the path directly specifies the pack to include.
+
 **Example:**
 
 ```yml
@@ -1223,13 +1226,19 @@ At the level of a `cproject.yml` file, only the `pname` can be specified as the 
 
 ### `processor:`
 
-The `processor:` keyword specifies the TrustZone configuration for this project.
+The `processor:` keyword specifies the usage of processor features for this project.
 
-`processor:`                         | Content
-:------------------------------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `trustzone:`      | TrustZone mode: `secure` \| `non-secure` \| `off`.
+`processor:`                            | Content
+:---------------------------------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `fpu:`               | Select usage of FPU instructions: `dp` (double precision) \| `sp` (single precision) \| `off` (disabled).
+&nbsp;&nbsp;&nbsp; `dsp:`               | Select usage of SIMD instructions: `on` (enabled) \| `off` (disabled).
+&nbsp;&nbsp;&nbsp; `mve:`               | Select usage of M-Profile vector extension: `fp` (floating point and integer instructions) \| `int` (integer instructions) \| `off` (disabled).
+&nbsp;&nbsp;&nbsp; `trustzone:`         | Select TrustZone mode: `secure` \| `non-secure` \| `off`.
+&nbsp;&nbsp;&nbsp; `branch-protection:` | Select Branch Protection mode: `bti` (branch target identification) \| `bti-signret` (branch target identification and pointer authentication) \| `off` (disabled).
 
-The default setting for `trustzone:` is:
+The default setting enables the available features of the device. For example `fpu: dp` is selected for devices that offer double precision floating point hardware.  
+
+For `trustzone:` the default setting is:
 
 - `off` for devices that support this option, but TrustZone is configurable.
 - `non-secure` for devices that have TrustZone enabled.
@@ -1240,6 +1249,8 @@ The default setting for `trustzone:` is:
 project:
   processor:
     trustzone: secure
+    fpu: off             # do not use FPU instructions
+    mve: off             # do not use vector instructions.  
 ```
 
 ## Context
@@ -1360,13 +1371,13 @@ The `context-map:` node allows for a specific `project-name` the remapping of `t
 - Integrating an existing `*.cproject.yml` file in a different `*.csolution.yml` file that uses different `build-types:` and/or `target-types:` for the overall application.
 - Defines how different `*.cproject.yml` files of a `*.csolution.yml` are to the binary image of the final target (needs reflection in cbuild-idx.yml).
 
-The `context-map:` node lists the remapping the [`context:`](#context-name-conventions) of a `project-name` for specific `target-types:` and `build-types:`.
+The `context-map:` node lists a remapping of the [`context-name`](#context-name-conventions) for a `project-name` and specific `target-types:` and `build-types:`.
 
 `context-map:`                                     |              | Content
 :--------------------------------------------------|--------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `- context:`                    | **Required** | Specify a next context for a project
+&nbsp;&nbsp;&nbsp; `- <context-name>`              | **Required** | Specify an alternative [`context-name`](#context-name-conventions) for a project.
 
-For the `context-map:` it is required to specify the `project-name` in the `context:` list. This project will use a different `.build-type` and/or `+target-type` as applied in the `context:`. This remapping of the context applies for the specific type in the `build-types:` or `target-types:` list.
+For the `context-map:` it is required to specify the `<project-name>` as part of the [`context-name`](#context-name-conventions). This project will use a different `.build-type` and/or `+target-type` as applied in the [`context-name`](#context-name-conventions). This remapping of the context applies for the specific type in the `build-types:` or `target-types:` list.
 
 **Example 1:**
 
@@ -1380,7 +1391,7 @@ This application combines two projects for a multi-processor device, but the pro
   build-types:
     - type: Release                        # When applying build-type name 'release':
       context-map:
-        - context: HelloCM7.flex_release   # project HelloCM7 uses build-type name "flex_release" instead of "release"
+        - HelloCM7.flex_release            # project HelloCM7 uses build-type name "flex_release" instead of "release"
      
   projects:
     - project: ./CM7/HelloCM7.cproject.yml
@@ -1395,8 +1406,8 @@ The following example uses three projects `Demo`, `TFM` and `Boot`. The project 
   target-types:
     - type: Board                          # When applying target-type: 'Board':
       context-map:
-        - context: TFM.Release+LibMode     # for project TFM use build-type: Release, target-type: LibMode
-        - context: Boot+Flash              # for project Boot use target-type: Flash
+        - TFM.Release+LibMode              # for project TFM use build-type: Release, target-type: LibMode
+        - Boot+Flash                       # for project Boot use target-type: Flash
       board: B-U585I-IOT02A
     - type: AVH                            # When applying target-type: 'AVH':
       context-map:
@@ -1796,7 +1807,7 @@ the `%Instance%` with the instance number `n`.
 
 ## Pre/Post build steps
 
->**Scheduled for CMSIS-Toolbox 2.1 - Q3'23**
+>**Scheduled for CMSIS-Toolbox 2.3 - Q1'24**
 Tbd: potentially map to CMake add_custom_command.
 
 ### `execute:`

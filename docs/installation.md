@@ -24,12 +24,13 @@ There are three different ways to setup the CMSIS-Toolbox:
       - [Setup Win64](#setup-win64)
       - [Setup Linux or Bash](#setup-linux-or-bash)
       - [Setup MacOS](#setup-macos)
+    - [Registering CMSIS\_PACK\_ROOT with cpackget](#registering-cmsis_pack_root-with-cpackget)
   - [vcpkg - Setup using CLI](#vcpkg---setup-using-cli)
   - [vcpgk - Setup in VS Code](#vcpgk---setup-in-vs-code)
   
 ## Manual Setup
 
-Download the CMSIS-Toolbox from the [**release page**](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases). It is provided for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (amd64, arm64) in an archive file.
+Download the CMSIS-Toolbox from the [**Arm tools artifactory**](https://artifacts.keil.arm.com/cmsis-toolbox/). Signed binaries are provided for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (amd64, arm64) in an archive file.
 
 To setup the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example to `/c/cmsis-toolbox`.
 
@@ -53,11 +54,11 @@ The CMSIS-Toolbox works with the following toolchains. Install one or more toolc
 
 - [**Keil MDK**](http://www.keil.com/mdk5/install) version 5.36 or higher.
 
-- [**Arm Compiler**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18 or higher.
+- [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18 or higher.
 
 - [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
 
-- [**CLANG**](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest) version 16.0.0 or higher (experimental).
+- [**CLANG**](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest) version 17.0.1 or higher.
 
 ### Environment Variables
 
@@ -113,7 +114,7 @@ For Windows, use the dialog **System Properties - Advanced** and add the **Envir
 
 **Keil MDK**
 
-When using Keil MDK version 5, the CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\cmsis-toolbox` (in older versions `ARM\ctools`) directory of the MDK installation.
+When using Keil MDK version 5, the CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\cmsis-toolbox` directory of the MDK installation.
 
 Adding the binary directory of the cmsis-toolbox directory to your **PATH** environment variable allows you to invoke the tools at the
 command line without the need to specify the full path (default: `C:\Keil_v5\ARM\cmsis-toolbox\bin`)
@@ -129,7 +130,11 @@ The **CMSIS_COMPILER_ROOT** environment varible is not required if the compiler 
 >
 > At the Windows command prompt, use `set` to list all environment variables.
 >
-> Keil MDK may be used to [*import*](https://www.keil.com/support/man/docs/uv4/uv4_ui_import.htm) and [*export*](https://www.keil.com/support/man/docs/uv4/uv4_ui_export.htm) project files in `*.CPRJ` format.
+> Keil µVision may be used to:
+>
+> - [*import*](https://www.keil.com/support/man/docs/uv4/uv4_ui_import.htm) project files in `*.CPRJ` format.
+> - [*export*](https://www.keil.com/support/man/docs/uv4/uv4_ui_export.htm) project files in `*.csolution.yml` format.
+> - [*open*](https://developer.arm.com/documentation/101407/0539/User-Interface/Project-Menu-and-Commands) CMSIS-Toolbox build information files for debug start (experimental in MDK v5.39).
 
 #### Setup Linux or Bash
 
@@ -177,7 +182,9 @@ cpackget init https://www.keil.com/pack/index.pidx
 
 ## vcpkg - Setup using CLI
 
-The following setups describe how to setup the CMSIS-Toolbox using a command line (CLI) environment.
+The [vcpkg](https://vcpkg.io/en/) is a management tool for packages and includes features to manage tool artifacts. Arm provides a artifactory system for tools. Refer to [Arm Tools Available in vcpkg](https://www.keil.arm.com/packages/) for more information.
+
+The following setups describe how to setup the CMSIS-Toolbox using a command line (CLI) environment. In many examples there is already the file `vcpkg-configuration.json` which describes the tool environment required for the example. Refer to the last step to create an new `vcpkg-configuration.json` file.
 
 1. Install and enable vcpkg; the command depends on the shell.
 
@@ -216,11 +223,13 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
    vcpkg activate --project mypath/vcpkg-configuration.json
    ```
 
-   - with explict commands
-
-   ```txt
-   vcpkg use arm:cmsis-toolbox microsoft:cmake microsoft:ninja arm:arm-none-eabi-gcc
-   ```
+   > **Note:**
+   >
+   > - In case that activate fails, update registries to access latest versions of the tools artifacts.
+   >
+   >   ```txt
+   >   vcpkg  x-update-registry --all
+   >   ```
 
 3. Deactivate previous configuration
 
@@ -228,13 +237,7 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
    vcpkg deactivate
    ```
 
-4. Update registries to access latest versions of the tools artifacts.
-
-   ```txt
-   vcpkg  x-update-registry --all
-   ```
-
-5. Create a new vcpkg configuration file with these commands:
+4. Create a new `vcpkg-configuration.json` file with these commands:
 
    ```txt
    vcpkg new --application
@@ -256,7 +259,7 @@ https://github.com/Open-CMSIS-Pack/vscode-get-started) with a vcpkg-configuratio
 4. Specify the destination folder to clone to and select 'Open' when asked 'Would you like to open the cloned directory?'
 5. Use `View` menu 'Explorer' and select the file `vcpkg-configuration.json`. This file instructs [Microsoft vcpkg](https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts) to install the prerequisite artifacts required for building the solution and installs therefore:
 
-    - CMSIS-Toolbox 2.0.0
+    - CMSIS-Toolbox 2.2.0
     - cmake 3.25.2
     - ninja 1.10.2
     - arm-none-eabi-gcc 12.2.1-mpacbti (GNU Arm Embedded Toolchain 12.2.1)
