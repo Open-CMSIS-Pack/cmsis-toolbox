@@ -222,6 +222,13 @@ It is also possible to overwrite the toolchain selection and use a different too
 cbuild example.csolution.yml --toolchain GCC
 ```
 
+> **Note:**
+>
+> The `--toolchain` option is useful for:
+>
+> - Testing a new compiler or new compiler version on the overall project.
+> - For unit test applications to allow the usage of different compilers.
+
 ### Update RTE Configuration Files
 
 The [Component Configuration​](build-overview.md#project-structure) is stored in the [RTE directory](build-overview.md#rte-directory-structure). When files are missing or new software pack versions are installed it might be required to update the RTE configuration files with this command:

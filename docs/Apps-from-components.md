@@ -21,18 +21,18 @@ The steps to create an application based on software components are:
 
 1. Step: **Select software components**
    - Select the software pack that provides the required functionality (this could be based on pack datasheets) and identify the required software component(s).
-   - Add the pack and the component to your `*.cproject.yaml` file.
-   - Run `csolution *.csolution.yaml list dependencies` to identify other required software components.
+   - Add the pack and the component to your `*.cproject.yml` file.
+   - Run `csolution *.csolution.yml list dependencies` to identify other required software components.
    - Run `csolution list components --filter` to identify packs that provide this software components.
    - Repeat this step until all software components are part of your project.
 
 2. Step: **Configure software components**
-   - Run `csolution *.csolution.yaml update-rte` to copy configuration files into the [RTE directory](./build-overview.md#rte-directory-structure).
+   - Run `csolution *.csolution.yml update-rte` to copy configuration files into the [RTE directory](./build-overview.md#rte-directory-structure).
    - Set the parameters in the configuration files for your application.
   
 3. Step: **Use software components in application program**
    - User code templates provide a starting point for your application. 
-   - Copy these template files to your project directory add add it to your `*.cproject.yaml` file.
+   - Copy these template files to your project directory add add it to your `*.cproject.yml` file.
    - Adjust the code in the user template files as required.
 
 ## Software Component
