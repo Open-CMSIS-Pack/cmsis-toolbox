@@ -30,8 +30,8 @@ The section below describes the overall process to add a new compiler toolchain 
 
 The **`cbuild` Build Invocation** utility controls the overall build process.
 
-- Calls the **`csolution` Project Manager** to process *user input files*.
-- Optionally downloads *software packs* using the **`cpackget` Pack Manager**.
+- Calls the **`csolution` Project Manager** (with option `--no-update-rte`) to process *csolution project files*.
+- When option `--packs` is used, it downloads missing *software packs* using the **`cpackget` Pack Manager**.
 - Generates a `CMakeList.txt` files that include a `compiler_name.<version>.cmake` file for toolchain specific configuration.
 - These `CMakeList.txt` files are then processed by the `CMake` tool to generate the `build.ninja` file with the actual build commands.
 - This `build.ninja` file is then used by the `Ninja` tool to generate the binary image or a library file with the selected toolchain.
@@ -40,13 +40,17 @@ The picture below outlines these operations.
 
 ![Operation of `csolution` tool](./images/cbuild-operation.png "Operation of `csolution` tool")
 
+> **Note:**
+>
+> By default, the `cbuild` invocation does not update the [**RTE Directory**](build-overview.md#rte-directory-structure). Use the option `--update-rte` if this is required.
+
 ### `csolution` Project Manager
 
-The [**`csolution` Project Manager**](Overview.md) processes [*user input files* (in YAML format)](YML-Input-Format.md) and the `*.pdsc` metadata files of *software packs* and performs the following operations:
+The [**`csolution` Project Manager**](build-overview.md) processes [*csolution project files* (in YAML format)](YML-Input-Format.md) and the `*.pdsc` metadata files of *software packs* and performs the following operations:
 
-- Generate build information in the [**Project Area**](Overview.md#project-area) with the following files: [`*.cbuild-idx.yml`, `*.cbuild.yml`](YML-CBuild-Format.md), and `*.cprj` files for the **cbuild** tool.
-- Generate header files in the [**RTE Directory**](Overview.md#rte-directory-structure) for each [context](YML-Input-Format.md#context) with the following files: [RTE_components.h](Overview.md#rte_componentsh) and pre-include files from the `*.pdsc` metadata.
-- [Copy the configuration files](Overview.md#plm-of-configuration-files) from selected software components to the [**RTE Directory**](Overview.md#rte-directory-structure).
+- Generate build information in the [**Project Area**](build-overview.md#project-area) with the following files: [`*.cbuild-idx.yml`, `*.cbuild.yml`](YML-CBuild-Format.md), and `*.cprj` files for the **cbuild** tool.
+- Generate header files in the [**RTE Directory**](build-overview.md#rte-directory-structure) for each [context](YML-Input-Format.md#context) with the following files: [RTE_components.h](build-overview.md#rte_componentsh) and pre-include files from the `*.pdsc` metadata.
+- [Copy the configuration files](build-overview.md#plm-of-configuration-files) from selected software components to the [**RTE Directory**](build-overview.md#rte-directory-structure).
 
 The picture below outlines these operations.
 
@@ -141,7 +145,7 @@ A [`<component>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/ht
 
 > **Note:**
 >
-> No `<generator>` element in the *.PDSC file is required when the [Global Generator Registry File](#global-generator-registry-file) is used. The `generator="id"` attribute of the `<component>` element in the *.PDSC file is the reference to the `- id:` list node in the `global.generator.yml` file.
+> No `<generator>` element in the *.PDSC file is required when the [Global Generator Registry File](#global-generator-registry-file) is used. The `generator="id"` attribute of the `<component>` element in the `*.PDSC` file is the reference to the `- id:` list node in the `global.generator.yml` file.
 
 ### Global Generator Registry File
 

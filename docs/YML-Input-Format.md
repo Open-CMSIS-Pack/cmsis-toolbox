@@ -1,16 +1,16 @@
-# Project File Format
+# CMSIS Solution Project File Format
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **> Project File Format**
+[**CMSIS-Toolbox**](README.md) **> CMSIS Solution Project File Format**
 
-The following chapter explains the YAML format of the *user input files* that describes the software of an embedded application.
+The following chapter explains the CMSIS Solution Project File Format (short form *csolution project files*), the YAML files that that describes the software of an embedded application.
 
 **Table of Contents**
 
-- [Project File Format](#project-file-format)
+- [CMSIS Solution Project File Format](#cmsis-solution-project-file-format)
   - [Name Conventions](#name-conventions)
     - [Filename Extensions](#filename-extensions)
     - [`pack:` Name Conventions](#pack-name-conventions)
@@ -153,7 +153,7 @@ Element    |              | Description
 
 **Partly defined components**
 
-A component can be partly defined in *user input files* (`*.cproject.yml`, `*.clayer.yml`, `*.genlayer.yml`) by omitting `Cvendor`, `Cvariant`, and `Cversion`, even when this are part of the `components` element of the software pack. The component select algorithm resolves this to a fully defined component by:
+A component can be partly defined in *csolution project files* (`*.cproject.yml`, `*.clayer.yml`, `*.genlayer.yml`) by omitting `Cvendor`, `Cvariant`, and `Cversion`, even when this are part of the `components` element of the software pack. The component select algorithm resolves this to a fully defined component by:
 
 - when a partly specified component resolves to several possible choices, the tool selects:
   - (a) the default `Cvariant` of the component as defined in the PDSC file. 
@@ -167,7 +167,7 @@ The fully resolved component name is shown in the [`*.cbuild.yml`](YML-CBuild-Fo
 
 **Multiple component definitions are rejected**
 
-- If a component is added more then once in the *user input files* and an *error* is issued.
+- If a component is added more then once in the *csolution project files* and an *error* is issued.
 - An attempt to select multiple variants (using `Cvariant`) of a component results in an *error*.
 
 **Examples:**
@@ -454,7 +454,7 @@ The table below explains the top-level elements in each of the different `*.yml`
 Keyword                          | Description
 :--------------------------------|:------------------------------------
 [`default:`](#default)           | Start of `cdefault.yml` file that is used to setup the compiler along with some compiler-specific controls.
-[`solution:`](#solution)         | Start of `*.csolution.yml` file that [collects related projects](Overview.md#solution-collection-of-related-projects) along with `build-types:` and `target-types:`.
+[`solution:`](#solution)         | Start of `*.csolution.yml` file that [collects related projects](build-overview.md#solution-collection-of-related-projects) along with `build-types:` and `target-types:`.
 [`project:`](#project)           | Start of `*.cproject.yml` file that defines files, components, and layers which can be independently translated to a binary image or library.
 [`layer:`](#layer)               | Start of `*.clayer.yml` file that contains pre-configured software components along with source files.
 
@@ -491,7 +491,7 @@ default:
 ### `solution:`
 
 The `solution:` node is the start of a `*.csolution.yml` file that collects related projects as described in the section
-["Project setup for related projects"](Overview.md#project-setup-for-related-projects).
+["Project setup for related projects"](build-overview.md#project-setup-for-related-projects).
 
 `solution:`                                          |            | Content
 :----------------------------------------------------|:-----------|:------------------------------------
@@ -550,7 +550,7 @@ The `project:` node is the start of a `*.cproject.yml` file and can contain the 
 &nbsp;&nbsp;&nbsp; `description:`                   |  Optional  | Brief description text of this project.
 &nbsp;&nbsp;&nbsp; [`output:`](#output)             |  Optional  | Configure the generated output files.
 &nbsp;&nbsp;&nbsp; [`generators:`](#generators)     |  Optional  | Control the directory structure for generator output.
-&nbsp;&nbsp;&nbsp; [`rte:`](#rte)                   |  Optional  | Control the directory structure for [RTE (run-time environment)](Overview.md#rte-directory-structure) files.
+&nbsp;&nbsp;&nbsp; [`rte:`](#rte)                   |  Optional  | Control the directory structure for [RTE (run-time environment)](build-overview.md#rte-directory-structure) files.
 &nbsp;&nbsp;&nbsp; [`packs:`](#packs)               |  Optional  | Defines packs that are required for this project.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)     |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp) |  Optional  | Set the language standard for C++ source file compilation.
@@ -592,11 +592,11 @@ project:
 
 ### `layer:`
 
-The `layer:` node is the start of a `*.clayer.yml` file and defines a [Software Layer](./Overview.md#software-layers). It can contain the following nodes:
+The `layer:` node is the start of a `*.clayer.yml` file and defines a [Software Layer](./build-overview.md#software-layers). It can contain the following nodes:
 
 `layer:`                                                     |            | Content
 :------------------------------------------------------------|:-----------|:------------------------------------
-&nbsp;&nbsp;&nbsp; [`type:`](#layer---type)                  |  Optional  | Layer type for combining layers; used to identify [compatible layers](Overview.md#list-compatible-layers).
+&nbsp;&nbsp;&nbsp; [`type:`](#layer---type)                  |  Optional  | Layer type for combining layers; used to identify [compatible layers](build-overview.md#list-compatible-layers).
 &nbsp;&nbsp;&nbsp; `description:`                            |  Optional  | Brief description text of the layer.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)              |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)          |  Optional  | Set the language standard for C++ source file compilation.
@@ -723,7 +723,7 @@ generators:
 
 ### `rte:`
 
-Allows to control the directory structure for [RTE (run-time environment)](Overview.md#rte-directory-structure) files.  
+Allows to control the directory structure for [RTE (run-time environment)](build-overview.md#rte-directory-structure) files.  
 
 >**Notes:**
 > 
@@ -1262,7 +1262,7 @@ A [`context`](#context-name-conventions) is an enviroment setup for a project th
 - `+target-type` that defines typically target specific settings such as device, board, or usage of processor features.
 
 The section
-[Project setup for multiple targets and test builds](Overview.md#project-setup-for-multiple-targets-and-builds)
+[Project setup for multiple targets and test builds](build-overview.md#project-setup-for-multiple-targets-and-builds)
 explains the overall concept of  `target-types` and `build-types`. These `target-types` and `build-types` are defined in the `*.csolution.yml` that defines the overall application for a system.
 
 The settings of the `target-types:` are processed first; then the settings of the `build-types:` that potentially overwrite the `target-types:` settings.
@@ -1442,9 +1442,7 @@ Depending on a [compiler](#compiler) toolchain it is possible to include *list n
 ```yml
 for-compiler: AC6@6.16               # add item for Arm Compiler version 6.16 only      
 
-for-compiler:                        # add item
-  - AC6                              # for Arm Compiler (any version)
-  - GCC                              # for GCC Compiler
+for-compiler: GCC                    # for GCC Compiler (any version)
 ```
 
 ### `for-context:`
@@ -1504,7 +1502,7 @@ In other words, the restrictions specified by `for-context:` or `not-for-context
 
 ## Multiple Projects
 
-The section [Project setup for related projects](Overview.md#project-setup-for-related-projects) describes the
+The section [Project setup for related projects](build-overview.md#project-setup-for-related-projects) describes the
 organization of multiple projects. The file `*.csolution.yml` describes the relationship of this projects and may also re-map
 `target-types:` and `build-types:` for this projects using [`context-map:`](#context-map).
 

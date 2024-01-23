@@ -521,7 +521,7 @@ File                    | Description
 
 ### File Structure of `*.cgen.yml`
 
-The `*.cgen.yml` file starts with the node `generator-import:`. It defines similar to a [Software Layer](./Overview.md#software-layers) additional paramenters, files, and components that are included in the project.
+The `*.cgen.yml` file starts with the node `generator-import:`. It defines similar to a [Software Layer](./build-overview.md#software-layers) additional paramenters, files, and components that are included in the project.
 
 `generator-import:`                                                             | Content
 :-------------------------------------------------------------------------------|:------------------------------------

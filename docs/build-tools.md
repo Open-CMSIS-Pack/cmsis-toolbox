@@ -5,7 +5,7 @@
 
 [**CMSIS-Toolbox**](README.md) **> Build Tools**
 
-This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects), [`csolution`](#csolution-invocation) (transform *user input files*), and [`cpackget`](#cpackget-invocation) (manage software packs). It includes command line syntax details and examples.
+This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects), [`csolution`](#csolution-invocation) (transform *csolution project files*), and [`cpackget`](#cpackget-invocation) (manage software packs). It includes command line syntax details and examples.
 
 **Chapter Contents:**
 
@@ -93,6 +93,10 @@ Options:
 
 Use "cbuild [command] --help" for more information about a command.
 ```
+
+> **Note:**
+>
+> By default, the `cbuild` invocation does not update the [**RTE Directory**](build-overview.md#rte-directory-structure). Use the option `--update-rte` if this is required.
 
 ## `csolution` Invocation
 
@@ -217,6 +221,13 @@ It is also possible to overwrite the toolchain selection and use a different too
 ```bash
 cbuild example.csolution.yml --toolchain GCC
 ```
+
+> **Note:**
+>
+> The `--toolchain` option is useful for:
+>
+> - Testing a new compiler or new compiler version on the overall project.
+> - For unit test applications to allow the usage of different compilers.
 
 ### Update RTE Configuration Files
 
