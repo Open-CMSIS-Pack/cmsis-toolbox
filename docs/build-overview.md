@@ -5,7 +5,7 @@
 
 [**CMSIS-Toolbox**](README.md) **> Build Overview**
 
-This chapter describes the overall concept of the CMSIS-Toolbox build process. It outlines the content of *user input files* that describes the software application, and contains references to examples and project templates.
+This chapter describes the overall concept of the CMSIS-Toolbox build process. It outlines the content of *csolution project files* that describes the software application, and contains references to examples and project templates.
 
 - [Project Examples](#project-examples) helps to get started with the tools.
 - [Project Structure](#project-structure) describes the overall structure of projects.
@@ -22,6 +22,7 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
     - [Minimal Project Setup](#minimal-project-setup)
     - [Context](#context)
     - [Toolchain Agnostic Project](#toolchain-agnostic-project)
+      - [Compiler Selection](#compiler-selection)
     - [Reproducible builds](#reproducible-builds)
     - [Software Layers](#software-layers)
       - [Configuration Settings](#configuration-settings)
@@ -69,7 +70,7 @@ Tool                     | Description
 [cbuild](build-tools.md#cbuild-invocation)      | Build Invocation: orchestrate the build steps utilizing CMSIS tools and a CMake compilation process.
 [csolution](build-tools.md#csolution-invocation)| Project Manager: create build information for embedded applications that consist of one or more related projects.
 
-The tools processes *user input files* (in YAML format) and *software packs*
+The tools processes *csolution project files* (in YAML format) and *software packs*
 (in Open-CMSIS-Pack format) to generate independent projects which may be a part of a more complex application.
 
 > **Note:**
@@ -168,11 +169,12 @@ Refer to [CMSIS-Toolbox Templates](https://github.com/Open-CMSIS-Pack/csolution-
 A minimal application requires two files:
 
 - `Sample.csolution.yml` that defines the a [target type](YML-Input-Format.md#target-types) with [board](YML-Input-Format.md#board) or [device](YML-Input-Format.md#device). It includes [projects](YML-Input-Format.md#projects) and selects a [compiler](YML-Input-Format.md#compiler).
+  
 - `Sample.cproject.yml` that defines the files and software components that are translated into an image or library archive.
 
 >**Note:**
 >
-> When no [`packs:`](YML-Input-Format.md#packs) are specified in user input files, the tools use the latest version of the installed packs.
+> When no [`packs:`](YML-Input-Format.md#packs) are specified in *csolution project files*, the tools use the latest version of the installed packs.
 
 **Simple Project: `Sample.csolution.yml`**
 
@@ -229,9 +231,9 @@ This output file convention is identical with the [context: name conventions](YM
 
 ### Toolchain Agnostic Project
 
-With generic [**Translation Control**](YML-Input-Format.md#translation-control) settings it is possible to create projects that work across the range of supported compilers (AC6, GCC, IAR, CLANG).  The compiler selection and potential compiler specific settings are stored in the file `cdefault.yml`. By replacing the `cdefault.yml` file it is possible to re-target application projects.  [**Translation Control**](YML-Input-Format.md#translation-control) settings are mapped to specify compiler by the build tools.
+With generic [**Translation Control**](YML-Input-Format.md#translation-control) settings it is possible to create projects that work across the range of supported compilers (AC6, GCC, IAR, CLANG). The `cdefault.yml` file contains compiler specific settings and selects the default [`compiler:`](YML-Input-Format.md#compiler). By replacing the `cdefault.yml` file it is therefore possible to change the compiler or toolchain for the application project. The [**Translation Control**](YML-Input-Format.md#translation-control) settings are mapped to specify compiler by the build tools.
 
-**Default settings for multiple compiler toolchains**
+**Default settings in `cdefault.yml` for multiple compiler toolchains**
 
 ```yml
 default:
@@ -270,7 +272,7 @@ default:
 ```yml
 solution:
   cdefault:                      # use default setup of toolchain specific controls
-  compiler: AC6                  # explicit compiler selection (optional)
+  compiler: AC6                  # without explicit compiler selection, the setting of cdefault.yml is used
 
   packs:
     - pack: ARM::CMSIS
@@ -309,6 +311,18 @@ project:
     - component: ARM::CMSIS:CORE
     - component: Device:Startup
 ```
+
+#### Compiler Selection
+
+There are multiple ways to select a toolchain:
+
+- With `cdefault:` in the `*.csolution.yml` file, the `compiler:` selection of the `cdefault.yml` file is used. An installation can provide a `cdefault.yml` file in the directory [`<cmsis-toolbox-installation-dir>/etc`] and select in this way the toolchain used.
+  
+- An explicit `compiler:` definition in `*.csolution.yml` or `*.cproject.yml` project file overwrites the setting in `cdefault.yml`.
+  
+- The command line option `--toolchain` of the `cbuild` or `csolution` tool overwrites any `compiler:` definition in the csolution project files.
+
+Toolchain agnostic project examples may therefore omit any `cdefault:` and `compiler:` setting and rely on the `compiler:` setting of the `cdefault.yml` file in the directory [`<cmsis-toolbox-installation-dir>/etc`]. Such projects would then use the compiler of that is defined in the installation environment.
 
 ### Reproducible builds
 
@@ -791,7 +805,7 @@ The automatic Linker Script generation uses Linker Script template and generates
 - [`<device>` - `<memory>` element in the DFP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_boards_pg.html#element_board_memory)
 - [`<board>` - `<memory>` element in the BSP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory)
 
-Both files, the Linker Script template and the `<regions>.h` are located in the [RTE directory](Overview.md#rte-directory-structure) path `\RTE\Device\<device>`. The `<regions>.h` file name is extended with:
+Both files, the Linker Script template and the `<regions>.h` are located in the [RTE directory](build-overview.md#rte-directory-structure) path `\RTE\Device\<device>`. The `<regions>.h` file name is extended with:
 
 - `Bname` when the project context uses a [`board:`](YML-Input-Format.md#board-name-conventions) specification, i.e. `regions_IMXRT1050-EVKB.h`
 - `Dname` when the project context only uses a [`device:`](YML-Input-Format.md#device-name-conventions) specification, i.e. `regions_stm32u585xx.h`.

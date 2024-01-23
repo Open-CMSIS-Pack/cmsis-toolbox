@@ -7,7 +7,6 @@
 
 [**CMSIS-Toolbox**](README.md) **> Generate Application from Components**
 
-
 The following chapter explains the structure of a software pack and how it can be used in an application.
 
 - [Generate Application from Components](#generate-application-from-components)
