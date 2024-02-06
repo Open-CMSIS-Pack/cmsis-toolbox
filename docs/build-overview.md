@@ -474,7 +474,7 @@ projects:
   - project: ./MyProject.cproject.yml
 ```
 
-**File: MyProject.csolution.yml**
+**File: MyProject.cproject.yml**
 
 ```yml
 project:
