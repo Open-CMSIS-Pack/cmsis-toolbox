@@ -10,7 +10,7 @@ There are three different ways to setup the CMSIS-Toolbox:
 
 - [Manual setup](#manual-setup) with operating system commands and environment variables.
 - [vcpkg - CLI](#vcpkg---setup-using-cli) using the vcpkg tool in command-line mode
-- [vcpgk - VS Code](#vcpgk---setup-in-vs-code) using the vcpgk tool with VS Code integration
+- [vcpkg - VS Code](#vcpkg---setup-in-vs-code) using the vcpkg tool with VS Code integration
 
 **Chapter Contents:**
 
@@ -26,7 +26,8 @@ There are three different ways to setup the CMSIS-Toolbox:
       - [Setup MacOS](#setup-macos)
     - [Registering CMSIS\_PACK\_ROOT with cpackget](#registering-cmsis_pack_root-with-cpackget)
   - [vcpkg - Setup using CLI](#vcpkg---setup-using-cli)
-  - [vcpgk - Setup in VS Code](#vcpgk---setup-in-vs-code)
+  - [vcpkg - Setup in CI](#vcpkg---setup-in-ci)
+  - [vcpkg - Setup in VS Code](#vcpkg---setup-in-vs-code)
   
 ## Manual Setup
 
@@ -72,7 +73,7 @@ Environment Variable     | Description
 **CMSIS_PACK_ROOT**      | Path to the [CMSIS-Pack Root Directory](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory) that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
 **CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. `/c/cmsis-toolbox/etc`)
 **Path**                 | Add to the system path the CMSIS-Toolbox `bin` directory (i.e. `/c/cmsis-toolbox/bin`) as well as CMake and Ninja.
-**CMSIS_BUILD_ROOT**     | ** DEPRECATED **: Ensure that no environment variable with this name is defined in your environment, otherwise `cbuild` will use tools from the directory specified instead of the tools located side by side.
+**CMSIS_BUILD_ROOT**     | **DEPRECATED**: Ensure that no environment variable with this name is defined in your environment, otherwise `cbuild` will use tools from the directory specified instead of the tools located side by side.
 
 #### Default Values
 
@@ -124,7 +125,7 @@ and the **RTE_PATH** setting in the MDK's TOOLS.INI (default: C:\Keil_v5\TOOLS.I
 Note that in case the default location `%localappdata%\Arm\Packs` was selected during installation, the setting of **CMSIS_PACK_ROOT**
 environment variable is not required.
 
-The **CMSIS_COMPILER_ROOT** environment varible is not required if the compiler configuration files provided in cmsis-toolbox/etc are used.
+The **CMSIS_COMPILER_ROOT** environment variable is not required if the compiler configuration files provided in cmsis-toolbox/etc are used.
 
 > **Notes:**
 >
@@ -190,54 +191,54 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
 
    - Windows Command Prompt (cmd)
 
-   ```txt
-   curl -LO https://aka.ms/vcpkg-init.cmd && .\vcpkg-init.cmd
-   %USERPROFILE%\.vcpkg\vcpkg-init.cmd
-     ```
+      ```bat
+      curl -LO https://aka.ms/vcpkg-init.cmd && .\vcpkg-init.cmd
+      %USERPROFILE%\.vcpkg\vcpkg-init.cmd
+      ```
 
-   - Windows powerShell
+   - Windows PowerShell
 
-    ```txt
-    iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
-    . ~/.vcpkg/vcpkg-init.ps1
-    ```
+      ```ps1
+      iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
+      . ~/.vcpkg/vcpkg-init.ps1
+      ```
 
-   - Linux / macOS
+   - Linux (x64) / macOS
 
-    ```txt
-    . <(curl https://aka.ms/vcpkg-init.sh -L)
-    . ~/.vcpkg/vcpkg-init
-    ```
-
-2. Activate required tools using one of the following methods:
+      ```sh
+      . <(curl https://aka.ms/vcpkg-init.sh -L)
+      . ~/.vcpkg/vcpkg-init
+      ```
   
-   - `vcpkg-configuration.json` configuration file in current directory or any parent directory
+    > **Note:**
+    > vcpkg is currently not working on
+    >
+    > - MSYS Bash (such as Git Bash) on Windows.
+    > - Linux (aarch64)
 
-   ```txt
-   vcpkg activate
-   ```
+1. Activate required tools using one of the following methods:
+  
+   `vcpkg-configuration.json` configuration file in current directory or any parent directory
 
-   - explicitly specify a `configuration.json` file
-
-   ```txt
-   vcpkg activate --project mypath/vcpkg-configuration.json
-   ```
+    ```txt
+    vcpkg activate
+    ```
 
    > **Note:**
    >
-   > - In case that activate fails, update registries to access latest versions of the tools artifacts.
+   > In case that activate fails, update registries to access latest versions of the tools artifacts.
    >
-   >   ```txt
-   >   vcpkg  x-update-registry --all
-   >   ```
+   > ```txt
+   > vcpkg x-update-registry --all
+   > ```
 
-3. Deactivate previous configuration
+1. Deactivate previous configuration
 
    ```txt
    vcpkg deactivate
    ```
 
-4. Create a new `vcpkg-configuration.json` file with these commands:
+1. Create a new `vcpkg-configuration.json` file with these commands:
 
    ```txt
    vcpkg new --application
@@ -245,13 +246,54 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
    vcpkg add artifact microsoft:cmake
    vcpkg add artifact microsoft:ninja
    vcpkg add artifact arm:arm-none-eabi-gcc
-   vcpkg  activate
+   vcpkg activate
    ```  
 
 Alternatively you may use an existing repository, for example [github.com/Open-CMSIS-Pack/vscode-get-started](
 https://github.com/Open-CMSIS-Pack/vscode-get-started) with a vcpkg-configuration.json file.
 
-## vcpgk - Setup in VS Code
+## vcpkg - Setup in CI
+
+Using vcpkg in Continuous Integration (CI) environments is basically like [using it manually CLI](#vcpkg---setup-using-cli).
+
+The way vcpkg artifacts updates the current shell environment needs to be taken into account when creating CI
+pipelines. The command `vcpkg activate` updates the current environment variables by extending `PATH` and adding
+additional variables required by installed artifacts. These modifications are only visible in the current running
+shell and spawned subprocesses.
+
+This fact doesn't affect manual usage on a local prompt, given a typical user runs subsequent command from the same
+parent shell process. In contrast, typical CI systems such as GitHub Actions or Jenkins spawn a new sub shell for each
+step of a pipeline. Hence, modifications made to the environment in one sub shell by running the `vcpkg activate`
+command are not persisted into the subsequent steps.
+
+Another aspect to consider is about handling the local vcpkg cache (e.g., `~/.vcpkg`). Common practice on CI systems is
+to recreate a clean environment for each run. Hence, vcpkg and all required artifacts are re-downloaded on every run.
+This can easily cause massive bandwidth waste for re-downloading the very same (huge) archives all the time. Instead,
+consider about preserving the local vcpkg cache between runs.
+
+### GitHub Actions
+
+In GitHub Actions one can preserve environment settings from one step to subsequent ones via the special files
+exposed in `$GITHUB_PATH` and `$GITHUB_ENV`. One can refer to the custom action provided by
+[JonatanAntoni/actions/vcpkg](https://github.com/JonatanAntoni/actions) to get this for free.
+
+Preserving the runners vcpkg cache between runs can easily be achieved with an `actions/cache` step preceding the
+first `vcpkg activate` command. The above custom action takes this implicitly into account.
+
+### Other CI Systems
+
+In CI Systems without a proper vcpkg integration one need to go for a workaround.
+Either,
+
+- keep all command depending on an activated environment within the same shell block, or
+- repeat activation for each new shell block before running any dependent command.
+
+  ```sh
+  . ~/.vcpkg/vcpkg-init
+  vcpkg activate
+  ```
+
+## vcpkg - Setup in VS Code
 
 1. Download & Install [Microsoft Visual Studio Code](https://code.visualstudio.com/download) for your operating system.
 2. Launch Visual Studio Code. Using the menu `View` and open `Extensions` and install the `Keil Studio Pack` extensions.
@@ -266,8 +308,8 @@ https://github.com/Open-CMSIS-Pack/vscode-get-started) with a vcpkg-configuratio
 
 > **Notes:**
 >
-> - In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
->
-Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal. 
+> In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
+
+Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal.
 
 Alternatively use `View` and open the `CMSIS` Extension. Then use the `Build` buttons to translate the project, flash your connected board and/or launch a debug connection.
