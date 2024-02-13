@@ -75,7 +75,7 @@ Environment Variable     | Description
 **Path**                 | Add to the system path the CMSIS-Toolbox `bin` directory (i.e. `/c/cmsis-toolbox/bin`) as well as CMake and Ninja.
 **CMSIS_BUILD_ROOT**     | **DEPRECATED**: Must not be set in your environment, otherwise `cbuild` will use tools from the directory specified instead of the tools located side by side.
 
-The **CMSIS_COMPILER_ROOT** environment variable is optional. If it is missing the path to the CMSIS-Toolbox is used and extended with `\etc`.  It is used to locate:
+The **CMSIS_COMPILER_ROOT** environment variable is optional. If it is missing the path to the CMSIS-Toolbox is used and extended with `/etc`.  It is used to locate:
 
 - Toolchain cmake files `<compiler-name>.<major>.<minor>.<patch>.cmake` for the selected [compiler](YML-Input-Format.md#compiler).
 - Default [linker script files](build-overview.md#linker-script-management) (to be preprocessed): `<compiler-name>_linker_script.<ext>.src`
