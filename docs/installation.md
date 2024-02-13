@@ -70,9 +70,14 @@ Environment Variable     | Description
 :------------------------|:------------
 `<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries where `<name>` is one of AC6, GCC, IAR, CLANG
 **CMSIS_PACK_ROOT**      | Path to the [CMSIS-Pack Root Directory](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory) that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
-**CMSIS_COMPILER_ROOT**  | Path to the CMSIS-Toolbox `etc` directory (i.e. `/c/cmsis-toolbox/etc`)
+**CMSIS_COMPILER_ROOT**  | Optional: Path to the CMSIS-Toolbox `etc` directory (i.e. `/c/cmsis-toolbox/etc`).
 **Path**                 | Add to the system path the CMSIS-Toolbox `bin` directory (i.e. `/c/cmsis-toolbox/bin`) as well as CMake and Ninja.
-**CMSIS_BUILD_ROOT**     | ** DEPRECATED **: Ensure that no environment variable with this name is defined in your environment, otherwise `cbuild` will use tools from the directory specified instead of the tools located side by side.
+
+The **CMSIS_COMPILER_ROOT** environment variable is optional. If it is missing the path to the CMSIS-Toolbox is used and extended with `\etc`.  It is used to locate:
+
+- Toolchain cmake files `<compiler-name>.<major>.<minor>.<patch>.cmake` for the selected [compiler](YML-Input-Format.md#compiler).
+- Default [linker script files](build-overview.md#linker-script-management) (to be preprocessed): `<compiler-name>_linker_script.<ext>.src`
+- The `cdefault.yml` that is used when no other [`cdefault.yml`](YML-Input-Format.md#cdefault) file is found.
 
 #### Default Values
 
@@ -268,6 +273,6 @@ https://github.com/Open-CMSIS-Pack/vscode-get-started) with a vcpkg-configuratio
 >
 > - In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
 >
-Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal. 
+Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal.
 
 Alternatively use `View` and open the `CMSIS` Extension. Then use the `Build` buttons to translate the project, flash your connected board and/or launch a debug connection.
