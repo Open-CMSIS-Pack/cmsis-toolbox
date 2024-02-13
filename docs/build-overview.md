@@ -16,6 +16,7 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
 
 - [Build Overview](#build-overview)
   - [Overview of Operation](#overview-of-operation)
+    - [Source Code of Software Packs](#source-code-of-software-packs)
   - [Project Examples](#project-examples)
     - [GitHub repositories](#github-repositories)
     - [Project Templates](#project-templates)
@@ -24,6 +25,7 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
     - [Toolchain Agnostic Project](#toolchain-agnostic-project)
       - [Compiler Selection](#compiler-selection)
     - [Reproducible builds](#reproducible-builds)
+      - [Repository (version control)](#repository-version-control)
     - [Software Layers](#software-layers)
       - [Configuration Settings](#configuration-settings)
       - [Software Layers in Packs](#software-layers-in-packs)
@@ -99,7 +101,7 @@ Input Files              | Description
 [Generic Software Packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/cp_PackTutorial.html#cp_SWComponents) | Provide re-usable software components that are typically configurable  towards a user application.
 [DFP Software Packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/cp_PackTutorial.html#createPack_DFP)     | Device related information (including memory sizes) for the tool configuration.
 [BSP Software Packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/cp_PackTutorial.html#createPackBoard)    | Board specific configuration (i.e. additional memory resources).
-[cdefault.yml](YML-Input-Format.md#default)           | When enabled with [`cdefault:`](YML-Input-Format.md#solution), setup of toolchain specific controls and pre-defined toolchains.
+[cdefault.yml](YML-Input-Format.md#cdefault)           | When enabled with [`cdefault:`](YML-Input-Format.md#solution), setup of toolchain specific controls and pre-defined toolchains.
 [*.csolution.yml](YML-Input-Format.md#solution)         | Complete scope of the application with build order of sub-projects. Defines [target](YML-Input-Format.md#target-types) and [build](YML-Input-Format.md#build-types) types.
 [*.cproject.yml](YML-Input-Format.md#project)           | Content of an independent build (linker or archiver run) - directly relates to a `*.cprj` file.
 [*.clayer.yml](YML-Input-Format.md#layer)               | Set of source files along with pre-configured components for reuse in different applications.
@@ -134,6 +136,17 @@ To build an application project, the `csolution` command `convert` executes the 
    - Update [configuration files](#plm-of-configuration-files) in RTE directory (disable with option: `--no-update-rte`).
    - Print results of software component dependency validation.
    - Create `cbuild-idx.yml`, `cbuild.yml` and `*.CPRJ` files.
+
+### Source Code of Software Packs
+
+Software packs and the related [components:](#software-components) allow you to share and reuse code. The content of a software pack is therefore *read-only* (with the exception of [configuration files](#configuration-settings) that are copied to the [RTE directory](#rte-directory-structure)) as these source code should not be modified by a user.
+
+The **benefit** is a clean project directory that only only the user code and [configuration files](#configuration-settings) for [components:](#software-components). This keeps a [repository](#repository-version-control) small and makes it easy to upgrade to a [new pack version](#plm-of-configuration-files).
+
+> **Notes:**
+>
+> - During development of a software pack you may [install a repository](build-tools.md#install-a-repository) the contains the source of the software pack.
+> - You may copy the content of a software pack to your project workspace and provide a [path to the pack](YML-Input-Format.md#pack).
 
 ## Project Examples
 
@@ -336,6 +349,21 @@ Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.m
 > - The [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file should be committed to a repository to ensure reproducible builds.
 > - With CMSIS-Toolbox Version 2.3.0, the `cbuild` option `--freeze-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file exists and reports an error if any pack is changed or not available.
 > - To update to pack versions, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) and use the command `csolution convert` to generate the build information.
+
+#### Repository (version control)
+
+To support reproducible builds the following files should be committed to a repository of a version control system.
+
+- All user source code files.
+- All csolution project files (`*.csolution.yml`, `*.cproject.yml`, etc.).
+- All files in the RTE directory
+  - Ensure that there are no files with the extension *.update@* as this indicates that configuration files are not up-to-date due to updated software packs.
+- The file `*.cbuild-pack` to allow reproducible builds.
+- Optionally, the file `*.cbuild-set` which defines the context set of the application that should be generated.
+
+> **Note:**
+>
+> - If the file `*.cbuild-set` is missing, the `setup` command creates a `*.cbuild-set` file with selection of the first `target-type` and the first `build-type`.
 
 ### Software Layers
 

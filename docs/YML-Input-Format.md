@@ -22,7 +22,7 @@ The following chapter explains the CMSIS Solution Project File Format (short for
   - [Variables](#variables)
   - [Order of List Nodes](#order-of-list-nodes)
   - [Project File Structure](#project-file-structure)
-    - [`default:`](#default)
+    - [`cdefault:`](#cdefault)
     - [`solution:`](#solution)
     - [`project:`](#project)
     - [`layer:`](#layer)
@@ -453,12 +453,12 @@ The table below explains the top-level elements in each of the different `*.yml`
 
 Keyword                          | Description
 :--------------------------------|:------------------------------------
-[`default:`](#default)           | Start of `cdefault.yml` file that is used to setup the compiler along with some compiler-specific controls.
+[`default:`](#cdefault)          | Start of `cdefault.yml` file that is used to setup the compiler along with some compiler-specific controls.
 [`solution:`](#solution)         | Start of `*.csolution.yml` file that [collects related projects](build-overview.md#solution-collection-of-related-projects) along with `build-types:` and `target-types:`.
 [`project:`](#project)           | Start of `*.cproject.yml` file that defines files, components, and layers which can be independently translated to a binary image or library.
 [`layer:`](#layer)               | Start of `*.clayer.yml` file that contains pre-configured software components along with source files.
 
-### `default:`
+### `cdefault:`
 
 When [`cdefault:`](#solution) is specified in the `*.csolution.yml` file, the **`csolution` Project Manager** uses a file with the name `cdefault.yml` or `cdefault.yaml` to setup 
 the compiler along with some specific default controls. The search order for this file is:
@@ -498,7 +498,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; `created-by:`                     |  Optional  | Identifies the tool that created this solution.
 &nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this solution, i.e. **CMSIS-Toolbox@2.2.0**
 &nbsp;&nbsp;&nbsp; `description:`                    |  Optional  | Brief description text of this solution.
-&nbsp;&nbsp;&nbsp; `cdefault:`                       |  Optional  | When specified, the [`cdefault.yml`](#default) file is used to setup compiler specific controls. 
+&nbsp;&nbsp;&nbsp; `cdefault:`                       |  Optional  | When specified, the [`cdefault.yml`](#cdefault) file is used to setup compiler specific controls. 
 &nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)      |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)  |  Optional  | Set the language standard for C++ source file compilation.
@@ -1176,7 +1176,7 @@ have also the format `@~1.2`/`@~1` that matches with semantic versioning.
 
 `pack:`                                                     | Content
 :-----------------------------------------------------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `path:`                                  | Explicit path name that stores the software pack
+&nbsp;&nbsp;&nbsp; `path:`                                  | Explicit path name that stores the software pack. This can be a relative path to your project workspace.
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)           | Include pack for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context)   | Exclude pack for a list of *build* and *target* types.
 
