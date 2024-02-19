@@ -168,6 +168,6 @@ generator:
 
 > **Note:** 
 > 
-> - The only argument to the `run:` command is the path to the [Generator Information Index File](YML-CBuild-Format.md#generator-information-file). There are no configurable parameters for this utility. The invocation is:
+> - The only argument to the `run:` command is the path to the [Generator Information Index File](YML-CBuild-Format.md#generator-information-files). There are no configurable parameters for this utility. The invocation is:
 >
 >   `cbrige <csolution-name>.cbuild-gen-idx.yml`
