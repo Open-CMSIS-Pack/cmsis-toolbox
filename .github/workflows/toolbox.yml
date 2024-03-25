@@ -40,7 +40,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/buildmgr/2.2.1
+          version: tags/tools/buildmgr/2.3.0-dev0
           file: cbuild_install.sh
           target: toolbox/cbuild/cbuild_install.sh
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -97,6 +97,7 @@ jobs:
           mkdir -p zip/cmsis-toolbox-darwin-amd64/bin  zip/cmsis-toolbox-darwin-amd64/etc  zip/cmsis-toolbox-darwin-amd64/doc
           mkdir -p zip/cmsis-toolbox-darwin-arm64/bin  zip/cmsis-toolbox-darwin-arm64/etc  zip/cmsis-toolbox-darwin-arm64/doc
           cp distribution/bin/cbuild.exe-amd64    zip/cmsis-toolbox-windows-amd64/bin/cbuild.exe
+          cp distribution/bin/cbuild2cmake.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/cbuild2cmake.exe
           cp distribution/bin/cbuildgen.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/cbuildgen.exe
           cp distribution/bin/cpackget.exe-amd64  zip/cmsis-toolbox-windows-amd64/bin/cpackget.exe
           cp distribution/bin/cbridge.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/cbridge.exe
@@ -104,6 +105,7 @@ jobs:
           cp distribution/bin/packchk.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/packchk.exe
           cp distribution/bin/svdconv.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/svdconv.exe
           cp distribution/bin/cbuild.exe-arm64    zip/cmsis-toolbox-windows-arm64/bin/cbuild.exe
+          cp distribution/bin/cbuild2cmake.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/cbuild2cmake.exe
           cp distribution/bin/cbuildgen.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/cbuildgen.exe
           cp distribution/bin/cpackget.exe-arm64  zip/cmsis-toolbox-windows-arm64/bin/cpackget.exe
           cp distribution/bin/cbridge.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/cbridge.exe
@@ -111,6 +113,7 @@ jobs:
           cp distribution/bin/packchk.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/packchk.exe
           cp distribution/bin/svdconv.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/svdconv.exe
           cp distribution/bin/cbuild.lin-amd64    zip/cmsis-toolbox-linux-amd64/bin/cbuild
+          cp distribution/bin/cbuild2cmake.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuild2cmake
           cp distribution/bin/cbuildgen.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuildgen
           cp distribution/bin/cpackget.lin-amd64  zip/cmsis-toolbox-linux-amd64/bin/cpackget
           cp distribution/bin/cbridge.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/cbridge
@@ -118,6 +121,7 @@ jobs:
           cp distribution/bin/packchk.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/packchk
           cp distribution/bin/svdconv.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/svdconv
           cp distribution/bin/cbuild.lin-arm64    zip/cmsis-toolbox-linux-arm64/bin/cbuild
+          cp distribution/bin/cbuild2cmake.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/cbuild2cmake
           cp distribution/bin/cbuildgen.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/cbuildgen
           cp distribution/bin/cpackget.lin-arm64  zip/cmsis-toolbox-linux-arm64/bin/cpackget
           cp distribution/bin/cbridge.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/cbridge
@@ -125,6 +129,7 @@ jobs:
           cp distribution/bin/packchk.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/packchk
           cp distribution/bin/svdconv.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/svdconv
           cp distribution/bin/cbuild.mac-amd64    zip/cmsis-toolbox-darwin-amd64/bin/cbuild
+          cp distribution/bin/cbuild2cmake.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/cbuild2cmake
           cp distribution/bin/cbuildgen.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/cbuildgen
           cp distribution/bin/cpackget.mac-amd64  zip/cmsis-toolbox-darwin-amd64/bin/cpackget
           cp distribution/bin/cbridge.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/cbridge
@@ -132,6 +137,7 @@ jobs:
           cp distribution/bin/packchk.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/packchk
           cp distribution/bin/svdconv.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/svdconv
           cp distribution/bin/cbuild.mac-arm64    zip/cmsis-toolbox-darwin-arm64/bin/cbuild
+          cp distribution/bin/cbuild2cmake.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/cbuild2cmake
           cp distribution/bin/cbuildgen.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/cbuildgen
           cp distribution/bin/cpackget.mac-arm64  zip/cmsis-toolbox-darwin-arm64/bin/cpackget
           cp distribution/bin/cbridge.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/cbridge

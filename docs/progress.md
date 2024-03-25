@@ -85,6 +85,9 @@ add `auto` node for automatic linker script generation                          
 processor attributes `trustzone`, `fpu`, `dsp`, `mve`, `endian` and `branch-protection`  | :heavy_check_mark:       | csolution 2.2.0
 alpha support for LLVM/Clang updated to 17.0.1                                           | :heavy_check_mark:       | cbuild 2.2.0
 add `*.src` file extension as linker script source for pre-processing                    | :heavy_check_mark:       | cbuild 2.2.0
+support multiple component instances                                                     | :heavy_check_mark:       | csolution 2.3.0-dev0
+add cbuild `setup` command                                                               | :heavy_check_mark:       | cbuild 2.3.0-dev0
+add alpha build manager backend                                                          | :heavy_check_mark:       | cbuild2cmake 0.9.0-dev0
 resources management                                                                     | :x:                      |
 execution groups/phases                                                                  | :x:                      |
 pre/post build steps in csolution                                                        | :x:                      |
