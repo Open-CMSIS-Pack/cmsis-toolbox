@@ -67,7 +67,7 @@ jobs:
 
       - name: Unzip and copy files
         run: |
-          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.28/schema/PACK.xsd --output distribution/etc/PACK.xsd
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.31/schema/PACK.xsd --output distribution/etc/PACK.xsd
           sudo chmod +x ./cbuild/cbuild_install.sh
           ./cbuild/cbuild_install.sh -x cbuild
           cp -r cbuild/bin/* distribution/bin
