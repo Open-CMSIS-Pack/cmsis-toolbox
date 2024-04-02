@@ -75,9 +75,10 @@ Tool                     | Description
 The tools processes *csolution project files* (in YAML format) and *software packs*
 (in Open-CMSIS-Pack format) to generate independent projects which may be a part of a more complex application.
 
-> **Note:**
+> **Notes:**
 >
->This documentation uses the filename extension `*.yml`, but the extension `*.yaml` is also supported.
+> - This documentation uses the filename extension `*.yml`, but the extension `*.yaml` is also supported.
+> - The term *CMSIS solution* refers to an application project that is specified with *csolution project files*.
 
 The overall features are:
 
@@ -193,8 +194,8 @@ A minimal application requires two files:
 
 ```yml
 solution:
-  created-for: CMSIS-Toolbox@2.0.0
-  compiler: AC6                               # explicit selection of compiler
+  cdefault:                                   # use default setup for toolchains
+  compiler: AC6                               # select the compiler to use
   
   packs:                                      # explicit pack selection may be omitted
     - pack: NXP::K32L3A60_DFP@16.0.0          # specify DFP
@@ -207,7 +208,7 @@ solution:
   build-types:                                # defines toolchain options for 'debug' and 'release'
     - type: Debug
       debug: on
-      optimize: none
+      optimize: debug
 
     - type: Release
       debug: off
@@ -250,79 +251,60 @@ With generic [**Translation Control**](YML-Input-Format.md#translation-control) 
 
 ```yml
 default:
-  compiler: GCC          # selects the default compiler for an installation
+
+  compiler: GCC                  # default compiler that is used without explicit selection                
 
   misc:
-    - for-compiler: GCC
-      C:
-        - -std=gnu11
-      Link:
-        - --specs=nano.specs
-        - --specs=rdimon.specs
-
     - for-compiler: AC6
       C-CPP:
         - -Wno-macro-redefined
         - -Wno-pragma-pack
         - -Wno-parentheses-equality
+        - -Wno-license-management
       C:
         - -std=gnu11
       ASM:
         - -masm=auto
       Link:
         - --entry=Reset_Handler
+        - --map
         - --info summarysizes
+        - --summary_stderr
+        - --diag_suppress=L6314W
+
+    - for-compiler: GCC
+      C-CPP:
+        - -masm-syntax-unified
+        - -fomit-frame-pointer
+        - -ffunction-sections
+        - -fdata-sections
+      C:
+        - -std=gnu11
+      Link:
+        - --specs=nano.specs
+        - --specs=rdimon.specs
+        - -Wl,-Map=$elf()$.map
+        - -Wl,--gc-sections
+
+    - for-compiler: CLANG
+      C-CPP:
+        - -fomit-frame-pointer
+        - -ffunction-sections
+        - -fdata-sections
+      C:
+        - -std=gnu11
+      Link:
+        - -lcrt0-semihost
+        - -lsemihost
+        - -Wl,-Map=$elf()$.map
+        - -Wl,--gc-sections
 
     - for-compiler: IAR
-      C-CPP:
+      C-CPP: 
         - --dlib_config DLib_Config_Full.h
       Link:
         - --semihosting
-```
-
-**Simple Compiler Agnostic Project: `Sample.csolution.yml`**
-
-```yml
-solution:
-  cdefault:                      # use default setup of toolchain specific controls
-  compiler: AC6                  # without explicit compiler selection, the setting of cdefault.yml is used
-
-  packs:
-    - pack: ARM::CMSIS
-    - pack: Keil::LPC1700_DFP
-
-  target-types:                  # multiple device or boards
-    - type: MyHardware
-      device: NXP::LPC1768
-
-    - type: MyBoard
-      board: MCB1700
-
-  build-types:
-    - type: debug                # options for 'debug'
-      optimize: none
-      debug: on
-
-    - type: release              # options for 'release'
-      optimize: balanced
-      debug: off
-      
-  projects:
-    - project: ./Sample.cproject.yml
-```
-
-**Simple Compiler Agnostic Project: `Sample.cproject.yml`**
-
-```yml
-project:
-  groups:
-    - group: App
-      files:
-        - file: ./main.c
-
-  components:
-    - component: ARM::CMSIS:CORE
-    - component: Device:Startup
+        - --map=$elf()$.map
 ```
 
 #### Compiler Selection
@@ -335,7 +317,17 @@ There are multiple ways to select a toolchain:
   
 - The command line option `--toolchain` of the `cbuild` or `csolution` tool overwrites any `compiler:` definition in the csolution project files.
 
-Toolchain agnostic project examples may therefore omit any `cdefault:` and `compiler:` setting and rely on the `compiler:` setting of the `cdefault.yml` file in the directory [`<cmsis-toolbox-installation-dir>/etc`]. Such projects would then use the compiler of that is defined in the installation environment.
+Toolchain agnostic project examples may therefore omit the `compiler:` setting and rely on the `compiler:` setting of the `cdefault.yml` file in the directory [`<cmsis-toolbox-installation-dir>/etc`]. Such projects would then use the compiler of that is defined in the installation environment.
+
+**Example: Compiler selection in `Sample.csolution.yml`**
+
+```yml
+solution:
+  cdefault:                      # use default setup of toolchain specific controls
+  compiler: AC6                  # without explicit compiler selection, the setting of cdefault.yml is used
+
+   :
+```
 
 ### Reproducible builds
 
@@ -347,7 +339,7 @@ Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.m
 > **Notes:**
 >
 > - The [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file should be committed to a repository to ensure reproducible builds.
-> - With CMSIS-Toolbox Version 2.3.0, the `cbuild` option `--freeze-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file exists and reports an error if any pack is changed or not available.
+> - The `cbuild` option `--frozen-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file exists and reports an error if any pack is changed or not available.
 > - To update to pack versions, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) and use the command `csolution convert` to generate the build information.
 
 #### Repository (version control)

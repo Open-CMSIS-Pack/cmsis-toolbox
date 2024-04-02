@@ -14,6 +14,7 @@ The following chapter explains the structure of a software pack and how it can b
   - [Software Component](#software-component)
     - [Required Interfaces](#required-interfaces)
   - [Example: Network Stack](#example-network-stack)
+  - [Update Software Packs](#update-software-packs)
 
 ## Overall Process
 
@@ -55,7 +56,7 @@ For example the LwIP network stack:
 - CMSIS-Drivers for the communication interface.
 - List API header files for their interfaces.
 
-ToDo: Create a pack datasheet to display information about software components.
+> ToDo: Create a pack datasheet to display information about software components.
 
 ### Required Interfaces
 
@@ -101,3 +102,28 @@ The required interfaces are identified using `csolution list dependencies`:
 Adding more components such as a IoT Client would be the next step.
 
 ![Network Stack - Class View](./images/Network-classes.png "Network Stack - Class View")
+
+## Update Software Packs
+
+The update of software packs can be performed with these steps:
+
+- Download new software packs as needed using `cpackget`.
+
+- Use the command `csolution convert` with the option `--load latest` to update the software packs.
+
+  ```bash
+  >csolution convert Hello.csolution.yml --load latest
+  ```
+
+- List potentially outdated configuration files using the command `csolution list configs`.
+
+  ```bash
+  >csolution list configs Hello.csolution.yml
+  ../RTE/CMSIS/RTX_Config.c@5.1.1 (update@5.2.0) from ARM::CMSIS:RTOS2:Keil RTX5&Source@5.8.0
+  ../RTE/Device/SSE-300-MPS3/startup_SSE300MPS3.c@1.1.1 (up to date) from ARM::Device:Startup&C Startup@2.0.0
+  ../RTE/Device/SSE-300-MPS3/system_SSE300MPS3.c@1.1.1 (up to date) from ARM::Device:Startup&C Startup@2.0.0
+  ```
+
+> **Note:** 
+>
+> The text `update@version` indicates that there is a new configuration file available. Use a merge utility to identify and merge configuration settings from a previous version. Refer to [PLM of configuration files](build-overview.md#plm-of-configuration-files) for more information.

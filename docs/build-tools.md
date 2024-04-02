@@ -29,6 +29,8 @@ This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects)
     - [List Compatible Layers](#list-compatible-layers)
     - [Use Generators (i.e. CubeMX)](#use-generators-ie-cubemx)
     - [Use context set](#use-context-set)
+    - [List configuration files](#list-configuration-files)
+    - [Setup Project (for IDE)](#setup-project-for-ide)
   - [`cpackget` Details](#cpackget-details)
     - [Specify CMSIS-Pack root directory](#specify-cmsis-pack-root-directory)
     - [Initialize CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory)
@@ -60,7 +62,7 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.2.0 (C) 2023 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.3.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -69,12 +71,15 @@ Commands:
   buildcprj   Use a *.CPRJ file as build input
   help        Help about any command
   list        List information about environment, toolchains, and contexts
+  setup       Generate project data for IDE environment
 
 Options:
+      --cbuild2cmake       Use build information files with cbuild2cmake interface (experimental) 
   -C, --clean              Remove intermediate and output directories
   -c, --context arg [...]  Input context names [<project-name>][.<build-type>][+<target-type>]
-  -S, --context-set        Use context set
+  -S, --context-set        Select the context names from cbuild-set.yml for generating the target application
   -d, --debug              Enable debug messages
+      --frozen-packs       Pack list and versions from cbuild-pack.yml are fixed and raises errors if it changes
   -g, --generator arg      Select build system generator (default "Ninja")
   -h, --help               Print usage
   -j, --jobs int           Number of job slots for parallel execution
@@ -103,7 +108,7 @@ Use "cbuild [command] --help" for more information about a command.
 Create build information for embedded applications that consist of one or more related projects.
 
 ```text
-csolution: Project Manager 2.2.0 (C) 2023 Arm Ltd. and Contributors
+csolution: Project Manager 2.3.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   csolution <command> [<name>.csolution.yml] [options]
@@ -137,7 +142,8 @@ Options:
   -n, --no-check-schema         Skip schema check
   -N, --no-update-rte           Skip creation of RTE directory and files
   -o, --output arg              Output directory
-  -S, --context-set             Use context set
+  -R, --relative-paths          Print paths relative to project or ${CMSIS_PACK_ROOT}
+  -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
   -t, --toolchain arg           Selection of the toolchain used in the project optionally with version
   -v, --verbose                 Enable verbose messages
   -V, --version                 Print version
@@ -214,6 +220,12 @@ Options allow to rebuild and download missing software packs or to select specif
 
 ```bash
 cbuild example.csolution.yml --rebuild --packs --context .Release
+```
+
+For reproducible builds in CI environment, fix software pack versions as provided by the file `*.cbuild-pack.yml`. An error is reported if the file `*.cbuild-pack.yml` does not exist or packs are added/removed. Refer to [reproducible builds](build-overview.md#reproducible-builds) for more information.
+
+```bash
+cbuild example.csolution.yml --frozen-packs --packs --rebuild
 ```
 
 It is also possible to overwrite the toolchain selection and use a different toolchain for translation:
@@ -341,6 +353,22 @@ Read from the file `SimpleTZ.cbuild-set.yml` to previous stored `--context` setu
 
 ```bash
 cbuild SimpleTZ.csolution.yml -S
+```
+
+### List configuration files
+
+List all configuration files that belong to software components and are stored in the [RTE directory](build-overview.md#rte-directory-structure). When [updating software packs](Apps-from-components.md#update-software-packs), it shows also the update status of each file.
+
+```bash
+csolution list configs SimpleTZ.csolution.yml -S
+```
+
+### Setup Project (for IDE)
+
+This command downloads missing packs, creates [build information files](YML-CBuild-Format.md), and generates the file `compile_commands.json` for IntelliSense in an IDE environment. Refer to [cbuild setup command](build-operation.md#cbuild-setup-command) for more information.
+
+```bash
+cbuild setup example.csolution.yml --context-set --packs
 ```
 
 ## `cpackget` Details

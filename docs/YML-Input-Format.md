@@ -76,7 +76,7 @@ The following chapter explains the CMSIS Solution Project File Format (short for
     - [`components:`](#components)
     - [`instances:`](#instances)
   - [Pre/Post build steps](#prepost-build-steps)
-    - [`execute:`](#execute)
+    - [`executes:`](#executes)
   - [`connections:`](#connections)
     - [`connect:`](#connect)
     - [`set:`](#set)
@@ -286,7 +286,7 @@ The `context` name is also used in [`for-context:`](#for-context) and [`not-for-
 ## Access Sequences
 
 The following **access sequences** allow to use arguments from the CMSIS Project Manager as arguments of the various
-`*.yml` files in the key values for `define:`, `add-path:`, `misc:`, `files:`, and `execute:`. The **access sequences**
+`*.yml` files in the key values for `define:`, `add-path:`, `misc:`, `files:`, and `executes:`. The **access sequences**
 can refer in a different project and provide therefore a method to describe project dependencies.
 
 Access Sequence                                | Description
@@ -321,7 +321,6 @@ Access Sequence                                | Description
 :----------------------------------------------|:--------------------------------------
 `$Bpack$`                                      | Path to the pack that defines the selected board (BSP).
 `$Dpack$`                                      | Path to the pack that defines the selected device (DFP).
-`$PackRoot$`                                   | Path to the CMSIS Pack Root directory.
 `$Pack(vendor.name)$`                          | Path to a specific pack. Example: `$Pack(NXP.K32L3A60_DFP)$`.
 
 **Example:**
@@ -373,13 +372,17 @@ The example below uses the `build-type: Debug`. The `target-type` of the current
 
 > **Note:** 
 > 
-> `-execute` is scheduled for implementation in CMSIS-Toolbox 2.3 (Q1'24)
+> Implementation of `executes:` is scheduled for implementation in CMSIS-Toolbox 2.4 (Q2'24)
 
 ```yml
-  - execute: Generate Image
-    os: Windows                           # on Windows run from
-    run: $DPack$/bin/gen_image.exe        # DFP the get_image tool
-    arg: -input $elf(TFM.Debug)$ -output $OutDir(TFM.Debug)$
+  executes:
+    - execute: Generate Image
+      run: gen_image %input% -o %output%           # DFP the get_image tool
+      input:
+        - $elf(TFM.Debug)$
+        - $elf(Bootloader.Release)$
+      output:
+        - $OutDir(TFM.Debug)$
 ```
 
 The example below creates a `define` that uses the device name.
@@ -393,7 +396,7 @@ groups:
 
 ## Variables
 
-The `variables:` node defines are *key/value* pairs that can be used to refer to `*.clayer.yml` files.  The *key* is the name of the *variable* and can be used  in the following nodes: [`layers:`](#layers), [`define:`](#define), [`add-path:`](#add-path), [`misc:`](#misc), [`files:`](#files), and [`execute:`](#execute)
+The `variables:` node defines are *key/value* pairs that can be used to refer to `*.clayer.yml` files.  The *key* is the name of the *variable* and can be used  in the following nodes: [`layers:`](#layers), [`define:`](#define), [`add-path:`](#add-path), [`misc:`](#misc), [`files:`](#files), and [`executes:`](#executes)
 
 Using variables that are defined in the `*.csolution.yml` file, a `*.cproject.yml` file requires no modifications when new `target-types:` are introduced.  The required `layers:` could be instead specified in the `*.csolution.yml` file using a new node `variables:`.
 
@@ -508,6 +511,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`target-types:`](#target-types)  |**Required**| List of target-types that define the target system (device or board).
 &nbsp;&nbsp;&nbsp; [`build-types:`](#build-types)    |  Optional  | List of build-types (i.e. Release, Debug, Test).
 &nbsp;&nbsp;&nbsp; [`projects:`](#projects)          |**Required**| List of projects that belong to the solution.
+&nbsp;&nbsp;&nbsp; [`executes:`](#executes)          |  Optional  | Additional pre or post build steps using external tools.
 
 **Example:**
 
@@ -568,6 +572,7 @@ The `project:` node is the start of a `*.cproject.yml` file and can contain the 
 &nbsp;&nbsp;&nbsp; [`components:`](#components)     |  Optional  | List of software components used.
 &nbsp;&nbsp;&nbsp; [`layers:`](#layers)             |  Optional  | List of software layers that belong to the project.
 &nbsp;&nbsp;&nbsp; [`connections:`](#connections)   |  Optional  | List of consumed and provided resources.
+&nbsp;&nbsp;&nbsp; [`executes:`](#executes)         |  Optional  | Additional pre or post build steps using external tools.
 
 **Example:**
 
@@ -780,15 +785,16 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 &nbsp;&nbsp;&nbsp;`script:`                                 |  Optional  | Explicit file name of the Linker Script, overrules files provided with [`file:`](#files) or components.
 &nbsp;&nbsp;&nbsp;`auto:`                                   |  Optional  | Request [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation).
 &nbsp;&nbsp;&nbsp;[`define:`](#define)                      |  Optional  | Define symbol settings for the linker script file preprocessor.
-&nbsp;&nbsp;&nbsp;[`for-compiler:`](#for-compiler)         |  Optional  |  Include Linker Script for the specified toolchain.
-&nbsp;&nbsp;&nbsp;[`for-context:`](#for-context)           |  Optional  |  Include Linker Script for a list of *build* and *target* type names.
-&nbsp;&nbsp;&nbsp;[`not-for-context:`](#not-for-context)   |  Optional  |  Exclude Linker Script for a list of *build* and *target* type names.
+&nbsp;&nbsp;&nbsp;[`for-compiler:`](#for-compiler)          |  Optional  |  Include Linker Script for the specified toolchain.
+&nbsp;&nbsp;&nbsp;[`for-context:`](#for-context)            |  Optional  |  Include Linker Script for a list of *build* and *target* type names.
+&nbsp;&nbsp;&nbsp;[`not-for-context:`](#not-for-context)    |  Optional  |  Exclude Linker Script for a list of *build* and *target* type names.
 
 > **Notes:** 
 > 
 > - The `linker:` node must have at least `regions:`, `script:`, `auto:`, or `define:`.
 > - If no `script:` file is specified, compiler specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
-> - A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`. 
+> - A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`.
+> - If both `auto:` and `script:` is specified a warning is issued and [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation) is performed and the specified `script:` is ignored.
 
 **Examples:**
 
@@ -921,6 +927,7 @@ Value                                                 | Code Generation
 `balanced`                                            | Balanced optimization (default)
 `size`                                                | Optimized for code size
 `speed`                                               | Optimized for execution speed
+`debug`                                               | Optimize for debugging experience 
 `none`                                                | No optimization (provides better debug illusion)
 
 **Example:**
@@ -1328,7 +1335,7 @@ target-types:
 build-types:
   - type: Debug                  # build-type name, used in context with: .Debug
     optimize: none               # specifies code optimization level
-    debug: on                    # generates debug information
+    debug: debug                 # generates debug information
 
   - type: Test                   # build-type name, used in context with: .Test
     optimize: size
@@ -1783,7 +1790,7 @@ components:
 ### `instances:`
 
 Allows to add multiple instances of a component and actually applies to configuration files.
-Detailed description is [here](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances)
+For detailed description refer to [Open-CMSIS-Pack specification - Component Instances](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances)
 
 **Example:**
 
@@ -1800,55 +1807,52 @@ will be copied multiple times to the project. The name of the component (for exa
 Instance 0: config_usb_device_0.h  
 Instance 1: config_usb_device_1.h
 
-The availability of instances in a project can be made public in the `RTE_Components.h` file. The existing way to extend
+The availability of instances in a project can be made public in the `RTE_Components.h` file. The existing way to extend 
 the `%Instance%` with the instance number `n`.
 
 ## Pre/Post build steps
 
->**Scheduled for CMSIS-Toolbox 2.3 - Q1'24**
-Tbd: potentially map to CMake add_custom_command.
+>**Scheduled for CMSIS-Toolbox 2.4 - Q2'24**
 
-### `execute:`
+### `executes:`
 
-Execute and external command for pre- or post-build steps (such as code signing).
+Execute and external command for pre or post build steps (such as code signing).  The `input:` and `output:` files are used for dependency checking and schedule the execution of this build step.
 
-`- execute:`                      |               | Content
-:---------------------------------|:--------------|:------------------------------------
-`- execute:` description          |  **Required** | Execute an external command with description
-&nbsp;&nbsp;&nbsp; `os:` name     |   Optional    | Executable on named operating systems (if omitted it is OS independent).
-&nbsp;&nbsp;&nbsp; `run:` name    |   Optional    | Executable name, optionally with path to the tool.
-&nbsp;&nbsp;&nbsp; `args:` name   |   Optional    | Executable arguments.
-&nbsp;&nbsp;&nbsp; `stop:` name   |   Optional    | Stop on exit code.
+The structure of the `executes:` node is:
 
-Potential usage before/after build:
+`executes:`                                 |              | Content
+:-------------------------------------------|:-------------|:------------------------------------
+`- execute:`                                | **Required** | Description of the build step.
+&nbsp;&nbsp;&nbsp; `run:`                   | **Required** | Command string with name of the program or script (optionally with path) along with argument string.
+&nbsp;&nbsp;&nbsp; `always:`                |  Optional    | When present, the build step always runs and bypasses check for outdated `output:` files.
+&nbsp;&nbsp;&nbsp; `input:`                 |  Optional    | A list of input files (may contain [Access Sequences](#access-sequences)). 
+&nbsp;&nbsp;&nbsp; `output:`                |  Optional    | A list of output files (may contain [Access Sequences](#access-sequences)).
+
+The `run:` command string uses `%input%` and `%output%` to get a list of all input files and output files.
+
+**Examples:**
 
 ```yml
-solution:
-  :
-  :
-  projects:
-    - execute: Generate Keys for TF-M
-      os: Linux
-      run: KeyGen.exe
-    - project: /security/TFM.cproject.yml
-    - project: /application/MQTT_AWS.cproject.yml
-    - execute: Copy output files
-      run: cp *.out ./output
+solution:                       # executed as part of a project build
+  executes:
+    - execute: Generate Download Image
+      run: gen_image %input% -o %output% --sign    # Command line string
+      input:
+        - $elf(Application)$                       # combine these project parts
+        - $elf(TFM)$
+        - $elf(Bootloader)$
+      output:
+        - $SolutionDir$/$Solution$.out             # output file name
 ```
 
-Potential usage during build steps:
-
 ```yml
-project:
-  :
-  :
-  groups:
-    - group:  "Main File Group"
-      files: 
-        - execute: Generate file1a.c
-          run: xyz.exe
-          ....
-        - file: file1a.c
+project:                       # executed as part of a project build
+  executes:
+    - execute: Generate Encryption Keys
+      run: KeyGen %input% -o %output%
+      always:                  # always generate the keyfile.c as it contains a timestamp
+      input:  keyfile.txt      # contains the key in text format
+      output: keyfile.c        # output as C source file that is part of this project
 ```
 
 ## `connections:`
