@@ -153,6 +153,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 `build-idx:`                                       | Content
 :--------------------------------------------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `generated-by:`                 | Reference to csolution tool along with version information used to generate this application.
+&nbsp;&nbsp;&nbsp; `description:`                  | Brief description text of this application.
 &nbsp;&nbsp;&nbsp; `cdefault:`                     | Relative path and name of the [`*.cdefault.yml`](YML-Input-Format.md#default) input file used to generate this application.
 &nbsp;&nbsp;&nbsp; `csolution:`                    | Relative path and name of the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
 &nbsp;&nbsp;&nbsp; [`configurations:`](#configurations)      | List of potential project configurations for a reference application with undefined layers
@@ -166,6 +167,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 ```yml  
 build-idx:
   generated-by: csolution version 2.3.0
+  description: USB application examples sharing board layers.
   cdefault: cdefault.yml
   csolution: USB.csolution.yml
   configurations:
