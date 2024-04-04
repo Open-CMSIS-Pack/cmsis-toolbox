@@ -167,6 +167,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 ```yml  
 build-idx:
   generated-by: csolution version 2.3.0
+  description: USB application examples sharing board layers.
   cdefault: cdefault.yml
   csolution: USB.csolution.yml
   configurations:
