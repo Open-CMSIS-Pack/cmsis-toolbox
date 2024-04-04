@@ -153,6 +153,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 `build-idx:`                                       | Content
 :--------------------------------------------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `generated-by:`                 | Reference to csolution tool along with version information used to generate this application.
+&nbsp;&nbsp;&nbsp; `description:`                  | Brief description text copied from the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
 &nbsp;&nbsp;&nbsp; `cdefault:`                     | Relative path and name of the [`*.cdefault.yml`](YML-Input-Format.md#default) input file used to generate this application.
 &nbsp;&nbsp;&nbsp; `csolution:`                    | Relative path and name of the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
 &nbsp;&nbsp;&nbsp; [`configurations:`](#configurations)      | List of potential project configurations for a reference application with undefined layers
@@ -377,6 +378,7 @@ The `configurations:` node lists possible configurations for [reference applicat
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`- set:`                                                              | Description of the usage instruction
 
 **Example:**
+
 ```yml
   configurations:
     - target-type: B-U585I-IOT02A
