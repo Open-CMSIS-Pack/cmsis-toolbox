@@ -884,7 +884,8 @@ The following translation control options may be used at various places such as:
 
 > **Note:**
 > 
-> `define:`, `add-path:`, `del-path:`  and `misc:` are additive. All other keywords overwrite previous settings.
+> - The keys `define:`, `add-path:`, `del-path:`, and `misc:` are additive. 
+> - All other keys can only be defined once at the level of `solution:`, `project:`, `setup:`, `layer:`, `build-types:`. or `target-types:`. However, it is possible to overwrite these keys at the level of `group:`, `file:`, or `component:`, for example it is possible to translate a file group with a different optimize level.
 
 ### `language-C:`
 
@@ -924,11 +925,15 @@ Generic optimize levels for code generation.
 
 Value                                                 | Code Generation
 :-----------------------------------------------------|:------------------------------------
-`balanced`                                            | Balanced optimization (default)
+`balanced`                                            | Balanced optimization
 `size`                                                | Optimized for code size
 `speed`                                               | Optimized for execution speed
 `debug`                                               | Optimize for debugging experience 
 `none`                                                | No optimization (provides better debug illusion)
+
+> **Note:**
+>
+> - When `optimize:` is not specified, the default optimize setting of the compiler is used.
 
 **Example:**
 
@@ -1762,7 +1767,7 @@ Add software components to a project or a software layer. Used in `*.cproject.ym
 **Example:**
 
 ```yml
-components:
+  components:
     - component: ARM::CMSIS:RTOS2:FreeRTOS&Cortex-M
 
     - component: ARM::RTOS&FreeRTOS:Config&CMSIS RTOS2
@@ -1795,9 +1800,9 @@ For detailed description refer to [Open-CMSIS-Pack specification - Component Ins
 **Example:**
 
 ```yml
-components:
-  - component: USB:Device
-    instances: 2
+  components:
+    - component: USB:Device
+      instances: 2
 ```
 
 If the user selects multiple instances of the same component, all files with  attribute `config` in the `*.PDSC` file
@@ -1828,7 +1833,7 @@ The structure of the `executes:` node is:
 &nbsp;&nbsp;&nbsp; `input:`                 |  Optional    | A list of input files (may contain [Access Sequences](#access-sequences)). 
 &nbsp;&nbsp;&nbsp; `output:`                |  Optional    | A list of output files (may contain [Access Sequences](#access-sequences)).
 
-The `run:` command string uses `%input%` and `%output%` to get a list of all input files and output files.
+The `run:` command string uses `$input$` and `$output$` to get a list of all input files and output files.
 
 **Examples:**
 
@@ -1836,7 +1841,7 @@ The `run:` command string uses `%input%` and `%output%` to get a list of all inp
 solution:                       # executed as part of a project build
   executes:
     - execute: Generate Download Image
-      run: gen_image %input% -o %output% --sign    # Command line string
+      run: gen_image $input$ -o $output$ --sign    # Command line string
       input:
         - $elf(Application)$                       # combine these project parts
         - $elf(TFM)$
@@ -1849,7 +1854,7 @@ solution:                       # executed as part of a project build
 project:                       # executed as part of a project build
   executes:
     - execute: Generate Encryption Keys
-      run: KeyGen %input% -o %output%
+      run: KeyGen $input$ -o $output$
       always:                  # always generate the keyfile.c as it contains a timestamp
       input:  keyfile.txt      # contains the key in text format
       output: keyfile.c        # output as C source file that is part of this project
