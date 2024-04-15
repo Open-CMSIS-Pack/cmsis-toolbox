@@ -1,1 +1,6 @@
-build
+# Directories
+/build*/
+**/run
+
+# Files
+**/stdout.txt

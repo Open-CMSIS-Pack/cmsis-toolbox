@@ -1,0 +1,2 @@
+*** Variables ***
+${RESOURCES}        ..${/}resources

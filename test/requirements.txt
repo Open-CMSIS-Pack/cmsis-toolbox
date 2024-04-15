@@ -1,0 +1,2 @@
+# Requirements needed
+robotframework >= 7.0

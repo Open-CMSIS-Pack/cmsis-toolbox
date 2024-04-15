@@ -1,0 +1,6 @@
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/CMakeFiles/project.GCC+ARMCM0.dir
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/CMakeFiles/project.GCC+ARMCM0-build.dir
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/CMakeFiles/project.GCC+ARMCM0-configure.dir
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/CMakeFiles/project.GCC+ARMCM0-database.dir
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/CMakeFiles/edit_cache.dir
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/CMakeFiles/rebuild_cache.dir

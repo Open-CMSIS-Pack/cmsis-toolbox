@@ -1,0 +1,14 @@
+# Target labels
+ project.GCC+ARMCM0
+# Source files and their labels
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/CMakeFiles/project.GCC+ARMCM0
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/CMakeFiles/project.GCC+ARMCM0.rule
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/CMakeFiles/project.GCC+ARMCM0-complete.rule
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-build.rule
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-configure.rule
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-download.rule
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-install.rule
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-mkdir.rule
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-patch.rule
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-test.rule
+C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-update.rule

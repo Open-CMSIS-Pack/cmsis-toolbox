@@ -1,0 +1,200 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/tools/share/cmake-3.26/Modules/CMakeDetermineSystem.cmake:199 (message)"
+      - "CMakeLists.txt:114 (project)"
+    message: |
+      The target system is: Generic -  - 
+      The host system is: Windows - 10.0.19045 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/tools/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/tools/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/tools/share/cmake-3.26/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:114 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+      Compiler: C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2020-q4-major/bin/arm-none-eabi-gcc.exe 
+      Build flags: -mcpu=cortex-m0
+      Id flags:  
+      
+      The output was:
+      1
+      c:/program files (x86)/gnu arm embedded toolchain/10 2020-q4-major/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/bin/ld.exe: c:/program files (x86)/gnu arm embedded toolchain/10 2020-q4-major/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/nofp\\libc.a(lib_a-exit.o): in function `exit':
+      exit.c:(.text.exit+0x18): undefined reference to `_exit'
+      collect2.exe: error: ld returned 1 exit status
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/tools/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/tools/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/tools/share/cmake-3.26/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:114 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2020-q4-major/bin/arm-none-eabi-gcc.exe 
+      Build flags: -mcpu=cortex-m0
+      Id flags: -c 
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.o"
+      
+      The C compiler identification is GNU, found in:
+        C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project/ARMCM0/GCC/CMakeFiles/3.26.0/CompilerIdC/CMakeCCompilerId.o
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/tools/share/cmake-3.26/Modules/CMakeDetermineCompilerABI.cmake:57 (try_compile)"
+      - "C:/tools/share/cmake-3.26/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:114 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project/ARMCM0/GCC/CMakeFiles/CMakeScratch/TryCompile-it7977"
+      binary: "C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project/ARMCM0/GCC/CMakeFiles/CMakeScratch/TryCompile-it7977"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "-mcpu=cortex-m0"
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "C:/Sandbox/Test/cmsis-toolbox/etc/CMakeASM"
+      CMAKE_WARN_DEPRECATED: "FALSE"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project/ARMCM0/GCC/CMakeFiles/CMakeScratch/TryCompile-it7977
+        
+        Run Build Command(s):C:/Users/soumeh01/AppData/Local/Programs/Python/Python310/Scripts/ninja.exe -v cmTC_753da && [1/2] C:\\PROGRA~2\\GNUARM~1\\102020~1\\bin\\AR19DD~1.EXE   -mcpu=cortex-m0    -v -o CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj -c C:/tools/share/cmake-3.26/Modules/CMakeCCompilerABI.c
+        Using built-in specs.
+        COLLECT_GCC=C:\\PROGRA~2\\GNUARM~1\\102020~1\\bin\\AR19DD~1.EXE
+        Target: arm-none-eabi
+        Configured with: /mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/src/gcc/configure --build=x86_64-linux-gnu --host=i686-w64-mingw32 --target=arm-none-eabi --prefix=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw --libexecdir=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/lib --infodir=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/share/doc/gcc-arm-none-eabi/info --mandir=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/share/doc/gcc-arm-none-eabi/man --htmldir=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/share/doc/gcc-arm-none-eabi/html --pdfdir=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/share/doc/gcc-arm-none-eabi/pdf --enable-languages=c,c++ --enable-mingw-wildcard --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-gnu-as --with-gnu-ld --with-headers=yes --with-newlib --with-python-dir=share/gcc-arm-none-eabi --with-sysroot=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/arm-none-eabi --with-libiconv-prefix=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-gmp=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-mpfr=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-mpc=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-isl=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-libelf=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' --with-pkgversion='GNU Arm Embedded Toolchain 10-2020-q4-major' --with-multilib-list=rmprofile,aprofile
+        Thread model: single
+        Supported LTO compression algorithms: zlib
+        gcc version 10.2.1 20201103 (release) (GNU Arm Embedded Toolchain 10-2020-q4-major) 
+        COLLECT_GCC_OPTIONS='-mcpu=cortex-m0' '-v' '-o' 'CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj' '-c' '-mfloat-abi=soft' '-mthumb' '-march=armv6s-m'
+         c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/cc1.exe -quiet -v -imultilib thumb/v6-m/nofp -iprefix c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../lib/gcc/arm-none-eabi/10.2.1/ -isysroot c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../arm-none-eabi -D__USES_INITFINI__ C:/tools/share/cmake-3.26/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -mcpu=cortex-m0 -mfloat-abi=soft -mthumb -march=armv6s-m -auxbase-strip CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj -version -o C:\\Users\\soumeh01\\AppData\\Local\\Temp\\ccsEYzSp.s
+        GNU C17 (GNU Arm Embedded Toolchain 10-2020-q4-major) version 10.2.1 20201103 (release) (arm-none-eabi)
+        	compiled by GNU C version 7.3-win32 20180312, GMP version 6.1.0, MPFR version 3.1.4, MPC version 1.0.3, isl version isl-0.18-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring duplicate directory "c:/progra~2/gnuarm~1/102020~1/lib/gcc/../../lib/gcc/arm-none-eabi/10.2.1/include"
+        ignoring nonexistent directory "c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../arm-none-eabi/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/lib/gcc/arm-none-eabi/10.2.1/../../../../include"
+        ignoring duplicate directory "c:/progra~2/gnuarm~1/102020~1/lib/gcc/../../lib/gcc/arm-none-eabi/10.2.1/include-fixed"
+        ignoring duplicate directory "c:/progra~2/gnuarm~1/102020~1/lib/gcc/../../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/include"
+        ignoring nonexistent directory "c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../arm-none-eabi/usr/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../lib/gcc/arm-none-eabi/10.2.1/include
+         c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../lib/gcc/arm-none-eabi/10.2.1/include-fixed
+         c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/include
+        End of search list.
+        GNU C17 (GNU Arm Embedded Toolchain 10-2020-q4-major) version 10.2.1 20201103 (release) (arm-none-eabi)
+        	compiled by GNU C version 7.3-win32 20180312, GMP version 6.1.0, MPFR version 3.1.4, MPC version 1.0.3, isl version isl-0.18-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        Compiler executable checksum: d0af1807fcd872df6b1165770acff16d
+        COLLECT_GCC_OPTIONS='-mcpu=cortex-m0' '-v' '-o' 'CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj' '-c' '-mfloat-abi=soft' '-mthumb' '-march=armv6s-m'
+         c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/bin/as.exe -v -march=armv6s-m -mfloat-abi=soft -meabi=5 -o CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj C:\\Users\\soumeh01\\AppData\\Local\\Temp\\ccsEYzSp.s
+        GNU assembler version 2.35.1 (arm-none-eabi) using BFD version (GNU Arm Embedded Toolchain 10-2020-q4-major) 2.35.1.20201028
+        COMPILER_PATH=c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/;c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/;c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/bin/
+        LIBRARY_PATH=c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/thumb/v6-m/nofp/;c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/;c:/progra~2/gnuarm~1/102020~1/bin/../arm-none-eabi/lib/thumb/v6-m/nofp/;c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/;c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/;c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/;c:/progra~2/gnuarm~1/102020~1/bin/../arm-none-eabi/lib/
+        COLLECT_GCC_OPTIONS='-mcpu=cortex-m0' '-v' '-o' 'CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj' '-c' '-mfloat-abi=soft' '-mthumb' '-march=armv6s-m'
+        [2/2] cmd.exe /C "cd . && C:\\tools\\bin\\cmake.exe -E rm -f libcmTC_753da.a && C:\\PROGRA~2\\GNUARM~1\\102020~1\\bin\\ARM-NO~2.EXE qc libcmTC_753da.a  CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj && C:\\PROGRA~2\\GNUARM~1\\102020~1\\bin\\AR17F9~1.EXE libcmTC_753da.a && cd ."
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/tools/share/cmake-3.26/Modules/CMakeDetermineCompilerABI.cmake:127 (message)"
+      - "C:/tools/share/cmake-3.26/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:114 (project)"
+    message: |
+      Parsed C implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/include]
+          add: [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/include-fixed]
+          add: [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/include]
+        end of search list found
+        collapse include dir [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/include] ==> [C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2020-q4-major/lib/gcc/arm-none-eabi/10.2.1/include]
+        collapse include dir [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/include-fixed] ==> [C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2020-q4-major/lib/gcc/arm-none-eabi/10.2.1/include-fixed]
+        collapse include dir [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/include] ==> [C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2020-q4-major/arm-none-eabi/include]
+        implicit include dirs: [C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2020-q4-major/lib/gcc/arm-none-eabi/10.2.1/include;C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2020-q4-major/lib/gcc/arm-none-eabi/10.2.1/include-fixed;C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2020-q4-major/arm-none-eabi/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/tools/share/cmake-3.26/Modules/CMakeDetermineCompilerABI.cmake:152 (message)"
+      - "C:/tools/share/cmake-3.26/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:114 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(arm-none-eabi-ld\\.exe|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        ignore line: [Change Dir: C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project/ARMCM0/GCC/CMakeFiles/CMakeScratch/TryCompile-it7977]
+        ignore line: []
+        ignore line: [Run Build Command(s):C:/Users/soumeh01/AppData/Local/Programs/Python/Python310/Scripts/ninja.exe -v cmTC_753da && [1/2] C:\\PROGRA~2\\GNUARM~1\\102020~1\\bin\\AR19DD~1.EXE   -mcpu=cortex-m0    -v -o CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj -c C:/tools/share/cmake-3.26/Modules/CMakeCCompilerABI.c]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=C:\\PROGRA~2\\GNUARM~1\\102020~1\\bin\\AR19DD~1.EXE]
+        ignore line: [Target: arm-none-eabi]
+        ignore line: [Configured with: /mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/src/gcc/configure --build=x86_64-linux-gnu --host=i686-w64-mingw32 --target=arm-none-eabi --prefix=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw --libexecdir=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/lib --infodir=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/share/doc/gcc-arm-none-eabi/info --mandir=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/share/doc/gcc-arm-none-eabi/man --htmldir=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/share/doc/gcc-arm-none-eabi/html --pdfdir=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/share/doc/gcc-arm-none-eabi/pdf --enable-languages=c,c++ --enable-mingw-wildcard --disable-decimal-float --disable-libffi --disable-libgomp --disable-libmudflap --disable-libquadmath --disable-libssp --disable-libstdcxx-pch --disable-nls --disable-shared --disable-threads --disable-tls --with-gnu-as --with-gnu-ld --with-headers=yes --with-newlib --with-python-dir=share/gcc-arm-none-eabi --with-sysroot=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/arm-none-eabi --with-libiconv-prefix=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-gmp=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-mpfr=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-mpc=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-isl=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-libelf=/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/build-mingw/host-libs/usr --with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' --with-pkgversion='GNU Arm Embedded Toolchain 10-2020-q4-major' --with-multilib-list=rmprofile,aprofile]
+        ignore line: [Thread model: single]
+        ignore line: [Supported LTO compression algorithms: zlib]
+        ignore line: [gcc version 10.2.1 20201103 (release) (GNU Arm Embedded Toolchain 10-2020-q4-major) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-mcpu=cortex-m0' '-v' '-o' 'CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj' '-c' '-mfloat-abi=soft' '-mthumb' '-march=armv6s-m']
+        ignore line: [ c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/cc1.exe -quiet -v -imultilib thumb/v6-m/nofp -iprefix c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../lib/gcc/arm-none-eabi/10.2.1/ -isysroot c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../arm-none-eabi -D__USES_INITFINI__ C:/tools/share/cmake-3.26/Modules/CMakeCCompilerABI.c -quiet -dumpbase CMakeCCompilerABI.c -mcpu=cortex-m0 -mfloat-abi=soft -mthumb -march=armv6s-m -auxbase-strip CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj -version -o C:\\Users\\soumeh01\\AppData\\Local\\Temp\\ccsEYzSp.s]
+        ignore line: [GNU C17 (GNU Arm Embedded Toolchain 10-2020-q4-major) version 10.2.1 20201103 (release) (arm-none-eabi)]
+        ignore line: [	compiled by GNU C version 7.3-win32 20180312  GMP version 6.1.0  MPFR version 3.1.4  MPC version 1.0.3  isl version isl-0.18-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring duplicate directory "c:/progra~2/gnuarm~1/102020~1/lib/gcc/../../lib/gcc/arm-none-eabi/10.2.1/include"]
+        ignore line: [ignoring nonexistent directory "c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../arm-none-eabi/mnt/workspace/workspace/GCC-10-pipeline/jenkins-GCC-10-pipeline-48_20201124_1606180641/install-mingw/lib/gcc/arm-none-eabi/10.2.1/../../../../include"]
+        ignore line: [ignoring duplicate directory "c:/progra~2/gnuarm~1/102020~1/lib/gcc/../../lib/gcc/arm-none-eabi/10.2.1/include-fixed"]
+        ignore line: [ignoring duplicate directory "c:/progra~2/gnuarm~1/102020~1/lib/gcc/../../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/include"]
+        ignore line: [ignoring nonexistent directory "c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../arm-none-eabi/usr/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../lib/gcc/arm-none-eabi/10.2.1/include]
+        ignore line: [ c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../lib/gcc/arm-none-eabi/10.2.1/include-fixed]
+        ignore line: [ c:\\progra~2\\gnuarm~1\\102020~1\\bin\\../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/include]
+        ignore line: [End of search list.]
+        ignore line: [GNU C17 (GNU Arm Embedded Toolchain 10-2020-q4-major) version 10.2.1 20201103 (release) (arm-none-eabi)]
+        ignore line: [	compiled by GNU C version 7.3-win32 20180312  GMP version 6.1.0  MPFR version 3.1.4  MPC version 1.0.3  isl version isl-0.18-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [Compiler executable checksum: d0af1807fcd872df6b1165770acff16d]
+        ignore line: [COLLECT_GCC_OPTIONS='-mcpu=cortex-m0' '-v' '-o' 'CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj' '-c' '-mfloat-abi=soft' '-mthumb' '-march=armv6s-m']
+        ignore line: [ c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/bin/as.exe -v -march=armv6s-m -mfloat-abi=soft -meabi=5 -o CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj C:\\Users\\soumeh01\\AppData\\Local\\Temp\\ccsEYzSp.s]
+        ignore line: [GNU assembler version 2.35.1 (arm-none-eabi) using BFD version (GNU Arm Embedded Toolchain 10-2020-q4-major) 2.35.1.20201028]
+        ignore line: [COMPILER_PATH=c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/]
+        ignore line: [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/]
+        ignore line: [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/bin/]
+        ignore line: [LIBRARY_PATH=c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/thumb/v6-m/nofp/]
+        ignore line: [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/thumb/v6-m/nofp/]
+        ignore line: [c:/progra~2/gnuarm~1/102020~1/bin/../arm-none-eabi/lib/thumb/v6-m/nofp/]
+        ignore line: [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/]
+        ignore line: [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/]
+        ignore line: [c:/progra~2/gnuarm~1/102020~1/bin/../lib/gcc/arm-none-eabi/10.2.1/../../../../arm-none-eabi/lib/]
+        ignore line: [c:/progra~2/gnuarm~1/102020~1/bin/../arm-none-eabi/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-mcpu=cortex-m0' '-v' '-o' 'CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj' '-c' '-mfloat-abi=soft' '-mthumb' '-march=armv6s-m']
+        ignore line: [[2/2] cmd.exe /C "cd . && C:\\tools\\bin\\cmake.exe -E rm -f libcmTC_753da.a && C:\\PROGRA~2\\GNUARM~1\\102020~1\\bin\\ARM-NO~2.EXE qc libcmTC_753da.a  CMakeFiles/cmTC_753da.dir/CMakeCCompilerABI.c.obj && C:\\PROGRA~2\\GNUARM~1\\102020~1\\bin\\AR17F9~1.EXE libcmTC_753da.a && cd ."]
+        ignore line: []
+        ignore line: []
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+...

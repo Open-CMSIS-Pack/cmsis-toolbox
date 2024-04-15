@@ -1,0 +1,5 @@
+# ninja log v5
+22	147	7348727268914785	CMakeFiles/project.dir/C_/Sandbox/forked/cmsis-toolbox/test/data/include-define/project/source1.c.obj	c37055b5e2ed04d5
+31	265	7348727270085014	CMakeFiles/project.dir/C_/Sandbox/forked/cmsis-toolbox/test/data/include-define/project/RTE/Device/ARMCM0/system_ARMCM0.c.obj	ed2c4bdb36c46e1e
+12	267	7348727270085014	CMakeFiles/project.dir/C_/Sandbox/forked/cmsis-toolbox/test/data/include-define/project/main.c.obj	764fe513f7c54e86
+1	268	7348727270085014	CMakeFiles/project.dir/C_/Sandbox/forked/cmsis-toolbox/test/data/include-define/project/RTE/Device/ARMCM0/startup_ARMCM0.c.obj	92ea7f146f9dafd6

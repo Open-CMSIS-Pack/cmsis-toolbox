@@ -1,0 +1,88 @@
+name: Robot Tests
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/robot-tests.yml'
+      - 'test/**'
+      - '!test/README.md'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      CMSIS_PACK_ROOT: /home/runner/.cache/arm/packs
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install pip dependencies
+        run: |
+            pip install --upgrade pip
+            pip install -r test/requirements.txt
+
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ github.run_id }}
+          restore-keys: |
+              vcpkg-${{ runner.os }}-${{ runner.arch }}-
+          path: /home/runner/.vcpkg
+    
+      - name: Prepare vcpkg env
+        working-directory: ./test
+        run: |  
+          . <(curl https://aka.ms/vcpkg-init.sh -L)
+          vcpkg x-update-registry --all
+          vcpkg activate
+
+      - name: Activate Arm tool license
+        working-directory: ./test
+        run: |
+          . /home/runner/.vcpkg/vcpkg-init
+          vcpkg activate
+          armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
+
+      - name: Run Test
+        working-directory: ./test
+        run: |
+          . /home/runner/.vcpkg/vcpkg-init
+          vcpkg activate
+          python -m robot --outputdir ../reports -x junit-report.xml src/test.robot
+
+      - name: Archieve test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: reports
+
+  report:
+    runs-on: ubuntu-latest
+    needs: test
+    permissions: write-all
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download reports
+      uses: actions/download-artifact@v4
+      with:
+        name: reports
+        path: reports
+
+    - name: Send report to commit
+      uses: joonvena/robotframework-reporter-action@v2.4
+      with:
+        gh_access_token: ${{ secrets.GITHUB_TOKEN }}
+        
