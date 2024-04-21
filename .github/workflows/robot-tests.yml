@@ -15,6 +15,7 @@ concurrency:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
@@ -60,7 +61,6 @@ jobs:
           armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
 
       - name: Run Test
-        continue-on-error: true
         working-directory: ./test
         run: |
           python -m robot --outputdir ../reports-${{ matrix.os }} -x junit-report.xml src
