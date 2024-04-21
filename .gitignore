@@ -1,6 +1,7 @@
 # Directories
 /build*/
 **/run
+**/__pycache__
 
 # Files
 **/stdout.txt

@@ -1,0 +1,14 @@
+project:
+
+  components:
+    - component: ARM::CMSIS:CORE
+    - component: ARM::Device:Startup&C Startup
+
+  groups:
+    - group: Source
+      files:
+        - file: ./ma in.c
+    - group: Header
+      files:
+        - file: ./tes t/tes t.h
+

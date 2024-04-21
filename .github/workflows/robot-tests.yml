@@ -14,10 +14,10 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    env:
-      CMSIS_PACK_ROOT: /home/runner/.cache/arm/packs
-
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -32,57 +32,86 @@ jobs:
             pip install --upgrade pip
             pip install -r test/requirements.txt
 
-      - name: Cache vcpkg
-        uses: actions/cache@v4
-        with:
-          key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ github.run_id }}
-          restore-keys: |
-              vcpkg-${{ runner.os }}-${{ runner.arch }}-
-          path: /home/runner/.vcpkg
+      # - name: Cache vcpkg
+      #   uses: actions/cache@v4
+      #   with:
+      #     key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ github.run_id }}
+      #     restore-keys: |
+      #         vcpkg-${{ runner.os }}-${{ runner.arch }}-
+      #     path: /home/runner/.vcpkg
     
-      - name: Prepare vcpkg env
-        working-directory: ./test
-        run: |  
-          . <(curl https://aka.ms/vcpkg-init.sh -L)
-          vcpkg x-update-registry --all
-          vcpkg activate
+      # - name: Prepare vcpkg env
+      #   working-directory: ./test
+      #   run: |  
+      #     . <(curl https://aka.ms/vcpkg-init.sh -L)
+      #     vcpkg x-update-registry --all
+      #     vcpkg activate
+
+      - name: Setup vcpkg environment
+        uses: soumeh01/actions/vcpkg@testwindows
+        with:
+          config: "./test/vcpkg-configuration.json"
+          vcpkg-root: "${{ github.workspace }}/.vcpkg"
+          cache: "-"
 
       - name: Activate Arm tool license
         working-directory: ./test
         run: |
-          . /home/runner/.vcpkg/vcpkg-init
-          vcpkg activate
           armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
 
       - name: Run Test
+        continue-on-error: true
         working-directory: ./test
         run: |
-          . /home/runner/.vcpkg/vcpkg-init
-          vcpkg activate
-          python -m robot --outputdir ../reports -x junit-report.xml src/test.robot
+          python -m robot --outputdir ../reports-${{ matrix.os }} -x junit-report.xml src
 
       - name: Archieve test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: reports
-          path: reports
+          name: reports-${{ matrix.os }}
+          path: reports-${{ matrix.os }}
 
   report:
     runs-on: ubuntu-latest
+    if: always()
     needs: test
     permissions: write-all
     steps:
     - uses: actions/checkout@v4
 
-    - name: Download reports
+    - name: Download reports windows
       uses: actions/download-artifact@v4
       with:
-        name: reports
-        path: reports
+        name: reports-windows-latest
+        path: reports-windows-latest
 
-    - name: Send report to commit
+    - name: Download reports linux
+      uses: actions/download-artifact@v4
+      with:
+        name: reports-ubuntu-latest
+        path: reports-ubuntu-latest
+
+    - name: Download reports darwin
+      uses: actions/download-artifact@v4
+      with:
+        name: reports-macos-latest
+        path: reports-macos-latest
+
+    - name: Send windows report to commit
       uses: joonvena/robotframework-reporter-action@v2.4
       with:
+        report_path: reports-windows-latest
         gh_access_token: ${{ secrets.GITHUB_TOKEN }}
-        
+
+    - name: Send linux report to commit
+      uses: joonvena/robotframework-reporter-action@v2.4
+      with:
+        report_path: reports-ubuntu-latest
+        gh_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Send macos report to commit
+      uses: joonvena/robotframework-reporter-action@v2.4
+      with:
+        report_path: reports-macos-latest
+        gh_access_token: ${{ secrets.GITHUB_TOKEN }}

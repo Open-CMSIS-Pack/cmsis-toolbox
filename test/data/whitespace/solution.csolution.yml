@@ -5,8 +5,6 @@ solution:
   packs:
     - pack: ARM::Cortex_DFP
     - pack: ARM::CMSIS
-    - pack: ARM::RteTest
-      path: ./pack
 
   target-types:
     - type: ARMCM0

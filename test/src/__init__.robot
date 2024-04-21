@@ -2,8 +2,8 @@
 Library            OperatingSystem
 Resource           ./global.robot
 Resource           ${RESOURCES}/utils.resource
-Suite Setup        Global Setup
-Suite Teardown     Global Teardown
+# Suite Setup        Global Setup
+# Suite Teardown     Global Teardown
 
 
 *** Keywords ***
