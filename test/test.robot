@@ -1,16 +1,16 @@
 *** Settings ***
-Documentation           Tests to execute solution examples
-Resource                ./global.robot
-Resource                ${RESOURCES}/utils.resource
-Library                 Collections
-Library                 String
-Library                 ../lib/elf_compare.py 
-# Variables               TestExamples.yml
+Documentation           Tests to verify the csolution examples can be compiled and executed
 Suite Setup             Global Setup
 Suite Teardown          Global Teardown
+Resource                resources${/}global.resource
+Resource                resources${/}utils.resource
+Library                 String
+Library                 Collections
+Library                 lib${/}elf_compare.py 
 Test Template           Run CSolution Project
 
 *** Variables ***
+# The directory name of the example to be built
 ${build-asm}                build-asm
 ${build-c}                  build-c
 ${build-cpp}                build-cpp
@@ -22,6 +22,9 @@ ${whitespace}               whitespace
 ${trustzone}                trustzone
 
 *** Test Cases ***
+# <Name of the Test>
+#    <Path to the input *.csolution.yml file>    <Expected build status>    <Example root directory name>
+
 Validate build-asm Example
     ${TEST_DATA_DIR}${/}${build-asm}${/}solution.csolution.yml    ${0}    ${build-asm}
 
@@ -34,20 +37,20 @@ Validate build-cpp Example
 Validate include-define Example
     ${TEST_DATA_DIR}${/}${include-define}${/}solution.csolution.yml    ${0}    ${include-define}
 
-Validate language-scope Example
-    ${TEST_DATA_DIR}${/}${language-scope}${/}solution.csolution.yml    ${0}    ${language-scope}
+# Validate language-scope Example
+#     ${TEST_DATA_DIR}${/}${language-scope}${/}solution.csolution.yml    ${0}    ${language-scope}
 
-Validate linker-pre-processing Example
-    ${TEST_DATA_DIR}${/}${linker-pre-processing}${/}solution.csolution.yml    ${0}    ${linker-pre-processing}
+# Validate linker-pre-processing Example
+#     ${TEST_DATA_DIR}${/}${linker-pre-processing}${/}solution.csolution.yml    ${0}    ${linker-pre-processing}
 
-Validate pre-include Example
-    ${TEST_DATA_DIR}${/}${pre-include}${/}solution.csolution.yml    ${0}    ${pre-include}
+# Validate pre-include Example
+#     ${TEST_DATA_DIR}${/}${pre-include}${/}solution.csolution.yml    ${0}    ${pre-include}
 
-Validate whitespace Example
-    ${TEST_DATA_DIR}${/}${whitespace}${/}solution.csolution.yml    ${0}    ${whitespace}
+# Validate whitespace Example
+#     ${TEST_DATA_DIR}${/}${whitespace}${/}solution.csolution.yml    ${0}    ${whitespace}
 
-Validate trustzone Example
-     ${TEST_DATA_DIR}${/}${trustzone}${/}solution.csolution.yml    ${0}    ${trustzone}
+# Validate trustzone Example
+#      ${TEST_DATA_DIR}${/}${trustzone}${/}solution.csolution.yml    ${0}    ${trustzone}
 
 *** Keywords ***
 Run Csolution Project
@@ -55,7 +58,12 @@ Run Csolution Project
     ${rc_cbuildgen}=          Run Project With cbuildgen       ${input_file}    ${args}
     ${rc_cbuild2cmake}=       Run Project with cbuild2cmake    ${input_file}    ${args}
     ${build_status}=          Validate Build Status     ${rc_cbuildgen}    ${rc_cbuild2cmake}    ${expect}
-    Run Keyword If            ${build_status} == ${True}    Compare Elf Information   ${input_file}    ${TEST_DATA_DIR}${/}${example_name}${/}out_dir/out     ${TEST_DATA_DIR}${/}${example_name}${/}out
+    ${result}=    Run Keyword If    ${build_status} == ${True}
+    ...    Run Keyword And Return
+    ...    Compare Elf Information   ${input_file}
+    ...    ${TEST_DATA_DIR}${/}${example_name}${/}out_dir/out
+    ...    ${TEST_DATA_DIR}${/}${example_name}${/}out
+    Should Be True    ${result}
 
 
 

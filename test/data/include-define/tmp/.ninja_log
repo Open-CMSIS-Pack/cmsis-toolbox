@@ -1,9 +1,0 @@
-# ninja log v5
-0	61	7348746336016680	project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-mkdir	31899037849be8f0
-0	61	7348746336016680	C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-mkdir	31899037849be8f0
-62	121	7348746336613627	project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-download	ce4ba564e60af7bc
-62	121	7348746336613627	C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-download	ce4ba564e60af7bc
-121	183	7348746337239563	project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-update	614ef3df24905a91
-121	183	7348746337239563	C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-update	614ef3df24905a91
-184	250	7348746337891629	project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-patch	53b871a1eb4c5093
-184	250	7348746337891629	C:/Sandbox/forked/cmsis-toolbox/test/data/include-define/tmp/project.GCC+ARMCM0/src/project.GCC+ARMCM0-stamp/project.GCC+ARMCM0-patch	53b871a1eb4c5093

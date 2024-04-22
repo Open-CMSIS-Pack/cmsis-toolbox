@@ -1,14 +1,14 @@
 import os
 import subprocess
 from robot.api import logger
-import robot.utils.asserts
+from robot.utils import asserts
 
 def compare_elf_information(input_file, cbuildgen_out_dir, cbuild2cmake_out_dir):
     logger.debug('Input file: %s' % input_file)
     logger.debug('Cbuildgen out dir: %s' % cbuildgen_out_dir)
     logger.debug('Cbuild2cmake out dir: %s' % cbuild2cmake_out_dir)
     result = CompareELF(input_file, cbuildgen_out_dir, cbuild2cmake_out_dir).compare_elf_files()
-    robot.utils.asserts.assert_equal(True, result)
+    return result
     
 
 class Context:

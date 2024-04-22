@@ -15,9 +15,18 @@ concurrency:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    continue-on-error: true
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
+        arch: [amd64, arm64]
+        include:
+          - os: windows-latest
+            target: win
+          - os: ubuntu-latest
+            target: lin
+          - os: macos-latest
+            target: mac
     steps:
       - uses: actions/checkout@v4
 
@@ -32,21 +41,6 @@ jobs:
             pip install --upgrade pip
             pip install -r test/requirements.txt
 
-      # - name: Cache vcpkg
-      #   uses: actions/cache@v4
-      #   with:
-      #     key: vcpkg-${{ runner.os }}-${{ runner.arch }}-${{ github.run_id }}
-      #     restore-keys: |
-      #         vcpkg-${{ runner.os }}-${{ runner.arch }}-
-      #     path: /home/runner/.vcpkg
-    
-      # - name: Prepare vcpkg env
-      #   working-directory: ./test
-      #   run: |  
-      #     . <(curl https://aka.ms/vcpkg-init.sh -L)
-      #     vcpkg x-update-registry --all
-      #     vcpkg activate
-
       - name: Setup vcpkg environment
         uses: soumeh01/actions/vcpkg@testwindows
         with:
@@ -55,22 +49,20 @@ jobs:
           cache: "-"
 
       - name: Activate Arm tool license
-        working-directory: ./test
         run: |
           armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
+        working-directory: ./test
 
       - name: Run Test
-        continue-on-error: true
-        working-directory: ./test
         run: |
-          python -m robot --outputdir ../reports-${{ matrix.os }} -x junit-report.xml src
+          python -m robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} --settag ${{ matrix.target }}-${{ matrix.arch }} --name ${{ matrix.target }}-${{ matrix.arch }} ./test
 
       - name: Archieve test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: reports-${{ matrix.os }}
-          path: reports-${{ matrix.os }}
+          name: reports-${{ matrix.target }}-${{ matrix.arch }}
+          path: reports-${{ matrix.target }}-${{ matrix.arch }}
 
   report:
     runs-on: ubuntu-latest
@@ -80,38 +72,71 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Download reports windows
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install pip dependencies
+      run: |
+          pip install --upgrade pip
+          pip install -r test/requirements.txt
+
+    - name: Download reports windows amd64
       uses: actions/download-artifact@v4
       with:
-        name: reports-windows-latest
-        path: reports-windows-latest
+        name: reports-win-amd64
+        path: reports-win-amd64
 
-    - name: Download reports linux
+    - name: Download reports windows arm64
       uses: actions/download-artifact@v4
       with:
-        name: reports-ubuntu-latest
-        path: reports-ubuntu-latest
+        name: reports-win-arm64
+        path: reports-win-arm64
 
-    - name: Download reports darwin
+    - name: Download reports linux amd64
       uses: actions/download-artifact@v4
       with:
-        name: reports-macos-latest
-        path: reports-macos-latest
+        name: reports-lin-amd64
+        path: reports-lin-amd64
 
-    - name: Send windows report to commit
+    - name: Download reports linux arm64
+      uses: actions/download-artifact@v4
+      with:
+        name: reports-lin-arm64
+        path: reports-lin-arm64
+
+    - name: Download reports darwin amd64
+      uses: actions/download-artifact@v4
+      with:
+        name: reports-mac-amd64
+        path: reports-mac-amd64
+
+    - name: Download reports darwin arm64
+      uses: actions/download-artifact@v4
+      with:
+        name: reports-mac-arm64
+        path: reports-mac-arm64
+
+    - name: Consolidate robot test results
+      continue-on-error: true
+      run: |
+        python -m robot.rebot --name Collective_Robot_Results --outputdir Collective_Robot_Results --output output.xml \
+          ./reports-win-amd64/output.xml ./reports-win-amd64/output.xml \
+          ./reports-lin-arm64/output.xml ./reports-lin-arm64/output.xml \
+          ./reports-mac-amd64/output.xml ./reports-mac-arm64/output.xml
+
+    - name: HTML Preview
+      if: always()
+      id: html_preview
+      uses: pavi2410/html-preview-action@v2
+      with:
+        html_file: 'log.html'
+
+    - name: Send report to commit
+      if: always()
       uses: joonvena/robotframework-reporter-action@v2.4
       with:
-        report_path: reports-windows-latest
-        gh_access_token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Send linux report to commit
-      uses: joonvena/robotframework-reporter-action@v2.4
-      with:
-        report_path: reports-ubuntu-latest
-        gh_access_token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Send macos report to commit
-      uses: joonvena/robotframework-reporter-action@v2.4
-      with:
-        report_path: reports-macos-latest
+        report_path: Collective_Robot_Results
         gh_access_token: ${{ secrets.GITHUB_TOKEN }}

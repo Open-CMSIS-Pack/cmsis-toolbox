@@ -1,21 +1,33 @@
 *** Settings ***
-Documentation    A resource file with reusable keywords
+Documentation    A collection of commonly used keywords across multiple test suites
 Library          Collections
 Library          Process
 Library          OperatingSystem
+Resource         global.resource
 
 
 *** Keywords ***
-Get Test Data directory
-    [Documentation]      Get test input data directory path
+Global Setup
+    ${parent_dir}=                  Join Path           ${CURDIR}        ..
+    ${src_dir}=                     Join Path           ${parent_dir}    ${Data}
+    ${dest_dir}=                    Get Test Data Directory
+    Set Global Variable             ${TEST_DATA_DIR}    ${dest_dir}
+    Copy Directory                  ${src_dir}          ${dest_dir}
+
+Global Teardown
+    Remove Directory with Content    ${TEST_DATA_DIR}
+
+Get Test Data Directory
+    [Documentation]      Retrieve the directory path for test input data
     ${parent_dir}=       Join Path           ${CURDIR}        ..
-    ${test_data_dir}=    Join Path           ${parent_dir}    run
+    ${test_data_dir}=    Join Path           ${parent_dir}    ${Build}
     RETURN               ${test_data_dir}
 
 Run Program
     [Documentation]             Run specified executable with arguments
     [Arguments]                 ${exe_path}      ${input_File}    @{args}
-    ${result}    Run Process    ${exe_path}      ${input_File}    @{args}    shell=True    stdout=${CURDIR}/stdout.txt
+    ${result}    Run Process    ${exe_path}      ${input_File}    @{args}
+    ...                         shell=True       stdout=${CURDIR}/stdout.txt
     Log Many                    StdOut: ${result.stdout}    Return Code: ${result.rc}
     RETURN                      ${result.rc}
 
@@ -48,19 +60,6 @@ Remove Directory with Content
 #     Log                             ${result.stderr}
 #     Should Be Equal As Integers     ${result.rc}          ${0}
 
-Global Setup
-    [Documentation]                 Global test set up
-    ${parent_dir}=                  Join Path           ${CURDIR}        ..
-    ${src_dir}=                     Join Path           ${parent_dir}    data
-    ${dest_dir}=                    Get Test Data directory
-    Set Global Variable             ${TEST_DATA_DIR}    ${dest_dir}
-    Copy Directory                  ${src_dir}          ${dest_dir}
-
-Global Teardown
-    [Documentation]                  Global tear down
-    Remove Directory with Content    ${TEST_DATA_DIR}
-
-*** Keywords ***
 Run Project With cbuild2cmake
     [Arguments]     ${input_file}    ${args}=@{EMPTY}
     ${ex_args}=     Append Additional Arguments     ${args}    --cbuild2cmake
