@@ -37,20 +37,20 @@ Validate build-cpp Example
 Validate include-define Example
     ${TEST_DATA_DIR}${/}${include-define}${/}solution.csolution.yml    ${0}    ${include-define}
 
-# Validate language-scope Example
-#     ${TEST_DATA_DIR}${/}${language-scope}${/}solution.csolution.yml    ${0}    ${language-scope}
+Validate language-scope Example
+    ${TEST_DATA_DIR}${/}${language-scope}${/}solution.csolution.yml    ${0}    ${language-scope}
 
-# Validate linker-pre-processing Example
-#     ${TEST_DATA_DIR}${/}${linker-pre-processing}${/}solution.csolution.yml    ${0}    ${linker-pre-processing}
+Validate linker-pre-processing Example
+    ${TEST_DATA_DIR}${/}${linker-pre-processing}${/}solution.csolution.yml    ${0}    ${linker-pre-processing}
 
-# Validate pre-include Example
-#     ${TEST_DATA_DIR}${/}${pre-include}${/}solution.csolution.yml    ${0}    ${pre-include}
+Validate pre-include Example
+    ${TEST_DATA_DIR}${/}${pre-include}${/}solution.csolution.yml    ${0}    ${pre-include}
 
-# Validate whitespace Example
-#     ${TEST_DATA_DIR}${/}${whitespace}${/}solution.csolution.yml    ${0}    ${whitespace}
+Validate whitespace Example
+    ${TEST_DATA_DIR}${/}${whitespace}${/}solution.csolution.yml    ${0}    ${whitespace}
 
-# Validate trustzone Example
-#      ${TEST_DATA_DIR}${/}${trustzone}${/}solution.csolution.yml    ${0}    ${trustzone}
+Validate trustzone Example
+    ${TEST_DATA_DIR}${/}${trustzone}${/}solution.csolution.yml    ${0}    ${trustzone}
 
 *** Keywords ***
 Run Csolution Project
