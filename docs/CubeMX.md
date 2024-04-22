@@ -1,29 +1,29 @@
-# Work with CubeMX
+# Configure STM32 Devices with CubeMX
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **> Work with CubeMX**
+[**CMSIS-Toolbox**](README.md) **> Configure STM32 Devices with CubeMX**
 
-This chapter explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) (or just CubeMX) with the CMSIS-Toolbox to manage device and board configuration.
+This chapter explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) with the CMSIS-Toolbox to manage device and board configuration.
 
 **Chapter Contents:**
 
-- [Work with CubeMX](#work-with-cubemx)
+- [Configure STM32 Devices with CubeMX](#configure-stm32-devices-with-cubemx)
   - [Overview](#overview)
   - [Simple Project](#simple-project)
   - [Add RTOS](#add-rtos)
   - [Add Linker Script?](#add-linker-script)
-  - [Work with Board Layer](#work-with-board-layer)
-  - [TrustZone or Multicore Project](#trustzone-or-multicore-project)
+  - [Create a Board Layer](#create-a-board-layer)
+  - [TrustZone or Multi-Core Project](#trustzone-or-multi-core-project)
   - [CubeMX Runtime Context Mapping](#cubemx-runtime-context-mapping)
 
 ## Overview
 
-[STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) is a graphical tool for configuration of a STM32 device or board. It generates C code for project and peripheral initialization based on user settings. CubeMX interacts with the CMSIS-Toolbox  using the [generic interface for generators](build-operation.md#generator-integration).
+[STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) (CubeMX) is a graphical tool for configuration of a STM32 device or board. CubeMX generates C code for project and peripheral initialization based on user settings. Depending on the device configuration related drivers are added to the user application. The CMSIS-Toolbox interacts with CubeMX using the [generic interface for generators](build-operation.md#generator-integration).
 
-The `component: Device:CubeMX` connects a *csolution project* to CubeMX. This component imports the CubeMX generated files for a selected `device:` or `board:` using the `*.cgen.yml` file. This `*.cgen.yml` file is similar to a [software layer](build-overview.md#software-layers) but managed by CubeMX and should be not modified directly.
+The `component: Device:CubeMX` connects a *csolution project* to CubeMX. This component imports the CubeMX generated files for a selected `device:` or `board:` using the [generator import file](YML-CBuild-Format.md#generator-import-file) (`*.cgen.yml`). This `*.cgen.yml` file is similar to a [software layer](build-overview.md#software-layers) but managed by CubeMX and should be not modified directly.
 
 An example project created with CubeMX can be found in [**csolution-examples/CubeMX**](https://github.com/Open-CMSIS-Pack/csolution-examples/CubeMX).
 
@@ -118,7 +118,7 @@ CubeMX generates the following content in the generator output directory of the 
 Directory `STM32CubeMX/MyBoard`     | Content
 :-----------------------------------|:---------------
 `CubeMX.cgen.yml`                   | Lists the CubeMX generated files and settings that are imported in the *csolution project*.
-`MX_Device\CubeMX\MX_Device.h`      | Header file with configuration settings for CMSIS software components.
+`MX_Device/CubeMX/MX_Device.h`      | Header file with configuration settings for CMSIS software components.
 `STM32CubeMX/STM32CubeMX.ioc`       | CubeMX project file with settings.
 `STM32CubeMX/Src`                   | CubeMX generated application code: `main.c` and STM32 setup code.
 `STM32CubeMX/Inc`                   | Header files for CubeMX generated application code.
@@ -162,7 +162,8 @@ generator-import:
 ## Add RTOS
 
 Many applications require an RTOS kernel. By default, CubeMX implements interrupts functions for all Cortex-M exception handlers. However some exception handlers are typically required for the RTOS kernel execution. 
-Adding an RTOS kernel is therefore a two-step process:
+
+Adding an RTOS kernel requires these steps:
 
 1. **Add the RTOS kernel to application** as should below:
 
@@ -179,10 +180,10 @@ Adding an RTOS kernel is therefore a two-step process:
            - file: MyMain.c    
 
      components:
-       - component: CMSIS:CORE                   # CMSIS-Core component is  required
-       - component: Device:CubeMX                # Component that connects  to CubeMX    
+       - component: CMSIS:CORE                   # CMSIS-Core component is required
+       - component: Device:CubeMX                # Component that connects to CubeMX    
        - component: CMSIS:RTOS2:Keil RTX5&Source # RTOS component
-       - component: CMSIS:OS Tick                # OS Tick implementation  for RTOS
+       - component: CMSIS:OS Tick                # OS Tick implementation for RTOS
    ```    
 
 1. **In CubeMX configure interrupt handlers** as shown below:
@@ -207,30 +208,50 @@ Adding an RTOS kernel is therefore a two-step process:
 
 Should we add information about a linker script?
 
-## Work with Board Layer
+## Create a Board Layer
 
-What needs to be considered when working with layers, make a layer out of the configuration.
+A [software layer](build-overview.md#software-layers) is a set of pre-configured software components and source files for re-use in multiple projects. A board layer contains typically basic I/O drivers and related device and board configuration. CubeMX does generate a significant part of a board layer.
 
-generators:
-    options:
-    - generator: CubeMX
-      path: ./STM32CubeMX/B-U585I-IOT02A
-      cgen-name:            # file name of the `cgen.yml` file
-      map: Application      # map project or layer to CubeMX runtime context
+The board layer is stored in an separate directory that is independent of a specific *csolution project*. To create a board layer, copy the related source files, the STM32CubeMX generated files, and the configuration files of the [RTE directory](.) that relate to software components in the board layer.
 
+**Example directory content of a STM32 board layer**
 
-## TrustZone or Multicore Project
+Directory and Files          | Description
+:----------------------------|:---------------------------------------
+`Board.clayer.yml`           | Defines the source files and software components of the board layer.
+`Driver/`                    | Directory with driver related source files.
+`STM32CubeMX/`               | Directory with CubeMX generated files.
+`STM32CubeMX/Board.cgen.yml` | Generator import file that lists CubeMX generated files and options.
 
-Explain what is different when creating a TrustZone or Multicore Project
-
-## CubeMX Runtime Context Mapping
-
-Some devices, for example the STM32H7S series, provide in CubeMX *runtime contexts*, for example: `Boot`, `Application`, `ExternalMemoryLoader`. To map the *csolution* project context to these CubeMX *runtime contexts* it is required for this type of devices to use `map:` key in the `generator`: option as shown below.
+The `Board.clayer.yml` file defines with the `generators:` node, options to locate the CubeMX generated files in the directory structure of the [software layer](build-overview.md#software-layers). As a board layer is used by many projects, the name of the generator import file should be explicitly specified as shown below:
 
 ```yml
 generators:
     options:
     - generator: CubeMX
-      path: ./STM32CubeMX/B-U585I-IOT02A
+      path: ./STM32CubeMX                   # path relative to the `*.clayer.yml` file
+      name: Board                           # generator import file is named `Board.cgen.yml`.
+```
+
+## TrustZone or Multi-Core Project
+
+Projects that use TrustZone or a multi-core device share the same STM32CubeMX configuration. There is therefore just one directory `STM32CubeMX` located at the same level as the `*.csolution.yml` project file.
+
+## CubeMX Runtime Context Mapping
+
+Some devices, for example the STM32H7S series, provide in CubeMX *runtime contexts*, for example: `Boot`, `Application`, `ExternalMemoryLoader`. To map the *csolution* project context to these CubeMX *runtime contexts* it is required for this type of devices to use `map:` key in the `generator`: option as shown below.
+
+The STM32H7S series uses the following CubeMX run-time names:
+
+- `Boot` for the boot loader.
+- `Application` for the user application program.
+- `ExternalMemoryLoader` for the part that is in external memory.
+
+The `generators:` node is used to map a `*.cproject.yml` or `*.clayer.yml` file to a CubeMX run-time context as shown below.
+
+```yml
+generators:
+    options:
+    - generator: CubeMX
       map: Application      # map project or layer to CubeMX runtime context
 ```
