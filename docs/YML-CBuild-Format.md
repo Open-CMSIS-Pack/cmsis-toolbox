@@ -379,9 +379,9 @@ The `configurations:` node lists possible configurations for [reference applicat
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`value:`                                                           | Value of the variable when layer is not copied.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`description:`                                                     | Brief [description](YML-Input-Format.md#layer) text taken from `*.clayer.yml`.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`settings:`                                                        | Usage instructions for this layer.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`- info:`                                                              | Value of `set` and `info` taken from [`connect:`](YML-Input-Format.md#connect) in `*.clayer.yml`.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`- info:`                                                          | Value of `set` and `info` taken from [`connect:`](YML-Input-Format.md#connect) in `*.clayer.yml`.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`path:`                                                            | Path to the directory that contains the layer (from *.PDSC file).
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`file:`                                                            | Name of the *.clayer.yml file (optional with relative path to the directory specified with path) (from *.PDSC file).
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`file:`                                                            | Name of the *.clayer.yml file (optional with relative path to the directory specified with path) (from `*.PDSC` file).
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`copy-to:`                                                         | Proposed directory for the layer in the *csolution project* (from *.PDSC file).
 
 **Example:**
