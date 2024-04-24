@@ -713,7 +713,9 @@ The `generators:` node can be added at various levels of the `*.yml` input files
 `options:`                     |            | Content
 :------------------------------|------------|:------------------------------------
 `- generator:`                 |  Optional  | Identifier of the generator tool, specified with `id` in the [generators element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_generators_pg.html#element_generator) of the PDSC file.
-&nbsp;&nbsp;&nbsp; `path:`     |  Optional  | Specifies the directory for generated files. Relative paths used the location of the `yml` file as base directory.
+&nbsp;&nbsp;&nbsp; `path:`     |  Optional  | Specifies the directory for generated files. Relative paths used location of `*.cproject.yml` or `*.clayer.yml` file as base directory.
+&nbsp;&nbsp;&nbsp; `name:`     |  Optional  | Specifies the base name of the [generator import file](YML-CBuild-Format.md#generator-import-file) (added in CMSIS-Toolbox 2.4.0); typically used for a board layer.
+&nbsp;&nbsp;&nbsp; `map:`      |  Optional  | Mapping of the *csolution project* to a generator specific run-time context name (added in CMSIS-Toolbox 2.4.0).
 
 **Example:**
 
@@ -723,7 +725,9 @@ generators:
 
   options:
   - generator: CubeMX                         # for the generator id `CubeMX` use this path
-    path:  ./CubeFiles                        # relative path to the *.yml file that contains this setting
+    path:  ./CubeFiles                        # relative path to generated files and the generator import file
+    name: MyConf                              # results in generator import file ./CubeFiles/MyConf.cgen.yml
+    map: Boot                                 # Map this project part to the CubeMX run-time context Boot
 ```
 
 ### `rte:`
@@ -928,8 +932,8 @@ Value                                                 | Code Generation
 `balanced`                                            | Balanced optimization
 `size`                                                | Optimized for code size
 `speed`                                               | Optimized for execution speed
-`debug`                                               | Optimize for debugging experience 
-`none`                                                | No optimization (provides better debug illusion)
+`debug`                                               | Optimize for debug experience 
+`none`                                                | No optimization
 
 > **Note:**
 >
