@@ -60,24 +60,19 @@ Remove Directory with Content
 #     Log                             ${result.stderr}
 #     Should Be Equal As Integers     ${result.rc}          ${0}
 
-Run Project With cbuild2cmake
-    [Arguments]     ${input_file}    ${args}=@{EMPTY}
-    ${ex_args}=     Append Additional Arguments     ${args}    --cbuild2cmake
-    ${result}=      Run cbuild        ${input_file}      ${ex_args}
-    RETURN          ${result}
-
 Run Project with cbuildgen
-    [Arguments]    ${input_file}      ${example_name}    ${args}=@{EMPTY}
-    ${ex_args}=     Append Additional Arguments     ${args}    --output    ${TEST_DATA_DIR}${/}${example_name}${/}out_dir
-    ${result}=      Run cbuild        ${input_file}      ${ex_args}
-    RETURN          ${result}
+    [Arguments]         ${input_file}       ${example_name}    ${expect}    ${args}=@{EMPTY}
+    ${ex_args}=         Append Additional Arguments     ${args}    --output    ${TEST_DATA_DIR}${/}${example_name}${/}out_dir
+    ${rc}=              Run cbuild          ${input_file}      ${ex_args}
+    Should Be Equal     ${rc}               ${expect}    msg=Unexpected status returned by cbuildgen execution
+    RETURN              ${rc}
 
-Validate Build Status
-    [Arguments]         ${rc_cbuildgen}        ${rc_cbuild2cmake}    ${rc_expected}
-    Should Be Equal     ${rc_cbuildgen}        ${rc_expected}        msg=Unexpected status returned by cbuildgen execution
-    Should Be Equal     ${rc_cbuild2cmake}     ${rc_expected}        msg=Unexpected status returned by cbuild2cmake execution
-    ${status_match}=    Evaluate    ${rc_cbuildgen} == ${rc_cbuild2cmake} and ${rc_cbuildgen} == ${rc_expected}
-    RETURN              ${status_match}
+Run Project With cbuild2cmake
+    [Arguments]         ${input_file}     ${example_name}    ${expect}          ${args}=@{EMPTY}
+    ${ex_args}=         Append Additional Arguments          ${args}    --cbuild2cmake
+    ${result}=          Run cbuild        ${input_file}      ${ex_args}
+    Should Be Equal     ${result}         ${expect}    msg=Unexpected status returned by cbuild2cmake execution
+    RETURN              ${result}
 
 Append Additional Arguments
     [Arguments]                  ${list}    @{values}

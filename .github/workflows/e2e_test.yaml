@@ -1,4 +1,4 @@
-name: Robot Tests
+name: E2E Tests
 
 on:
   pull_request:
@@ -93,41 +93,18 @@ jobs:
       working-directory: artifacts
       run: |
         python -m robot.rebot --name Collective_Robot_Results --outputdir collective_robot_results --output output.xml \
-          ./reports-win-amd64/output.xml ./reports-win-amd64/output.xml \
-          ./reports-lin-arm64/output.xml ./reports-lin-arm64/output.xml \
+          ./reports-win-amd64/output.xml ./reports-win-arm64/output.xml \
+          ./reports-lin-amd64/output.xml ./reports-lin-arm64/output.xml \
           ./reports-mac-amd64/output.xml ./reports-mac-arm64/output.xml
-
-    - name: Convert xml to junit xml
-      if: always()
-      run: |
-        python -m robot.rebot -x test_results_junit.xml artifacts/collective_robot_results/output.xml
 
     - name: Generate Summary report
       if: always()
       run: |
         python ./test/lib/execution_summary.py artifacts/collective_robot_results/output.xml
 
-    - name: check directory content
-      run: |
-        ls -l .
-
     - name: Print E2E Report
       if: always()
       run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
-
-    - name: Publish Test Results
-      if: always()
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      with:
-        report_individual_runs: true
-        files: "test_results_junit.xml"
-
-    # - name: HTML Preview
-    #   if: always()
-    #   id: html_preview
-    #   uses: pavi2410/html-preview-action@v2
-    #   with:
-    #     html_file: 'artifacts/collective_robot_results/log.html'
 
     - name: Archieve consolidated test results
       if: always()
@@ -135,10 +112,3 @@ jobs:
       with:
         name: consolidated-reports
         path: artifacts/collective_robot_results
-
-    # - name: Send report to commit
-    #   if: always()
-    #   uses: joonvena/robotframework-reporter-action@v2.4
-    #   with:
-    #     report_path: artifacts/collective_robot_results
-    #     gh_access_token: ${{ secrets.GITHUB_TOKEN }}
