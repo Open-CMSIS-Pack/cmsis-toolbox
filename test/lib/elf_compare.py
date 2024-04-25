@@ -7,9 +7,7 @@ def compare_elf_information(input_file, cbuildgen_out_dir, cbuild2cmake_out_dir)
     logger.debug('Input file: %s' % input_file)
     logger.debug('Cbuildgen out dir: %s' % cbuildgen_out_dir)
     logger.debug('Cbuild2cmake out dir: %s' % cbuild2cmake_out_dir)
-    result = CompareELF(input_file, cbuildgen_out_dir, cbuild2cmake_out_dir).compare_elf_files()
-    return result
-    
+    return CompareELF(input_file, cbuildgen_out_dir, cbuild2cmake_out_dir).compare_elf_files()
 
 class Context:
     def __init__(self, strContext: str):
@@ -64,7 +62,7 @@ class CompareELF:
         for context in context_list:
             logger.info('Processing context: %s.%s+%s' % (context.project, context.build, context.target))
             path = self.get_elf_file_path(self.cbuildgen_out_dir, context)
-            logger.debug('Path: %s' % path)
+            logger.info('Path: %s' % path)
             if path != '':
                 cbuildgen_elf_file = os.path.join(self.cbuildgen_out_dir, path)
                 cbuild2cmake_elf_file = os.path.join(self.cbuild2cmake_out_dir, path)
@@ -77,6 +75,7 @@ class CompareELF:
       
     def get_elf_file_path(self, basePath, context: Context):
         file_extns = [".axf", ".elf"]
+        logger.info('basePath: %s' % basePath)
         for extn in file_extns:
             filePath = os.path.join(basePath, context.project, context.target, context.build, context.project+extn)
             if os.path.exists(filePath):

@@ -17,5 +17,5 @@ project:
     - group: Non-secure Code
       files: 
         - file: main_ns.c 
-        - file: $Source(secure)$/interface.h
-        - file: $Output(secure)$_CMSE_Lib.o
+        - file: $ProjectDir(secure)$/interface.h
+        - file: $cmse-lib(secure)$

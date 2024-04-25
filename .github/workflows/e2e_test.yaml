@@ -18,14 +18,14 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest, macos-13]
         arch: [amd64, arm64]
         include:
           - os: windows-latest
             target: win
           - os: ubuntu-latest
             target: lin
-          - os: macos-latest
+          - os: macos-13
             target: mac
     steps:
       - uses: actions/checkout@v4
@@ -83,7 +83,7 @@ jobs:
           pip install --upgrade pip
           pip install -r test/requirements.txt
 
-    - name: Download reports darwin arm64
+    - name: Download reports
       uses: actions/download-artifact@v4
       with:
         path: artifacts

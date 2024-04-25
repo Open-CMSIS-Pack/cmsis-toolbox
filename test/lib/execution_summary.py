@@ -37,7 +37,6 @@ class ResultVisitorEx(ResultVisitor):
     def end_result(self, result: Result):
         with open(self.markdown_file, "w") as f:
             f.write("# Robot Framework Report\n\n")
-            self.__write_test_env(f)
             f.write("## Summary\n\n")
             f.write("|:white_check_mark: Passed|:x: Failed|:fast_forward: Skipped|Total|\n")
             f.write("|:----:|:----:|:-----:|:---:|\n")
@@ -45,28 +44,6 @@ class ResultVisitorEx(ResultVisitor):
             self.__write_test_section(f, self.passed_tests, "Passed Tests", "|Tag|Test|:clock1030: Duration|Suite|\n")
             self.__write_test_section(f, self.failed_tests, "Failed Tests", "|Tag|Test|Message|:clock1030: Duration|Suite|\n")
             self.__write_test_section(f, self.skipped_tests, "Skipped Tests", "|Tag|Test|Suite|\n")
-
-    def __write_test_env(self, file):
-        tool_dict = {"cbuild": shutil.which("cbuild"),
-                    "cpackget": shutil.which("cpackget"),
-                    "csolution": shutil.which("csolution")}
-
-        file.write("## Test Environment\n\n")
-        for tool, path in tool_dict.items():
-            version = "unknown"
-            version_cmd = f"{tool} -V"
-            try:
-                output = subprocess.run(version_cmd, shell=True, check=True, text=True, capture_output=True)
-                version_match = re.search(r"(\d+\.\d+\.\d+.*) \(C\)", output.stdout)
-                if version_match:
-                    version = version_match.group(1)
-            except subprocess.CalledProcessError:
-                pass
-
-            tool_info = f"- **{tool}**: `version {version}, {path}`"
-            file.write(f"{tool_info}\n")
-        file.write(f"- **CMSIS_PACK_ROOT**: `{os.getenv('CMSIS_PACK_ROOT')}`\n\n")
-
 
     def __write_test_section(self, file, test_dict, section_header, table_header):
         if len(test_dict) != 0:

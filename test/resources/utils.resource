@@ -3,6 +3,7 @@ Documentation    A collection of commonly used keywords across multiple test sui
 Library          Collections
 Library          Process
 Library          OperatingSystem
+Library          ..${/}lib${/}utils.py
 Resource         global.resource
 
 
@@ -27,15 +28,15 @@ Run Program
     [Documentation]             Run specified executable with arguments
     [Arguments]                 ${exe_path}      ${input_File}    @{args}
     ${result}    Run Process    ${exe_path}      ${input_File}    @{args}
-    ...                         shell=True       stdout=${CURDIR}/stdout.txt
-    Log Many                    StdOut: ${result.stdout}    Return Code: ${result.rc}
-    RETURN                      ${result.rc}
+    ...    shell=True    stdout=${CURDIR}/stdout.txt
+    ${ret_code}=                Set Variable If    ${result.rc} == ${0}    ${result.rc}    ${1}
+    Log Many                    StdOut: ${result.stdout}
+    RETURN                      ${ret_code}
 
 Run cbuild
     [Documentation]                Run cbuild with specified arguments
     [Arguments]                    ${input_file}    ${args}=@{EMPTY}
     Append To List                 ${args}    -p    -r    --update-rte
-    Log Many                       cbuild    ${input_file}    @{args}
     ${ret_code}=    Run Program    cbuild    ${input_file}    @{args}
     RETURN                         ${ret_code}
 
@@ -52,29 +53,31 @@ Remove Directory with Content
     Remove Directory                ${target_dir}      recursive=${True}
     Wait Until Removed              ${target_dir}      timeout=5 seconds
 
-# Checkout GitHub Repository
-#     [Documentation]                 Checkout github repository
-#     [Arguments]                     ${github_repo_url}    ${dest_path}
-#     ${result}=    Run Process       git    clone          ${github_repo_url}    ${dest_path}
-#     Log                             ${result.stdout}
-#     Log                             ${result.stderr}
-#     Should Be Equal As Integers     ${result.rc}          ${0}
+Checkout GitHub Repository
+    [Documentation]                 Checkout github repository
+    [Arguments]                     ${github_repo_url}    ${dest_path}
+    ${result}=    Run Process       git    clone          ${github_repo_url}    ${dest_path}
+    Log                             ${result.stdout}
+    Log                             ${result.stderr}
+    Should Be Equal As Integers     ${result.rc}          ${0}
 
 Run Project with cbuildgen
-    [Arguments]         ${input_file}       ${example_name}    ${expect}    ${args}=@{EMPTY}
-    ${ex_args}=         Append Additional Arguments     ${args}    --output    ${TEST_DATA_DIR}${/}${example_name}${/}out_dir
-    ${rc}=              Run cbuild          ${input_file}      ${ex_args}
-    Should Be Equal     ${rc}               ${expect}    msg=Unexpected status returned by cbuildgen execution
-    RETURN              ${rc}
+    [Documentation]     Run the csolution project with cbuildgen
+    [Arguments]         ${input_file}    ${expect}        ${args}=@{EMPTY}
+    ${parent_path}=     Get Parent Directory Path         ${input_file}
+    ${ex_args}=         Append Additional Arguments       ${args}    --output    ${parent_path}${/}${Out_Dir}
+    ${ret_code}=        Run cbuild       ${input_file}    ${ex_args}
+    Should Be Equal     ${ret_code}      ${expect}        msg=Unexpected status returned by cbuildgen execution
 
 Run Project With cbuild2cmake
-    [Arguments]         ${input_file}     ${example_name}    ${expect}          ${args}=@{EMPTY}
-    ${ex_args}=         Append Additional Arguments          ${args}    --cbuild2cmake
-    ${result}=          Run cbuild        ${input_file}      ${ex_args}
-    Should Be Equal     ${result}         ${expect}    msg=Unexpected status returned by cbuild2cmake execution
-    RETURN              ${result}
+    [Documentation]     Run the csolution project with cbuild2cmake
+    [Arguments]         ${input_file}     ${expect}        ${args}=@{EMPTY}
+    ${ex_args}=         Append Additional Arguments        ${args}    --cbuild2cmake
+    ${ret_code}=        Run cbuild        ${input_file}    ${ex_args}
+    Should Be Equal     ${ret_code}       ${expect}        msg=Unexpected status returned by cbuild2cmake execution
 
 Append Additional Arguments
+    [Documentation]     Append values to the list
     [Arguments]                  ${list}    @{values}
     ${args}=    Combine Lists    ${list}    ${values}
     RETURN                       ${args}
