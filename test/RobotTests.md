@@ -8,15 +8,34 @@ Before running Robot Framework tests, ensure you have the following prerequisite
 
 - Python (minimum recommended version **3.11**)
 - pip (python package manager)
+- [vcpkg](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#vcpkg---setup-using-cli)
 
-## Install Robot Framework
+## Install Test Environment
+
+### Install Robot Framework
 
 Install Robot Framework and its dependencies using pip:
 
 ```bash
-cd <root_dir>
+cd <root_dir>/test
 pip install --upgrade pip
-pip install -r test/requirements.txt
+pip install -r requirements.txt
+```
+
+### Install Toolchains using vcpkg
+
+These commands will install all the required toolchains listed [here](./vcpkg-configuration.json):
+
+```bash
+cd <root_dir>/test
+vcpkg x-update-registry --all
+vcpkg activate
+```
+
+```txt
+👉 Important:
+    The AC6 toolchain installation includes the "fromelf" utility, which can be found in the AC6 toolchain installation
+    directory. Ensure that "fromelf" utlity is in PATH.
 ```
 
 ## Running Tests
@@ -27,6 +46,12 @@ This command will run all tests located in the `test` directory and place the te
 
 ```bash
 robot -d <output_directory> <path_to_tests>
+```
+
+for e.g.
+
+```bash
+vcpkg activate
 robot -d results ./test
 ```
 
@@ -41,6 +66,7 @@ robot --test <test_name> <path_to_tests>
 for e.g.
 
 ```bash
+vcpkg activate
 robot --test "Validate build-c Example"  test/test.robot
 ```
 
@@ -65,6 +91,6 @@ The test cases in [test.robot](./test.robot) are implemented in a data-driven st
 
 ```txt
 ☑️ Note:
-    All options in the tests should be separated by **TABs**.
+    All options in the tests should be separated by "TABs".
     For more information on robot test follow https://docs.robotframework.org/docs/testcase_styles/datadriven
 ```

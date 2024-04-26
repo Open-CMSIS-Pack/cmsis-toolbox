@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation           Tests to verify the csolution examples can be compiled and executed
+Documentation           Tests to compile & execute local csolution examples
 Suite Setup             Global Setup
 Suite Teardown          Global Teardown
 Resource                resources${/}global.resource

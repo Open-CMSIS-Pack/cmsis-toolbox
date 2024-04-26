@@ -1,4 +1,5 @@
 *** Settings ***
+Documentation           Tests to compile & execute remote csolution examples
 Suite Setup             Global Setup
 Suite Teardown          Global Teardown
 Library                 lib${/}utils.py 
