@@ -1,0 +1,50 @@
+project:
+
+  components:
+    - component: ARM::CMSIS:CORE
+      del-path:
+        - ./inc1
+      undefine:
+        - DEF1
+    - component: ARM::Device:Startup&C Startup
+      add-path:
+        - ./inc2
+      define:
+        - DEF2: 1
+
+  groups:
+    - group: Source1
+      files:
+        - file: source1.c
+      add-path:
+        - ./inc1
+      define:
+        - DEF1: 1
+      groups:
+        - group: Source2
+          files:
+            - file: source2.c
+          add-path:
+            - ./inc2
+          define:
+            - DEF2: 1
+          del-path:
+            - ./inc1
+          undefine:
+            - DEF1
+
+    - group: Main
+      files:
+        - file: ./main.c
+          add-path:
+            - ./inc2
+          define:
+            - DEF2
+          del-path:
+            - ./not-supported
+          undefine:
+            - not-supported
+
+    - group: Headers
+      files:
+        - file: ./inc3/inc.h

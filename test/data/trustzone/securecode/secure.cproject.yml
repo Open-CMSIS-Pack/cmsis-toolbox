@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Open-CMSIS-Pack/devtools/main/tools/projmgr/schemas/cproject.schema.json
+
+project:
+  packs:
+    - pack: ARM::CMSIS@5.9.0
+
+  processor:
+    trustzone: secure
+
+  components:
+    - component: ARM::Device:Startup&C Startup
+    - component: ARM::CMSIS:CORE
+
+  groups:
+    - group: Secure Code
+      files: 
+        - file: main_s.c
+
+    - group: CMSE
+      files: 
+        - file: interface.c
+        - file: interface.h
+        - file: tz_context.c

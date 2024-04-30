@@ -1,0 +1,27 @@
+solution:
+  created-for: CMSIS-Toolbox@2.2.1
+  cdefault:
+
+  packs:
+    - pack: ARM::Cortex_DFP
+    - pack: ARM::CMSIS
+
+  target-types:
+    - type: ARMCM0
+      device: ARMCM0
+
+  build-types:
+    - type: AC6
+      compiler: AC6
+
+    - type: GCC
+      compiler: GCC
+
+    # - type: IAR
+      # compiler: IAR
+
+    - type: CLANG
+      compiler: CLANG
+
+  projects:
+    - project: ./project/project.cproject.yml
