@@ -219,7 +219,7 @@ Adding an RTOS kernel requires these steps:
 Depending on the project type and toolchain, CubeMX provides a linker script:
 
 - `compiler: AC6`
-  - no linker script is generated for a simple memory. In this case, the default linker script from the CMSIS-Toolbox is used, but needs a modification: remove ARM_LIB_HEAP and ARM_LIB_STACK as the are defined in the STM32 startup file.
+  - no linker script is generated for a simple memory. In this case, the default linker script from the CMSIS-Toolbox is used, but needs a modification: remove ARM_LIB_HEAP and ARM_LIB_STACK as they are defined in the STM32 startup file.
   - linker script is provided for more complex projects (typically when using the CubeMX Memory Manager).
   
 - `compiler: GCC` or `compiler: IAR`
@@ -260,13 +260,13 @@ Projects that use TrustZone or a multi-core device share the same STM32CubeMX co
 
 ## CubeMX Runtime Context Mapping
 
-Some devices, for example the STM32H7S series, provide in CubeMX *runtime contexts*, for example: `Boot`, `Application`, `ExternalMemoryLoader`. To map the *csolution* project context to these CubeMX *runtime contexts* it is required for this type of devices to use `map:` key in the `generator`: option as shown below.
+Some devices, for example the STM32H7S series, provide in CubeMX *runtime contexts*, for example: `Boot`, `Appli`, `ExtMemLoader`. To map the *csolution* project context to these CubeMX *runtime contexts* it is required for this type of devices to use `map:` key in the `generator`: option as shown below.
 
 The STM32H7S series uses the following CubeMX run-time names:
 
 - `Boot` for the boot loader.
-- `Application` for the user application program.
-- `ExternalMemoryLoader` for the part that is in external memory.
+- `Appli` for the user application program.
+- `ExtMemLoader` for the part that is in external memory.
 
 The `generators:` node is used to map a `*.cproject.yml` or `*.clayer.yml` file to a CubeMX run-time context as shown below.
 
@@ -274,5 +274,5 @@ The `generators:` node is used to map a `*.cproject.yml` or `*.clayer.yml` file 
 generators:
     options:
     - generator: CubeMX
-      map: Application      # map project or layer to CubeMX runtime context
+      map: Appli            # map project or layer to CubeMX runtime context
 ```
