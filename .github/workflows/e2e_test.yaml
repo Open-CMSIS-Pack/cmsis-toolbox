@@ -1,0 +1,114 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/robot-tests.yml'
+      - 'test/**'
+      - '!test/README.md'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    continue-on-error: true
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-13]
+        arch: [amd64, arm64]
+        include:
+          - os: windows-latest
+            target: win
+          - os: ubuntu-latest
+            target: lin
+          - os: macos-13
+            target: mac
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install pip dependencies
+        run: |
+            pip install --upgrade pip
+            pip install -r test/requirements.txt
+
+      - name: Setup vcpkg environment
+        uses: soumeh01/actions/vcpkg@testwindows
+        with:
+          config: "./test/vcpkg-configuration.json"
+          vcpkg-root: "${{ github.workspace }}/.vcpkg"
+          cache: "-"
+
+      - name: Activate Arm tool license
+        run: |
+          armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
+        working-directory: ./test
+
+      - name: Run Test
+        run: |
+          python -m robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} --settag ${{ matrix.target }}-${{ matrix.arch }} --name ${{ matrix.target }}-${{ matrix.arch }} ./test
+
+      - name: Archieve test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ matrix.target }}-${{ matrix.arch }}
+          path: reports-${{ matrix.target }}-${{ matrix.arch }}
+
+  report:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: test
+    permissions: write-all
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install pip dependencies
+      run: |
+          pip install --upgrade pip
+          pip install -r test/requirements.txt
+
+    - name: Download reports
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+        pattern: reports-*
+
+    - name: Consolidate robot test results
+      working-directory: artifacts
+      run: |
+        python -m robot.rebot --name Collective_Robot_Results --outputdir collective_robot_results --output output.xml \
+          ./reports-win-amd64/output.xml ./reports-win-arm64/output.xml \
+          ./reports-lin-amd64/output.xml ./reports-lin-arm64/output.xml \
+          ./reports-mac-amd64/output.xml ./reports-mac-arm64/output.xml
+
+    - name: Generate Summary report
+      if: always()
+      run: |
+        python ./test/lib/execution_summary.py artifacts/collective_robot_results/output.xml
+
+    - name: Print E2E Report
+      if: always()
+      run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
+
+    - name: Archieve consolidated test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: consolidated-reports
+        path: artifacts/collective_robot_results

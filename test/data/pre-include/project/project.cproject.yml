@@ -1,0 +1,12 @@
+project:
+
+  components:
+    - component: ARM::CMSIS:CORE
+    - component: ARM::Device:Startup&C Startup
+    - component: ARM::TestClass:TestGlobal
+    - component: ARM::TestClass:TestLocal
+
+  groups:
+    - group: Source
+      files:
+        - file: ./main.c

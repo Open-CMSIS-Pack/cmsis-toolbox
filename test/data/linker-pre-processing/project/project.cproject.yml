@@ -1,0 +1,14 @@
+project:
+
+  components:
+    - component: ARM::CMSIS:CORE
+    - component: ARM::Device:Startup&C Startup
+
+  groups:
+    - group: Source
+      files:
+        - file: ./main.c
+
+  linker:
+    - define:
+        - DEF_LD_PP

@@ -1,0 +1,53 @@
+project:
+
+  components:
+    - component: ARM::CMSIS:CORE
+    - component: ARM::Device:Startup&C Startup
+
+  groups:
+    - group: Source
+      files:
+        - file: ./main.c
+
+    - group: GCC-CLANG
+      for-compiler: [GCC, CLANG]
+      files:
+        - file: ./GCC/GAS.s
+          for-compiler: GCC
+          define:
+            - GAS_DEF
+        - file: ./GCC/PreProcessed.S
+          define:
+            - PRE_PROCESSED_DEF
+        - file: ./GCC/NonPreProcessed.s
+          misc:
+            - ASM:
+              - -DPRE_PROCESSED_DEF
+
+    - group: AC6
+      for-compiler: AC6
+      files:
+        - file: ./AC6/AsmArm.s
+          define:
+            - HEXADECIMAL_TEST: 0xABCDEF
+            - DECIMAL_TEST: 1234567890
+            - STRING_TEST: "\"String0\""
+        - file: ./AC6/GnuSyntax.s
+          define:
+            - GAS_DEF
+          misc:
+            - ASM:
+              - -masm=gnu
+        - file: ./AC6/PreProcessed.S
+          define:
+            - PRE_PROCESSED_DEF
+        - file: ./AC6/Auto.s
+          define:
+            - AUTO_DEF
+
+    - group: IAR
+      for-compiler: IAR
+      files:
+        - file: ./IAR/Asm.s
+          define:
+            - IAR_ASM_DEF
