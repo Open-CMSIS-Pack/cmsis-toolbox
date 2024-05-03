@@ -1,5 +1,5 @@
 # -------------------------------------------------------
-# Copyright (c) 2023 Arm Limited. All rights reserved.
+# Copyright (c) 2023-2024 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 # -------------------------------------------------------
@@ -17,7 +17,7 @@ def test_check_archive(base_path):
     dirDict["etc"] = {
         "{{ProjectName}}.cproject.yml",
         "{{SolutionName}}.csolution.yml",
-        "AC6.6.18.0.cmake",
+        "AC6.6.16.2.cmake",
         "ac6_linker_script.sct.src",
         "cbuild.schema.json",
         "cdefault.schema.json",
