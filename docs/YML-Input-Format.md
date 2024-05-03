@@ -102,6 +102,7 @@ File Extension           | [Category](https://open-cmsis-pack.github.io/Open-CMS
 `.a`, `.lib`                                 | library      | Library file
 `.o`                                         | object       | Object file
 `.txt`, `.md`, `.pdf`, `.htm`, `.html`       | doc          | Documentation
+`.scvd`                                      | other        | [Software Component View Description](https://arm-software.github.io/CMSIS-View/latest/SCVD_Format.html) for CMSIS-View
 
 ### `pack:` Name Conventions
 
@@ -975,6 +976,7 @@ Control warning level for compiler diagnostics.
 Value                                                 | Control diagnostic messages (warnings)
 :-----------------------------------------------------|:------------------------------------
 `on`                                                  | Generate warning messages
+`all`                                                 | Enable all compiler warning messages (compiler option -Wall)
 `off`                                                 | No warning messages generated
 
 ### `define:`

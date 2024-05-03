@@ -751,12 +751,12 @@ operation:
 >[Component Instances](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances).
 >In this case the instance %placeholder% is expanded as shown below:
 >
->  ```c
->  ./RTE/component_class/ConfigFile_0.h
->  ./RTE/component_class/ConfigFile_0.h.base@1.2.0
->  ./RTE/component_class/ConfigFile_1.h
->  ./RTE/component_class/ConfigFile_1.h.base@1.2.0
->  ```
+> ```c
+> ./RTE/component_class/ConfigFile_0.h
+> ./RTE/component_class/ConfigFile_0.h.base@1.2.0
+> ./RTE/component_class/ConfigFile_1.h
+> ./RTE/component_class/ConfigFile_1.h.base@1.2.0
+> ```
 
 ### RTE_Components.h
 
