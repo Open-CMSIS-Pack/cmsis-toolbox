@@ -18,6 +18,7 @@ This chapter explains how to work with *Application Reference Examples* that can
     - [Targeting Custom Hardware](#targeting-custom-hardware)
   - [Usage](#usage)
   - [Structure](#structure)
+    - [Project Files](#project-files)
     - [Typical Directory Structure](#typical-directory-structure)
     - [Reference Application Example](#reference-application-example)
     - [Board Layer](#board-layer)
@@ -69,7 +70,7 @@ solution:
 #     board: NXP::IMXRT1050-EVKB
 # Step 2: Run `cbuild setup` and use cbuild-idx.yml to identify variables, for example:
 #     variables:
-#       - Board-Layer:  %SolutionDir$/board/IMXRT1050-EVKB/board.clayer.yml
+#       - Board-Layer:  %SolutionDir()$/board/IMXRT1050-EVKB/board.clayer.yml
 ```
 
 ### Sensor Application Examples
@@ -114,15 +115,68 @@ solution:
 
 ## Usage
 
-ToDo once CMSIS-Toolbox 2.4.0 is complete.
+A *Reference Application Examples* is an incomplete `*.csolution.yml` project file that requires an compatible software layer for execution. The CMSIS-Toolbox helps you to identify compatible software layers with this process:
+
+ToDo finalize when CMSIS-Toolbox 2.4.0 is released.
 
 ## Structure
 
-The following section describes the overall structure of *Reference Application Examples*.
+The following section describes the overall file structure of *Reference Application Examples*.
+
+### Project Files
+
+A `*.csolution.yml` project file that contains software layers for two different evaluation boards should look like shown below.  This project contains three different examples that show different features of a USB device middleware.
+
+The actual example project (HID, MSC, or CDC1) is selected using a [context set](build-overview.md#working-with-context-set); the compiler is selected using the `--toolchain` option. To translate the completed *Reference Application Examples* use:
+
+```bash
+cbuild USB-Device.csolution.yml --context-set --toolchain AC6
+```
+
+**Example `USB_Device.csolution.yml` file with three different projects**
+
+```yml
+solution:
+  created-for: CMSIS-Toolbox@2.4.0
+  cdefault:
+
+  target-types:
+    - type: B-U585I-IOT02A
+      board: B-U585I-IOT02A
+      variables:
+        - Board-Layer: $SolutionDir()$\Board\B-U585I-IOT02A\Board.clayer.yml
+ 
+    - type: LPC55S69-EVK            # type name identical with board name?
+      board: LPC55S69-EVK
+      variables:
+        - Board-Layer: $SolutionDir()$\Board\LPC55S69-EVK\Board.clayer.yml
+
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: debug
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  projects:
+    - project: HID/HID.cproject.yml
+    - project: MSC/MassStorage.cproject.yml
+    - project: CDC1/VirtualCOM.cproject.yml
+```
 
 ### Typical Directory Structure
 
-ToDo 
+The directory structure of the above example from the programmers point of view is shown below.  The software layer in the directory `./board` is copied from the BSP of the related board.
+
+Directory Content                   | Content
+:-----------------------------------|:---------------
+`USB_Device.csolution.yml`          | Overall CMSIS solution project file.
+`./HID/`                            | HID example project from MDK-Middleware pack.
+`./MSC/`                            | MSC example project from MDK-Middleware pack.
+`./CDC1/`                           | CDC1 example project from MDK-Middleware pack.
+`./Board/B-U585I-IOT02A`            | Board software layer from B-U585I-IOT02A BSP.
+`./Board/LPC55S69-EVK`              | Board software layer from LPC55S69-EVK BSP.
 
 ### Reference Application Example
 
