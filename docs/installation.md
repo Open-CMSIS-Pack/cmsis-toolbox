@@ -314,8 +314,9 @@ Either,
     - ninja 1.10.2
     - arm-none-eabi-gcc 12.2.1-mpacbti (GNU Arm Embedded Toolchain 12.2.1)
 
-**Notes:**
- - In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
+> **Note:**
+>
+> In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
 
 Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal.
 
