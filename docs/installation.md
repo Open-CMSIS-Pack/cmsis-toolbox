@@ -27,6 +27,8 @@ There are three different ways to setup the CMSIS-Toolbox:
     - [Registering CMSIS\_PACK\_ROOT with cpackget](#registering-cmsis_pack_root-with-cpackget)
   - [vcpkg - Setup using CLI](#vcpkg---setup-using-cli)
   - [vcpkg - Setup in CI](#vcpkg---setup-in-ci)
+    - [GitHub Actions](#github-actions)
+    - [Other CI Systems](#other-ci-systems)
   - [vcpkg - Setup in VS Code](#vcpkg---setup-in-vs-code)
   
 ## Manual Setup
@@ -41,11 +43,11 @@ The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The instal
 
 - [**CMake**](https://cmake.org/download) version 3.25.2 or higher.
 
-> Note: For Win64, enable the install option *Add CMake to the system PATH*.
+> **Note:** For Win64, enable the install option *Add CMake to the system PATH*.
 
 - [**Ninja**](https://github.com/ninja-build/ninja/releases) version 1.10.2 or higher.
 
-> Note: [**Ninja**](https://github.com/ninja-build/ninja/releases) may be copied to the `<cmsis-toolbox-installation-dir>/bin` directory.
+> **Note:** [**Ninja**](https://github.com/ninja-build/ninja/releases) may be copied to the `<cmsis-toolbox-installation-dir>/bin` directory.
 
 ### Toolchain Options
 
@@ -55,7 +57,7 @@ The CMSIS-Toolbox works with the following toolchains. Install one or more toolc
 
 - [**Keil MDK**](http://www.keil.com/mdk5/install) version 5.36 or higher.
 
-- [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18 or higher.
+- [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18.0 or higher (CMSIS-Toolbox >= 2.4.0: version 6.16.2 or higher)
 
 - [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
 
@@ -312,8 +314,9 @@ Either,
     - ninja 1.10.2
     - arm-none-eabi-gcc 12.2.1-mpacbti (GNU Arm Embedded Toolchain 12.2.1)
 
-**Notes:**
- - In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
+> **Note:**
+>
+> In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
 
 Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal.
 

@@ -46,7 +46,8 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
       - [Linker Script Templates](#linker-script-templates)
   - [Generator Support](#generator-support)
     - [Use a Generator](#use-a-generator)
-    - [Configure Generator Output Directory](#configure-generator-output-directory)
+    - [Configure Generator Output](#configure-generator-output)
+    - [Detailed Usage Instructions](#detailed-usage-instructions)
   - [Reference Application Framework](#reference-application-framework)
     - [Interface Definitions](#interface-definitions)
     - [Target Hardware Abstraction](#target-hardware-abstraction)
@@ -417,6 +418,10 @@ A software layer is a set of source files and pre-configured software components
 the configuration files of a [`layer`](YML-Input-Format.md#layer) are stored within the directory structure of the software layer. This separate [RTE Directory Structure](#rte-directory-structure) allows that projects
 can share a `layer` with common configuration settings.
 
+> **Note:**
+>
+> When using a generator, such as CubeMX or MCUxpresso, the output should be redirected as described under [Configure Generator Output](#configure-generator-output).
+
 #### Software Layers in Packs
 
 A collection of software layers can be stored in software packs using the element [`<clayers>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_clayers_pg.html). Using the `csolution` command `list layers` it is possible to identify compatible software by iterating the [`layers:` - `type:`](YML-Input-Format.md#layers---type)
@@ -709,7 +714,7 @@ operation:
     ./RTE/component_class/ConfigFile.h -  info: component 'name' added configuration file version '1.2.0'
     ```
 
-    >**NOTE:**
+    >**Note:**
     >
     > The unmodified files with `@version` information should be committed to the repository of the version control system as this files are used to upgrade configuration information using merge utilities.
 
@@ -745,18 +750,18 @@ operation:
                                                         // information; used as a base for version comparison
     ```
 
-> **Note: Multiple Instances of Configuration files**
+> **Note:** Multiple Instances of Configuration files
 >
 >The system is also capable of handling multiple instances of configuration files as explained in the CMSIS-Pack specification under
 >[Component Instances](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances).
 >In this case the instance %placeholder% is expanded as shown below:
 >
->  ```c
->  ./RTE/component_class/ConfigFile_0.h
->  ./RTE/component_class/ConfigFile_0.h.base@1.2.0
->  ./RTE/component_class/ConfigFile_1.h
->  ./RTE/component_class/ConfigFile_1.h.base@1.2.0
->  ```
+> ```c
+> ./RTE/component_class/ConfigFile_0.h
+> ./RTE/component_class/ConfigFile_0.h.base@1.2.0
+> ./RTE/component_class/ConfigFile_1.h
+> ./RTE/component_class/ConfigFile_1.h.base@1.2.0
+> ```
 
 ### RTE_Components.h
 
@@ -845,61 +850,62 @@ Linker Script Template       | Linker control file for ...
 
 ## Generator Support
 
-Generators such as STM32CubeMX or MCUXpresso Config Tools simplify the configuration for devices and boards. The CMSIS-Toolbox implements a [generic interface for generators](build-operation.md#generator-integration). Generators may be used to:
+*Generators* such as STM32CubeMX or MCUXpresso Config Tools simplify the configuration for devices and boards. The CMSIS-Toolbox implements a [generic interface for generators](build-operation.md#generator-integration). *Generators* may be used to:
 
 - Configure device and/or board settings, for example clock configuration or pinout.
 - Add and configure software drivers, for example for UART, SPI, or I/O ports.
 - Configure parameters of an algorithm, for example DSP filter design or motor control parameters.
 
-The steps for creating a `*.csolution.yml` application with a Generator are:
+The steps for creating a `*.csolution.yml` application with a *Generator* are:
 
 1. Create the `*.csolution.yml` container that refers the projects and selects `device:` or `board:`  (by using `target-types:`)
 1. Create `*.cproject.yml` files that are referred by the `*.csolution.yml` container.
-1. Add `components:` and/or `layers:` to the `*.cproject.yml` file.
+1. Add `components:` to the `*.cproject.yml` file.
 1. For components that have a `<generator-id>`, run the related generator.
+
+The *Generator* can add files, components, and settings to a project using the [*Generator* import file (`*.cgen.yml`)](YML-CBuild-Format.md#generator-import-file). The format of this file is similar to a [software layer](#software-layers).
 
 ### Use a Generator
 
-Examples that use STM32CubeMx are provided in [github.com/Open-CMSIS-Pack/generator-poc](https://github.com/Open-CMSIS-Pack/generator-poc). The `./Examples/Demo1` is used below.
+An example that uses STM32CubeMX is provided in [github.com/Open-CMSIS-Pack/csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples). The `./CubeMX` example is used below.
 
-To list the generator configuration of a `*.csolution.yml` use:
+To list the *Generator* configuration of a `*.csolution.yml` use:
 
 ```bash
->csolution test.csolution.yml list generators -v
-CubeMX (Global Registered Generator)
-  base-dir: STM32CubeMX/Target_H7        # Generator output directory for the contexts listed below
-    context: h7.Debug+Target_H7
-    context: h7.Release+Target_H7
-  base-dir: STM32CubeMX/Target_U5        # Generator output directory for the contexts listed below
-    context: u5.Debug+Target_U5
-    context: u5.Release+Target_U5
+>csolution CubeMX.csolution.yml list generators -v
+CubeMX (Global Registered Generator)                 # Name of the Generator
+  base-dir: STM32CubeMX/MyBoard                      # Generator output directory for contexts listed below
+    cgen-file: STM32CubeMX/MyBoard/CubeMX.cgen.yml   # Generator import file for contexts listed below
+      context: CubeMX.Debug+MyBoard
+      context: CubeMX.Release+MyBoard
 ```
 
 To run the generator (in this case CubeMX) use:
 
 ```bash
->csolution test.csolution.yml run -g CubeMX -c u5.Debug+Target_U5
+>csolution CubeMX.csolution.yml run -g CubeMX
 ```
 
-> **Note:**
->
-> STM32CubeMX can start from a `board` or a `device`. For boards a matching device configuration can be created quickly.
+### Configure Generator Output
 
-### Configure Generator Output Directory
-
-The Generator output directory can be configured using the node [`generators:`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#generators) as shown below.
+The *Generator* output directory and the name of the [*Generator* import file (`*.cgen.yml`)](YML-CBuild-Format.md#generator-import-file) can be configured using the node [`generators:`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#generators) as shown below.
 
 ```yml
   generators:
     options:
     - generator: CubeMX
       path: ../STM32CubeMX
+      name: MyConfig
 ```
 
-A Generator output directory is useful for:
+A Generator output configuration is useful for:
 
-- Using a [board layer](#software-layers) that is shareable across multiple projects (as in `./Examples/Demo2`).
+- Using a [board layer](#software-layers) that is shareable across multiple projects.
 - Using different configurations across a `*.csolution.yml` project.
+
+### Detailed Usage Instructions
+
+- [**Configure STM32 Devices with CubeMX**](CubeMX.md) explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) to manage device and board configuration.
 
 ## Reference Application Framework
 
