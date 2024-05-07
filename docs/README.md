@@ -65,6 +65,10 @@ The build steps are:
 3. **buildmgr** converts this Build Information into CMake format.
 4. **CMake/Ninja** call the C/C++ compiler toolchain to translate the source files into the application image.
 
+> **Note:**
+>
+> The CMSIS-Toolbox build system does not use the CMake compiler and linker flags specified by environment variables [CFLAGS, LDFLAGS](https://cmake.org/cmake/help/latest/envvar/CFLAGS.html).
+
 ## Command Line and IDE Usage
 
 The CMSIS-Toolbox is a set of command line tools that is designed for stand-alone usage and integration into IDEs or DevOps (for CI workflows).
