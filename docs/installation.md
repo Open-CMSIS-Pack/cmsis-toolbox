@@ -57,7 +57,7 @@ The CMSIS-Toolbox works with the following toolchains. Install one or more toolc
 
 - [**Keil MDK**](http://www.keil.com/mdk5/install) version 5.36 or higher.
 
-- [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18 or higher.
+- [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18.0 or higher (CMSIS-Toolbox >= 2.4.0: version 6.16.2 or higher)
 
 - [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
 
