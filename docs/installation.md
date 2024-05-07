@@ -27,6 +27,8 @@ There are three different ways to setup the CMSIS-Toolbox:
     - [Registering CMSIS\_PACK\_ROOT with cpackget](#registering-cmsis_pack_root-with-cpackget)
   - [vcpkg - Setup using CLI](#vcpkg---setup-using-cli)
   - [vcpkg - Setup in CI](#vcpkg---setup-in-ci)
+    - [GitHub Actions](#github-actions)
+    - [Other CI Systems](#other-ci-systems)
   - [vcpkg - Setup in VS Code](#vcpkg---setup-in-vs-code)
   
 ## Manual Setup
@@ -41,11 +43,11 @@ The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The instal
 
 - [**CMake**](https://cmake.org/download) version 3.25.2 or higher.
 
-> Note: For Win64, enable the install option *Add CMake to the system PATH*.
+> **Note:** For Win64, enable the install option *Add CMake to the system PATH*.
 
 - [**Ninja**](https://github.com/ninja-build/ninja/releases) version 1.10.2 or higher.
 
-> Note: [**Ninja**](https://github.com/ninja-build/ninja/releases) may be copied to the `<cmsis-toolbox-installation-dir>/bin` directory.
+> **Note:** [**Ninja**](https://github.com/ninja-build/ninja/releases) may be copied to the `<cmsis-toolbox-installation-dir>/bin` directory.
 
 ### Toolchain Options
 

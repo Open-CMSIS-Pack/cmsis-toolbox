@@ -45,6 +45,7 @@ Thank you for using the **CMSIS-Toolbox** that provides command-line tools for:
 This user's guide assumes some top-level knowledge about Cortex-M software development. It is written for embedded developers that want to utilize microcontroller devices that incorporate Cortex-M processors, Ethos-U NPUs, and work with C/C++ compiler toolchains. The CMSIS-Toolbox supports currently:
 
 - [Arm Compiler for Embedded](https://developer.arm.com/Tools%20and%20Software/Arm%20Compiler%20for%20Embedded) version 6.18 or higher
+  - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
 - [Arm GNU Toolchain (GCC)](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain) version 10.3.1 or higher
 - [IAR Compiler](https://www.iar.com/products/architectures/arm/) version 9.32.1 or higher
 - [CLANG Compiler version 17.0.1](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases) or higher based on LLVM technology
@@ -85,6 +86,7 @@ The overall benefits of the CMSIS-Toolbox are:
 - Build types support software testing and verification (debug build, test build, release build, ect.).
 - Support for multiple toolchains, even within the same set of *project files* and command line options to select different toolchains during verification.
 - [Linker Script Management](build-overview.md#linker-script-management) utilizes device and board information to define the  available memory and allows flexible control of the linker operation.
+- [Generator Support](build-overview.md#generator-support) for utilizing tools such as CubeMX or MCUxpresso Config Tools to configure devices or software stacks.
 - Uses a CMake backend for the build process that integrates with other tools such as VS Code intellisense.
 
 ## Revision History

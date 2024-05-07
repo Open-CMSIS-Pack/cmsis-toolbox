@@ -387,8 +387,9 @@ variants. There are two ways to specify the CMSIS-PACK root directory:
    ~ $ cpackget add Vendor.PackName --pack-root ./MyLocal/Packs
    ```
 
->NOTE: As the various tools of the CMSIS-Toolbox rely all on the CMSIS-Pack root directory, it is recommended to use
-       the `CMSIS_PACK_ROOT` environment variable.
+>**Note:**
+>
+> As the various tools of the CMSIS-Toolbox rely all on the CMSIS-Pack root directory, it is recommended to use        the `CMSIS_PACK_ROOT` environment variable.
 
 ### Initialize CMSIS-Pack root directory
 
@@ -570,7 +571,9 @@ List all packs present in the local copy of the **Pack Index File** (`index.pidx
 ~ $ cpackget list --public
 ```
 
->NOTE: [Update Pack Index File](#update-pack-index-file) before the `list` command to list all public software packs.
+>**Note:**
+>
+> [Update Pack Index File](#update-pack-index-file) before using the `list` command to list all public software packs.
 
 ### Remove packs
 
