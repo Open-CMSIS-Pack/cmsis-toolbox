@@ -323,7 +323,7 @@ List compatible layers for `./fxls8962_normal_spi.csolution.yml` and the context
 csolution list layers ./fxls8962_normal_spi.csolution.yml -c *+frdmk22f_agmp03
 ```
 
-Refer to [Working with Layers](build-overview#working-with-layers) for more information.
+Refer to [Working with Layers](build-overview.md#working-with-layers) for more information.
 
 ### Use Generators (i.e. CubeMX)
 

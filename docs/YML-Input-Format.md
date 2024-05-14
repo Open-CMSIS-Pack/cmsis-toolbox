@@ -1634,7 +1634,7 @@ Add source files to a project.
 
 > **Note:** 
 > 
-> It is also possible to specify a [Linker Script](Linker-Script-Management.md). Files with the extension `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
+> It is also possible to specify a [Linker Script](build-overview.md#linker-script-management). Files with the extension `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
 
 **Example:**
 

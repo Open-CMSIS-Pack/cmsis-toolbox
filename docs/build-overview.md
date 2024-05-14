@@ -119,7 +119,7 @@ Output Files             | Description
 [*.cbuild.yml](YML-CBuild-Format.md#file-structure-of-cbuild-yml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file (replaces *.CPRJ in CMSIS-Toolbox 2.3 - schedule for Q1'24)
 [Project Build Files *.cprj](https://arm-software.github.io/CMSIS_5/Build/html/cprjFormat_pg.html) | Project build information in legacy format.
 [Run-Time Environment (RTE)](#rte-directory-structure)  | Contains the user configured files of a project along with RTE_Components.h inventory file.
-[Linker Script Files](Linker-Script-Management.md#automatic-linker-script-generation) | Header file that describes the memory resources.
+[Linker Script Files](#automatic-linker-script-generation) | Header file that describes the memory resources.
 
 To build an application project, the `csolution` command `convert` executes the following steps:
 
@@ -424,7 +424,7 @@ can share a `layer` with common configuration settings.
 
 #### Software Layers in Packs
 
-A collection of software layers can be stored in software packs using the element [`<clayers>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_clayers_pg.html). Using the `csolution` command `list layers` it is possible to identify compatible software by iterating the [`layers:` - `type:`](YML-Input-Format.md#layers---type)
+A collection of software layers can be stored in software packs using the element [`<clayers>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_csolution_pg.html). Using the `csolution` command `list layers` it is possible to identify compatible software by iterating the [`layers:` - `type:`](YML-Input-Format.md#layers---type)
  [`connections`](YML-Input-Format.md#connections).
 filter conditions to it. In combination with interfaces specifications, an interactive IDE should be able to display suitable layers that could be added to an application.
 
