@@ -72,7 +72,7 @@ robot --test "Validate build-c Example"  test/test.robot
 
 ## Adding Tests
 
-The test cases in [test.robot](./test.robot) are implemented in a data-driven style, where each test case utilizes a single higher-level keyword to encapsulate the test workflow. To incorporate a new example for validation, follow the steps outlined below.
+The test cases in [local_example_tests.robot](./local_example_tests.robot) are implemented in a data-driven style, where each test case utilizes a single higher-level keyword to encapsulate the test workflow. To incorporate a new example for validation, follow the steps outlined below.
 
 - Add Example under [data](./data/) directory.
 - Add test details under **Test Cases** section following below conventions

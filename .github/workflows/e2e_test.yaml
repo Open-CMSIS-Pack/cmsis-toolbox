@@ -5,7 +5,7 @@ on:
     paths:
       - '.github/workflows/robot-tests.yml'
       - 'test/**'
-      - '!test/README.md'
+      - '!test/RobotTests.md'
   workflow_dispatch:
 
 concurrency:
