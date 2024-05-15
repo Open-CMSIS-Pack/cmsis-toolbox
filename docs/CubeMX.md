@@ -18,6 +18,9 @@ This chapter explains how to use [STM32CubeMX](https://www.st.com/en/development
   - [Create a Board Layer](#create-a-board-layer)
   - [TrustZone or Multi-Core Project](#trustzone-or-multi-core-project)
   - [CubeMX Runtime Context Mapping](#cubemx-runtime-context-mapping)
+  - [Migration to CMSIS-Toolbox CubeMX Integration](#migration-to-cmsis-toolbox-cubemx-integration)
+    - [Copy CubeMX files to directory ./STM32CubeMX/`<targetType>`/STM32CubeMX](#copy-cubemx-files-to-directory-stm32cubemxtargettypestm32cubemx)
+  - [3. uVision](#3-uvision)
 
 ## Overview
 
@@ -276,3 +279,79 @@ generators:
     - generator: CubeMX
       map: Appli            # map project or layer to CubeMX runtime context
 ```
+
+## Migration to CMSIS-Toolbox CubeMX Integration
+
+In previous CubeMX integrations a `*.gpdsc` file is used to import the generator output. For using the new CMSIS-Toolbox CubeMX integration new `STM32*_DFP` software packs are required (will be released in July 2024). These software packs contain in the Release information: **Updated for new CMSIS-Toolbox CubeMX integration**.
+
+The following table compares the CMSIS-Toolbox CubeMX integration (based on `*.cgen.yml` files) with the previous STM32CubeMX integration (based on `*.gpdsc` files).
+
+Comparison               | CMSIS-Toolbox `*.cgen.yml` Integration           | Previous `*.gdpsc` Integration
+:------------------------|:-------------------------------------------------|:------------------------------
+IDE Support              | [VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack), Keil uVision 5.40 or higher   | Keil uVision, [CMSIS-Pack for Eclipse](https://github.com/ARM-software/cmsis-pack-eclipse)
+CLI Tools                | [CMSIS-Toolbox 2.4.0](installation.md) or higher | n/a
+STM32CubeMX project file | `STM32CubeMX.ioc`                                | `STCubeGenerated.ioc`
+ST Firmware              | Provided by STM32CubeMX Firmware Packs           | Provided by STM32*_DFP software pack
+CMSIS-Driver             | Provided by [CMSIS-Driver_STM32](https://github.com/Open-CMSIS-Pack/CMSIS-Driver_STM32) software pack     | Provided by STM32*_DFP software pack
+
+To migrate existing projects that where using the previous STM32CubeMX integration (based on `*.gpdsc` files) use the following steps:
+
+1. Remove all `component: Keil::Device:xxx` from the `*.cproject.yml` file.
+2. Add the `component: Device:CubeMX` to the `*.cproject.yml` file.
+3. Use `csolution run *.csolution.yml -g CubeMX` to initialize the directory structure
+4. Replace the file `STM32CubeMX.ioc` with the file `STCubeGenerated.ioc` from the previous project
+5. Use `csolution run *.csolution.yml -g CubeMX` to generated the output from the previous STM32CubeMX project.
+
+------
+### Copy CubeMX files to directory ./STM32CubeMX/`<targetType>`/STM32CubeMX
+
+1. Find existing STM32CubeMX project file, typical directory locations are:
+   - `./Board/`<board name>`/STM32CubeMX`
+   - `./Board/STM32CubeMX`
+   - `./STM32CubeMX/STCubeGenerated`
+   - `./RTE/Device/<device name>/STCubeGenerated` 
+- 
+2. From this directory copy the following folders and files
+   - ./Inc
+   - ./Src
+   - ./MDK-ARM or ./EWARM or ./STM32CubeIDE
+   - ./STCubeGenerated.ioc or ./STM32CubeMX.ioc
+  to location: ./STM32CubeMX/`<targetType>`/STM32CubeMX
+- If copied file name is `STCubeGenerated.ioc`, rename it to `STM32CubeMX.ioc`
+
+3. Update the csolution `*.cproject.yml` file.
+- Remove following components from `*.csolution.yml`, `*cproject.yml` and `*.clayer.yml`: 
+  - Device:Startup
+  - Device:STM32Cube Framework:STM32CubeMX
+  - All Device:STM32Cube HAL and Device:STM32Cube LL components
+- Add Device:CubeMX component
+- Run STM32CubeMX: 
+```sh
+csolution run -g CubeMX <solution>.csolution.yml -c <context>
+```
+- In STM32CubeMX:
+  - In `Project Manager -> Project` select proper Toolchain/IDE (depending on selected compiler in csolution)
+  - In `Project Manager -> Code Generator` select `Copy only necessary library files`
+  - Click `GENERATE CODE` 
+  - Wait for code generation to complete
+- Return to csolution
+
+## 3. uVision
+- Open uVision project
+- Close pop-up window that requests start of CubeMX, if it appears
+- In uVision open Run-Time Environment window
+- De-select all `"red"` STM32CubeMX related components:
+  - Device:Startup
+  - Device:STM32Cube Framework:STM32CubeMX
+  - All Device:STM32Cube HAL and Device:STM32Cube LL components
+- Click `OK` to close Run-Time Environment window
+- Reopen Run-Time Environment window
+- Select component Device:CubeMX and press play button to launch STM32CubeMX
+- In STM32CubeMX:
+  - In `Project Manager -> Project` select Toolchain/IDE = `MDK-ARM`
+  - In `Project Manager -> Code Generator` select `Copy only necessary library files`
+  - Click `GENERATE CODE` 
+- Wait that code generation is complete
+- Go back to uVision
+- Click `OK` to close Run-Time Environment window
+- In pop-up window click `Yes` to import changes made by `*.cgen.yml`

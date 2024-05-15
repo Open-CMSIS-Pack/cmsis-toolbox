@@ -155,7 +155,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 :--------------------------------------------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `generated-by:`                 | Reference to csolution tool along with version information used to generate this application.
 &nbsp;&nbsp;&nbsp; `description:`                  | Brief description text copied from the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
-&nbsp;&nbsp;&nbsp; `cdefault:`                     | Relative path and name of the [`*.cdefault.yml`](YML-Input-Format.md#default) input file used to generate this application.
+&nbsp;&nbsp;&nbsp; `cdefault:`                     | Relative path and name of the [`*.cdefault.yml`](YML-Input-Format.md#cdefault) input file used to generate this application.
 &nbsp;&nbsp;&nbsp; `csolution:`                    | Relative path and name of the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
 &nbsp;&nbsp;&nbsp; [`configurations:`](#configurations)      | List of potential project configurations for a reference application with undefined layers
 &nbsp;&nbsp;&nbsp; [`cprojects:`](#cprojects)      | List of `*.cproject.yml` and `*.clayer.yml` input files used to generate this application.
@@ -218,7 +218,7 @@ The `cbuild.yml` file is structured into several sections.  The top-level struct
 &nbsp;&nbsp;&nbsp; `misc:`                               | Global control of [miscellaneous](YML-Input-Format.md#misc) literal tool-specific controls.
 &nbsp;&nbsp;&nbsp; `define:`                             | List of global [define](YML-Input-Format.md#define) symbol settings.
 &nbsp;&nbsp;&nbsp; `add-path:`                           | List of global [include path](YML-Input-Format.md#add-path) settings.
-&nbsp;&nbsp;&nbsp; `output-type:`                        | Select the [output type](YML-Input-Format.md#output-type) (exe or lib) for this project context.
+&nbsp;&nbsp;&nbsp; `output-type:`                        | Select the [output type](YML-Input-Format.md#output) (exe or lib) for this project context.
 &nbsp;&nbsp;&nbsp; `output-dirs:`                        | Specifies the [directories](YML-Input-Format.md#output-dirs) used to generate the output files.
 &nbsp;&nbsp;&nbsp; `linker:`                             | Specifies the [linker script processing](#linker) used to generate the output files.
 &nbsp;&nbsp;&nbsp; [`components:`](#components)          | List of software components used.
@@ -376,10 +376,10 @@ The `configurations:` node lists possible configurations for [reference applicat
 &nbsp;&nbsp;&nbsp;`target-configurations:`                         | List of possible configurations for the target-type.
 &nbsp;&nbsp;&nbsp;- `configuration:`                               | Possible configuration for the reference application.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`- variables:`                 | List of variable names with configuration information.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`value:`                                                           | Value of the variable when layer is not copied.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`<layer-name>:`                                                    | Layer name with value that is the path to the `clayer.yml` file.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`description:`                                                     | Brief [description](YML-Input-Format.md#layer) text taken from `*.clayer.yml`.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`settings:`                                                        | Usage instructions for this layer.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`- info:`                                                          | Value of `set` and `info` taken from [`connect:`](YML-Input-Format.md#connect) in `*.clayer.yml`.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`- set:`                                                           | Value of `set` and `info` taken from [`connect:`](YML-Input-Format.md#connect) in `*.clayer.yml`.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`path:`                                                            | Path to the directory that contains the layer (from *.PDSC file).
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`file:`                                                            | Name of the *.clayer.yml file (optional with relative path to the directory specified with path) (from `*.PDSC` file).
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`copy-to:`                                                         | Proposed directory for the layer in the *csolution project* (from *.PDSC file).
@@ -392,26 +392,24 @@ The `configurations:` node lists possible configurations for [reference applicat
       target-configurations:
         - configuration:
             - variables:
-                - Board-Layer:
-                  value: /Users/.../Arm/Packs/Keil/B-U585I-IOT02A_BSP/2.0.0-dev0/Layers/IoT/Board.clayer.yml
+              - Board-Layer: /Users/.../Arm/Packs/Keil/B-U585I-IOT02A_BSP/2.0.0-dev0/Layers/IoT/Board.clayer.yml
+                description: "Configuration including FXLS8962 sensor"
 
     - target-type: MyBoard
         - configuration:
             - variables:
-              - Board-Layer:
-                value: ./layer/board/frdmk22f/frdmk22f.clayer.yml
+              - Board-Layer: ./layer/board/frdmk22f/frdmk22f.clayer.yml
                 description: "Configuration: Ethernet, UART, and WiFi"
                 settings:
-                - info: set1.select1 (connect A - set 1 select 1)
+                - set: set1.select1 (connect A - set 1 select 1)
                 path: ./layer/board/frdmk22f
                 file: frdmk22f.clayer.yml
                 copy-to: board/frdmk22f
-              - Shield-Layer: 
-                value: ./layer/shield/agmp03/agmp03.clayer.yml
+              - Shield-Layer: ./layer/shield/agmp03/agmp03.clayer.yml
                 description: "Shield with FXLS8962 and FXAS21002"
                 settings:
-                - info: Bus.SPI (FXLS8962 SPI Bus - Jumper configuration: I2C/SPI=SPI)
-                - info: Bus.SPI (FXAS21002 SPI Bus - Jumper configuration: I2C/SPI=SPI)
+                - set: Bus.SPI (FXLS8962 SPI Bus - Jumper configuration: I2C/SPI=SPI)
+                - set: Bus.SPI (FXAS21002 SPI Bus - Jumper configuration: I2C/SPI=SPI)
                 path: ./layer/board/frdmk22f
                 file: frdmk22f.clayer.yml
                 copy-to: board/frdmk22f
@@ -639,7 +637,7 @@ build-gen-idx:
   generated-by: csolution version 2.3.0
   generators:
     - id: CubeMX
-      output: C:/w/csolution-examples/CubeMX/STM32CubeMX/MyBoard
+      output: C:/w/csolution-examples/CubeMX/STM32CubeMX/MyBoard  # output directory
       device: STM32U585AIIx
       board: B-U585I-IOT02A
       project-type: single-core
@@ -647,7 +645,7 @@ build-gen-idx:
         - cbuild-gen: C:/w/csolution-examples/CubeMX/tmp/CubeMX/MyBoard/Debug/CubeMX.Debug+MyBoard.cbuild-gen.yml
           project: CubeMX
           configuration: .Debug+MyBoard
-          name: BoardLayer    # create $output$/BoardLayer.cgen.yml (new in CMSIS-Toolbox 2.4.0)
+          name: BoardLayer    # create BoardLayer.cgen.yml in output directory (new in CMSIS-Toolbox 2.4.0)
           map: Boot           # map to CubeMX run-time context (new in CMSIS-Toolbox 2.4.0)
 ```
 

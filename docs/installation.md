@@ -57,7 +57,8 @@ The CMSIS-Toolbox works with the following toolchains. Install one or more toolc
 
 - [**Keil MDK**](http://www.keil.com/mdk5/install) version 5.36 or higher.
 
-- [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18.0 or higher (CMSIS-Toolbox >= 2.4.0: version 6.16.2 or higher)
+- [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18.0 or higher
+  - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
 
 - [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
 
@@ -121,9 +122,9 @@ export GCC_TOOLCHAIN_10_3_1=/opt/gcc-arm-none-eabi-10.3-2021.10/bin
 
 For Windows, use the dialog **System Properties - Advanced** and add the **Environment Variables** listed above.
 
-**Keil MDK**
+**Keil MDK version 5**
 
-When using Keil MDK version 5, the CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\cmsis-toolbox` directory of the MDK installation.
+When using Keil MDK version 5, the CMSIS-Toolbox is shipped as part of the installer. The tools are located in the directory `.\ARM\cmsis-toolbox` of the MDK installation.
 
 Adding the binary directory of the cmsis-toolbox directory to your **PATH** environment variable allows you to invoke the tools at the
 command line without the need to specify the full path (default: `C:\Keil_v5\ARM\cmsis-toolbox\bin`)
