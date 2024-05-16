@@ -1,23 +1,24 @@
 # -------------------------------------------------------
-# Copyright (c) 2023 Arm Limited. All rights reserved.
+# Copyright (c) 2023-2024 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 # -------------------------------------------------------
 
 from os import path
 import platform
+import glob
 
 def test_check_archive(base_path):
     """
     Test to check the archive content
     """
     dirDict = dict()
-    dirDict["bin"] = {'cbuild', 'cbuildgen', 'cpackget', 'csolution', 'packchk', 'svdconv'}
+    dirDict["bin"] = {'cbuild', 'cbuildgen', 'cpackget', 'csolution', 'packchk', 'svdconv', 'launch-MCUXpressoConfigTools'}
     dirDict["doc"] = {'index.html'}
     dirDict["etc"] = {
         "{{ProjectName}}.cproject.yml",
         "{{SolutionName}}.csolution.yml",
-        "AC6.6.18.0.cmake",
+        "AC6.6.16.2.cmake",
         "ac6_linker_script.sct.src",
         "cbuild.schema.json",
         "cdefault.schema.json",
@@ -40,6 +41,4 @@ def test_check_archive(base_path):
     assert(True == path.isfile(path.join(base_path,"LICENSE.txt")))
     for dir in dirDict:
         for file in dirDict[dir]:
-            if dir == "bin" and platform.system() == "Windows":
-                file += ".exe"
-            assert(True == path.exists(path.join(base_path, dir, file)))
+            assert(glob.glob(path.join(base_path, dir, file + "*")))

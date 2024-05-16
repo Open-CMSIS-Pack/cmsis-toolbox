@@ -40,7 +40,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/buildmgr/2.3.0
+          version: tags/tools/buildmgr/2.4.0
           file: cbuild_install.sh
           target: toolbox/cbuild/cbuild_install.sh
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -67,7 +67,7 @@ jobs:
 
       - name: Unzip and copy files
         run: |
-          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.33/schema/PACK.xsd --output distribution/etc/PACK.xsd
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.37/schema/PACK.xsd --output distribution/etc/PACK.xsd
           sudo chmod +x ./cbuild/cbuild_install.sh
           ./cbuild/cbuild_install.sh -x cbuild
           cp -r cbuild/bin/* distribution/bin
@@ -101,6 +101,7 @@ jobs:
           cp distribution/bin/cbuildgen.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/cbuildgen.exe
           cp distribution/bin/cpackget.exe-amd64  zip/cmsis-toolbox-windows-amd64/bin/cpackget.exe
           cp distribution/bin/cbridge.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/cbridge.exe
+          cp distribution/bin/launch-MCUXpressoConfigTools.bat-amd64 zip/cmsis-toolbox-windows-amd64/bin/launch-MCUXpressoConfigTools.bat
           cp distribution/bin/csolution.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/csolution.exe
           cp distribution/bin/packchk.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/packchk.exe
           cp distribution/bin/svdconv.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/svdconv.exe
@@ -109,6 +110,7 @@ jobs:
           cp distribution/bin/cbuildgen.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/cbuildgen.exe
           cp distribution/bin/cpackget.exe-arm64  zip/cmsis-toolbox-windows-arm64/bin/cpackget.exe
           cp distribution/bin/cbridge.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/cbridge.exe
+          cp distribution/bin/launch-MCUXpressoConfigTools.bat-arm64 zip/cmsis-toolbox-windows-arm64/bin/launch-MCUXpressoConfigTools.bat
           cp distribution/bin/csolution.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/csolution.exe
           cp distribution/bin/packchk.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/packchk.exe
           cp distribution/bin/svdconv.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/svdconv.exe
@@ -117,6 +119,7 @@ jobs:
           cp distribution/bin/cbuildgen.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuildgen
           cp distribution/bin/cpackget.lin-amd64  zip/cmsis-toolbox-linux-amd64/bin/cpackget
           cp distribution/bin/cbridge.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/cbridge
+          cp distribution/bin/launch-MCUXpressoConfigTools.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/launch-MCUXpressoConfigTools
           cp distribution/bin/csolution.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/csolution
           cp distribution/bin/packchk.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/packchk
           cp distribution/bin/svdconv.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/svdconv
@@ -125,6 +128,7 @@ jobs:
           cp distribution/bin/cbuildgen.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/cbuildgen
           cp distribution/bin/cpackget.lin-arm64  zip/cmsis-toolbox-linux-arm64/bin/cpackget
           cp distribution/bin/cbridge.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/cbridge
+          cp distribution/bin/launch-MCUXpressoConfigTools.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/launch-MCUXpressoConfigTools
           cp distribution/bin/csolution.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/csolution
           cp distribution/bin/packchk.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/packchk
           cp distribution/bin/svdconv.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/svdconv
@@ -133,6 +137,7 @@ jobs:
           cp distribution/bin/cbuildgen.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/cbuildgen
           cp distribution/bin/cpackget.mac-amd64  zip/cmsis-toolbox-darwin-amd64/bin/cpackget
           cp distribution/bin/cbridge.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/cbridge
+          cp distribution/bin/launch-MCUXpressoConfigTools.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/launch-MCUXpressoConfigTools
           cp distribution/bin/csolution.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/csolution
           cp distribution/bin/packchk.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/packchk
           cp distribution/bin/svdconv.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/svdconv
@@ -141,6 +146,7 @@ jobs:
           cp distribution/bin/cbuildgen.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/cbuildgen
           cp distribution/bin/cpackget.mac-arm64  zip/cmsis-toolbox-darwin-arm64/bin/cpackget
           cp distribution/bin/cbridge.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/cbridge
+          cp distribution/bin/launch-MCUXpressoConfigTools.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/launch-MCUXpressoConfigTools
           cp distribution/bin/csolution.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/csolution
           cp distribution/bin/packchk.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/packchk
           cp distribution/bin/svdconv.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/svdconv
