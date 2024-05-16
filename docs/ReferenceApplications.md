@@ -43,7 +43,7 @@ The CMSIS-Pack format supports different types of project examples:
 
 - *Templates* are [stub projects](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) that help to get started. Some software packs may contain device specific templates.
 - *Examples* are created for a specific hardware or evaluation board. These are typically complete projects that directly interface with board and device peripherals.
-- *Reference Applications* that use defined interfaces (APIs) and are therefore hardware agnostic. These example projects show usage of middleware components and require additional [software layers](build-overview.md#software-layers) with API drivers for the specific target hardware, typically an evaluation board.
+- *Reference Applications* that use defined interfaces (APIs) and are therefore hardware agnostic. These project examples show usage of middleware components and require additional [software layers](build-overview.md#software-layers) with API drivers for the specific target hardware, typically an evaluation board.
  
 The following sections explain the usage, structure, and creation of *Reference Applications* that can target many different evaluation boards.
 
@@ -53,23 +53,23 @@ The following sections explain the usage, structure, and creation of *Reference 
 
 ### MDK Middleware Reference Applications
 
-The [MDK Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) provides software components for IPv4 and IPv6 networking, USB Host and Device communication, and File System for data storage. 
+The [MDK Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) provides software components for IPv4/IPv6 networking, USB Host/Device communication, and File System for data storage. 
 
 The [MDK Middleware Pack](https://www.keil.arm.com/packs/mdk-middleware-keil) contains *Reference Applications* that shows the usage of these software components. These examples are hardware agnostic; adding a board layer that provides the required APIs allows to run the example project on a specific target hardware. 
 
 ![MDK Middleware Example](./images/MDK-MW-Example.png "MDK Middleware Example")
 
-The picture above shows how and USB HID example connects to a board specific software layer.
-The *Reference Application Example* does not specify a target hardware. For execution on target hardware a software layer is required that provides the hardware specific APIs. These board specific layers are provided in BSP Packs which allows to run the example on many different hardware targets.
+The picture above shows how an USB HID example connects to a board specific software layer.
+The *Reference Application* does not specify a target hardware. For execution on target hardware a software layer is required that provides the hardware specific APIs. These board specific layers are provided in BSP Packs which allows to run the example on many different hardware targets.
 
-The Reference example uses [`connections:`](YML-Input-Format.md#connections) to list the consumed (required) APIs. The board layer in the BSP Pack provides these [`connections:`](YML-Input-Format.md#connections), and may offer several additional `connections:` that makes the layer suitable for a range of *Reference Applications*.
+The Reference example uses [`connections:`](YML-Input-Format.md#connections) to list the consumed (required) APIs. The board layer in the BSP Pack provides these [`connections:`](YML-Input-Format.md#connections) and may offer several additional `connections:` that makes the layer suitable for a range of *Reference Applications*.
 
-As the *Application Reference Example* is not hardware specific it does not define a target type. It does also not add the board specific software layer. With two steps the `*.csolution.yml` file of such an example is configured for an evaluation board.
+As the *Reference Application* is not hardware specific it does not define a target type. It does also not add the board specific software layer. With two steps the `*.csolution.yml` file of such an example is configured for an evaluation board.
 
 1. Specify the evaluation board under `target-types:`. This board should also provide a suitable board specific software layer for the application.
 2. Use the command `cbuild setup` to identify the compatible board specific software layer. Add this software layer to your application.
   
-***Reference Application Example* `*.csolution.yml` file**
+***Reference Application* `*.csolution.yml` file**
 
 ```yml
 solution:
@@ -101,13 +101,13 @@ The overall structure of an sensor example project is shown in the picture below
 
 > **Note:**
 >
-> As the `connections:` for the MEMS sensor are specific to the sensor itself, the same *Reference Application Example* also works with an evaluation board that integrates the MEMS sensor (and requires therefore no Shield layer). The board specific software layer adds in this case the sensor specific `connections:`.
+> As the `connections:` for the MEMS sensor are specific to the sensor itself, the same *Reference Application* also works with an evaluation board that integrates the MEMS sensor (and requires therefore no Shield layer). The board specific software layer adds in this case the sensor specific `connections:`.
 
 ### Targeting Custom Hardware
 
-The *Reference Application Example* may serve as starting point for user applications that target custom hardware. It is required to provide:
+The *Reference Application* may serve as starting point for user applications that target custom hardware. It is required to provide:
 
-- A software layer with a compatible set of APIs; the `connections:` consumed by the *Reference Application Example*. This software layer can be added along with the target type that defines the custom hardware.
+- A software layer with a compatible set of APIs; the `connections:` consumed by the *Reference Application*. This software layer can be added along with the target type that defines the custom hardware.
    > **Note:** It is not required to define `connections:` as this information is only used to identify compatible layers.
 - A header file that replaces the `CMSIS_board_header` (ToDo - more description).
 
@@ -192,20 +192,20 @@ Directory Content                   | Content
 
 ### Application Program Start
 
-A *Reference Application Example* starts with the C function `app_main` as shown below.
+A *Reference Application* starts with the C function `app_main` as shown below.
 
 To access board resources the header file `CMSIS_board_header` is used. This header file includes driver and configuration specific defines of the [Board Layer](#board-layer). When a [Shield Layer](#shield-layer) is added, it also provides settings that reflect the hardware provided by the extension shield. Refer to [Header Files](#header-files) for further information.
 
 ```c
 #include CMSIS_board_header    // board resource definitions 
 
-// application example of a middleware component
+// reference application of a middleware component
 int app_main (void)  {
 
 };
 ```
 
-It may use a RTOS or run a simple `while` loop. Additional software components such as CMSIS-View, CMSIS-DSP, or mbedTLS are added directly to the *Reference Application Example* and not provided by other software layers.  In general the `connections:` that are consumed should be minimized allowing to run the example on many different target boards.
+It may use a RTOS or run a simple `while` loop. Additional software components such as CMSIS-View, CMSIS-DSP, or mbedTLS are added directly to the *Reference Application* and not provided by other software layers.  In general the `connections:` that are consumed should be minimized allowing to run the example on many different target boards.
 
 ### Board Layer
 
@@ -213,15 +213,14 @@ Provides system startup, board/device hardware initialization, and transfers con
 
 **Typical Features:**
 
-- System startup including clock and memory configuration
-
-- Device/Board hardware initialization
-- Calls the application startup function
-- Drivers for board peripherals \[optional]
-- Interfaces to LEDs and switches \[optional]
-- STDIO re-targeting to debug interfaces \[optional]
-- Shield setup and drivers for Arduino interfaces \[optional]
-- Heap and Stack configuration \[optional]
+- System startup including clock and memory configuration.
+- Device/Board hardware initialization.
+- Calls the application startup function.
+- Drivers for board peripherals \[optional].
+- Interfaces to LEDs and switches \[optional].
+- STDIO re-targeting to debug interfaces \[optional].
+- Shield setup and drivers for Arduino interfaces \[optional].
+- Heap and Stack configuration \[optional].
 
 **Files:**
 
@@ -231,8 +230,9 @@ Provides system startup, board/device hardware initialization, and transfers con
 - Files that relate to the device and/or board configuration (i.e. generated by MCUXpresso or STM32CubeMX)
 - Linker Script definition for boards that require specific memory configurations.
 
-The parameters of the available APIs are defined in `CMSIS_board_header`.  ToDo: add more information.
+The parameters of the available APIs are defined in `CMSIS_board_header`.  
 
+ToDo: add more information.
 - Do we need driver instance numbers in “connections”?
 - Does this header include <cmsis_shield_header> when it exist?
 
@@ -286,11 +286,16 @@ Currently the following **`connect` names** are used.
 [CMSIS_VIO](#cmsis_vio)     |.   | CMSIS-Driver VIO interface for virtual I/O
 CMSIS-RTOS2            |.                       | CMSIS-RTOS2 compliant RTOS
 .                      |.                       | **I/O Retargeting**
-STDERR                 |.                       | Standard Error output
-STDIN                  |.                       | Standard Input
-STDOUT                 |.                       | Standard Output
+[STDERR](#stdin--stdout--stderr)  |.            | Standard Error output
+[STDIN](#stdin--stdout--stderr)   |.            | Standard Input
+[STDOUT](#stdin--stdout--stderr)  |.            | Standard Output
 .                      |.                       | **Memory allocation**
 Heap                   | Heap Size              | Memory heap configuration
+
+ToDo:
+- what features of CMSIS-RTOS2 are typically used by board layers?
+- are CMSIS-Driver instances still exposed with the connect value?  How are they used?
+- more information about Heap. How is it configured? Which existing Reference Applications are using it?  FreeRTOS has it's own heap management; is it really required?
 
 ### ARDUINO_UNO_UART
 
