@@ -6,6 +6,7 @@ on:
       - '.github/workflows/robot-tests.yml'
       - 'test/**'
       - '!test/RobotTests.md'
+      - '!test/tests.py'
   workflow_dispatch:
 
 concurrency:

@@ -6,13 +6,14 @@
 
 from os import path
 import platform
+import glob
 
 def test_check_archive(base_path):
     """
     Test to check the archive content
     """
     dirDict = dict()
-    dirDict["bin"] = {'cbuild', 'cbuildgen', 'cpackget', 'csolution', 'packchk', 'svdconv'}
+    dirDict["bin"] = {'cbuild', 'cbuildgen', 'cpackget', 'csolution', 'packchk', 'svdconv', 'launch-MCUXpressoConfigTools'}
     dirDict["doc"] = {'index.html'}
     dirDict["etc"] = {
         "{{ProjectName}}.cproject.yml",
@@ -40,6 +41,4 @@ def test_check_archive(base_path):
     assert(True == path.isfile(path.join(base_path,"LICENSE.txt")))
     for dir in dirDict:
         for file in dirDict[dir]:
-            if dir == "bin" and platform.system() == "Windows":
-                file += ".exe"
-            assert(True == path.exists(path.join(base_path, dir, file)))
+            assert(glob.glob(path.join(base_path, dir, file + "*")))

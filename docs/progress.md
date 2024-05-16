@@ -42,7 +42,6 @@ separation of config files belonging to layers                                  
 generation of cbuild-idx.yml and cbuild.yml files                                        | :heavy_check_mark:       | csolution 1.2.0
 support for linux-arm64 host platform                                                    | :heavy_check_mark:       | csolution 1.3.0
 support for win-arm64 and mac-arm64 host platforms                                       | :heavy_check_mark:       | csolution 1.7.0
-distribution of layers                                                                   | :heavy_multiplication_x: | in progress
 disable update of RTE folder by default in cbuild                                        | :heavy_check_mark:       | cbuild 1.4.0
 `--update-rte` flag to enable the update of RTE folder contents in cbuild                | :heavy_check_mark:       | cbuild 1.4.0
 `--no-update-rte` flag to skip the update of RTE folder contents in csolution            | :heavy_check_mark:       | csolution 1.4.0
@@ -88,7 +87,7 @@ add `*.src` file extension as linker script source for pre-processing           
 support multiple component instances                                                     | :heavy_check_mark:       | csolution 2.3.0-dev0
 add cbuild `setup` command                                                               | :heavy_check_mark:       | cbuild 2.3.0-dev0
 add alpha build manager backend                                                          | :heavy_check_mark:       | cbuild2cmake 0.9.0-dev0
+`executes` nodes in csolution                                                            | :heavy_check_mark:       | csolution 2.4.0
+`executes` nodes in cbuild2cmake                                                         | :heavy_check_mark:       | cbuild2cmake 0.9.1
+extended cbuild `setup` with layers discovery                                            | :heavy_check_mark:       | cbuild 2.4.0
 resources management                                                                     | :x:                      |
-execution groups/phases                                                                  | :x:                      |
-pre/post build steps in csolution                                                        | :x:                      |
-pre/post build steps in cbuild                                                           | :x:                      |
