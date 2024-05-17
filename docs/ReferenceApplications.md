@@ -16,6 +16,7 @@ This chapter explains how to work with *Reference Applications* that can run on 
     - [MDK Middleware Reference Applications](#mdk-middleware-reference-applications)
     - [Sensor Reference Applications](#sensor-reference-applications)
     - [Targeting Custom Hardware](#targeting-custom-hardware)
+    - [Interface Definitions (ToDo)](#interface-definitions-todo)
   - [Usage](#usage)
   - [Structure](#structure)
     - [Project Files](#project-files)
@@ -124,6 +125,23 @@ solution:
       variables:
         - Board-Layer:  %SolutionDir$/MyTarget/MyHardware.clayer.yml
 ```
+
+### Interface Definitions (ToDo)
+
+ToDo this needs rework
+
+The interfaces between the software layers are defined in header files.  As such is it possible to reuse the various software blocks with other build systems that are not CMSIS aware.
+
+The header files `CMSIS_board_header`, `iot_socket.h`, `cmsis_os2.h`, and `todo: cmsis_stream.h` are typically used by the reference application to access the software layers.
+
+Header File              | Description
+:------------------------|:----------------------------------
+`CMSIS_board_header`     | `#define` of the board header file; gives access to drivers defined in the board connections.
+`CMSIS_shield_header`    | `#define` of the shield header file; gives access to drivers defined in the shield connections.
+`CMSIS_target_header`    | `#define` of the target header file; combines drivers defined in Board and Shield layers.
+[`iot_socket.h`](https://github.com/MDK-Packs/IoT_Socket/blob/develop/include/iot_socket.h)           | Defines the interface to the [IoT Socket](https://github.com/MDK-Packs/IoT_Socket).
+[`cmsis_os2.h`](https://github.com/ARM-software/CMSIS_5/blob/develop/CMSIS/RTOS2/Include/cmsis_os2.h) | Defines the interface to the [RTOS](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS.html).
+`cmsis_stream.h`                                                                                      | ToDo: Defines the interface for data streaming.
 
 ## Usage
 
