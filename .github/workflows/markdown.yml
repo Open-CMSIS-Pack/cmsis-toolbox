@@ -16,7 +16,7 @@ jobs:
       - name: Checkout cmsis-toolbox
         uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
 
-      - uses: gaurav-nelson/github-action-markdown-link-check@25b2c436c653f0d4500d3c2df86e5c14e71e44e1 # master
+      - uses: gaurav-nelson/github-action-markdown-link-check@7d83e59a57f3c201c76eed3d33dff64ec4452d27 # master
         with:
           use-verbose-mode: 'yes'
           check-modified-files-only: 'yes'
