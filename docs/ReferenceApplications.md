@@ -16,11 +16,11 @@ This chapter explains how to work with *Reference Applications* that can run on 
     - [MDK Middleware Reference Applications](#mdk-middleware-reference-applications)
     - [Sensor Reference Applications](#sensor-reference-applications)
     - [Targeting Custom Hardware](#targeting-custom-hardware)
-    - [Interface Definitions (ToDo)](#interface-definitions-todo)
   - [Usage](#usage)
   - [Structure](#structure)
     - [Project Files](#project-files)
     - [Typical Directory Structure](#typical-directory-structure)
+    - [Header File Structure](#header-file-structure)
     - [Application Program Start](#application-program-start)
     - [Board Layer](#board-layer)
     - [Shield Layer](#shield-layer)
@@ -36,7 +36,7 @@ This chapter explains how to work with *Reference Applications* that can run on 
     - [CMSIS\_VIO](#cmsis_vio)
     - [STDIN / STDOUT / STDERR](#stdin--stdout--stderr)
   - [Arduino Shield](#arduino-shield)
-  - [Header Files](#header-files)
+  - [Header File Example](#header-file-example)
 
 ## Overview
 
@@ -108,9 +108,9 @@ The overall structure of an sensor example project is shown in the picture below
 
 The *Reference Application* may serve as starting point for user applications that target custom hardware. It is required to provide:
 
-- A software layer with a compatible set of APIs; the `connections:` consumed by the *Reference Application*. This software layer can be added along with the target type that defines the custom hardware.
+- A software layer with a compatible set of APIs of the `connections:` consumed by the *Reference Application*. This software layer can be added along with the target type (in the `*.csolution.yml` file) that defines the custom hardware.
    > **Note:** It is not required to define `connections:` as this information is only used to identify compatible layers.
-- A header file that replaces the `CMSIS_board_header` (ToDo - more description).
+- A header file that replaces the `CMSIS_target_header`. Refer to [Header File Structure](#header-file-structure) for more information.
 
 **Example `*.csolution.yml` file for custom hardware**
 
@@ -126,22 +126,10 @@ solution:
         - Board-Layer:  %SolutionDir$/MyTarget/MyHardware.clayer.yml
 ```
 
-### Interface Definitions (ToDo)
+**Example `MyHardware.clayer.yml**
 
-ToDo this needs rework
-
-The interfaces between the software layers are defined in header files.  As such is it possible to reuse the various software blocks with other build systems that are not CMSIS aware.
-
-The header files `CMSIS_board_header`, `iot_socket.h`, `cmsis_os2.h`, and `todo: cmsis_stream.h` are typically used by the reference application to access the software layers.
-
-Header File              | Description
-:------------------------|:----------------------------------
-`CMSIS_board_header`     | `#define` of the board header file; gives access to drivers defined in the board connections.
-`CMSIS_shield_header`    | `#define` of the shield header file; gives access to drivers defined in the shield connections.
-`CMSIS_target_header`    | `#define` of the target header file; combines drivers defined in Board and Shield layers.
-[`iot_socket.h`](https://github.com/MDK-Packs/IoT_Socket/blob/develop/include/iot_socket.h)           | Defines the interface to the [IoT Socket](https://github.com/MDK-Packs/IoT_Socket).
-[`cmsis_os2.h`](https://github.com/ARM-software/CMSIS_5/blob/develop/CMSIS/RTOS2/Include/cmsis_os2.h) | Defines the interface to the [RTOS](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS.html).
-`cmsis_stream.h`                                                                                      | ToDo: Defines the interface for data streaming.
+ToDo: Assumption: it defines `cmsis_target_header` - however currently on the case in
+https://github.com/Open-CMSIS-Pack/pack-examples/blob/main/B-U585I-IOT02A_BSP/Layers/IoT/Board.clayer.yml
 
 ## Usage
 
@@ -208,14 +196,30 @@ Directory Content                   | Content
 `./Board/B-U585I-IOT02A`            | Board software layer from B-U585I-IOT02A BSP.
 `./Board/LPC55S69-EVK`              | Board software layer from LPC55S69-EVK BSP.
 
+### Header File Structure
+
+The interfaces between the software layers are defined in header files. As such is it possible to reuse the various software blocks with other build systems that are not CMSIS aware. The following diagram shows the overall header file structure.
+
+![Header File Structure](./images/Reference-App-Header.png "Header File Structure")
+
+The *Reference Application* has no direct access to hardware. Therefore, it does not use the [`cmsis_device_header`](https://arm-software.github.io/CMSIS_6/latest/Core/using_pg.html#using_packs) provided by the CMSIS-Core that defines the registers and interrupt mapping.
+
+To access target hardware these header files are used by the *Reference Application*:
+
+- Standardized `Driver API header files` are used for the communication with device peripherals. Header files of CMSIS-Drivers are provided by the [CMSIS base software pack](https://arm-software.github.io/CMSIS_6/latest/General/index.html).
+- The configuration of the driver interfaces is defined by the `CMSIS_target_header`. This header therefore specifies the available resources of the target hardware that can be used by the *Reference Application*. The [Header File Example](#header-file-example) shows a typical structure of the `CMSIS_target_header`.
+- When a shield is applied to a evaluation board, the `CMSIS_shield_header` extends the resource configuration of the `CMSIS_target_header`. 
+
+> **Note:**
+>
+> The driver implementation of the hardware abstraction might use *shim layer* as shown on the right side of above diagram. For example for [STM32 devices](https://github.com/Open-CMSIS-Pack/CMSIS-Driver_STM32) the STM32 HAL is used in the driver implementation.
+
 ### Application Program Start
 
 A *Reference Application* starts with the C function `app_main` as shown below.
 
-To access board resources the header file `CMSIS_board_header` is used. This header file includes driver and configuration specific defines of the [Board Layer](#board-layer). When a [Shield Layer](#shield-layer) is added, it also provides settings that reflect the hardware provided by the extension shield. Refer to [Header Files](#header-files) for further information.
-
 ```c
-#include CMSIS_board_header    // board resource definitions 
+#include CMSIS_target_header    // board resource definitions 
 
 // reference application of a middleware component
 int app_main (void)  {
@@ -223,7 +227,7 @@ int app_main (void)  {
 };
 ```
 
-It may use a RTOS or run a simple `while` loop. Additional software components such as CMSIS-View, CMSIS-DSP, or mbedTLS are added directly to the *Reference Application* and not provided by other software layers.  In general the `connections:` that are consumed should be minimized allowing to run the example on many different target boards.
+The application may use a RTOS kernel or run a simple `while` loop. Additional software components such as CMSIS-View, CMSIS-DSP, or mbedTLS are added directly to the *Reference Application*.  In general the `connections:` that are consumed should be minimized allowing to run the example on many different target boards.
 
 ### Board Layer
 
@@ -248,11 +252,7 @@ Provides system startup, board/device hardware initialization, and transfers con
 - Files that relate to the device and/or board configuration (i.e. generated by MCUXpresso or STM32CubeMX)
 - Linker Script definition for boards that require specific memory configurations.
 
-The parameters of the available APIs are defined in `CMSIS_board_header`.  
-
-ToDo: add more information.
-- Do we need driver instance numbers in “connections”?
-- Does this header include <cmsis_shield_header> when it exist?
+The configuration parameters of the available APIs are defined in `CMSIS_target_header`.  
 
 **Generator Usage:**
 
@@ -288,38 +288,38 @@ There are also no strict rules how the different software layers consume or prov
 
 Currently the following **`connect` names** are used.
 
-`connect` name         | Value                  | Description
-:----------------------|:-----------------------|:--------------------
-.                      |.                       | **Arduino Shield Interface**
-[ARDUINO_UNO_UART](#arduino_uno_uart)       | CMSIS-Driver instance  | CMSIS-Driver USART connecting to UART on Arduino pins D0..D1
-[ARDUINO_UNO_SPI](#arduino_uno_spi)         | CMSIS-Driver instance  | CMSIS-Driver SPI connecting to SPI on Arduino pins D10..D13
-[ARDUINO_UNO_I2C](#arduino_uno_i2c--arduino_uno_i2c-alt)         | CMSIS-Driver instance  | CMSIS-Driver I2C connecting to I2C on Arduino pins D20..D21
-[ARDUINO_UNO_I2C-Alt](#arduino_uno_i2c--arduino_uno_i2c-alt)    | CMSIS-Driver instance  | CMSIS-Driver I2C connecting to I2C on Arduino pins D18..D19
-[ARDUINO_UNO_D0 .. D21](#arduino_uno_d0--d21)  | -                      | CMSIS-Driver GPIO connecting to Arduino pins D0..D21
-.                      |.                       | **CMSIS Driver and RTOS Interfaces**
-[CMSIS_ETH](#cmsis_eth)     | CMSIS-Driver instance  | CMSIS-Driver ETH connected to physical board connector
-[CMSIS_MCI](#cmsis_mci)     | CMSIS-Driver instance  | CMSIS-Driver MCI connected to physical board connector
-[CMSIS_USB_Device](#cmsis_usb_device)     | CMSIS-Driver instance  | CMSIS-Driver USB Device connected to physical board connector
-[CMSIS_USB_Host](#cmsis_usb_host)         | CMSIS-Driver instance  | CMSIS-Driver USB Host connected to physical board connector
-[CMSIS_VIO](#cmsis_vio)     |.   | CMSIS-Driver VIO interface for virtual I/O
-CMSIS-RTOS2            |.                       | CMSIS-RTOS2 compliant RTOS
-.                      |.                       | **I/O Retargeting**
-[STDERR](#stdin--stdout--stderr)  |.            | Standard Error output
-[STDIN](#stdin--stdout--stderr)   |.            | Standard Input
-[STDOUT](#stdin--stdout--stderr)  |.            | Standard Output
-.                      |.                       | **Memory allocation**
-Heap                   | Heap Size              | Memory heap configuration
+`connect` name                                               | Value                  | Description
+:------------------------------------------------------------|:-----------------------|:--------------------
+.                                                            |.                       | **Arduino Shield Interface**
+[ARDUINO_UNO_UART](#arduino_uno_uart)                        | -                      | CMSIS-Driver USART connecting to UART on Arduino pins D0..D1
+[ARDUINO_UNO_SPI](#arduino_uno_spi)                          | -                      | CMSIS-Driver SPI connecting to SPI on Arduino pins D10..D13
+[ARDUINO_UNO_I2C](#arduino_uno_i2c--arduino_uno_i2c-alt)     | -                      | CMSIS-Driver I2C connecting to I2C on Arduino pins D20..D21
+[ARDUINO_UNO_I2C-Alt](#arduino_uno_i2c--arduino_uno_i2c-alt) | -                      | CMSIS-Driver I2C connecting to I2C on Arduino pins D18..D19
+[ARDUINO_UNO_D0 .. D21](#arduino_uno_d0--d21)                | -                      | CMSIS-Driver GPIO connecting to Arduino pins D0..D21
+.                                                            |.                       | **CMSIS Driver and RTOS Interfaces**
+[CMSIS_ETH](#cmsis_eth)                                      | -                      | CMSIS-Driver ETH connected to physical board connector
+[CMSIS_MCI](#cmsis_mci)                                      | -                      | CMSIS-Driver MCI connected to physical board connector
+[CMSIS_USB_Device](#cmsis_usb_device)                        | -                      | CMSIS-Driver USB Device connected to physical board connector
+[CMSIS_USB_Host](#cmsis_usb_host)                            | -                      | CMSIS-Driver USB Host connected to physical board connector
+[CMSIS_VIO](#cmsis_vio)                                      | -                      | CMSIS-Driver VIO interface for virtual I/O
+CMSIS-RTOS2                                                  | -                      | CMSIS-RTOS2 compliant RTOS
+.                                                            |.                       | **I/O Retargeting**
+[STDERR](#stdin--stdout--stderr)                             | -                      | Standard Error output
+[STDIN](#stdin--stdout--stderr)                              | -                      | Standard Input
+[STDOUT](#stdin--stdout--stderr)                             | -                      | Standard Output
+.                                                            |.                       | **Memory allocation**
+Heap                                                         | Heap Size              | Memory heap configuration
 
 ToDo:
+
 - what features of CMSIS-RTOS2 are typically used by board layers?
-- are CMSIS-Driver instances still exposed with the connect value?  How are they used?
 - more information about Heap. How is it configured? Which existing Reference Applications are using it?  FreeRTOS has it's own heap management; is it really required?
 
 ### ARDUINO_UNO_UART
 
 Connects to a [CMSIS-Driver USART Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__usart__interface__gr.html) configured in asynchronous UART mode with no Modem lines.
 
-`CMSIS_board_header` contains driver instance number with this define:
+`CMSIS_target_header` contains driver instance number with this define:
 
 ```c
 #define ARDUINO_UNO_UART    3     // CMSIS-Driver USART instance number
@@ -329,7 +329,7 @@ Connects to a [CMSIS-Driver USART Interface](https://arm-software.github.io/CMSI
 
 Connects to a [CMSIS-Driver I2C Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__i2c__interface__gr.html) configured in Master Mode.
 
-`CMSIS_board_header` contains driver instance number with this define:
+`CMSIS_target_header` contains driver instance number with this define:
 
 ```c
 #define ARDUINO_UNO_I2C    0     // CMSIS-Driver I2C instance number
@@ -341,7 +341,7 @@ Connects to a [CMSIS-Driver SPI Interface](https://arm-software.github.io/CMSIS_
 
 The Slave Select (SS) pin (typically on ARDUINO_UNO_D10) is not handled by CMSIS-Driver SPI interface. This is driven by the GPIO interface. 
 
-`CMSIS_board_header` contains driver instance number with this define:
+`CMSIS_target_header` contains driver instance number with this define:
 
 ```c
 #define ARDUINO_UNO_SPI    1     // CMSIS-Driver SPI instance number
@@ -351,7 +351,7 @@ The Slave Select (SS) pin (typically on ARDUINO_UNO_D10) is not handled by CMSIS
 
 Connects to a [CMSIS-Driver GPIO Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__gpio__interface__gr.html).
 
-`CMSIS_board_header` contains the pin mapping to the physical driver.
+`CMSIS_target_header` contains the pin mapping to the physical driver.
 
 ```c
 #define ARDUINO_UNO_D0  GPIO_PORTD(9U)  /* USART3: RX */
@@ -382,7 +382,7 @@ Connects to a [CMSIS-Driver GPIO Interface](https://arm-software.github.io/CMSIS
 
 Connects to a [CMSIS-Driver Ethernet Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__eth__interface__gr.html) that offers a physical Ethernet connector on the evaluation board.
 
-`CMSIS_board_header` contains the pin mapping to the physical driver.
+`CMSIS_target_header` contains the pin mapping to the physical driver.
 
 ```c
 #define CMSIS_DRIVER_ETH    0     // CMSIS-Driver Ethernet instance number
@@ -392,7 +392,7 @@ Connects to a [CMSIS-Driver Ethernet Interface](https://arm-software.github.io/C
 
 Connects to a [CMSIS-Driver MCI Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__mci__interface__gr.html) that offers a physical Memory Card connector on the evaluation board.
 
-`CMSIS_board_header` contains the pin mapping to the physical driver.
+`CMSIS_target_header` contains the pin mapping to the physical driver.
 
 ```c
 #define CMSIS_DRIVER_MCI    0     // CMSIS-Driver MCI instance number
@@ -402,7 +402,7 @@ Connects to a [CMSIS-Driver MCI Interface](https://arm-software.github.io/CMSIS_
 
 Connects to a [CMSIS-Driver USB Device Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__usbd__interface__gr.html) that offers a physical USB connector on the evaluation board.
 
-`CMSIS_board_header` contains the pin mapping to the physical driver.
+`CMSIS_target_header` contains the pin mapping to the physical driver.
 
 ```c
 #define CMSIS_DRIVER_USBD   0     // CMSIS-Driver USB Device instance number
@@ -412,7 +412,7 @@ Connects to a [CMSIS-Driver USB Device Interface](https://arm-software.github.io
 
 Connects to a [CMSIS-Driver USB Host Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__usbh__interface__gr.html) that offers a physical USB connector on the evaluation board.
 
-`CMSIS_board_header` contains the pin mapping to the physical driver.
+`CMSIS_target_header` contains the pin mapping to the physical driver.
 
 ```c
 #define CMSIS_DRIVER_USBH   0     // CMSIS-Driver USB Host instance number
@@ -432,16 +432,16 @@ The software layers [Board](#board-layer) and [Shield](#shield-layer) are curren
 
 ![Arduino Shield Pinout](./images/Arduino-Shield.png "Arduino Shield Pinout")
 
-## Header Files
+## Header File Example
 
 Two header files contain I/O configuration settings for the application program:
 
-- `CMSIS_board_header` defines the resources available in the [Board Layer](#board-layer).
-- `CMSIS_shield_header` defines settings of the [Shield Layer](#shield-layer). When a shield is applied, this header file is included in the `CMSIS_board_header`.
+- `CMSIS_target_header` defines the resources available by the evaluation board.
+- `CMSIS_shield_header` extends this `CMSIS_target_header` with resources of a shield that is applied to an evaluation board.
 
-Content examples:
+Refer to [Header File Structure](#header-file-structure) for more information.
 
-**`CMSIS_board_header`**
+**`CMSIS_target_header`**
 
 ```c
 #ifndef B_U585I_IOT02A_H_
@@ -449,7 +449,7 @@ Content examples:
 
 #include "stm32u5xx_hal.h"
 #include "GPIO_STM32U5xx.h"
-#include "Driver_I2C.h"
+#include "Driver_I2C.h"          // ToDo are these headers included in CMSIS_target_header?
 #include "Driver_SPI.h"
 #include "Driver_USART.h"
 

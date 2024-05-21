@@ -47,6 +47,16 @@ Header File              | Description
 [`cmsis_os2.h`](https://github.com/ARM-software/CMSIS_5/blob/develop/CMSIS/RTOS2/Include/cmsis_os2.h) | Defines the interface to the [RTOS](https://arm-software.github.io/CMSIS_5/RTOS2/html/group__CMSIS__RTOS.html).
 `cmsis_stream.h`                                                                                      | ToDo: Defines the interface for data streaming.
 
+
+#include CMSIS_target_header
+
+// target
+#ifdef CMSIS_shield_header
+#include CMSIS_shield_header    // Include appropriate sensor shield board header file
+#endif
+Info for STDIO:
+
+
 ### Target Hardware Abstraction
 
 Note that this is a **proposed software structure (work-in-progress)**.
