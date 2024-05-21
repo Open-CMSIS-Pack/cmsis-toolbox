@@ -17,6 +17,8 @@ This chapter explains how to work with *Reference Applications* that can run on 
     - [Sensor Reference Applications](#sensor-reference-applications)
     - [Targeting Custom Hardware](#targeting-custom-hardware)
   - [Usage](#usage)
+    - [Refer layers in ${CMSIS\_PACK\_ROOT}](#refer-layers-in-cmsis_pack_root)
+    - [Copy layers to csolution project](#copy-layers-to-csolution-project)
   - [Structure](#structure)
     - [Project Files](#project-files)
     - [Typical Directory Structure](#typical-directory-structure)
@@ -133,9 +135,89 @@ https://github.com/Open-CMSIS-Pack/pack-examples/blob/main/B-U585I-IOT02A_BSP/La
 
 ## Usage
 
-A *Reference Applications* is an incomplete `*.csolution.yml` project file that requires an compatible software layer for execution. The CMSIS-Toolbox helps you to identify compatible software layers with this process:
+A *Reference Applications* is an incomplete `*.csolution.yml` project file that requires the following steps to compile the project:
 
-ToDo finalize when CMSIS-Toolbox 2.4.0 is released.
+1. Add in the `*.csolution.yml` file under `target-types:` your board:
+
+   ```yml
+   solution:
+     cdefault:
+     :
+     target-types:
+       - type: B-U585I-IOT02A
+         board: B-U585I-IOT02A         # name of a target board
+   ```
+   
+2. Run `cbuild setup` with the `*.csolution.yml` file. This identifies compatible layers with an output similar to:
+
+   ```txt
+   >cbuild setup xxx.csolution.yml
+   error csolution: undefined variables in xxx.csolution.yml:
+     - $Board-Layer$
+
+   To resolve undefined variables, copy the settings from cbuild-idx.yml to csolution.yml
+   ```
+
+   The related `*.cbuild-idx.yml` should contain information similar to this:
+
+   ```yml
+   build-idx:
+     generated-by: csolution version 2.4.0
+     cdefault: cdefault.yml
+     csolution: xxx.csolution.yml
+     configurations:
+       - target-type: B-U585I-IOT02A
+         target-configurations:
+           - configuration: 
+             variables:
+               - Board-Layer: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/Layers/IoT/Board.clayer.yml
+                 description: B-U585I-IOT02A Board setup for IoT
+                 path: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/Layers/IoT
+                 file: Board.clayer.yml
+                 copy-to: .Board/U585
+   ```
+
+As a user you have now two choices to work with the identified software layer.
+
+### Refer layers in ${CMSIS_PACK_ROOT}
+
+This is useful when there is no plan to modify the software layer, for example in the early phase of adoption.
+
+```yml
+solution:
+  cdefault:
+  :
+  target-types:
+    - type: B-U585I-IOT02A
+      board: B-U585I-IOT02A         # name of a target board
+      variables:
+        - Board-Layer: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/Layers/IoT/Board.clayer.yml
+```
+
+### Copy layers to csolution project
+
+This allows to modify the layer, for example add or remove drivers or change device settings.
+
+It requires these steps:
+
+1. Copy all files from `path`, i.e. `${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/Layers/IoT` to the local csolution project directory.  The `copy-to` is a proposal for the user.
+2. Remove R/O attribute from the copied files.
+3. Add under `variables:` the path to the `*.clayer.yml` file. Use `$SolutionDir()` as base path to make the project portable.
+
+```yml
+solution:
+  cdefault:
+  :
+  target-types:
+    - type: B-U585I-IOT02A
+      board: B-U585I-IOT02A         # name of a target board
+      variables:
+        - Board-Layer: $SolutionDir()$\Board\B-U585I-IOT02A\Board.clayer.yml
+```
+
+> **Note:**
+>
+> The copy step is executed for you by some IDEs during the *Create New Project* workflow.
 
 ## Structure
 
