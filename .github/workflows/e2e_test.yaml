@@ -3,7 +3,7 @@ name: E2E Tests
 on:
   pull_request:
     paths:
-      - '.github/workflows/robot-tests.yml'
+      - '.github/workflows/e2e_test.yaml'
       - 'test/**'
       - '!test/RobotTests.md'
       - '!test/tests.py'
