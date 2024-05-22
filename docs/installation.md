@@ -57,7 +57,8 @@ The CMSIS-Toolbox works with the following toolchains. Install one or more toolc
 
 - [**Keil MDK**](http://www.keil.com/mdk5/install) version 5.36 or higher.
 
-- [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18.0 or higher (CMSIS-Toolbox >= 2.4.0: version 6.16.2 or higher)
+- [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18.0 or higher
+  - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
 
 - [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
 
@@ -121,9 +122,9 @@ export GCC_TOOLCHAIN_10_3_1=/opt/gcc-arm-none-eabi-10.3-2021.10/bin
 
 For Windows, use the dialog **System Properties - Advanced** and add the **Environment Variables** listed above.
 
-**Keil MDK**
+**Keil MDK version 5**
 
-When using Keil MDK version 5, the CMSIS-Toolbox is shipped as part of the installer. The tools are located in the `ARM\cmsis-toolbox` directory of the MDK installation.
+When using Keil MDK version 5, the CMSIS-Toolbox is shipped as part of the installer. The tools are located in the directory `.\ARM\cmsis-toolbox` of the MDK installation.
 
 Adding the binary directory of the cmsis-toolbox directory to your **PATH** environment variable allows you to invoke the tools at the
 command line without the need to specify the full path (default: `C:\Keil_v5\ARM\cmsis-toolbox\bin`)
@@ -264,37 +265,34 @@ https://github.com/Open-CMSIS-Pack/vscode-get-started) with a vcpkg-configuratio
 
 Using vcpkg in Continuous Integration (CI) environments is basically like [using it manually CLI](#vcpkg---setup-using-cli).
 
-The way vcpkg artifacts updates the current shell environment needs to be taken into account when creating CI
+The way how vcpkg artifacts updates the current shell environment needs to be taken into account when creating CI
 pipelines. The command `vcpkg activate` updates the current environment variables by extending `PATH` and adding
 additional variables required by installed artifacts. These modifications are only visible in the current running
 shell and spawned subprocesses.
 
-This fact doesn't affect manual usage on a local prompt, given a typical user runs subsequent command from the same
-parent shell process. In contrast, typical CI systems such as GitHub Actions or Jenkins spawn a new sub shell for each
-step of a pipeline. Hence, modifications made to the environment in one sub shell by running the `vcpkg activate`
+This enables also manual usage on a local prompt, given a typical user runs subsequent command from the same
+parent shell process. In contrast, typical CI systems such as GitHub Actions or Jenkins spawn a new sub-shell for each
+step of a pipeline. Hence, modifications made to the environment in one sub-shell by running the `vcpkg activate`
 command are not persisted into the subsequent steps.
 
 Another aspect to consider is about handling the local vcpkg cache (e.g., `~/.vcpkg`). Common practice on CI systems is
 to recreate a clean environment for each run. Hence, vcpkg and all required artifacts are re-downloaded on every run.
-This can easily cause massive bandwidth waste for re-downloading the very same (huge) archives all the time. Instead,
-consider about preserving the local vcpkg cache between runs.
+This may cause massive bandwidth requirements for downloading the same (huge) archives all the time. Instead, consider preserving the local vcpkg cache between runs.
 
 ### GitHub Actions
 
-In GitHub Actions one can preserve environment settings from one step to subsequent ones via the special files
-exposed in `$GITHUB_PATH` and `$GITHUB_ENV`. One can refer to the custom action provided by
-[JonatanAntoni/actions/vcpkg](https://github.com/JonatanAntoni/actions) to get this for free.
+GitHub Actions allow you to preserve environment settings via the files
+exposed in `$GITHUB_PATH` and `$GITHUB_ENV`. Refer to the custom action provided in [github.com/ARM-software/cmsis-actions - Action: vcpkg](https://github.com/ARM-software/cmsis-actions) for more information.
 
-Preserving the runners vcpkg cache between runs can easily be achieved with an `actions/cache` step preceding the
-first `vcpkg activate` command. The above custom action takes this implicitly into account.
+Preserving the runners vcpkg cache between runs is achieved with an `actions/cache` step preceding the
+first `vcpkg activate` command. The above custom action uses this `actions/cache` step.
 
 ### Other CI Systems
 
-In CI Systems without a proper vcpkg integration one need to go for a workaround.
-Either,
+In CI Systems without a vcpkg integration:
 
-- keep all command depending on an activated environment within the same shell block, or
-- repeat activation for each new shell block before running any dependent command.
+- Keep all tool installation depending on an activated environment within the same shell block, or
+- Repeat activation for each new shell block before running any dependent command.
 
   ```sh
   . ~/.vcpkg/vcpkg-init

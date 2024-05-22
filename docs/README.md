@@ -19,7 +19,7 @@ Thank you for using the **CMSIS-Toolbox** that provides command-line tools for:
 
 - [**Generate Application from Components**](Apps-from-components.md) explains the structure of a software pack and how it can be used in an application. It also describes how to upgrade software packs.
 
-- [**Application Reference Examples**](App-ref-examples.md) explains how to use and create examples that show middleware usage on on many different evaluation boards including custom hardware.
+- [**Reference Applications**](ReferenceApplications.md) explains how to use and create examples that show middleware usage on on many different evaluation boards including custom hardware.
 
 - [**Configure STM32 Devices with CubeMX**](CubeMX.md) explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) to manage device and board configuration.
   
@@ -100,4 +100,4 @@ Version            | Description
 2.0.0              | Initial release for CMSIS-Toolbox [2.0.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.0.0)
 2.2.0              | CMSIS-Toolbox [2.2.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.2.0) adds [generator integration](build-operation.md#generator-integration), extends [translation controls](YML-Input-Format.md#translation-control), adds [context set](build-overview.md#working-with-context-set), adds [pack locking](YML-CBuild-Format.md#pack-locking), and improves [linker script management](build-overview.md#linker-script-management). Refer to [release information](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.2.0) for more details.
 2.3.0              | CMSIS-Toolbox [2.3.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) adds in the csolution project files [component instances](YML-Input-Format.md#instances) and [optimize: debug](YML-Input-Format.md#optimize). Tools are extended with [cbuild setup command](build-operation.md#cbuild-setup-command), [--frozen-pack option](build-overview.md#reproducible-builds). Refer to [release information](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) for more details.
-2.4.0 preview      | Contains some preview information for CMSIS-Toolbox 2.4.0; Note: CubeMX integration requires new packs that are not public yet.
+2.4.0              | CMSIS-Toolbox [2.4.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.4.0); adds [CubeMX integration](CubeMX.md), [pre/post-build steps](YML-Input-Format.md#prepost-build-steps) when using the option [`--cbuild2cmake`](build-tools.md#direct-cmake-interface), simplifies the [generator integration](build-operation.md#generator-integration), and contains several corrections.
