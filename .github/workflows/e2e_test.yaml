@@ -43,10 +43,10 @@ jobs:
             pip install -r test/requirements.txt
 
       - name: Setup vcpkg environment
-        uses: soumeh01/actions/vcpkg@testwindows
+        uses: ARM-software/cmsis-actions/vcpkg@v1
         with:
           config: "./test/vcpkg-configuration.json"
-          vcpkg-root: "${{ github.workspace }}/.vcpkg"
+          vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
           cache: "-"
 
       - name: Activate Arm tool license
