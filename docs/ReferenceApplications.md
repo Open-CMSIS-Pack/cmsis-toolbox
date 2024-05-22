@@ -300,7 +300,7 @@ To access target hardware these header files are used by the *Reference Applicat
 
 > **Note:**
 >
-> The driver implementation of the hardware abstraction might use *shim layer* as shown on the right side of above diagram. For example for [STM32 devices](https://github.com/Open-CMSIS-Pack/CMSIS-Driver_STM32) the STM32 HAL is used in the driver implementation.
+> The driver implementation of the hardware abstraction might use *shim layer* as shown on the right side of above diagram. For example for [STM32 devices the STM32 HAL is used in the driver implementation](https://github.com/Open-CMSIS-Pack/CMSIS-Driver_STM32).
 
 ### Application Program Start
 
