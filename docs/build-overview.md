@@ -40,6 +40,7 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
     - [Software Components](#software-components)
     - [PLM of Configuration Files](#plm-of-configuration-files)
     - [RTE\_Components.h](#rte_componentsh)
+    - [CMSIS\_device\_header](#cmsis_device_header)
   - [Linker Script Management](#linker-script-management)
     - [Linker Script Preprocessing](#linker-script-preprocessing)
     - [Automatic Linker Script generation](#automatic-linker-script-generation)
@@ -789,6 +790,10 @@ to other components of the same software pack.
 #include "Net_Config_ETH_0.h"        // add the related configuration file for this component
 #endif
 ```
+
+### CMSIS_device_header
+
+The `CMSIS_device_header` represents the [device header file](https://arm-software.github.io/CMSIS_6/latest/Core/using_pg.html#using_packs) provided by the CMSIS-Core. It defines the registers and interrupt mapping of the device that is used. Refer to [Reference Applications > Header File Structure](ReferenceApplications.md#header-file-structure) for more information.
 
 ## Linker Script Management
 

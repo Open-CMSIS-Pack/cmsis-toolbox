@@ -130,8 +130,14 @@ solution:
 
 **Example `MyHardware.clayer.yml**
 
-ToDo: Assumption: it defines `cmsis_target_header` - however currently on the case in
-https://github.com/Open-CMSIS-Pack/pack-examples/blob/main/B-U585I-IOT02A_BSP/Layers/IoT/Board.clayer.yml
+You may use a `*.clayer.yml` file for implementing the HAL drivers for the application and define the `CMSIS_target_header` as shown below:  
+
+```yml
+layer:
+  :
+  define:
+    - CMSIS_target_header: "\"MyHardware.h\""
+```
 
 ## Usage
 
@@ -284,7 +290,7 @@ The interfaces between the software layers are defined in header files. As such 
 
 ![Header File Structure](./images/Reference-App-Header.png "Header File Structure")
 
-The *Reference Application* has no direct access to hardware. Therefore, it does not use the [`cmsis_device_header`](https://arm-software.github.io/CMSIS_6/latest/Core/using_pg.html#using_packs) provided by the CMSIS-Core that defines the registers and interrupt mapping.
+The *Reference Application* has no direct access to hardware. Therefore, it does not use the [`CMSIS_device_header`](https://arm-software.github.io/CMSIS_6/latest/Core/using_pg.html#using_packs) provided by the CMSIS-Core that defines the registers and interrupt mapping.
 
 To access target hardware these header files are used by the *Reference Application*:
 

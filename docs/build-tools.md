@@ -19,6 +19,7 @@ This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects)
     - [List Available Toolchains](#list-available-toolchains)
     - [Update Pack Index File](#update-pack-index-file)
     - [Build Project](#build-project)
+    - [Direct CMake Interface](#direct-cmake-interface)
     - [Update RTE Configuration Files](#update-rte-configuration-files)
     - [Add Software Packs](#add-software-packs)
     - [List Installed Packs](#list-installed-packs)
@@ -62,7 +63,7 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.3.0 (C) 2024 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.4.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -74,10 +75,10 @@ Commands:
   setup       Generate project data for IDE environment
 
 Options:
-      --cbuild2cmake       Use build information files with cbuild2cmake interface (experimental) 
+      --cbuild2cmake       Use build information files with cbuild2cmake interface (experimental)
   -C, --clean              Remove intermediate and output directories
   -c, --context arg [...]  Input context names [<project-name>][.<build-type>][+<target-type>]
-  -S, --context-set        Select the context names from cbuild-set.yml for generating the target application
+  -S, --context-set        Select the context names from cbuild-set.yml for generating the target application   
   -d, --debug              Enable debug messages
       --frozen-packs       Pack list and versions from cbuild-pack.yml are fixed and raises errors if it changes
   -g, --generator arg      Select build system generator (default "Ninja")
@@ -108,11 +109,6 @@ Use "cbuild [command] --help" for more information about a command.
 Create build information for embedded applications that consist of one or more related projects.
 
 ```text
-csolution: Project Manager 2.3.0 (C) 2024 Arm Ltd. and Contributors
-
-Usage:
-  csolution <command> [<name>.csolution.yml] [options]
-
 Commands:
   convert                       Convert user input *.yml files to *.cprj files
   list boards                   Print list of available board names
@@ -142,6 +138,7 @@ Options:
   -n, --no-check-schema         Skip schema check
   -N, --no-update-rte           Skip creation of RTE directory and files
   -o, --output arg              Output directory
+  -q, --quiet                   Run silently, printing only error messages
   -R, --relative-paths          Print paths relative to project or ${CMSIS_PACK_ROOT}
   -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
   -t, --toolchain arg           Selection of the toolchain used in the project optionally with version
@@ -241,6 +238,14 @@ cbuild example.csolution.yml --toolchain GCC
 > - Testing a new compiler or new compiler version on the overall project.
 > - For unit test applications to allow the usage of different compilers.
 
+### Direct CMake Interface
+
+The option `--cbuild2cmake`  uses the [build information files](YML-CBuild-Format.md) for generating the CMake input. This option enables [pre/post-build steps](YML-Input-Format.md#prepost-build-steps) and is currently experimental. With CMSIS-Toolbox 2.5.0 this will be default and replaces the `*.CPRJ` file interface.
+
+```bash
+cbuild example.csolution.yml --cbuild2cmake
+```
+
 ### Update RTE Configuration Files
 
 The [Component Configuration​](build-overview.md#project-structure) is stored in the [RTE directory](build-overview.md#rte-directory-structure). When files are missing or new software pack versions are installed it might be required to update the RTE configuration files with this command:
@@ -323,7 +328,7 @@ List compatible layers for `./fxls8962_normal_spi.csolution.yml` and the context
 csolution list layers ./fxls8962_normal_spi.csolution.yml -c *+frdmk22f_agmp03
 ```
 
-Refer to [Working with Layers](build-overview.md#working-with-layers) for more information.
+Refer to [Software Layers](build-overview.md#software-layers) for more information.
 
 ### Use Generators (i.e. CubeMX)
 

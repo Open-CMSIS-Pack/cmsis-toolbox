@@ -368,7 +368,7 @@ cbuild-set:
 
 ### `configurations:`
 
-The `configurations:` node lists possible configurations for [reference applications](build-overview.md#reference-application-framework) that have undefined variable settings.
+The `configurations:` node lists possible configurations for [reference applications](ReferenceApplications.md) that have undefined variable settings.
 
 `configurations:`                                                  | Content
 :------------------------------------------------------------------|:------------------------------------
@@ -643,10 +643,10 @@ build-gen-idx:
       project-type: single-core
       cbuild-gens:
         - cbuild-gen: C:/w/csolution-examples/CubeMX/tmp/CubeMX/MyBoard/Debug/CubeMX.Debug+MyBoard.cbuild-gen.yml
-          project: CubeMX
+          project: CubeMX     # user selected name of the project
           configuration: .Debug+MyBoard
           name: BoardLayer    # create BoardLayer.cgen.yml in output directory (new in CMSIS-Toolbox 2.4.0)
-          map: Boot           # map to CubeMX run-time context (new in CMSIS-Toolbox 2.4.0)
+          map: Boot           # map to STM32CubeMX run-time context (new in CMSIS-Toolbox 2.4.0)
 ```
 
 ## Generator Import File

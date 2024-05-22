@@ -605,7 +605,7 @@ The `layer:` node is the start of a `*.clayer.yml` file and defines a [Software 
 
 `layer:`                                                     |            | Content
 :------------------------------------------------------------|:-----------|:------------------------------------
-&nbsp;&nbsp;&nbsp; [`type:`](#layer---type)                  |  Optional  | Layer type for combining layers; used to identify [compatible layers].
+&nbsp;&nbsp;&nbsp; [`type:`](#layer---type)                  |  Optional  | Layer type for combining layers; used to identify [compatible layers](ReferenceApplications.md#usage).
 &nbsp;&nbsp;&nbsp; `description:`                            |  Optional  | Brief description text of the layer.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)              |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)          |  Optional  | Set the language standard for C++ source file compilation.
