@@ -122,7 +122,7 @@ jobs:
           gh run download -D projmgr-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n projmgr-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
           gh run download -D cbuildgen-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n cbuildgen-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
 
-      - name: Checkout tools repo
+      - name: Checkout cmsis-toolbox repo
         uses: actions/checkout@v4
         with:
           repository: Open-CMSIS-PACK/devtools
@@ -199,6 +199,10 @@ jobs:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: cmsis-toolbox
 
+      - name: Set execution permissions
+        run: |
+          chmod -R +x ./cmsis-toolbox/bin/*
+
       - name: Get toolbox path
         if: always()
         id: toolbox_path
@@ -210,12 +214,11 @@ jobs:
         shell: bash
         run: |
           export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
-          echo "${{steps.toolbox_path.outputs.path}}"
-          csolution${{ matrix.binary_extension }} -V
-          cpackget${{ matrix.binary_extension }} -V
-          cbuild${{ matrix.binary_extension }} -V
-          cbuild2cmake${{ matrix.binary_extension }} -V
-          cbuildgen${{ matrix.binary_extension }} -V
+          csolution -V
+          cpackget -V
+          cbuild -V
+          cbuild2cmake -V
+          cbuildgen -V
 
       - name: Run Test
         shell: bash

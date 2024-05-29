@@ -6,6 +6,10 @@ on:
       - '.github/markdownlint-link-check.json'
       - '**/*.md'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 # Declare default permissions as read only.
 permissions: read-all
 

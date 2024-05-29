@@ -6,6 +6,11 @@ on:
       - '!README.md'
   release:
     types: [ published ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   copyright:
     runs-on: ubuntu-20.04
