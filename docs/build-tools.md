@@ -109,6 +109,11 @@ Use "cbuild [command] --help" for more information about a command.
 Create build information for embedded applications that consist of one or more related projects.
 
 ```text
+csolution: Project Manager 2.4.0 (C) 2024 Arm Ltd. and Contributors
+
+Usage:
+  csolution <command> [<name>.csolution.yml] [options]
+
 Commands:
   convert                       Convert user input *.yml files to *.cprj files
   list boards                   Print list of available board names
