@@ -45,6 +45,7 @@ The following chapter explains the CMSIS Solution Project File Format (short for
     - [`undefine:`](#undefine)
     - [`add-path:`](#add-path)
     - [`del-path:`](#del-path)
+    - [`pre-include:`](#pre-include)
     - [`misc:`](#misc)
   - [Project Setups](#project-setups)
     - [`setups:`](#setups)
@@ -509,6 +510,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)      |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)  |  Optional  | Set the language standard for C++ source file compilation.
+&nbsp;&nbsp;&nbsp; [`pre-include:`](#pre-include)    |  Optional  | Add pre-include files for C and C++ source files.
 &nbsp;&nbsp;&nbsp; [`output-dirs:`](#output-dirs)    |  Optional  | Control the output directories for the build output.
 &nbsp;&nbsp;&nbsp; [`generators:`](#generators)      |  Optional  | Control the directory structure for generator output.
 &nbsp;&nbsp;&nbsp; [`packs:`](#packs)                |  Optional  | Defines local packs and/or scope of packs that are used.
@@ -562,6 +564,7 @@ The `project:` node is the start of a `*.cproject.yml` file and can contain the 
 &nbsp;&nbsp;&nbsp; [`packs:`](#packs)               |  Optional  | Defines packs that are required for this project.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)     |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp) |  Optional  | Set the language standard for C++ source file compilation.
+&nbsp;&nbsp;&nbsp; [`pre-include:`](#pre-include)    |  Optional  | Add pre-include files for C and C++ source files.
 &nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)         |  Optional  | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`linker:`](#linker)             |  Optional  | Instructions for the linker.
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)               |  Optional  | Generation of debug information.
@@ -609,6 +612,7 @@ The `layer:` node is the start of a `*.clayer.yml` file and defines a [Software 
 &nbsp;&nbsp;&nbsp; `description:`                            |  Optional  | Brief description text of the layer.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)              |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)          |  Optional  | Set the language standard for C++ source file compilation.
+&nbsp;&nbsp;&nbsp; [`pre-include:`](#pre-include)            |  Optional  | Add pre-include files for C and C++ source files.
 &nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)                  |  Optional  | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)                        |  Optional  | Generation of debug information.
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)                  |  Optional  | Control generation of compiler diagnostics.
@@ -1070,6 +1074,27 @@ Remove include paths (that are defined at the cproject level) from the command l
         - /path/solution/to-be-removed
 ```
 
+### `pre-include:`
+
+> **Note:**
+>
+> **New in CMSIS-Toolbox 2.5.0; requires cbuild2cmake backend (todo)
+
+Add pre-include files to the command line of the development tools for C and C++ source files.
+
+`pre-include:`                                             | Content
+:----------------------------------------------------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `- file:`                               | Name of the pre-include file.
+
+**Examle:**
+
+```yml
+  groups:
+    - group: MyGroup
+      pre-include:
+        - file: my_include.h
+```
+
 ### `misc:`
 
 Add miscellaneous literal tool-specific controls that are directly passed to the individual tools depending on the file type.
@@ -1136,6 +1161,7 @@ project. It is however possible to change that `setup:` settings on a [`group:`]
 &nbsp;&nbsp;&nbsp; [`output:`](#output)              |   Optional   | Configure the generated output files.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)      |   Optional   | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)  |   Optional   | Set the language standard for C++ source file compilation.
+&nbsp;&nbsp;&nbsp; [`pre-include:`](#pre-include)    |  Optional    | Add pre-include files for C and C++ source files.
 &nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)          |   Optional   | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)                |   Optional   | Generation of debug information.
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)          |   Optional   | Control generation of compiler diagnostics.
@@ -1298,6 +1324,7 @@ The `target-types:` node may include [toolchain options](#toolchain-options), [t
 &nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)        |   Optional   | Toolchain selection.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)    |   Optional   | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)|   Optional   | Set the language standard for C++ source file compilation.
+&nbsp;&nbsp;&nbsp; [`pre-include:`](#pre-include)  |  Optional    | Add pre-include files for C and C++ source files.
 &nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)        |   Optional   | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)              |   Optional   | Generation of debug information.
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)        |   Optional   | Control Generation of debug information.
@@ -1326,6 +1353,7 @@ The `build-types:` node may include [toolchain options](#toolchain-options):
 &nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)        |   Optional   | Toolchain selection.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)    |   Optional   | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)|   Optional   | Set the language standard for C++ source file compilation.
+&nbsp;&nbsp;&nbsp; [`pre-include:`](#pre-include)    |  Optional  | Add pre-include files for C and C++ source files.
 &nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)        |   Optional   | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)              |   Optional   | Generation of debug information.
 &nbsp;&nbsp;&nbsp; [`define:`](#define)            |   Optional   | Preprocessor (#define) symbols for code generation.
@@ -1536,17 +1564,6 @@ The YAML structure of the section `projects:` is:
 [`- project:`](#project)                                  | **Required** | Path to the project file.
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |   Optional   | Include project for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude project for a list of *build* and *target* types.
-&nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)               |   Optional   | Specify a specific compiler.
-&nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)           |   Optional   | Set the language standard for C source file compilation.
-&nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)       |   Optional   | Set the language standard for C++ source file compilation.
-&nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)               |   Optional   | Optimize level for code generation.
-&nbsp;&nbsp;&nbsp; [`debug:`](#debug)                     |   Optional   | Generation of debug information.
-&nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)               |   Optional   | Control generation of compiler diagnostics.
-&nbsp;&nbsp;&nbsp; [`define:`](#define)                   |   Optional   | Define symbol settings for code generation.
-&nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)               |   Optional   | Remove define symbol settings for code generation.
-&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)               |   Optional   | Additional include file paths.
-&nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)               |   Optional   | Remove specific include file paths.
-&nbsp;&nbsp;&nbsp; [`misc:`](#misc)                       |   Optional   | Literal tool-specific controls.
 
 **Examples:**
 
@@ -1598,6 +1615,7 @@ The `groups:` keyword specifies a list that adds [source groups and files](#sour
 &nbsp;&nbsp;&nbsp; [`for-compiler:`](#for-compiler)       |   Optional   | Include group for a list of compilers.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)           |   Optional   | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)       |   Optional   | Set the language standard for C++ source file compilation.
+&nbsp;&nbsp;&nbsp; [`pre-include:`](#pre-include)         |  Optional    | Add pre-include files for C and C++ source files.
 &nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)               |   Optional   | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)                     |   Optional   | Generation of debug information.
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)               |   Optional   | Control generation of compiler diagnostics.
@@ -1626,6 +1644,7 @@ Add source files to a project.
 &nbsp;&nbsp;&nbsp; [`category:`](#filename-extensions)    |   Optional   | Explicit file category to overwrite [filename extension](#filename-extensions) assignment.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)           |   Optional   | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)       |   Optional   | Set the language standard for C++ source file compilation.
+&nbsp;&nbsp;&nbsp; [`pre-include:`](#pre-include)         |  Optional    | Add pre-include files for C and C++ source files.
 &nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)               |   Optional   | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)                     |   Optional   | Generation of debug information.
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)               |   Optional   | Control generation of compiler diagnostics.     
@@ -1764,6 +1783,7 @@ Add software components to a project or a software layer. Used in `*.cproject.ym
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude component for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)           |   Optional   | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)       |   Optional   | Set the language standard for C++ source file compilation.
+&nbsp;&nbsp;&nbsp; [`pre-include:`](#pre-include)         |  Optional    | Add pre-include files for C and C++ source files.
 &nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)               |   Optional   | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)                     |   Optional   | Generation of debug information.
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)               |   Optional   | Control generation of compiler diagnostics.

@@ -445,12 +445,16 @@ The `cbuilds:` node lists all project context configurations that are generated 
 `- cbuild:`                                                        | Build description file of a single context for a *.cproject.yml input file;
 &nbsp;&nbsp;&nbsp;`project:`                                       | Project name
 &nbsp;&nbsp;&nbsp;`configuration:`                                 | Context configuration for this build description file
+&nbsp;&nbsp;&nbsp;`clayers:`                                       | List of layers taht are included in the project
+
 
 **Example:**
 
 ```yml
-  cprojects:
+  cbuilds:
     - cproject: AWS_MQTT_MutualAuth_SW_Framework/Demo.cproject.yml
+      project: Demo
+      configuration: .Debug+AVH
       clayers:
         - clayer: AWS_MQTT_MutualAuth_SW_Framework/Socket/FreeRTOS+TCP/Socket.clayer.yml
         - clayer: AWS_MQTT_MutualAuth_SW_Framework/Socket/WiFi/Socket.clayer.yml
