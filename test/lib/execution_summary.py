@@ -6,19 +6,22 @@
 
 import os
 import re
-import shutil
-import subprocess
+import argparse
 import sys
+import glob
+from pathlib import Path
 from robot.api import ExecutionResult, ResultVisitor
 from robot.result.model import TestCase
 from robot.result.executionresult import Result 
 
 class ResultVisitorEx(ResultVisitor):
-    def __init__(self, markdown_file='summary_report.md'):
+    def __init__(self, test_env_files_path:str, output_path:str, markdown_file:str):
         self.failed_tests = {}
         self.passed_tests = {}
         self.skipped_tests = {}
+        self.test_env_files_path=test_env_files_path
         self.markdown_file = markdown_file
+        self.output_path = output_path
 
         # Remove existing markdown file if it exists
         if os.path.exists(markdown_file):
@@ -34,9 +37,50 @@ class ResultVisitorEx(ResultVisitor):
             test_status[tags] = []
         test_status[tags].append(status)
 
+    def read_file_content(self, file_path):
+        with open(file_path, 'r') as file:
+            return file.read()
+
+    def extract_platform(self, file_name):
+        match = re.search(r'test-env-(.*)\.md', file_name)
+        return match.group(1) if match else None
+    
+    def get_test_env(self, f):
+        test_env_files = glob.glob(self.test_env_files_path + '/**/test-env-*.md', recursive=False)
+        # return if no test_env file found
+        if not test_env_files:
+            print("No test-env-*.md files found")
+            return
+
+        # Read the content of the first file
+        first_file_content = self.read_file_content(test_env_files[0])
+
+        has_same_env = True
+        f.write("## Test Environment\n\n")
+        test_env_content = ""
+
+        # Iterate through the rest of the files and compare content
+        for file_path in test_env_files[1:]:
+            file_name = Path(file_path).name
+            platform = self.extract_platform(file_name)
+            if platform:
+                test_env_content += f"\n## {platform}\n\n"
+            
+            current_file_content = self.read_file_content(file_path)
+            test_env_content += current_file_content
+            
+            if current_file_content != first_file_content:
+                has_same_env &= False
+
+        if has_same_env:
+            test_env_content = first_file_content
+
+        f.write(test_env_content + "\n")
+
     def end_result(self, result: Result):
         with open(self.markdown_file, "w") as f:
             f.write("# Robot Framework Report\n\n")
+            self.get_test_env(f)
             f.write("## Summary\n\n")
             f.write("|:white_check_mark: Passed|:x: Failed|:fast_forward: Skipped|Total|\n")
             f.write("|:----:|:----:|:-----:|:---:|\n")
@@ -65,12 +109,24 @@ class ResultVisitorEx(ResultVisitor):
                         file.write(f"|{key}|{name}|{msg}|{duration}|{suite}|\n")
                     elif section_header.startswith("Skip"):
                         file.write(f"|{key}|{name}|{suite}|\n")
-               
-if __name__ == '__main__':
-    # Get output and markdown file paths from command line arguments
-    output_file = sys.argv[1] if len(sys.argv) > 1 else "output.xml"
-    markdown_file = sys.argv[2] if len(sys.argv) > 2 else "summary_report.md"
-    
-    # Parse the Robot Framework output file and generate the summary report
+
+def main():
+    parser = argparse.ArgumentParser(description='Consolidate test summary report')
+    parser.add_argument('test_env_files_path', type=str, help='Path to the test environment files')
+    parser.add_argument('output_file', type=str, help='Path to output xml file')
+    parser.add_argument('markdown_file', type=str, help='Path to consolidated summary markdown file')
+    args = parser.parse_args()
+
+    test_env_files_path = args.test_env_files_path
+    output_file = args.output_file
+    markdown_file = args.markdown_file
+
     result = ExecutionResult(output_file)
-    result.visit(ResultVisitorEx(markdown_file))
+    result.visit(ResultVisitorEx(test_env_files_path, output_file, markdown_file))
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as e:
+        print(f'An error occurred: {e}', file=sys.stderr)
+        sys.exit(1)

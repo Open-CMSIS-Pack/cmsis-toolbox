@@ -5,16 +5,23 @@ on:
       - main
     paths:
       - '.github/workflows/toolbox.yml'
-      - '**'
+      - 'test/test.py'
+      - 'scripts/**'
       - '!docs/**'
-      - '!README.md'
+      - '!**/*.md'
   pull_request:
     paths:
       - '.github/workflows/toolbox.yml'
-      - '**'
+      - 'test/test.py'
+      - 'scripts/**'
       - '!docs/**'
+      - '!**/*.md'
   release:
     types: [published]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   create_archives:

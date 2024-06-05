@@ -7,7 +7,7 @@
     },
     {
       "kind": "artifact",
-      "location": "https://artifacts.tools.arm.com/vcpkg-ce-registry/registry.zip",
+      "location": "https://artifacts.tools.arm.com/vcpkg-registry",
       "name": "arm"
     }
   ],

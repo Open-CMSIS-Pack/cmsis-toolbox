@@ -1,0 +1,290 @@
+name: nightly
+
+# This workflow picks up the latest changes of toolbox binaries
+# and runs end-to-end tests to detect regressions. It is triggered by:
+#   1. A schedule set for every midnight
+#   2. Manual triggering of the workflow
+#   3. Changes to the workflow file
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+  pull_request:
+    paths:
+      - '.github/workflows/nightly.yml'
+      - '.github/matrix_includes.json'
+      - 'test/**'
+      - '!test/RobotTests.md'
+      - '!test/tests.py'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+        
+jobs:
+  matrix_prep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: JoshuaTheMiller/conditional-build-matrix@v2.0.1        
+        id: set-matrix
+        with:
+          inputFile: '.github/matrix_includes.json'
+          filter: '[?runOnBranch==`always`]'
+
+  create-toolbox:
+    needs: [ matrix_prep ]
+    runs-on: ${{ matrix.runs_on }}
+    continue-on-error: true
+    strategy:
+      matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
+
+    steps:
+      - name: Authenticate with GitHub CLI
+        shell: bash
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
+
+      - name: Get latest nightly Run ID
+        id: get_run_id
+        shell: bash
+        run: |
+          RUN_ID=$(gh run list --limit 1 --workflow nightly --repo Open-CMSIS-Pack/devtools --json databaseId --jq '.[0].databaseId')
+          echo "NIGHTLY_RUN_ID=$RUN_ID" >> $GITHUB_OUTPUT
+
+      # Download and build cbuild executable
+      - name: Checkout cbuild repository
+        uses: actions/checkout@v4
+        with:
+          repository: Open-CMSIS-PACK/cbuild
+          path: cbuild
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: cbuild/go.mod
+          cache-dependency-path: |
+            **/go.mod
+            **/go.sum
+
+      - name: Build cbuild executable
+        working-directory: cbuild
+        shell: bash
+        run: |
+          GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/cbuild${{ matrix.binary_extension }} ./cmd/cbuild
+
+      # Download and build cpackget executable
+      - name: Checkout cpackget repository
+        uses: actions/checkout@v4
+        with:
+          repository: Open-CMSIS-PACK/cpackget
+          path: cpackget
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: cpackget/go.mod
+          cache-dependency-path: |
+            cpackget/go.mod
+            cpackget/go.sum
+
+      - name: Build cpackget executable
+        working-directory: cpackget
+        shell: bash
+        run: |
+          GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/cpackget${{ matrix.binary_extension }} ./cmd
+
+      # Download and build cbuild2cmake executable
+      - name: Checkout cbuild2cmake repository
+        uses: actions/checkout@v4
+        with:
+          repository: Open-CMSIS-PACK/cbuild2cmake
+          path: cbuild2cmake
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: cbuild2cmake/go.mod
+          cache-dependency-path: |
+            cbuild2cmake/go.mod
+            cbuild2cmake/go.sum
+
+      - name: Build cbuild2cmake executable
+        working-directory: cbuild2cmake
+        shell: bash
+        run: |
+          GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/cbuild2cmake${{ matrix.binary_extension }} ./cmd/cbuild2cmake
+
+      # Download projmgr and cbuildgen from nightly
+      - name: Download Open-CMSIS-Pack/devtools nightly artifacts
+        shell: bash
+        run : |
+          gh run download -D projmgr-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n projmgr-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
+          gh run download -D cbuildgen-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n cbuildgen-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
+
+      - name: Checkout cmsis-toolbox repo
+        uses: actions/checkout@v4
+        with:
+          repository: Open-CMSIS-PACK/devtools
+          path: devtools
+
+      - name: Copy Files
+        shell: bash
+        run: |
+          mkdir -p ./cmsis-toolbox/bin
+          mkdir -p ./cmsis-toolbox/etc
+          cp ./projmgr-${{ matrix.target }}-${{ matrix.arch }}/csolution${{ matrix.binary_extension }}      ./cmsis-toolbox/bin/csolution${{ matrix.binary_extension }}
+          cp ./cbuildgen-${{ matrix.target }}-${{ matrix.arch }}/cbuildgen${{ matrix.binary_extension }}*    ./cmsis-toolbox/bin/cbuildgen${{ matrix.binary_extension }}
+          cp ./cbuild/build/cbuild${{ matrix.binary_extension }}              ./cmsis-toolbox/bin/cbuild${{ matrix.binary_extension }}
+          cp ./cpackget/build/cpackget${{ matrix.binary_extension }}          ./cmsis-toolbox/bin/cpackget${{ matrix.binary_extension }}
+          cp ./cbuild2cmake/build/cbuild2cmake${{ matrix.binary_extension }}  ./cmsis-toolbox/bin/cbuild2cmake${{ matrix.binary_extension }}
+          cp -r devtools/tools/projmgr/templates/*                ./cmsis-toolbox/etc
+          cp -r devtools/tools/projmgr/schemas/*                  ./cmsis-toolbox/etc
+          cp -r devtools/tools/buildmgr/cbuildgen/scripts/*       ./cmsis-toolbox/etc
+          cp -r devtools/tools/buildmgr/cbuildgen/config/*        ./cmsis-toolbox/etc
+
+      - name: Update toolchain config files
+        if: ${{ matrix.target == 'windows' }}
+        shell: bash
+        run: |
+            sed -i '/set(EXT/c\  set(EXT .exe)' ./cmsis-toolbox/etc/AC6.6.16.2.cmake
+            sed -i '/set(EXT/c\  set(EXT .exe)' ./cmsis-toolbox/etc/GCC.10.3.1.cmake
+            sed -i '/set(EXT/c\  set(EXT .exe)' ./cmsis-toolbox/etc/IAR.9.32.1.cmake
+            sed -i '/set(EXT/c\  set(EXT .exe)' ./cmsis-toolbox/etc/CLANG.17.0.1.cmake
+
+      - name: Archieve test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+          path: cmsis-toolbox
+
+  run-tests:
+    needs: [ matrix_prep, create-toolbox ]
+    runs-on: ${{ matrix.runs_on }}
+    continue-on-error: true
+    strategy:
+      matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
+
+    steps:     
+      - name: Checkout toolbox repository
+        uses: actions/checkout@v4
+    
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+    
+      - name: Install pip dependencies
+        run: |
+            pip install --upgrade pip
+            pip install -r test/requirements.txt
+
+      - name: Setup vcpkg environment
+        uses: ARM-software/cmsis-actions/vcpkg@v1
+        with:
+          config: "./test/vcpkg-configuration.json"
+          vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
+          cache: "-"
+    
+      - name: Activate Arm tool license
+        run: |
+          armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
+        working-directory: ./test
+
+      - name: Download cmsis toolbox ${{ matrix.target }} ${{ matrix.arch }}
+        uses: actions/download-artifact@v4
+        with:
+          name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+          path: cmsis-toolbox
+
+      - name: Set execution permissions
+        run: |
+          chmod -R +x ./cmsis-toolbox/bin/*
+
+      - name: Get toolbox path
+        if: always()
+        id: toolbox_path
+        shell: bash
+        run: |
+          echo "path=$(echo "$(pwd)/cmsis-toolbox/bin")" >> $GITHUB_OUTPUT
+
+      - name: Binary version info
+        if: always()
+        shell: bash
+        run: |
+          export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
+          csolution -V
+          cpackget -V
+          cbuild -V
+          cbuild2cmake -V
+          cbuildgen -V
+
+      - name: Run Test
+        shell: bash
+        run: |
+          export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
+          python -m robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}.md --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }} --name ${{ matrix.target }}-${{ matrix.arch }} ./test
+
+      - name: Archieve test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-${{ matrix.target }}-${{ matrix.arch }}
+          path: reports-${{ matrix.target }}-${{ matrix.arch }}
+
+  consolidate-report:
+    if: always()
+    needs: [run-tests]
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install pip dependencies
+      run: |
+          pip install --upgrade pip
+          pip install -r test/requirements.txt
+
+    - name: Download reports
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+        pattern: reports-*
+
+    - name: Consolidate robot test results
+      working-directory: artifacts
+      run: |
+        python -m robot.rebot --name Collective_Robot_Results --outputdir collective_robot_results --output output.xml \
+          ./reports-windows-amd64/output.xml \
+          ./reports-linux-amd64/output.xml \
+          ./reports-darwin-amd64/output.xml
+
+    - name: Generate Summary report
+      if: always()
+      run: |
+        python ./test/lib/execution_summary.py artifacts artifacts/collective_robot_results/output.xml summary_report.md
+
+    - name: Print E2E Report
+      if: always()
+      run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
+
+    - name: Archieve consolidated test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: consolidated-reports
+        path: artifacts/collective_robot_results

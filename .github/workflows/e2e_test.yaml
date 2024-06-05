@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/e2e_test.yaml'
+      - '.github/matrix_includes.json'
       - 'test/**'
       - '!test/RobotTests.md'
       - '!test/tests.py'
@@ -14,20 +15,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  matrix_prep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: JoshuaTheMiller/conditional-build-matrix@v2.0.1        
+        id: set-matrix
+        with:
+          inputFile: '.github/matrix_includes.json'
+          filter: '[?runOnBranch==`always`]'
+
   test:
-    runs-on: ${{ matrix.os }}
+    needs: [ matrix_prep ]
+    runs-on: ${{ matrix.runs_on }}
     continue-on-error: true
     strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest, macos-13]
-        arch: [amd64, arm64]
-        include:
-          - os: windows-latest
-            target: win
-          - os: ubuntu-latest
-            target: lin
-          - os: macos-13
-            target: mac
+      matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -54,7 +60,17 @@ jobs:
           armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
         working-directory: ./test
 
+      - name: Binary version info
+        shell: bash
+        run: |
+          csolution${{ matrix.binary_extension }} -V
+          cpackget${{ matrix.binary_extension }} -V
+          cbuild${{ matrix.binary_extension }} -V
+          cbuild2cmake${{ matrix.binary_extension }} -V
+          cbuildgen${{ matrix.binary_extension }} -V
+
       - name: Run Test
+        shell: bash
         run: |
           python -m robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} --settag ${{ matrix.target }}-${{ matrix.arch }} --name ${{ matrix.target }}-${{ matrix.arch }} ./test
 
@@ -94,9 +110,9 @@ jobs:
       working-directory: artifacts
       run: |
         python -m robot.rebot --name Collective_Robot_Results --outputdir collective_robot_results --output output.xml \
-          ./reports-win-amd64/output.xml ./reports-win-arm64/output.xml \
-          ./reports-lin-amd64/output.xml ./reports-lin-arm64/output.xml \
-          ./reports-mac-amd64/output.xml ./reports-mac-arm64/output.xml
+          ./reports-windows-amd64/output.xml \
+          ./reports-linux-amd64/output.xml \
+          ./reports-darwin-amd64/output.xml
 
     - name: Generate Summary report
       if: always()
