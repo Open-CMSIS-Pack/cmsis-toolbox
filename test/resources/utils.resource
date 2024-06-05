@@ -1,19 +1,26 @@
 *** Settings ***
 Documentation    A collection of commonly used keywords across multiple test suites
+Library          BuiltIn
 Library          Collections
 Library          Process
 Library          OperatingSystem
 Library          ..${/}lib${/}utils.py
 Resource         global.resource
 
+*** Variables ***
+${TEST_ENV_FILE}    test_env.md
 
 *** Keywords ***
 Global Setup
-    ${parent_dir}=                  Join Path           ${CURDIR}        ..
-    ${src_dir}=                     Join Path           ${parent_dir}    ${Data}
-    ${dest_dir}=                    Get Test Data Directory
-    Set Global Variable             ${TEST_DATA_DIR}    ${dest_dir}
-    Copy Directory                  ${src_dir}          ${dest_dir}
+    ${parent_dir}=                    Join Path           ${CURDIR}        ..
+    ${src_dir}=                       Join Path           ${parent_dir}    ${Data}
+    ${dest_dir}=                      Get Test Data Directory
+    Set Global Variable               ${TEST_DATA_DIR}    ${dest_dir}
+    Copy Directory                    ${src_dir}          ${dest_dir}
+    ${output_file_path}               Get Output File Path
+    ${parent_path}=                   Get Parent Directory Path    ${output_file_path}
+    ${test_env_file}=    Join Path    ${parent_path}    ${TEST_ENV_FILE}
+    Write Test Environment            ${test_env_file} 
 
 Global Teardown
     Remove Directory with Content    ${TEST_DATA_DIR}
@@ -30,7 +37,7 @@ Run Program
     ${result}    Run Process    ${exe_path}      ${input_File}    @{args}
     ...    shell=True    stdout=${CURDIR}/stdout.txt
     ${ret_code}=                Set Variable If    ${result.rc} == ${0}    ${result.rc}    ${1}
-    Log Many                    StdOut: ${result.stdout}
+    Log Output String           ${result.stdout}
     RETURN                      ${ret_code}
 
 Run cbuild
@@ -77,7 +84,17 @@ Run Project With cbuild2cmake
     Should Be Equal     ${ret_code}       ${expect}        msg=Unexpected status returned by cbuild2cmake execution
 
 Append Additional Arguments
-    [Documentation]     Append values to the list
+    [Documentation]              Append values to the list
     [Arguments]                  ${list}    @{values}
     ${args}=    Combine Lists    ${list}    ${values}
     RETURN                       ${args}
+
+Log Output String
+    [Documentation]             Log STDOUT message
+    [Arguments]                 ${message}
+    Log Many                    StdOut: ${message}
+
+Get Output File Path
+    [Documentation]             Find path to output files
+    ${output_path}=             Get Variable Value    ${OUTPUT_FILE}
+    RETURN                      ${output_path}

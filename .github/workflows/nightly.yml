@@ -89,6 +89,9 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: cpackget/go.mod
+          cache-dependency-path: |
+            cpackget/go.mod
+            cpackget/go.sum
 
       - name: Build cpackget executable
         working-directory: cpackget
@@ -108,6 +111,9 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: cbuild2cmake/go.mod
+          cache-dependency-path: |
+            cbuild2cmake/go.mod
+            cbuild2cmake/go.sum
 
       - name: Build cbuild2cmake executable
         working-directory: cbuild2cmake
@@ -211,6 +217,7 @@ jobs:
           echo "path=$(echo "$(pwd)/cmsis-toolbox/bin")" >> $GITHUB_OUTPUT
 
       - name: Binary version info
+        if: always()
         shell: bash
         run: |
           export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
@@ -224,7 +231,7 @@ jobs:
         shell: bash
         run: |
           export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
-          python -m robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} --settag ${{ matrix.target }}-${{ matrix.arch }} --name ${{ matrix.target }}-${{ matrix.arch }} ./test
+          python -m robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}.md --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }} --name ${{ matrix.target }}-${{ matrix.arch }} ./test
 
       - name: Archieve test results
         if: always()
@@ -269,7 +276,7 @@ jobs:
     - name: Generate Summary report
       if: always()
       run: |
-        python ./test/lib/execution_summary.py artifacts/collective_robot_results/output.xml
+        python ./test/lib/execution_summary.py artifacts artifacts/collective_robot_results/output.xml summary_report.md
 
     - name: Print E2E Report
       if: always()
