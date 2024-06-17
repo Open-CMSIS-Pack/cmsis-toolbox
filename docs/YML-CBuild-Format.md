@@ -460,7 +460,7 @@ The `cbuilds:` node lists all project context configurations that are generated 
 
 ### `toolchains:`
 
-The `toolchains:` list of used compilers in the project. If no compiler is selected is lists the available compilers based on the [registered toolchains](installation.md#toolchain-registration) and available `misc:` - `for-compiler:` sections in the file [`cdefault.yml`](YML-Input-Format.md#cdefault).
+The `toolchains:` list of used compilers in the project. If no compiler is selected it lists the available compilers based on the [registered toolchains](installation.md#toolchain-registration) and available `misc:` - `for-compiler:` sections in the file [`cdefault.yml`](YML-Input-Format.md#cdefault).
 
 `toolchains:`                                                      | Content
 :------------------------------------------------------------------|:------------------------------------
