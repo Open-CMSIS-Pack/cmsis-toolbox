@@ -20,6 +20,7 @@ The following chapter explains the YAML CBuild format that describes how to buil
     - [`configurations:`](#configurations)
     - [`cprojects:`](#cprojects)
     - [`cbuilds:`](#cbuilds)
+    - [`toolchains:`](#toolchains)
     - [`packs:`](#packs)
     - [`generators:`](#generators)
   - [Source File Management](#source-file-management)
@@ -159,9 +160,8 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 &nbsp;&nbsp;&nbsp; `csolution:`                    | Relative path and name of the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
 &nbsp;&nbsp;&nbsp; [`configurations:`](#configurations)      | List of potential project configurations for a reference application with undefined layers
 &nbsp;&nbsp;&nbsp; [`cprojects:`](#cprojects)      | List of `*.cproject.yml` and `*.clayer.yml` input files used to generate this application.
-&nbsp;&nbsp;&nbsp; `cbuilds:`                      | List of `*.cbuild.yml` output files that are generated for this application.
-&nbsp;&nbsp;&nbsp; `errors:`                       | Error indication
-&nbsp;&nbsp;&nbsp; `packs-missing:`                | List of missing packs
+&nbsp;&nbsp;&nbsp; [`cbuilds:`](#cbuilds)          | List of `*.cbuild.yml` output files that are generated for this application.
+&nbsp;&nbsp;&nbsp; [`toolchains:`](#toolchains)    | List of compilers used or available compilers for selection.
 
 **Example:**
 
@@ -422,7 +422,7 @@ The `cprojects:` node lists all `*.cproject.yml` input files along with `*.claye
 `cprojects:`                                                       | Content
 :------------------------------------------------------------------|:------------------------------------
 `- cproject:`                                                      | Relative path and name of a [`*.cproject.yml`](YML-Input-Format.md#project) input file.
-&nbsp;&nbsp;`clayers:`                                             | List of [`*.clayer.yml`](YML-Input-Format.md#layer) input files used by this `*.cproject.yml` file.
+&nbsp;&nbsp;&nbsp;`clayers:`                       | List of [`*.clayer.yml`](YML-Input-Format.md#layer) input files used by this `*.cproject.yml` file.
 
 **Example:**
 
@@ -445,18 +445,28 @@ The `cbuilds:` node lists all project context configurations that are generated 
 `- cbuild:`                                                        | Build description file of a single context for a *.cproject.yml input file;
 &nbsp;&nbsp;&nbsp;`project:`                                       | Project name
 &nbsp;&nbsp;&nbsp;`configuration:`                                 | Context configuration for this build description file
+&nbsp;&nbsp;&nbsp; `errors:`                                       | Error indication
+&nbsp;&nbsp;&nbsp; `packs-missing:`                                | List of missing packs
 
 **Example:**
 
 ```yml
-  cprojects:
+  cbuilds:
     - cproject: AWS_MQTT_MutualAuth_SW_Framework/Demo.cproject.yml
-      clayers:
-        - clayer: AWS_MQTT_MutualAuth_SW_Framework/Socket/FreeRTOS+TCP/Socket.clayer.yml
-        - clayer: AWS_MQTT_MutualAuth_SW_Framework/Socket/WiFi/Socket.clayer.yml
-        - clayer: AWS_MQTT_MutualAuth_SW_Framework/Socket/VSocket/Socket.clayer.yml
-             :
+      project: Demo
+      configuration: .Debug+AVH
+      errors: true
 ```
+
+### `toolchains:`
+
+The `toolchains:` list of used compilers in the project. If no compiler is selected it lists the available compilers based on the [registered toolchains](installation.md#toolchain-registration) and available `misc:` - `for-compiler:` sections in the file [`cdefault.yml`](YML-Input-Format.md#cdefault).
+
+`toolchains:`                                                      | Content
+:------------------------------------------------------------------|:------------------------------------
+`- compiler:`                                      | Name of the compiler toolchain.
+&nbsp;&nbsp;&nbsp; `version:`                      | Version of the compiler toolchain.
+&nbsp;&nbsp;&nbsp; `selectable:`                   | No compiler is chosen, but this selection is possible.
 
 ### `packs:`
 

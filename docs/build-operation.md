@@ -54,11 +54,19 @@ The `cbuild setup` command prepares the data for an IDE environment. This comman
 cbuild setup <name>.csolution.yml --packs --context-set --update-rte
 ```
 
-This command checks for correctness of the csolution project files and creates the file `compile_commands.json` in the [output directory](build-overview.md#output-directory-structure) of the related context. The operation is further controlled by options: 
+This command performs the following operations:
+
+- Checks for correctness of the csolution project files.
+- Evaluates the software layers for [Reference Applications](ReferenceApplications.md) that use `variables:` to refer to layers, but the value is undefined. All projects are considered in this step.
+- Evaluates available toolchains when the `*.csolution.yml` does not contain a `compiler:` selection or `--toolchain` is not applied. The available toolchains are based on the [registered toolchains](installation.md#toolchain-registration) and available `misc:` - `for-compiler:` sections in the file [`cdefault.yml`](YML-Input-Format.md#cdefault).
+- Creates the file `compile_commands.json` in the [output directory](build-overview.md#output-directory-structure) for the context defined in [`*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-output-files). Note that this file is create if missing (see below).
+
+The operation is further controlled by options: 
 
 - The option `--packs` downloads missing software packs.
-- The option `--context-set` restricts the operation to the [`context-set`](build-overview.md#working-with-context-set) selected by the file [`*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-output-files). If this file is missing a file `*.cbuild-set.yml` with selection of the first `target-type` and the first `build-type` for each project is created.
+- The option `--context-set` restricts the operation to the [`context-set`](build-overview.md#working-with-context-set) selected by the file [`*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-output-files). If this file is missing a file `*.cbuild-set.yml` with selection of the first `target-type`, the first `build-type`, and the first `project` is created.
 - The option [`--update-rte`](build-overview.md#rte-directory-structure) updates the configuration files of the application.
+- The option `--toolchain` can be used to explicitly select a compiler.
 
 > **Note:**
 >
