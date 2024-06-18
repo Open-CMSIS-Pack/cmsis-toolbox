@@ -57,8 +57,8 @@ cbuild setup <name>.csolution.yml --packs --context-set --update-rte
 This command performs the following operations:
 
 - Checks for correctness of the csolution project files.
-- Evaluates the software layers for [Reference Applications](ReferenceApplications.md) that use `variables:` to refer to layers, but the value is undefined. All projects are considered in this step.
-- Evaluates available toolchains when the `*.csolution.yml` does not contain a `compiler:` selection or `--toolchain` is not applied. The available toolchains are based on the [registered toolchains](installation.md#toolchain-registration) and available `misc:` - `for-compiler:` sections in the file [`cdefault.yml`](YML-Input-Format.md#cdefault).
+- Evaluates the [software layers](YML-CBuild-Format.md#configurations) for [Reference Applications](ReferenceApplications.md) that use `variables:` to refer to layers, but the value is undefined. All projects are considered in this step.
+- Evaluates [selectable toolchains](YML-CBuild-Format.md#select-toolchains) when the `*.csolution.yml` does not contain a `compiler:` selection or `--toolchain` is not applied. The available toolchains are based on the [registered toolchains](installation.md#toolchain-registration) and available `misc:` - `for-compiler:` sections in the file [`cdefault.yml`](YML-Input-Format.md#cdefault).
 - Creates the file `compile_commands.json` in the [output directory](build-overview.md#output-directory-structure) for the context defined in [`*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-output-files). Note that this file is create if missing (see below).
 
 The operation is further controlled by options: 

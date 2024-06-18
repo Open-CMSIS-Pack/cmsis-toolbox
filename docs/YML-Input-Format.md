@@ -790,7 +790,7 @@ The following code translation options may be used at various places such as:
 
 ### `compiler:`
 
-Selects the compiler toolchain used for code generation.
+Selects the compiler toolchain used for code generation. It can be applied in `*.csolution.yml` files.
 Optionally the compiler can have a version number specification.
 
 Compiler Name                                         | Supported Compiler
@@ -1736,7 +1736,6 @@ Using `category:` allows to specify pre-include files that are project-wide or r
          category: preIncludeLocal
   ``` 
 
- 
 ### `layers:`
 
 Add a software layer to a project. Used in `*.cproject.yml` files.
