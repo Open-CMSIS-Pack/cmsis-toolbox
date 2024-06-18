@@ -20,7 +20,7 @@ The following chapter explains the YAML CBuild format that describes how to buil
     - [`configurations:`](#configurations)
     - [`cprojects:`](#cprojects)
     - [`cbuilds:`](#cbuilds)
-    - [`toolchains:`](#toolchains)
+    - [`select-toolchains:`](#select-toolchains)
     - [`packs:`](#packs)
     - [`generators:`](#generators)
   - [Source File Management](#source-file-management)
@@ -152,16 +152,16 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 
 ### File Structure of `*.cbuild-idx.yml`
 
-`build-idx:`                                       | Content
-:--------------------------------------------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `generated-by:`                 | Reference to csolution tool along with version information used to generate this application.
-&nbsp;&nbsp;&nbsp; `description:`                  | Brief description text copied from the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
-&nbsp;&nbsp;&nbsp; `cdefault:`                     | Relative path and name of the [`*.cdefault.yml`](YML-Input-Format.md#cdefault) input file used to generate this application.
-&nbsp;&nbsp;&nbsp; `csolution:`                    | Relative path and name of the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
-&nbsp;&nbsp;&nbsp; [`configurations:`](#configurations)      | List of potential project configurations for a reference application with undefined layers
-&nbsp;&nbsp;&nbsp; [`cprojects:`](#cprojects)      | List of `*.cproject.yml` and `*.clayer.yml` input files used to generate this application.
-&nbsp;&nbsp;&nbsp; [`cbuilds:`](#cbuilds)          | List of `*.cbuild.yml` output files that are generated for this application.
-&nbsp;&nbsp;&nbsp; [`toolchains:`](#toolchains)    | List of compilers used or available compilers for selection.
+`build-idx:`                                                  | Content
+:-------------------------------------------------------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `generated-by:`                            | Reference to csolution tool along with version information used to generate this application.
+&nbsp;&nbsp;&nbsp; `description:`                             | Brief description text copied from the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
+&nbsp;&nbsp;&nbsp; `cdefault:`                                | Relative path and name of the [`*.cdefault.yml`](YML-Input-Format.md#cdefault) input file used to generate this application.
+&nbsp;&nbsp;&nbsp; `csolution:`                               | Relative path and name of the [`*.csolution.yml`](YML-Input-Format.md#solution) input file used to generate this application.
+&nbsp;&nbsp;&nbsp; [`configurations:`](#configurations)       | For reference applications with undefined layers: list of potential project configurations for a reference application with undefined layers
+&nbsp;&nbsp;&nbsp; [`cprojects:`](#cprojects)                 | List of `*.cproject.yml` and `*.clayer.yml` input files used to generate this application.
+&nbsp;&nbsp;&nbsp; [`cbuilds:`](#cbuilds)                     | List of `*.cbuild.yml` output files that are generated for this application.
+&nbsp;&nbsp;&nbsp; [`select-toolchains:`](#select-toolchains) | For projects with unspecified compiler: list of available compilers for selection
 
 **Example:**
 
@@ -370,19 +370,19 @@ cbuild-set:
 
 The `configurations:` node lists possible configurations for [reference applications](ReferenceApplications.md) that have undefined variable settings.
 
-`configurations:`                                                  | Content
-:------------------------------------------------------------------|:------------------------------------
-`- target-type:`                                                   | Name of target-type for which configurations are listed.
-&nbsp;&nbsp;&nbsp;`target-configurations:`                         | List of possible configurations for the target-type.
-&nbsp;&nbsp;&nbsp;- `configuration:`                               | Possible configuration for the reference application.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`- variables:`                 | List of variable names with configuration information.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`<layer-name>:`                                                    | Layer name with value that is the path to the `clayer.yml` file.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`description:`                                                     | Brief [description](YML-Input-Format.md#layer) text taken from `*.clayer.yml`.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`settings:`                                                        | Usage instructions for this layer.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`- set:`                                                           | Value of `set` and `info` taken from [`connect:`](YML-Input-Format.md#connect) in `*.clayer.yml`.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`path:`                                                            | Path to the directory that contains the layer (from *.PDSC file).
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`file:`                                                            | Name of the *.clayer.yml file (optional with relative path to the directory specified with path) (from `*.PDSC` file).
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`copy-to:`                                                         | Proposed directory for the layer in the *csolution project* (from *.PDSC file).
+`configurations:`                                                       | Content
+:-----------------------------------------------------------------------|:------------------------------------
+`- target-type:`                                                        | Name of target-type for which configurations are listed.
+&nbsp;&nbsp;&nbsp;`target-configurations:`                              | List of possible configurations for the target-type.
+&nbsp;&nbsp;&nbsp;- `configuration:`                                    | Possible configuration for the reference application.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`- variables:`                      | List of variable names with configuration information.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`<layer-name>:`   | Layer name with value that is the path to the `clayer.yml` file.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`description:`    | Brief [description](YML-Input-Format.md#layer) text taken from `*.clayer.yml`.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`settings:`       | Usage instructions for this layer.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`- set:`          | Value of `set` and `info` taken from [`connect:`](YML-Input-Format.md#connect) in `*.clayer.yml`.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`path:`           | Path to the directory that contains the layer (from *.PDSC file).
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`file:`           | Name of the *.clayer.yml file (optional with relative path to the directory specified with path) (from `*.PDSC` file).
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`copy-to:`        | Proposed directory for the layer in the *csolution project* (from *.PDSC file).
 
 **Example:**
 
@@ -458,15 +458,16 @@ The `cbuilds:` node lists all project context configurations that are generated 
       errors: true
 ```
 
-### `toolchains:`
+### `select-toolchains:`
 
-The `toolchains:` list of used compilers in the project. If no compiler is selected it lists the available compilers based on the [registered toolchains](installation.md#toolchain-registration) and available `misc:` - `for-compiler:` sections in the file [`cdefault.yml`](YML-Input-Format.md#cdefault).
+If no compiler is specified in the *.csolution.yml project, the [`cbuild setup` command](build-operation.md#cbuild-setup-command) lists the available compilers based on the [registered toolchains](installation.md#toolchain-registration) and available `misc:` - `for-compiler:` sections in the file [`cdefault.yml`](YML-Input-Format.md#cdefault).
 
-`toolchains:`                                                      | Content
-:------------------------------------------------------------------|:------------------------------------
+> **Note:** New in CMSIS-Toolbox 2.5.0
+
+`select-toolchains:`                               | Content
+:--------------------------------------------------|:------------------------------------
 `- compiler:`                                      | Name of the compiler toolchain.
 &nbsp;&nbsp;&nbsp; `version:`                      | Version of the compiler toolchain.
-&nbsp;&nbsp;&nbsp; `selectable:`                   | No compiler is chosen, but this selection is possible.
 
 ### `packs:`
 
@@ -475,7 +476,7 @@ The `packs:` node is the start of a pack list that is used for the project conte
 `packs:`                                              | Content
 :-----------------------------------------------------|:------------------------------------
 `- pack:`                                             | Explicit pack specification with exact version information used.
-&nbsp;&nbsp;&nbsp;`path:`                                  | Path name that stores the software pack (see note).
+&nbsp;&nbsp;&nbsp;`path:`                             | Path name that stores the software pack (see note).
 
 > **Note:**
 >
