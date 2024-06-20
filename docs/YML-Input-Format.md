@@ -802,6 +802,17 @@ Lists the compilers that this *csolution project* is tested with. This informati
 :-----------------------------------------------------------|:-----------|:-------------------------------------------
 `- compiler:`                                               |**Required**| Path and file name of `<regions_file>.h`, used to 
 
+**Example:**
+
+```yml
+solution:
+  created-for: cmsis-toolbox@2.5  # minimum CMSIS-Toolbox version required for project build
+  select-compiler:                # list tested compilers that can be selected
+    - compiler: GCC               # GCC is supported
+    - compiler: AC6@6.22          # AC6 is supported, version number is an hint on what was tested
+```
+
+
 ### `compiler:`
 
 Selects the compiler toolchain used for code generation. It can be applied in `*.csolution.yml` files.
