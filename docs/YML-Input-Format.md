@@ -32,6 +32,7 @@ The following chapter explains the CMSIS Solution Project File Format (short for
       - [`generators: - options:`](#generators---options)
     - [`rte:`](#rte)
   - [Toolchain Options](#toolchain-options)
+    - [`select-compiler:`](#select-compiler)
     - [`compiler:`](#compiler)
     - [`linker:`](#linker)
     - [`output:`](#output)
@@ -476,10 +477,11 @@ the compiler along with some specific default controls. The search order for thi
 
 The `default:` node is the start of a `cdefault.yml` or `cdefault.yaml` file and contains the following.
 
-`default:`                                            | Content
-:-----------------------------------------------------|:------------------------------------
-&nbsp;&nbsp; [`compiler:`](#compiler)                 | Toolchain selection.
-&nbsp;&nbsp; [`misc:`](#misc)                         | Literal tool-specific controls.
+`default:`                                                | Content
+:---------------------------------------------------------|:-----------|:------------------------------------
+&nbsp;&nbsp;&nbsp; [`select-compiler:`](#select-compiler) |  Optional  | Lists the possible compiler selection that this project is tested with. 
+&nbsp;&nbsp; [`compiler:`](#compiler)                     |  Optional  | Toolchain selection.
+&nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls.
 
 **Example:**
 
@@ -533,7 +535,9 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; `created-by:`                     |  Optional  | Identifies the tool that created this solution.
 &nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this solution, i.e. **CMSIS-Toolbox@2.2.0**
 &nbsp;&nbsp;&nbsp; `description:`                    |  Optional  | Brief description text of this solution.
+&nbsp;&nbsp;&nbsp; [`select-compiler:`](#select-compiler) |  Optional  | Lists the possible compiler selection that this project is tested with. 
 &nbsp;&nbsp;&nbsp; `cdefault:`                       |  Optional  | When specified, the [`cdefault.yml`](#cdefault) file is used to setup compiler specific controls. 
+&nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
 &nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)      |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)  |  Optional  | Set the language standard for C++ source file compilation.
@@ -783,10 +787,18 @@ rte:
 
 ## Toolchain Options
 
-The following code translation options may be used at various places such as:
+Toolchain options may be used at various places such as:
 
 - [`solution:`](#solution) level to specify options for a collection of related projects
 - [`project:`](#projects) level to specify options for a project
+
+### `select-compiler:`
+
+Lists the compilers that this *csolution project* is tested with. This information is used by the [`cbuild setup` command](build-operation.md#cbuild-setup-command) to determine possible compiler choices. The actual compiler to be used is selected with the [`compiler:`](#compiler) node. 
+
+`select-compiler:`                                          |            | Content
+:-----------------------------------------------------------|:-----------|:--------------------------------
+`- compiler:`                                               |**Required**| Path and file name of `<regions_file>.h`, used to 
 
 ### `compiler:`
 
