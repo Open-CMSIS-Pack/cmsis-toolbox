@@ -796,8 +796,10 @@ Toolchain options may be used at various places such as:
 
 Lists the compilers that this *csolution project* is tested with. This information is used by the [`cbuild setup` command](build-operation.md#cbuild-setup-command) to determine possible compiler choices. The actual compiler to be used is selected with the [`compiler:`](#compiler) node. 
 
+> **Note:** New in CMSIS-Toolbox 2.5.0
+
 `select-compiler:`                                          |            | Content
-:-----------------------------------------------------------|:-----------|:--------------------------------
+:-----------------------------------------------------------|:-----------|:-------------------------------------------
 `- compiler:`                                               |**Required**| Path and file name of `<regions_file>.h`, used to 
 
 ### `compiler:`
