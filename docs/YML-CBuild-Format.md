@@ -460,14 +460,13 @@ The `cbuilds:` node lists all project context configurations that are generated 
 
 ### `select-compiler:`
 
-If no compiler is specified in the *.csolution.yml project, the [`cbuild setup` command](build-operation.md#cbuild-setup-command) lists the available compilers based on the [compiler registration](installation.md#compiler-registration) and `select-compiler:` section in the file [*.csolution.yml](YML-Input-Format.md#solution) or [`cdefault.yml`](YML-Input-Format.md#cdefault).
+If no compiler is specified in the *csolution project*, the [`cbuild setup` command](build-operation.md#cbuild-setup-command) lists the available compilers based on the [compiler registration](installation.md#compiler-registration) and `select-compiler:` node in the file [`*.csolution.yml`](YML-Input-Format.md#solution) or [`cdefault.yml`](YML-Input-Format.md#cdefault).
 
 > **Note:** New in CMSIS-Toolbox 2.5.0
 
 `select-compiler:`                                 | Content
 :--------------------------------------------------|:------------------------------------
-`- compiler:`                                      | Name of the compiler toolchain.
-&nbsp;&nbsp;&nbsp; `version:`                      | Version of the compiler toolchain.
+`- compiler:`                                      | Name (optionally with version) of the compiler toolchain; copied from the `select-compiler:` node in the *csolution project*.
 
 ### `packs:`
 
