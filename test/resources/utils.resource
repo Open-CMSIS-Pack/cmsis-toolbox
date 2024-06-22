@@ -72,14 +72,14 @@ Run Project with cbuildgen
     [Documentation]     Run the csolution project with cbuildgen
     [Arguments]         ${input_file}    ${expect}        ${args}=@{EMPTY}
     ${parent_path}=     Get Parent Directory Path         ${input_file}
-    ${ex_args}=         Append Additional Arguments       ${args}    --output    ${parent_path}${/}${Out_Dir}
+    ${ex_args}=         Append Additional Arguments       ${args}    --cbuildgen    --output    ${parent_path}${/}${Out_Dir}
     ${ret_code}=        Run cbuild       ${input_file}    ${ex_args}
     Should Be Equal     ${ret_code}      ${expect}        msg=Unexpected status returned by cbuildgen execution
 
 Run Project With cbuild2cmake
     [Documentation]     Run the csolution project with cbuild2cmake
     [Arguments]         ${input_file}     ${expect}        ${args}=@{EMPTY}
-    ${ex_args}=         Append Additional Arguments        ${args}    --cbuild2cmake
+    ${ex_args}=         Append Additional Arguments        ${args}
     ${ret_code}=        Run cbuild        ${input_file}    ${ex_args}
     Should Be Equal     ${ret_code}       ${expect}        msg=Unexpected status returned by cbuild2cmake execution
 
