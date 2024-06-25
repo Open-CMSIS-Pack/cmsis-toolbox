@@ -276,7 +276,7 @@ jobs:
     - name: Generate Summary report
       if: always()
       run: |
-        python ./test/lib/execution_summary.py artifacts artifacts/collective_robot_results/output.xml summary_report.md
+        python ./test/lib/execution_summary.py artifacts -o artifacts/collective_robot_results/output.xml -m summary_report.md
 
     - name: Print E2E Report
       if: always()
