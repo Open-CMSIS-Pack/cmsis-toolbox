@@ -113,8 +113,8 @@ class ResultVisitorEx(ResultVisitor):
 def main():
     parser = argparse.ArgumentParser(description='Consolidate test summary report')
     parser.add_argument('test_env_files_path', type=str, help='Path to the test environment files')
-    parser.add_argument('output_file', type=str, help='Path to output xml file')
-    parser.add_argument('markdown_file', type=str, help='Path to consolidated summary markdown file')
+    parser.add_argument('-o', '--output_file', type=str, nargs='?', default='output.xml', help='Path to output xml file')
+    parser.add_argument('-m', '--markdown_file', type=str, nargs='?', default='summary_report.md', help='Path to consolidated summary markdown file')
     args = parser.parse_args()
 
     test_env_files_path = args.test_env_files_path
