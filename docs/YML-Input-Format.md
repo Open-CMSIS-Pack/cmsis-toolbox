@@ -1596,7 +1596,7 @@ The inclusion of a *list node* is processed with this hierarchy from top to bott
 
 `project` --> `layer` --> `component`/`group` --> `file`
 
-In other words, the restrictions specified by `for-context:` or `not-for-context` for a *list node* are applied to it child nodes. Children *list nodes* inherit the restrictions from their parent.
+In other words, the restrictions specified by `for-context:` or `not-for-context` for a *list node* are applied to it child nodes. Child *list nodes* inherit the restrictions from their parent.
 
 > **Note:**
 >
@@ -1604,7 +1604,7 @@ In other words, the restrictions specified by `for-context:` or `not-for-context
 
 #### Regular Expressions
 
-With `for-context:` and `not-for-context:` a [regular expression](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03) can be used to refer to multiple context names. When a context name starts with the character `\` the [regular expression](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03) expansion is enabled. The trigger character itself is not part of the sequence.
+With `for-context:` and `not-for-context:` a [regular expression](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03) can be used to refer to multiple context names. When a context name starts with the character `\` the [regular expression](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03) expansion is enabled. The character `\` itself is not part of the sequence.
 
 **Example:**
 
@@ -1619,7 +1619,7 @@ The following project is only included when the `build-type:` of a context conta
     - Debug:
        :
     - Release:
-      : 
+       : 
     
   project: Test.cproject.yml
     - for-context: \.*Test*`
