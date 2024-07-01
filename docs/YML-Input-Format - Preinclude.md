@@ -669,13 +669,14 @@ Allows to control the directory structure for build output files.
 
 `output-dirs:`                     |              | Content
 :----------------------------------|--------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `intdir:`       |  Optional    | Specifies the directory for the interim files (temporary or object files).
+&nbsp;&nbsp;&nbsp; `intdir:`       |  Optional    | Specifies the directory for the interim files (temporary or object files) when using `cbuild` with option 
 &nbsp;&nbsp;&nbsp; `outdir:`       |  Optional    | Specifies the directory for the build output files (ELF, binary, MAP files).
+&nbsp;&nbsp;&nbsp; `tmpdir:`       |  Optional    | Specifies the directory for the interim temporary files.
 
 The default setting for the `output-dirs:` are:
 
 ```yml
-  intdir:  $SolutionDir()$/tmp/$Project$/$TargetType$/$BuildType$
+  tmpdir:  tmp
   outdir:  $SolutionDir()$/out/$TargetType$
 ```
 

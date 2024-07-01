@@ -62,12 +62,13 @@ The build steps are:
 
 1. [**cpackget**](build-tools.md#cpackget-invocation) downloads Software Packs that are required for `*.csolution.yml` when using the option `--pack`.
 2. [**csolution**](build-tools.md#csolution-invocation) processes the User Input and the Software Packs to generate the overall Build Information. Refer to [Overview of Operation](build-overview.md#overview-of-operation) for details.
-3. **buildmgr** converts this Build Information into CMake format.
+3. **cbuild2cmake** converts this Build Information into CMake format.
 4. **CMake/Ninja** call the C/C++ compiler toolchain to translate the source files into the application image.
 
 > **Note:**
 >
 > The CMSIS-Toolbox build system does not use the CMake compiler and linker flags specified by environment variables [CFLAGS, LDFLAGS](https://cmake.org/cmake/help/latest/envvar/CFLAGS.html).
+> Refer to the chapter [Build Operation](build-operation.md) for further details of the build process.
 
 ## Command Line and IDE Usage
 
@@ -99,5 +100,6 @@ Version            | Description
 :------------------|:-------------------------
 2.0.0              | Initial release for CMSIS-Toolbox [2.0.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.0.0)
 2.2.0              | CMSIS-Toolbox [2.2.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.2.0) adds [generator integration](build-operation.md#generator-integration), extends [translation controls](YML-Input-Format.md#translation-control), adds [context set](build-overview.md#working-with-context-set), adds [pack locking](YML-CBuild-Format.md#pack-locking), and improves [linker script management](build-overview.md#linker-script-management). Refer to [release information](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.2.0) for more details.
-2.3.0              | CMSIS-Toolbox [2.3.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) adds in the csolution project files [component instances](YML-Input-Format.md#instances) and [optimize: debug](YML-Input-Format.md#optimize). Tools are extended with [cbuild setup command](build-operation.md#cbuild-setup-command), [--frozen-pack option](build-overview.md#reproducible-builds). Refer to [release information](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) for more details.
+2.3.0              | CMSIS-Toolbox [2.3.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) adds in the csolution project files [component instances](YML-Input-Format.md#instances) and [optimize: debug](YML-Input-Format.md#optimize). Tools are extended with [cbuild setup command](build-operation.md#details-of-the-setup-mode), [--frozen-pack option](build-overview.md#reproducible-builds). Refer to [release information](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) for more details.
 2.4.0              | CMSIS-Toolbox [2.4.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.4.0); adds [CubeMX integration](CubeMX.md), [pre/post-build steps](YML-Input-Format.md#prepost-build-steps) when using the option [`--cbuild2cmake`](build-tools.md#direct-cmake-interface), simplifies the [generator integration](build-operation.md#generator-integration), and contains several corrections.
+2.5.0              | CMSIS-Toolbox [2.5.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.4.0); direct CMake interface is now default, [`tmpdir:`](YML-Input-Format.md#output-dirs) controls location of interim files, adds [`add-asm-path:`](YML-Input-Format.md#add-asm-path), and contains several corrections.
