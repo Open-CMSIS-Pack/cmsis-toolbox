@@ -68,6 +68,7 @@ The following chapter explains the CMSIS Solution Project File Format (short for
     - [`not-for-context:`](#not-for-context)
     - [Context List](#context-list)
     - [Usage](#usage)
+      - [Regular Expressions](#regular-expressions)
   - [Multiple Projects](#multiple-projects)
     - [`projects:`](#projects)
   - [Source File Management](#source-file-management)
@@ -1575,7 +1576,7 @@ not-for-context:  .Release+Virtual   # remove item for build-type: Release with 
 
 ### Usage
 
-The keyword `for-context:` and `not-for-context:` can be applied to the following *list nodes*:
+The keyword `for-context:` and `not-for-context:` can be used for the following *list nodes*:
 
 List Node                                  | Description
 :------------------------------------------|:------------------------------------
@@ -1591,11 +1592,38 @@ List Node                                  | Description
 [`- setup:`](#setups)                      | At `setups:` level it is define toolchain specific options that apply to the whole project.
 [`- file:`](#files)                        | At `files:` level it is possible to control inclusion of a file.
 
-The inclusion of a *list node* is processed for a given project [*context*](#context-name-conventions) respecting its hierarchy from top to bottom:
+The inclusion of a *list node* is processed with this hierarchy from top to bottom:
 
 `project` --> `layer` --> `component`/`group` --> `file`
 
-In other words, the restrictions specified by `for-context:` or `not-for-context` for a *list node* are automatically applied to its children nodes. Children *list nodes* inherit the restrictions from their parent.
+In other words, the restrictions specified by `for-context:` or `not-for-context` for a *list node* are applied to it child nodes. Children *list nodes* inherit the restrictions from their parent.
+
+> **Note:**
+>
+> With `for-context:` and `not-for-context:` the `project-name` of a [context](#context-name-conventions) cannot be applied. The `context` name must therefore start with `.` to refer the `build-type:` or `+` to refer the `target-type:`.
+
+#### Regular Expressions
+
+With `for-context:` and `not-for-context:` a [regular expression](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03) can be used to refer to multiple context names. When a context name starts with the character `\` the [regular expression](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03) expansion is enabled. The trigger character itself is not part of the sequence.
+
+**Example:**
+
+The following project is only included when the `build-type:` of a context contains `Test`.
+
+```yml
+  build-types:
+    - Debug-Test:         # Debug build with Test functionality 
+       :
+    - Test-Release:       # Release build with Test functionality 
+       :
+    - Debug:
+       :
+    - Release:
+      : 
+    
+  project: Test.cproject.yml
+    - for-context: \.*Test*`
+```
 
 ## Multiple Projects
 
