@@ -63,28 +63,28 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.4.0 (C) 2024 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.5.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
 
 Commands:
-  buildcprj   Use a *.CPRJ file as build input
   help        Help about any command
   list        List information about environment, toolchains, and contexts
   setup       Generate project data for IDE environment
 
 Options:
-      --cbuild2cmake       Use build information files with cbuild2cmake interface (experimental)
+      --cbuild2cmake       Use build information files with cbuild2cmake backend (default)
+      --cbuildgen          Use build information files with cbuildgen backend
   -C, --clean              Remove intermediate and output directories
   -c, --context arg [...]  Input context names [<project-name>][.<build-type>][+<target-type>]
-  -S, --context-set        Select the context names from cbuild-set.yml for generating the target application   
+  -S, --context-set        Select the context names from cbuild-set.yml for generating the target application
   -d, --debug              Enable debug messages
       --frozen-packs       Pack list and versions from cbuild-pack.yml are fixed and raises errors if it changes
   -g, --generator arg      Select build system generator (default "Ninja")
   -h, --help               Print usage
-  -j, --jobs int           Number of job slots for parallel execution
-  -l, --load arg           Set policy for packs loading [latest | all | required]
+  -j, --jobs int           Number of job slots for parallel execution (default 8)
+  -l, --load arg           Set policy for packs loading [latest | all | required] (default "required")
       --log arg            Save output messages in a log file
   -O, --output arg         Set directory for all output files
   -p, --packs              Download missing software packs with cpackget
@@ -109,7 +109,7 @@ Use "cbuild [command] --help" for more information about a command.
 Create build information for embedded applications that consist of one or more related projects.
 
 ```text
-csolution: Project Manager 2.4.0 (C) 2024 Arm Ltd. and Contributors
+csolution: Project Manager 2.5.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   csolution <command> [<name>.csolution.yml] [options]
@@ -243,9 +243,16 @@ cbuild example.csolution.yml --toolchain GCC
 > - Testing a new compiler or new compiler version on the overall project.
 > - For unit test applications to allow the usage of different compilers.
 
+In CI systems that run a matrix build it is sometimes required to add a top-level prefix to the output directory:
+
+```bash
+cbuild example.csolution.yml --toolchain AC6 --output outAC6
+cbuild example.csolution.yml --toolchain GCC --output outAC6
+```
+
 ### Direct CMake Interface
 
-The option `--cbuild2cmake`  uses the [build information files](YML-CBuild-Format.md) for generating the CMake input. This option enables [pre/post-build steps](YML-Input-Format.md#prepost-build-steps) and is currently experimental. With CMSIS-Toolbox 2.5.0 this will be default and replaces the `*.CPRJ` file interface.
+The option `--cbuild2cmake`  uses the [build information files](YML-CBuild-Format.md) for generating the CMake input. This option enables [pre/post-build steps](YML-Input-Format.md#prepost-build-steps) and is currently experimental. With CMSIS-Toolbox 2.5.0 this is the default and replaces the `*.CPRJ` file interface. Use the option `cbuildgen` to get the `*.CPRJ` interface.
 
 ```bash
 cbuild example.csolution.yml --cbuild2cmake
@@ -375,7 +382,7 @@ csolution list configs SimpleTZ.csolution.yml -S
 
 ### Setup Project (for IDE)
 
-This command downloads missing packs, creates [build information files](YML-CBuild-Format.md), and generates the file `compile_commands.json` for IntelliSense in an IDE environment. Refer to [cbuild setup command](build-operation.md#cbuild-setup-command) for more information.
+This command downloads missing packs, creates [build information files](YML-CBuild-Format.md), and generates the file `compile_commands.json` for IntelliSense in an IDE environment. Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
 
 ```bash
 cbuild setup example.csolution.yml --context-set --packs

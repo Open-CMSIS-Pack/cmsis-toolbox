@@ -32,6 +32,7 @@ The following chapter explains the CMSIS Solution Project File Format (short for
       - [`generators: - options:`](#generators---options)
     - [`rte:`](#rte)
   - [Toolchain Options](#toolchain-options)
+    - [`select-compiler:`](#select-compiler)
     - [`compiler:`](#compiler)
     - [`linker:`](#linker)
     - [`output:`](#output)
@@ -44,6 +45,7 @@ The following chapter explains the CMSIS Solution Project File Format (short for
     - [`define:`](#define)
     - [`undefine:`](#undefine)
     - [`add-path:`](#add-path)
+    - [`add-asm-path:`](#add-asm-path)
     - [`del-path:`](#del-path)
     - [`misc:`](#misc)
   - [Project Setups](#project-setups)
@@ -66,6 +68,7 @@ The following chapter explains the CMSIS Solution Project File Format (short for
     - [`not-for-context:`](#not-for-context)
     - [Context List](#context-list)
     - [Usage](#usage)
+      - [Regular Expressions](#regular-expressions)
   - [Multiple Projects](#multiple-projects)
     - [`projects:`](#projects)
   - [Source File Management](#source-file-management)
@@ -476,10 +479,11 @@ the compiler along with some specific default controls. The search order for thi
 
 The `default:` node is the start of a `cdefault.yml` or `cdefault.yaml` file and contains the following.
 
-`default:`                                            | Content
-:-----------------------------------------------------|:------------------------------------
-&nbsp;&nbsp; [`compiler:`](#compiler)                 | Toolchain selection.
-&nbsp;&nbsp; [`misc:`](#misc)                         | Literal tool-specific controls.
+`default:`                                                | Content
+:---------------------------------------------------------|:-----------|:------------------------------------
+&nbsp;&nbsp;&nbsp; [`select-compiler:`](#select-compiler) |  Optional  | Lists the possible compiler selection that this project is tested with. 
+&nbsp;&nbsp; [`compiler:`](#compiler)                     |  Optional  | Toolchain selection.
+&nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls.
 
 **Example:**
 
@@ -533,7 +537,9 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; `created-by:`                     |  Optional  | Identifies the tool that created this solution.
 &nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this solution, i.e. **CMSIS-Toolbox@2.2.0**
 &nbsp;&nbsp;&nbsp; `description:`                    |  Optional  | Brief description text of this solution.
+&nbsp;&nbsp;&nbsp; [`select-compiler:`](#select-compiler) |  Optional  | Lists the possible compiler selection that this project is tested with. 
 &nbsp;&nbsp;&nbsp; `cdefault:`                       |  Optional  | When specified, the [`cdefault.yml`](#cdefault) file is used to setup compiler specific controls. 
+&nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
 &nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)      |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)  |  Optional  | Set the language standard for C++ source file compilation.
@@ -683,31 +689,37 @@ The following nodes control the directory structure for the application.
 
 ### `output-dirs:`
 
-Allows to control the directory structure for build output files.  
+Allows to control the directory structure for build output files and temporary files.  
 
 >**Note:**
 > 
-> This control is only possible at `csolution.yml` level.  
->
-> Only relative paths to the base directory of the `csolution.yml` file are permitted. Use command line options of the `cbuild` tool to redirect the absolute path for this working directory.
+> - This control is only possible at `csolution.yml` level.
+> - CMake manages the temporary directory of all projects therefore `tmpdir:` does not support access sequences.
 
 `output-dirs:`                     |              | Content
 :----------------------------------|--------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `intdir:`       |  Optional    | Specifies the directory for the interim files (temporary or object files).
 &nbsp;&nbsp;&nbsp; `outdir:`       |  Optional    | Specifies the directory for the build output files (ELF, binary, MAP files).
+&nbsp;&nbsp;&nbsp; `tmpdir:`       |  Optional    | Specifies the directory for the interim temporary files.
+&nbsp;&nbsp;&nbsp; `intdir:`       |  Optional    | Legacy node, applied instead of `tmpdir:` when using `cbuild` with option `--cbuildgen`.
 
 The default setting for the `output-dirs:` are:
 
 ```yml
-  intdir:  $SolutionDir()$/tmp/$Project$/$TargetType$/$BuildType$
-  outdir:  $SolutionDir()$/out/$TargetType$
+  tmpdir:  tmp                          # All projects use the same temporary directory
+  outdir:  $SolutionDir()$/out/$TargetType$/$BuildType$
+```
+
+With the tool option `--output` an prefix top-level directory can be added. The effective `outdir:` with the command below is: `MyOut/out/$TargetType$/$BuildType$`.
+
+```bash
+cbuild <name>.csolution.yml --output MyOut
 ```
 
 **Example:**
 
 ```yml
 output-dirs:
-  intdir: ./tmp2                         # relative path to csolution.yml file
+  tmpdir: ./tmp2                         # relative path to csolution.yml file
   outdir: ./out/$Project$/$TargetType$   # $BuildType$ no longer part of the outdir    
 ```
 
@@ -783,10 +795,30 @@ rte:
 
 ## Toolchain Options
 
-The following code translation options may be used at various places such as:
+Toolchain options may be used at various places such as:
 
 - [`solution:`](#solution) level to specify options for a collection of related projects
 - [`project:`](#projects) level to specify options for a project
+
+### `select-compiler:`
+
+Lists the compilers that this *csolution project* is tested with. This information is used by the [`cbuild setup` command](build-operation.md#details-of-the-setup-mode) to determine possible compiler choices. The actual compiler to be used is selected with the [`compiler:`](#compiler) node. 
+
+> **Note:** New in CMSIS-Toolbox 2.5.0
+
+`select-compiler:`                                          |            | Content
+:-----------------------------------------------------------|:-----------|:-------------------------------------------
+`- compiler:`                                               |**Required**| Path and file name of `<regions_file>.h`, used to 
+
+**Example:**
+
+```yml
+solution:
+  created-for: cmsis-toolbox@2.5  # minimum CMSIS-Toolbox version required for project build
+  select-compiler:                # list tested compilers that can be selected
+    - compiler: GCC               # GCC is supported
+    - compiler: AC6@6.22          # AC6 is supported, version number is an hint on what was tested
+```
 
 ### `compiler:`
 
@@ -920,7 +952,7 @@ The following translation control options may be used at various places such as:
 
 > **Note:**
 > 
-> - The keys `define:`, `add-path:`, `del-path:`, and `misc:` are additive. 
+> - The keys `define:`, `add-path:`, `add-asm-path:`, `del-path:`, and `misc:` are additive. 
 > - All other keys can only be defined once at the level of `solution:`, `project:`, `setup:`, `layer:`, `build-types:`. or `target-types:`. However, it is possible to overwrite these keys at the level of `group:`, `file:`, or `component:`, for example it is possible to translate a file group with a different optimize level.
 
 ### `language-C:`
@@ -1064,7 +1096,7 @@ Add include paths to the command line of the development tools for C and C++ sou
 
 >**Note:**
 >
-> This control only applies to C and C++ source files.  For assembler source files use the `misc:` node.
+> This control only applies to C and C++ source files.  For assembler source files use the `add-asm-path:` node.
 
 **Example:**
 
@@ -1078,6 +1110,26 @@ project:
 
   add-path:
     - $OutDir(Secure)$                   # add path to secure project's output directory
+```
+
+### `add-asm-path:`
+
+Add include paths to the command line of the development tools for assembly source files.
+
+`add-asm-path:`                                            | Content
+:----------------------------------------------------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `- <path-name>`                         | Named path to be added
+
+>**Note:**
+>
+> This control only applies to assembler source files.  For C and C++ source files use the `add-path:` node.
+
+**Example:**
+
+```yml
+project:
+  add-asm-path:
+    - .\MyAsmIncludes                    # add path to assembler include filessecure project's output directory
 ```
 
 ### `del-path:`
@@ -1169,7 +1221,8 @@ project. It is however possible to change that `setup:` settings on a [`group:`]
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)          |   Optional   | Control generation of compiler diagnostics.
 &nbsp;&nbsp;&nbsp; [`define:`](#define)              |   Optional   | Define symbol settings for code generation.
 &nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)          |   Optional   | Remove define symbol settings for code generation.
-&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)          |   Optional   | Additional include file paths.
+&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)          |   Optional   | Additional include file paths for C/C++ source files.
+&nbsp;&nbsp;&nbsp; [`add-asm-path:`](#add-asm-path)  |   Optional   | Additional include file paths for assembly source files.
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)          |   Optional   | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`linker:`](#linker)              |   Optional   | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                  |   Optional   | Literal tool-specific controls.
@@ -1331,7 +1384,8 @@ The `target-types:` node may include [toolchain options](#toolchain-options), [t
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)        |   Optional   | Control Generation of debug information.
 &nbsp;&nbsp;&nbsp; [`define:`](#define)            |   Optional   | Preprocessor (#define) symbols for code generation.
 &nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)        |   Optional   | Remove preprocessor (#define) symbols.
-&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)        |   Optional   | Additional include file paths.
+&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)        |   Optional   | Additional include file paths for C/C++ source files.
+&nbsp;&nbsp;&nbsp; [`add-asm-path:`](#add-asm-path)|   Optional   | Additional include file paths for assembly source files.
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)        |   Optional   | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                |   Optional   | Literal tool-specific controls.
 &nbsp;&nbsp;&nbsp; [`board:`](#board)              | **see Note** | Board specification.
@@ -1358,7 +1412,8 @@ The `build-types:` node may include [toolchain options](#toolchain-options):
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)              |   Optional   | Generation of debug information.
 &nbsp;&nbsp;&nbsp; [`define:`](#define)            |   Optional   | Preprocessor (#define) symbols for code generation.
 &nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)        |   Optional   | Remove preprocessor (#define) symbols.
-&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)        |   Optional   | Additional include file paths.
+&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)        |   Optional   | Additional include file paths for C/C++ source files.
+&nbsp;&nbsp;&nbsp; [`add-asm-path:`](#add-asm-path)|   Optional   | Additional include file paths for assembly source files.
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)        |   Optional   | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                |   Optional   | Literal tool-specific controls.
 &nbsp;&nbsp;&nbsp; [`context-map:`](#context-map)  |   Optional   | Use different `build-types:` for specific projects.
@@ -1527,7 +1582,7 @@ not-for-context:  .Release+Virtual   # remove item for build-type: Release with 
 
 ### Usage
 
-The keyword `for-context:` and `not-for-context:` can be applied to the following *list nodes*:
+The keyword `for-context:` and `not-for-context:` can be used for the following *list nodes*:
 
 List Node                                  | Description
 :------------------------------------------|:------------------------------------
@@ -1543,11 +1598,38 @@ List Node                                  | Description
 [`- setup:`](#setups)                      | At `setups:` level it is define toolchain specific options that apply to the whole project.
 [`- file:`](#files)                        | At `files:` level it is possible to control inclusion of a file.
 
-The inclusion of a *list node* is processed for a given project [*context*](#context-name-conventions) respecting its hierarchy from top to bottom:
+The inclusion of a *list node* is processed with this hierarchy from top to bottom:
 
 `project` --> `layer` --> `component`/`group` --> `file`
 
-In other words, the restrictions specified by `for-context:` or `not-for-context` for a *list node* are automatically applied to its children nodes. Children *list nodes* inherit the restrictions from their parent.
+In other words, the restrictions specified by `for-context:` or `not-for-context` for a *list node* are applied to it child nodes. Child *list nodes* inherit the restrictions from their parent.
+
+> **Note:**
+>
+> With `for-context:` and `not-for-context:` the `project-name` of a [context](#context-name-conventions) cannot be applied. The `context` name must therefore start with `.` to refer the `build-type:` or `+` to refer the `target-type:`.
+
+#### Regular Expressions
+
+With `for-context:` and `not-for-context:` a [regular expression](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03) can be used to refer to multiple context names. When a context name starts with the character `\` the [regular expression](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap09.html#tag_09_03) expansion is enabled. The character `\` itself is not part of the sequence.
+
+**Example:**
+
+The following project is only included when the `build-type:` of a context contains `Test`.
+
+```yml
+  build-types:
+    - Debug-Test:         # Debug build with Test functionality 
+       :
+    - Test-Release:       # Release build with Test functionality 
+       :
+    - Debug:
+       :
+    - Release:
+       : 
+    
+  project: Test.cproject.yml
+    - for-context: \.*Test*`
+```
 
 ## Multiple Projects
 
@@ -1620,7 +1702,8 @@ The `groups:` keyword specifies a list that adds [source groups and files](#sour
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)               |   Optional   | Control generation of compiler diagnostics.
 &nbsp;&nbsp;&nbsp; [`define:`](#define)                   |   Optional   | Define symbol settings for code generation.
 &nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)               |   Optional   | Remove define symbol settings for code generation.
-&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)               |   Optional   | Additional include file paths.
+&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)               |   Optional   | Additional include file paths for C/C++ source files.
+&nbsp;&nbsp;&nbsp; [`add-asm-path:`](#add-asm-path)       |   Optional   | Additional include file paths for assembly source files.
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)               |   Optional   | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                       |   Optional   | Literal tool-specific controls.
 &nbsp;&nbsp;&nbsp; [`groups:`](#groups)                   |   Optional   | Start a nested list of groups.
@@ -1648,7 +1731,8 @@ Add source files to a project.
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)               |   Optional   | Control generation of compiler diagnostics.     
 &nbsp;&nbsp;&nbsp; [`define:`](#define)                   |   Optional   | Define symbol settings for code generation.     
 &nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)               |   Optional   | Remove define symbol settings for code generation.     
-&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)               |   Optional   | Additional include file paths.
+&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)               |   Optional   | Additional include file paths for C/C++ source files.
+&nbsp;&nbsp;&nbsp; [`add-asm-path:`](#add-asm-path)       |   Optional   | Additional include file paths for assembly source files.
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)               |   Optional   | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                       |   Optional   | Literal tool-specific controls.
 
@@ -1806,7 +1890,8 @@ Add software components to a project or a software layer. Used in `*.cproject.ym
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)               |   Optional   | Control generation of compiler diagnostics.
 &nbsp;&nbsp;&nbsp; [`define:`](#define)                   |   Optional   | Define symbol settings for code generation.
 &nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)               |   Optional   | Remove define symbol settings for code generation.
-&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)               |   Optional   | Additional include file paths.
+&nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)               |   Optional   | Additional include file paths for C/C++ source files.
+&nbsp;&nbsp;&nbsp; [`add-asm-path:`](#add-asm-path)       |   Optional   | Additional include file paths for assembly source files.
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)               |   Optional   | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                       |   Optional   | Literal tool-specific controls.
 &nbsp;&nbsp;&nbsp; [`instances:`](#instances)             |   Optional   | Add multiple instances of component configuration files (default: 1)

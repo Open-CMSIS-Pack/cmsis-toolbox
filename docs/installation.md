@@ -17,10 +17,10 @@ There are three different ways to setup the CMSIS-Toolbox:
 - [Installation](#installation)
   - [Manual Setup](#manual-setup)
     - [Requirements](#requirements)
-    - [Toolchain Options](#toolchain-options)
+    - [Compiler Toolchains](#compiler-toolchains)
     - [Environment Variables](#environment-variables)
       - [Default Values](#default-values)
-      - [TOOLCHAIN Registration](#toolchain-registration)
+      - [Compiler Registration](#compiler-registration)
       - [Setup Win64](#setup-win64)
       - [Setup Linux or Bash](#setup-linux-or-bash)
       - [Setup MacOS](#setup-macos)
@@ -49,11 +49,11 @@ The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The instal
 
 > **Note:** [**Ninja**](https://github.com/ninja-build/ninja/releases) may be copied to the `<cmsis-toolbox-installation-dir>/bin` directory.
 
-### Toolchain Options
+### Compiler Toolchains
 
-The CMSIS-Toolbox works with the following toolchains. Install one or more toolchains depending on your requirements.
+The CMSIS-Toolbox works with the following compiler toolchains. Install one or more compilers depending on your requirements.
 
-- [**GNU Arm Embedded Toolchain**](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads) version 10.3.1 or higher.
+- [**GNU Arm Embedded Compiler**](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads) version 10.3.1 or higher.
 
 - [**Keil MDK**](http://www.keil.com/mdk5/install) version 5.36 or higher.
 
@@ -62,7 +62,7 @@ The CMSIS-Toolbox works with the following toolchains. Install one or more toolc
 
 - [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
 
-- [**CLANG**](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest) version 17.0.1 or higher.
+- [**CLANG Embedded Compiler**](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest) version 17.0.1 or higher.
 
 ### Environment Variables
 
@@ -72,7 +72,7 @@ The various tools use the following environment variables.
 
 Environment Variable     | Description
 :------------------------|:------------
-`<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the toolchain binaries where `<name>` is one of AC6, GCC, IAR, CLANG
+`<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the compiler binaries where `<name>` is one of AC6, GCC, IAR, CLANG
 **CMSIS_PACK_ROOT**      | Path to the [CMSIS-Pack Root Directory](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory) that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
 **CMSIS_COMPILER_ROOT**  | Optional: Path to the CMSIS-Toolbox `etc` directory (i.e. `/c/cmsis-toolbox/etc`).
 **Path**                 | Add to the system path the CMSIS-Toolbox `bin` directory (i.e. `/c/cmsis-toolbox/bin`) as well as CMake and Ninja.
@@ -98,9 +98,9 @@ The environment variable **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are opt
 
 - **CMSIS_COMPILER_ROOT** default is `<toolbox>/bin/../etc`, i.e., `etc` folder relative to the toolbox executables.
 
-#### TOOLCHAIN Registration
+#### Compiler Registration
 
-The registration of a toolchain is manually defined by an environment variable with its name and semantic version numbers (major, minor and patch) in the format:
+The registration of a compiler toolchain is manually defined by an environment variable with its name and semantic version numbers (major, minor and patch) in the format:
 
 ```txt
 <name>_TOOLCHAIN_<major>_<minor>_<patch>=<path/to/toolchain/binaries>

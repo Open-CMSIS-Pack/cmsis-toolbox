@@ -20,7 +20,7 @@ The following chapter explains the YAML CBuild format that describes how to buil
     - [`configurations:`](#configurations)
     - [`cprojects:`](#cprojects)
     - [`cbuilds:`](#cbuilds)
-    - [`select-toolchains:`](#select-toolchains)
+    - [`select-compiler:`](#select-compiler)
     - [`packs:`](#packs)
     - [`generators:`](#generators)
   - [Source File Management](#source-file-management)
@@ -161,7 +161,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 &nbsp;&nbsp;&nbsp; [`configurations:`](#configurations)       | For reference applications with undefined layers: list of potential project configurations for a reference application with undefined layers
 &nbsp;&nbsp;&nbsp; [`cprojects:`](#cprojects)                 | List of `*.cproject.yml` and `*.clayer.yml` input files used to generate this application.
 &nbsp;&nbsp;&nbsp; [`cbuilds:`](#cbuilds)                     | List of `*.cbuild.yml` output files that are generated for this application.
-&nbsp;&nbsp;&nbsp; [`select-toolchains:`](#select-toolchains) | For projects with unspecified compiler: list of available compilers for selection
+&nbsp;&nbsp;&nbsp; [`select-compiler:`](#select-compiler)   | For projects with unspecified compiler: list of available compilers for selection
 
 **Example:**
 
@@ -458,16 +458,15 @@ The `cbuilds:` node lists all project context configurations that are generated 
       errors: true
 ```
 
-### `select-toolchains:`
+### `select-compiler:`
 
-If no compiler is specified in the *.csolution.yml project, the [`cbuild setup` command](build-operation.md#cbuild-setup-command) lists the available compilers based on the [registered toolchains](installation.md#toolchain-registration) and available `misc:` - `for-compiler:` sections in the file [`cdefault.yml`](YML-Input-Format.md#cdefault).
+If no compiler is specified in the *csolution project*, the [`cbuild setup` command](build-operation.md#details-of-the-setup-mode) lists the available compilers based on the [compiler registration](installation.md#compiler-registration) and `select-compiler:` node in the file [`*.csolution.yml`](YML-Input-Format.md#solution) or [`cdefault.yml`](YML-Input-Format.md#cdefault).
 
 > **Note:** New in CMSIS-Toolbox 2.5.0
 
-`select-toolchains:`                               | Content
+`select-compiler:`                                 | Content
 :--------------------------------------------------|:------------------------------------
-`- compiler:`                                      | Name of the compiler toolchain.
-&nbsp;&nbsp;&nbsp; `version:`                      | Version of the compiler toolchain.
+`- compiler:`                                      | Name (optionally with version) of the compiler toolchain; copied from the `select-compiler:` node in the *csolution project*.
 
 ### `packs:`
 
