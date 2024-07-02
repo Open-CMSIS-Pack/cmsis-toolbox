@@ -243,6 +243,13 @@ cbuild example.csolution.yml --toolchain GCC
 > - Testing a new compiler or new compiler version on the overall project.
 > - For unit test applications to allow the usage of different compilers.
 
+In CI systems that run a matrix build it is sometimes required to add a top-level prefix to the output directory:
+
+```bash
+cbuild example.csolution.yml --toolchain AC6 --output outAC6
+cbuild example.csolution.yml --toolchain GCC --output outAC6
+```
+
 ### Direct CMake Interface
 
 The option `--cbuild2cmake`  uses the [build information files](YML-CBuild-Format.md) for generating the CMake input. This option enables [pre/post-build steps](YML-Input-Format.md#prepost-build-steps) and is currently experimental. With CMSIS-Toolbox 2.5.0 this is the default and replaces the `*.CPRJ` file interface. Use the option `cbuildgen` to get the `*.CPRJ` interface.

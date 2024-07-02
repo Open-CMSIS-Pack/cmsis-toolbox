@@ -709,6 +709,12 @@ The default setting for the `output-dirs:` are:
   outdir:  $SolutionDir()$/out/$TargetType$/$BuildType$
 ```
 
+With the tool option `--output` an prefix top-level directory can be added. The effective `outdir:` with the command below is: `MyOut/out/$TargetType$/$BuildType$`.
+
+```bash
+cbuild <name>.csolution.yml --output MyOut
+```
+
 **Example:**
 
 ```yml
