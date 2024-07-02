@@ -32,7 +32,7 @@ These scripts are in several hands-on tutorials.
 Hands-on Tutorial         | Description
 :-------------------------|:-------------
 [**DFP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/DFP-Pack-HandsOn)   | Explains the structure and creation of a Device Family Pack (DFP).
-[**BSP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/DFP-Pack-HandsOn)   | Explains the structure and creation of a Board Support Pack (BSP).  
+[**BSP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/BSP-Pack-HandsOn)   | Explains the structure and creation of a Board Support Pack (BSP).  
 [**SW-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/SW-Pack-HandsOn)    | Explains the steps to create a simple software pack using the Open-CMSIS-Pack technology.
 [**Create-Scaleable-SW**](https://github.com/Open-CMSIS-Pack/Create-Scalable-SW) | Explains how to structure complex middleware stacks.
 
