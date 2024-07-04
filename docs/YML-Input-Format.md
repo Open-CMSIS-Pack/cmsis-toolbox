@@ -2086,14 +2086,14 @@ The `connect:` node describes one or more functionalities that belong together.
 The behaviour of the `connect:` node depends on the usage in *csolution project* files.
 
 - In a `cproject.yml` file the `connect:` node is always active.
-- In a `clayer.yml` file the `connect:` node is only active of one or more `key` listed under `provides:` is listed under `consumes:` in other active `connect:` nodes. It is also active by default if the `connect:` node has no `provides:` node.
+- In a `clayer.yml` file the `connect:` node is only active if one or more `key` listed under `provides:` is listed under `consumes:` in other active `connect:` nodes. It is also active by default if the `connect:` node has no `provides:` node.
 
 **Example:**
 
 In the example below the `connect` for:
 
-- `Sensor Communication Interface` is only active when the `SENSOR_I2C` is the `consumes:` list of other active `connect` nodes.  
-- `Sensor Interrupt` is only active when the `SENSOR_INT` is the `consumes:` list of other active `connect` nodes.  
+- `Sensor Communication Interface` is only active when the `SENSOR_I2C` is in the `consumes:` list of other active `connect` nodes.  
+- `Sensor Interrupt` is only active when the `SENSOR_INT` is in the `consumes:` list of other active `connect` nodes.  
 - `Core Functionality` is always active as it has not `provides:` list.
 
 ```yml
