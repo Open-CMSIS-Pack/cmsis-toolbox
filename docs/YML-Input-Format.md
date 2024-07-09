@@ -112,14 +112,14 @@ File Extension           | [Category](https://open-cmsis-pack.github.io/Open-CMS
 The **`csolution` Project Manager** uses the following syntax to specify the `pack:` names in the `*.yml` files.
 
 ```yml
-vendor [:: pack-name [@[~ | >=] version] ]
+vendor [:: pack-name [@[>=] version] ]
 ```
 
 Element      |              | Description
 :------------|--------------|:---------------------
 `vendor`     | **Required** | Vendor name of the software pack.
 `pack-name`  | Optional     | Name of the software pack; wildcards (\*, ?) can be used.
-`version`    | Optional     | Version number of the software pack, with `@1.2.3` that must exactly match, `@~1.2`/`@~1` that matches with semantic versioning, or `@>=1.2.3` that allows any version higher or equal.
+`version`    | Optional     | Version number of the software pack, with `@1.2.3` that must exactly match, or `@>=1.2.3` that allows any version higher or equal.
 
 > **Note:**
 >
@@ -140,7 +140,7 @@ Element      |              | Description
 The **`csolution` Project Manager** uses the following syntax to specify the `component:` names in the `*.yml` files.
 
 ```yml
-[Cvendor::] Cclass [&Cbundle] :Cgroup [:Csub] [&Cvariant] [@[~ | >=]Cversion]
+[Cvendor::] Cclass [&Cbundle] :Cgroup [:Csub] [&Cvariant] [@[>=]Cversion]
 ```
 
 Components are defined using the [Open-CMSIS-Pack - `<component>` element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#element_component). Several parts of a `component` are optional.  For example it is possible to just define a component using `Cclass` and `Cgroup` name. All elements of a component name are summarized in the following table.
@@ -153,7 +153,7 @@ Element    |              | Description
 `Cgroup`   | **Required** | Component group name as defined in `<components>` element of the software pack.
 `Csub`     | Optional     | Component sub-group name as defined in `<components>` element of the software pack.
 `Cvariant` | Optional     | Component sub-group name as defined in `<components>` element of the software pack.
-`Cversion` | Optional     | Version number of the component, with `@1.2.3` that must exactly match, `@~1.2`/`@~1` that matches with semantic versioning, or `@>=1.2.3` that allows any version higher or equal.
+`Cversion` | Optional     | Version number of the component, with `@1.2.3` that must exactly match, or `@>=1.2.3` that allows any version higher or equal.
 
 **Partly defined components**
 
@@ -2082,6 +2082,39 @@ The `connect:` node describes one or more functionalities that belong together.
 `info:`                              |   Optional   | Verbal desription displayed when this connect is selected
 [`provides:`](#provides)             |   Optional   | List of functionality (*key*/*value* pairs) that are provided
 [`consumes:`](#consumes)             |   Optional   | List of functionality (*key*/*value* pairs) that are required 
+
+The behaviour of the `connect:` node depends on the usage in *csolution project* files.
+
+- In a `cproject.yml` file the `connect:` node is always active.
+- In a `clayer.yml` file the `connect:` node is only active if one or more `key` listed under `provides:` is listed under `consumes:` in other active `connect:` nodes. It is also active by default if the `connect:` node has no `provides:` node.
+
+**Example:**
+
+In the example below the `connect` for:
+
+- `Sensor Communication Interface` is only active when the `SENSOR_I2C` is in the `consumes:` list of other active `connect` nodes.  
+- `Sensor Interrupt` is only active when the `SENSOR_INT` is in the `consumes:` list of other active `connect` nodes.  
+- `Core Functionality` is always active as it has not `provides:` list.
+
+```yml
+layer:
+  type: Shield
+
+  connections:
+    - connect: Sensor Communication Interface
+      provides:
+        - SENSOR_I2C
+      consumes:
+        - ARDUINO_UNO_I2C
+    - connect: Sensor Interrupt
+      provides:
+        - SENSOR_INT
+      consumes:
+        - ARDUINO_UNO_D2
+    - connect: Core Functionality
+      consumes:
+        - CMSIS-RTOS2
+```
 
 ### `set:`
 

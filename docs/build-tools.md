@@ -86,7 +86,7 @@ Options:
   -j, --jobs int           Number of job slots for parallel execution (default 8)
   -l, --load arg           Set policy for packs loading [latest | all | required] (default "required")
       --log arg            Save output messages in a log file
-  -O, --output arg         Set directory for all output files
+  -O, --output arg         Add prefix to 'outdir' and 'tmpdir'
   -p, --packs              Download missing software packs with cpackget
   -q, --quiet              Suppress output messages except build invocations
   -r, --rebuild            Remove intermediate and output directories and rebuild
@@ -142,7 +142,7 @@ Options:
   -m, --missing                 List only required packs that are missing in the pack repository
   -n, --no-check-schema         Skip schema check
   -N, --no-update-rte           Skip creation of RTE directory and files
-  -o, --output arg              Output directory
+  -O, --output arg              Add prefix to 'outdir' and 'tmpdir'
   -q, --quiet                   Run silently, printing only error messages
   -R, --relative-paths          Print paths relative to project or ${CMSIS_PACK_ROOT}
   -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
@@ -243,11 +243,11 @@ cbuild example.csolution.yml --toolchain GCC
 > - Testing a new compiler or new compiler version on the overall project.
 > - For unit test applications to allow the usage of different compilers.
 
-In CI systems that run a matrix build it is sometimes required to add a top-level prefix to the output directory:
+In CI systems that run a matrix build it is sometimes required to add a prefix to the [output directory](YML-Input-Format.md#output-dirs) names for `outdir:` and `tmpdir:`. The following command builds the project with the AC6 and GCC compiler and separates the directories for output and temporary files.
 
 ```bash
 cbuild example.csolution.yml --toolchain AC6 --output outAC6
-cbuild example.csolution.yml --toolchain GCC --output outAC6
+cbuild example.csolution.yml --toolchain GCC --output outGCC
 ```
 
 ### Direct CMake Interface
@@ -443,11 +443,18 @@ There are different ways to install software packs.
 The commands below install software packs from a public web service. The available packs along with download URL and
 version information are listed in the **Pack Index File**.
 
-Install the latest published version of a public software pack:
+Check if a pack exists. If it does not exist install the latest version of a public software pack:
 
 ```bash
-~ $ cpackget add Vendor.PackName                 # or 
+~ $ cpackget add Vendor.PackName                   # or 
 ~ $ cpackget add Vendor::PackName
+```
+
+Update an installed pack to the latest version of a public software pack:
+
+```bash
+~ $ cpackget add Vendor.PackName@latest           # or 
+~ $ cpackget add Vendor::PackName@latest
 ```
 
 Install a specific version of a public software pack:
@@ -462,6 +469,12 @@ Install a public software pack using version modifiers:
 ```bash
 ~ $ cpackget add Vendor::PackName>=x.y.z`         # check if there is any version greater than or equal to x.y.z, install latest
 ~ $ cpackget add Vendor::PackName@~x.y.z`         # check if there is any version greater than or equal to x.y.z 
+```
+
+Install latest version of a public software pack with the same major version. Within the rules of semantic versioning only compatible packs are used.
+
+```bash
+~ $ cpackget add "Vendor::PackName@^x.y.z"`         # check if there is any version greater than or equal to x.y.z, install latest
 ```
 
 #### Install a list of software packs
