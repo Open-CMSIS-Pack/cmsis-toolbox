@@ -72,7 +72,7 @@ Run Project with cbuildgen
     [Documentation]     Run the csolution project with cbuildgen
     [Arguments]         ${input_file}    ${expect}        ${args}=@{EMPTY}
     ${parent_path}=     Get Parent Directory Path         ${input_file}
-    ${ex_args}=         Append Additional Arguments       ${args}    --output    ${parent_path}${/}${Out_Dir}
+    ${ex_args}=         Append Additional Arguments       ${args}    --output    ${parent_path}${/}${Out_Dir}    --cbuildgen
     ${ret_code}=        Run cbuild       ${input_file}    ${ex_args}
     Should Be Equal     ${ret_code}      ${expect}        msg=Unexpected status returned by cbuildgen execution
 
@@ -98,3 +98,10 @@ Get Output File Path
     [Documentation]             Find path to output files
     ${output_path}=             Get Variable Value    ${OUTPUT_FILE}
     RETURN                      ${output_path}
+
+Get Destination Path
+    [Documentation]                 Get destination directory path from url
+    [Arguments]                     ${github_url}
+    ${dest_dir}=    Evaluate        "${github_url}".split('/')[-1]
+    ${dest_dir}=    Set Variable    ${TEST_DATA_DIR}${/}${Remote_Example_Dir}${/}${dest_dir}
+    RETURN                          ${dest_dir}

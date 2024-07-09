@@ -1,2 +1,3 @@
 # Requirements needed
 robotframework >= 7.0
+robotframework-datadriver >= 1.11.2
