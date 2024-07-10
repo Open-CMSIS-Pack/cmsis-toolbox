@@ -72,7 +72,10 @@ jobs:
       - name: Run Test
         shell: bash
         run: |
-          python -m robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} --settag ${{ matrix.target }}-${{ matrix.arch }} --name ${{ matrix.target }}-${{ matrix.arch }} ./test
+          robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} \
+            --settag ${{ matrix.target }}-${{ matrix.arch }} \
+            --name ${{ matrix.target }}-${{ matrix.arch }} \
+            ./test
 
       - name: Archieve test results
         if: always()
