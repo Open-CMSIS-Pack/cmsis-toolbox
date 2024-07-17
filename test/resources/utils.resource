@@ -98,3 +98,10 @@ Get Output File Path
     [Documentation]             Find path to output files
     ${output_path}=             Get Variable Value    ${OUTPUT_FILE}
     RETURN                      ${output_path}
+
+Get Destination Path
+    [Documentation]                 Get destination directory path from url
+    [Arguments]                     ${github_url}
+    ${dest_dir}=    Evaluate        "${github_url}".split('/')[-1]
+    ${dest_dir}=    Set Variable    ${TEST_DATA_DIR}${/}${Remote_Example_Dir}${/}${dest_dir}
+    RETURN                          ${dest_dir}
