@@ -13,6 +13,7 @@ from pathlib import Path
 from robot.api import ExecutionResult, ResultVisitor
 from robot.result.model import TestCase
 from robot.result.executionresult import Result 
+from reference_compare import *
 
 class ResultVisitorEx(ResultVisitor):
     def __init__(self, test_env_files_path:str, output_path:str, markdown_file:str):
@@ -113,20 +114,21 @@ class ResultVisitorEx(ResultVisitor):
 def main():
     parser = argparse.ArgumentParser(description='Consolidate test summary report')
     parser.add_argument('test_env_files_path', type=str, help='Path to the test environment files')
-    parser.add_argument('output_file', type=str, help='Path to output xml file')
-    parser.add_argument('markdown_file', type=str, help='Path to consolidated summary markdown file')
+    parser.add_argument('-r', '--reference_file', type=str, help='Path to reference file')
+    parser.add_argument('-o', '--output_file', type=str, nargs='?', default='output.xml', help='Path to output xml file')
+    parser.add_argument('-m', '--markdown_file', type=str, nargs='?', default='summary_report.md', help='Path to consolidated summary markdown file')
     args = parser.parse_args()
 
-    test_env_files_path = args.test_env_files_path
-    output_file = args.output_file
-    markdown_file = args.markdown_file
+    # generate summary report
+    result = ExecutionResult(args.output_file)
+    result.visit(ResultVisitorEx(args.test_env_files_path, args.output_file, args.markdown_file))
 
-    result = ExecutionResult(output_file)
-    result.visit(ResultVisitorEx(test_env_files_path, output_file, markdown_file))
+    # compare test execution summary and reference results 
+    return compare_summaries(args.markdown_file, args.reference_file)
 
 if __name__ == '__main__':
     try:
-        main()
+        sys.exit(main())
     except Exception as e:
         print(f'An error occurred: {e}', file=sys.stderr)
         sys.exit(1)

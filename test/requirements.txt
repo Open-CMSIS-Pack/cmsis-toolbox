@@ -1,2 +1,8 @@
 # Requirements needed
 robotframework >= 7.0
+robotframework-datadriver >= 1.11.2
+markdown >= 3.6
+pandas >= 2.2.2
+lxml >= 5.0.0
+html5lib >= 1.1
+beautifulsoup4 >= 4.12.3
