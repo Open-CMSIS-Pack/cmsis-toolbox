@@ -13,8 +13,11 @@ This chapter explains the overall build process that of the CMSIS-Toolbox and ho
 - [Build Operation](#build-operation)
   - [Build Process Overview](#build-process-overview)
     - [`cbuild` Build Invocation](#cbuild-build-invocation)
-    - [`cbuild` Setup Command](#cbuild-setup-command)
+      - [Details of the build mode](#details-of-the-build-mode)
+      - [Details of the setup mode](#details-of-the-setup-mode)
     - [`csolution` Project Manager](#csolution-project-manager)
+    - [`cbuild2cmake` Generate CMakeLists Files](#cbuild2cmake-generate-cmakelists-files)
+    - [`CMake` Invocation](#cmake-invocation)
   - [Add Toolchain to CMSIS-Toolbox](#add-toolchain-to-cmsis-toolbox)
     - [Steps](#steps)
     - [CMake Variables](#cmake-variables)
@@ -25,64 +28,114 @@ This chapter explains the overall build process that of the CMSIS-Toolbox and ho
 
 ## Build Process Overview
 
-The section below describes the overall process to add a new compiler toolchain to the CMSIS-Toolbox. 
+The section contains details of the build process. Refer to [Overall Workflow](README.md#overall-workflow) for a high-level description of the build process.
+
+> **Note:** 
+>
+> - The tool options `--verbose` and `--debug` enable detailed output about the build process for analysis.
+> - Refer to the chapter [Build Tools](build-tools.md) for more information on the command line syntax.
 
 ### `cbuild` Build Invocation
 
-The **`cbuild` Build Invocation** utility controls the overall build process.
+The **`cbuild` Build Invocation** utility controls the overall build process. It has two operating modes:
 
-- Calls the **`csolution` Project Manager** (with option `--no-update-rte`) to process *csolution project files*.
-- When option `--packs` is used, it downloads missing *software packs* using the **`cpackget` Pack Manager**.
-- Calls `cbuildgen` with *.cprj files to generate `CMakeList.txt` files that include a `compiler_name.<version>.cmake` file for toolchain specific configuration.
-  - With the experimental option `--cbuild2cmake` the `cbuild2cmake converter is called instead that uses the [build information files](YML-CBuild-Format.md) instead of the *.cprj files.
-- These `CMakeList.txt` files are then processed by the `CMake` tool to generate the `build.ninja` file with the actual build commands.
-- This `build.ninja` file is then used by the `Ninja` tool to generate the binary image or a library file with the selected toolchain.
+- **build mode** generates the application and is default command (no explicit command required).
+- **setup mode** generates the setup information for an IDE to populate dialogs, IntelliSense, and project outline views.
 
-The picture below outlines these operations.
+#### Details of the build mode
 
-![Operation of `csolution` tool](./images/cbuild-operation.png "Operation of `csolution` tool")
-
-> **Note:**
->
-> By default, the `cbuild` invocation does not update the [**RTE Directory**](build-overview.md#rte-directory-structure). Use the option `--update-rte` if this is required.
-
-### `cbuild` Setup Command
-
-The `cbuild setup` command prepares the data for an IDE environment. This command is called at start of an IDE or whenever one csolution project file is modified. The typical invocation is:
+Without a specific `cbuild` command, the application is generated. The typical invocation is:
 
 ```bash
-cbuild setup <name>.csolution.yml --packs --context-set --update-rte
+cbuild <name>.csolution.yml [--packs] [--context-set] [--update-rte] [--frozen-packs]
 ```
 
-This command performs the following operations:
+It generates the application program that is described with the `<name>.csolution.yml` project.
 
-- Checks for correctness of the csolution project files.
-- Evaluates the [software layers](YML-CBuild-Format.md#configurations) for [Reference Applications](ReferenceApplications.md) that use `variables:` to refer to layers, but the value is undefined. All projects are considered in this step.
-- Evaluates [selectable toolchains](YML-CBuild-Format.md#select-toolchains) when the `*.csolution.yml` does not contain a `compiler:` selection or `--toolchain` is not applied. The available toolchains are based on the [registered toolchains](installation.md#toolchain-registration) and available `misc:` - `for-compiler:` sections in the file [`cdefault.yml`](YML-Input-Format.md#cdefault).
-- Creates the file `compile_commands.json` in the [output directory](build-overview.md#output-directory-structure) for the context defined in [`*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-output-files). Note that this file is create if missing (see below).
-
-The operation is further controlled by options: 
-
-- The option `--packs` downloads missing software packs.
-- The option `--context-set` restricts the operation to the [`context-set`](build-overview.md#working-with-context-set) selected by the file [`*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-output-files). If this file is missing a file `*.cbuild-set.yml` with selection of the first `target-type`, the first `build-type`, and the first `project` is created.
-- The option [`--update-rte`](build-overview.md#rte-directory-structure) updates the configuration files of the application.
+- When option `--packs` is used, it downloads missing *software packs* using the **`cpackget` Pack Manager**.
+- It calls the **`csolution` Project Manager** to process the the `<name>.csolution.yml` project.
+  - With option `--update-rte` new configuration files from *software packs* are updated and the [`RTE_Components.h`](build-overview.md#rte_componentsh) file is recreated.
+  - With option `--context-set` the file `*.cbuild-set.yml` specifies the [context](build-overview.md#context) configuration of the application.
+  - With option `--frozen-packs` the file `*.cbuild-pack.yml` is used as input to issue an error when a pack version changes.
+- The output are [build information files](YML-CBuild-Format.md) with all relevant project information for the build process.
 - The option `--toolchain` can be used to explicitly select a compiler.
 
 > **Note:**
 >
-> The file `compile_commands.json` is generated by `CMake` with the option `--target database` and contains all source files of the `context` along with compiler options. It is intended for the IntelliSense system of an IDE.
+> By default, the `cbuild` invocation does not update or change configuration files in the [**RTE Directory**](build-overview.md#rte-directory-structure). Use the option `--update-rte` if this is required.
+
+#### Details of the setup mode
+
+The `cbuild setup` command prepares the data for an IDE environment. This command is called at start of an IDE or whenever a *csolution project* file is modified. The typical invocation is:
+
+```bash
+cbuild setup <name>.csolution.yml [--packs] [--context-set] [--update-rte] [--frozen-packs]
+```
+
+Typical IDE environments use a `--context-set` that specifies the [context](build-overview.md#context) configuration of the application. For the application program that is described with the `<name>.csolution.yml` project these steps are executed:
+
+- Check correctness of all project files specified by `<name>.csolution.yml`.
+- Evaluate the potential [software layers](YML-CBuild-Format.md#configurations) for [Reference Applications](ReferenceApplications.md) that use `variables:` to refer to layers, but the value is undefined. All projects are considered in this step.
+- Evaluate the [selectable compiler toolchains](YML-CBuild-Format.md#select-compiler) when the *csolution project* does not contain a `compiler:` selection or the `--toolchain` option is not applied. The available toolchains are based on the [compiler registration](installation.md#compiler-registration) and the `select-compiler:` node in the file [`<name>.csolution.yml`](YML-Input-Format.md#solution) or [`cdefault.yml`](YML-Input-Format.md#cdefault).
+- Create the file `compile_commands.json` in the [output directory](build-overview.md#output-directory-structure) for the context defined in [`*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-output-files).
+
+The operation is further controlled by options: 
+
+- The option `--packs` downloads missing software packs.
+- The option `--context-set` restricts the operation to the [`context-set`](build-overview.md#working-with-context-set) selected by the file [`<name>.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-output-files). If this file is missing a file `<name>.cbuild-set.yml` with selection of the first `target-type`, the first `build-type`, and first `project`  that is specified in the file `<name>.csolution.yml` is created. 
+- The option [`--update-rte`](build-overview.md#rte-directory-structure) updates the configuration files of the application.
+- With the option `--frozen-packs` the file `*.cbuild-pack.yml` is used as input. An error is issued when a pack version changes.
+- The option `--toolchain` can be used to explicitly select a compiler.
+
+> **Note:**
+>
+> The file `compile_commands.json` is generated by `CMake` with the option `--target <context>-database` and contains all source files of the `context` along with compiler options. It is used by the IntelliSense system of an IDE.
 
 ### `csolution` Project Manager
 
-The [**`csolution` Project Manager**](build-overview.md) processes [*csolution project files* (in YAML format)](YML-Input-Format.md) and the `*.pdsc` metadata files of *software packs* and performs the following operations:
+The [**`csolution` Project Manager**](build-overview.md) processes the [*csolution project files* (in YAML format)](YML-Input-Format.md) and the `*.pdsc` metadata files of *software packs* and performs the following operations:
 
-- Generate build information in the [**Project Area**](build-overview.md#project-area) with the following files: [`*.cbuild-idx.yml`, `*.cbuild.yml`](YML-CBuild-Format.md), and `*.cprj` files for the **cbuild** tool.
-- Generate header files in the [**RTE Directory**](build-overview.md#rte-directory-structure) for each [context](YML-Input-Format.md#context) with the following files: [RTE_components.h](build-overview.md#rte_componentsh) and pre-include files from the `*.pdsc` metadata.
-- [Copy the configuration files](build-overview.md#plm-of-configuration-files) from selected software components to the [**RTE Directory**](build-overview.md#rte-directory-structure).
+- In the [**Project Area**](build-overview.md#project-area):
+  - Generate [build information files](YML-CBuild-Format.md) `*.cbuild-idx.yml` and `*.cbuild.yml` with all relevant project information for the build process.
+- In the [**RTE Directory**](build-overview.md#rte-directory-structure):
+  - Generate for each [context](YML-Input-Format.md#context) the [RTE_components.h](build-overview.md#rte_componentsh) file and pre-include files from the software pack (`*.pdsc`)  metadata.
+  - [Copy the configuration files](build-overview.md#plm-of-configuration-files) from selected software componentsand provide [PLM](build-overview.md#plm-of-configuration-files) information.
+- In the [**base directory of the solution**](build-overview.md#project-area):
+  - Generate the file `*.cbuild-pack.yml` that records all used *software packs*. With the option `--frozen-packs` this file is used as input.
+  - With the option `--context-set` the file `*.cbuild-set.yml` specifies the [context](build-overview.md#context) configuration of the application. When `--context` names are specified this file is updated with this selection.
 
 The picture below outlines these operations.
 
 ![Operation of `csolution` tool](./images/csolution-operation.png "Operation of `csolution` tool")
+
+### `cbuild2cmake` Generate CMakeLists Files
+
+The `cbuild2cmake` utility reads the [build information files](YML-CBuild-Format.md) `*.cbuild-idx.yml` and `*.cbuild.yml` to get all relevant project information for the build process. It generates the following output files for `CMake` build system:
+
+Output Directory/File                    | Description
+:----------------------------------------|:----------------
+`./<tmp-dir>/CMakeList.txt`              | Describes the overall application build process with the current [context](build-overview.md#context) configuration.
+`./<tmp-dir>/<context>`                  | Each context has a separate sub-directory with the following files:
+`./<tmp-dir>/<context>/CMakeList.txt`    | Describes the build process for this context.
+`./<tmp-dir>/<context>/toolchain.cmake`  | Describes the toolchain used for this context.
+`./<tmp-dir>/<context>/groups.cmake`     | Contains all definitions and source files that related to file [groups](YML-Input-Format.md#groups).
+`./<tmp-dir>/<context>/components.cmake` | Contains all definitions and source files that related to [components](YML-Input-Format.md#components).
+
+### `CMake` Invocation
+
+The CMake build system is invoked with the following commands:
+
+- CMake configuration command defines build generator, source, and build directory with:
+
+  `cmake -G Ninja -S <tmpdir> -B <tmpdir> -Wnodev`
+
+- CMake build command to build the application program for each [context](build-overview.md#context) with:
+
+  `cmake --build <tmpdir> -j <n> --target <context>`
+
+- CMake build command to generate the IntelliSense `compile_commands.json` (used by the command `cbuild setup`) for each [context](build-overview.md#context) with:
+
+  `cmake --build <tmpdir> -j <n> --target <context>-database`
 
 ## Add Toolchain to CMSIS-Toolbox
 
