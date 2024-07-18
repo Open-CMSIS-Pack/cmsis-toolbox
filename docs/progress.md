@@ -90,4 +90,4 @@ add alpha build manager backend                                                 
 `executes` nodes in csolution                                                            | :heavy_check_mark:       | csolution 2.4.0
 `executes` nodes in cbuild2cmake                                                         | :heavy_check_mark:       | cbuild2cmake 0.9.1
 extended cbuild `setup` with layers discovery                                            | :heavy_check_mark:       | cbuild 2.4.0
-resources management                                                                     | :x:                      |
+set `cbuild2cmake` as default backend                                                    | :heavy_check_mark:       | cbuild 2.5.0

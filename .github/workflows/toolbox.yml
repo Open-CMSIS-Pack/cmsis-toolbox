@@ -47,7 +47,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/buildmgr/2.4.0
+          version: tags/tools/buildmgr/2.5.0
           file: cbuild_install.sh
           target: toolbox/cbuild/cbuild_install.sh
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,7 +66,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/svdconv/3.3.46
+          version: tags/tools/svdconv/3.3.47
           regex: true
           file: "svdconv-.*\\.(zip|tbz2)"
           target: "toolbox/svdconv/"
