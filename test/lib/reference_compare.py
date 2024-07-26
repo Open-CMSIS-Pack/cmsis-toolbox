@@ -86,10 +86,12 @@ def compare_summaries(markdown_file: str, reference_file: str):
         print("Comparison could not be performed due to missing summary data.", file=sys.stderr)
         return False
 
+    error = 0
     if md_summary != ref_summary:
        print(f"error: Test results do not match the reference\n"
           f"  Expected: Passed: {ref_summary.passed}, Failed: {ref_summary.failed}, Skipped: {ref_summary.skipped}, Total: {ref_summary.total}\n"
           f"  Actual: Passed: {md_summary.passed}, Failed: {md_summary.failed}, Skipped: {md_summary.skipped}, Total: {md_summary.total}")
+       error = 1 # failure
     
     md_passed_tests = md_file.extract_passed_tests()
     ref_passed_tests = ref_file.extract_passed_tests()
@@ -102,9 +104,9 @@ def compare_summaries(markdown_file: str, reference_file: str):
         print(f"error: Regression detected. The following tests were expected to execute and pass:")
         for reg_test in ref_passed_tests:
             print(f"  {reg_test}")
-        return 1 # failure
+        error = 1 # failure
 
-    return 0 # success
+    return error
 
 # def main():
 #     parser = argparse.ArgumentParser(description='Compare summaries in Markdown files.')

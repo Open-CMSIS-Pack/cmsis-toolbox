@@ -8,6 +8,7 @@ Library                 String
 Library                 lib${/}utils.py 
 Resource                resources${/}global.resource
 Resource                resources${/}utils.resource
+Resource                resources${/}exec.resource
 Test Template           Test github examples
 
 

@@ -4,6 +4,7 @@ Suite Setup             Global Setup
 Suite Teardown          Global Teardown
 Resource                resources${/}global.resource
 Resource                resources${/}utils.resource
+Resource                resources${/}exec.resource
 Library                 String
 Library                 Collections
 Library                 lib${/}utils.py
@@ -30,8 +31,8 @@ ${Hello}                    Hello
 Validate build-asm Example
     ${TEST_DATA_DIR}${/}${build-asm}${/}solution.csolution.yml    ${Pass}
 
-# Validate build-c Example
-#     ${TEST_DATA_DIR}${/}${build-c}${/}solution.csolution.yml    ${Pass}
+Validate build-c Example
+    ${TEST_DATA_DIR}${/}${build-c}${/}solution.csolution.yml    ${Pass}
 
 Validate build-cpp Example
     ${TEST_DATA_DIR}${/}${build-cpp}${/}solution.csolution.yml    ${Pass}
