@@ -125,7 +125,7 @@ def main():
     result.visit(ResultVisitorEx(args.test_env_files_path, args.output_file, args.markdown_file))
 
     # compare test execution summary and reference results 
-    return compare_summaries(args.markdown_file, args.reference_file)
+    return compare_test_results(args.markdown_file, args.reference_file)
 
 if __name__ == '__main__':
     try:

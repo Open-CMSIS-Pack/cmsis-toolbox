@@ -39,9 +39,24 @@ Run Csolution Project
     [Arguments]                      ${input_file}    ${expect}    ${args}=@{EMPTY}
     ${contexts}=        Get Contexts From Project        ${input_file}    ${expect}    ${args}
     ${filcontexts}=     Convert And Filter Contexts    ${contexts}
-    @{MERGED_LIST}      Create List    @{args}    @{filcontexts}
-    Build Example With cbuildgen       ${input_file}    ${expect}    ${MERGED_LIST}
-    Build Example with cbuild2cmake    ${input_file}    ${expect}    ${MERGED_LIST}
+    @{args_ex}      Create List    @{args}    @{filcontexts}
+    
+    ${res_cbuildgen}=       Run Keyword And Ignore Error    Build Example With cbuildgen       ${input_file}    ${expect}    ${args_ex}
+    ${res_cbuild2cmake}=    Run Keyword And Ignore Error    Build Example with cbuild2cmake    ${input_file}    ${expect}    ${args_ex}
+
+    # Check the result of the first run
+    ${success}=    Set Variable    ${res_cbuildgen[0]}
+    ${message}=    Set Variable    ${res_cbuildgen[1]}
+    Run Keyword If    '${success}' == 'PASS'    Log    cbuildgen ran successfully
+    ...    ELSE    Log    cbuildgen failed with message: ${message}
+
+    # Check the result of the second run
+    ${success}=    Set Variable    ${res_cbuild2cmake[0]}
+    ${message}=    Set Variable    ${res_cbuild2cmake[1]}
+    Run Keyword If    '${success}' == 'PASS'    Log    cbuild2cmake ran successfully
+    ...    ELSE    Log    cbuild2cmake failed with message: ${message}
+
+    Should Be Equal    ${res_cbuildgen[0]}    ${res_cbuild2cmake[0]}    build status doesn't match
     ${parent_path}=    Get Parent Directory Path    ${input_file}
     ${result}=         Run Keyword And Return
     ...                    Compare Elf Information   ${input_file}

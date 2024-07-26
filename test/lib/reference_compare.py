@@ -75,7 +75,7 @@ class MarkdownReader:
         passed_tests = test_pattern.findall(passed_tests_table)
         return passed_tests
 
-def compare_summaries(markdown_file: str, reference_file: str):
+def compare_test_results(markdown_file: str, reference_file: str):
     md_file = MarkdownReader(markdown_file)
     ref_file = MarkdownReader(reference_file)
 
@@ -108,20 +108,20 @@ def compare_summaries(markdown_file: str, reference_file: str):
 
     return error
 
-# def main():
-#     parser = argparse.ArgumentParser(description='Compare summaries in Markdown files.')
-#     parser.add_argument('-r', '--reference_file', type=str, required=True, help='Path to reference file')
-#     parser.add_argument('-m', '--markdown_file', type=str, default='summary_report.md', help='Path to consolidated summary markdown file')
-#     args = parser.parse_args()
+def main():
+    parser = argparse.ArgumentParser(description='Compare test results in Markdown files.')
+    parser.add_argument('-r', '--reference_file', type=str, required=True, help='Path to reference file')
+    parser.add_argument('-m', '--markdown_file', type=str, default='summary_report.md', help='Path to consolidated summary markdown file')
+    args = parser.parse_args()
 
-#     if compare_summaries(args.markdown_file, args.reference_file):
-#         print("Summaries are not equal.")
-#     else:
-#         print("Summaries are equal.")
+    if compare_test_results(args.markdown_file, args.reference_file):
+        print("Regression found")
+    else:
+        print("No regression found")
 
-# if __name__ == '__main__':
-#     try:
-#         main()
-#     except Exception as e:
-#         print(f'An error occurred: {e}', file=sys.stderr)
-#         sys.exit(1)
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception as e:
+        print(f'An error occurred: {e}', file=sys.stderr)
+        sys.exit(1)
