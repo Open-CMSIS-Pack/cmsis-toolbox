@@ -2,11 +2,12 @@ import os
 import subprocess
 from robot.api import logger
 from robot.utils import asserts
+from pathlib import Path
 
 def compare_elf_information(input_file, cbuildgen_out_dir, cbuild2cmake_out_dir):
-    logger.debug('Input file: %s' % input_file)
-    logger.debug('Cbuildgen out dir: %s' % cbuildgen_out_dir)
-    logger.debug('Cbuild2cmake out dir: %s' % cbuild2cmake_out_dir)
+    logger.info('Input file: %s' % input_file)
+    logger.info('Cbuildgen out dir: %s' % cbuildgen_out_dir)
+    logger.info('Cbuild2cmake out dir: %s' % cbuild2cmake_out_dir)
     return CompareELF(input_file, cbuildgen_out_dir, cbuild2cmake_out_dir).compare_elf_files()
 
 class Context:
@@ -34,7 +35,7 @@ class Utils:
     def run_command(exe_path, args):
         try:
             command = exe_path + ' ' + ' '.join(args)
-            logger.info(f"Running Command: {' '.join(command)}")
+            logger.info('Running Command: %s' % command)
             processOut = subprocess.run(command, check=True, shell=True, universal_newlines=True, capture_output=True, timeout=300)
             return True, processOut.stdout
         except subprocess.CalledProcessError as e:
@@ -66,6 +67,18 @@ class CompareELF:
             if path != '':
                 cbuildgen_elf_file = os.path.join(self.cbuildgen_out_dir, path)
                 cbuild2cmake_elf_file = os.path.join(self.cbuild2cmake_out_dir, path)
+                cbuildgenPath = Path(cbuildgen_elf_file)
+                cbuild2cmakePath = Path(cbuild2cmake_elf_file)
+                if cbuildgenPath.exists():
+                    logger.info('Path Exist: %s' % cbuildgenPath)
+                else:
+                    logger.info('Path doesnot Exist: %s' % cbuildgenPath)
+                
+                if cbuild2cmakePath.exists():
+                    logger.info('Path Exist: %s' % cbuild2cmakePath)
+                else:
+                    logger.info('Path doesnot Exist: %s' % cbuild2cmakePath)
+                
                 res1, stdout1 = self.get_elf_info(cbuildgen_elf_file)
                 res2, stdout2 = self.get_elf_info(cbuild2cmake_elf_file)
                 logger.info('Object Info %s' % stdout1)

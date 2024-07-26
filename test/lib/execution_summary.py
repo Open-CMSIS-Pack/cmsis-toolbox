@@ -90,6 +90,7 @@ class ResultVisitorEx(ResultVisitor):
             self.__write_test_section(f, self.failed_tests, "Failed Tests", "|Tag|Test|Message|:clock1030: Duration|Suite|\n")
             self.__write_test_section(f, self.skipped_tests, "Skipped Tests", "|Tag|Test|Suite|\n")
 
+
     def __write_test_section(self, file, test_dict, section_header, table_header):
         if len(test_dict) != 0:
             file.write(f"\n## {section_header}\n\n")

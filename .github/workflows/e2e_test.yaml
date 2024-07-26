@@ -71,9 +71,11 @@ jobs:
 
       - name: Run Test
         shell: bash
+        continue-on-error: true
         run: |
           robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} \
-            --settag ${{ matrix.target }}-${{ matrix.arch }} \
+            --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}.md \
+            --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }} \
             --name ${{ matrix.target }}-${{ matrix.arch }} \
             ./test
 
@@ -111,6 +113,7 @@ jobs:
 
     - name: Consolidate robot test results
       working-directory: artifacts
+      continue-on-error: true
       run: |
         python -m robot.rebot --name Collective_Robot_Results --outputdir collective_robot_results --output output.xml \
           ./reports-windows-amd64/output.xml \
@@ -120,7 +123,10 @@ jobs:
     - name: Generate Summary report
       if: always()
       run: |
-        python ./test/lib/execution_summary.py artifacts -o artifacts/collective_robot_results/output.xml -m summary_report.md
+        python ./test/lib/execution_summary.py artifacts \
+          -r ./test/reference.md \
+          -o artifacts/collective_robot_results/output.xml \
+          -m summary_report.md
 
     - name: Print E2E Report
       if: always()

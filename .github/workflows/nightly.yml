@@ -90,8 +90,8 @@ jobs:
         with:
           go-version-file: cpackget/go.mod
           cache-dependency-path: |
-            cpackget/go.mod
-            cpackget/go.sum
+            **/go.mod
+            **/go.sum
 
       - name: Build cpackget executable
         working-directory: cpackget
@@ -112,8 +112,8 @@ jobs:
         with:
           go-version-file: cbuild2cmake/go.mod
           cache-dependency-path: |
-            cbuild2cmake/go.mod
-            cbuild2cmake/go.sum
+            **/go.mod
+            **/go.sum
 
       - name: Build cbuild2cmake executable
         working-directory: cbuild2cmake

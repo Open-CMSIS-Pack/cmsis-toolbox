@@ -1,8 +1,8 @@
 import glob
 from pathlib import Path
-import shutil
 import subprocess
 import re
+# import os
 
 def glob_files_in_directory(directory:str, pattern: str, recursive: bool):
     yaml_files = glob.glob(directory + '/**/' + pattern, recursive=recursive)
@@ -13,7 +13,9 @@ def get_parent_directory_name(file_path:str):
     return parent_dir.name
 
 def get_parent_directory_path(file_path:str):
-    return Path(file_path).parent.absolute()
+    absPath = Path(file_path).parent.absolute()
+    path = str(absPath).replace('\\', '/')
+    return path
 
 def write_test_environment(test_env_file:str):
     toolList = ["cbuild", "cpackget", "csolution", "cbuild2cmake", "cbuildgen"]
@@ -37,3 +39,33 @@ def write_test_environment(test_env_file:str):
     # Write tool version info
     with open(test_env_file, "w") as file:
         file.write(markdown_content)
+
+# def insert_at_front(lst, item):
+#     """
+#     Inserts an item at the front of the list.
+    
+#     :param lst: List to insert the item into
+#     :param item: Item to insert
+#     :return: Modified list with the item inserted at the front
+#     """
+#     lst.insert(0, item)
+#     return lst
+
+# def remove_read_only(path):
+#     # Remove read-only attribute on a file or directory
+#     def onerror(func, path, exc_info):
+#         # Is the error an access error?
+#         if not os.access(path, os.W_OK):
+#             os.chmod(path, stat.S_IWUSR)
+#             func(path)
+#         else:
+#             raise
+
+#     if os.path.isdir(path):
+#         for root, dirs, files in os.walk(path):
+#             for dir in dirs:
+#                 os.chmod(os.path.join(root, dir), stat.S_IWUSR | stat.S_IREAD)
+#             for file in files:
+#                 os.chmod(os.path.join(root, file), stat.S_IWUSR | stat.S_IREAD)
+#     else:
+#         os.chmod(path, stat.S_IWUSR | stat.S_IREAD)
