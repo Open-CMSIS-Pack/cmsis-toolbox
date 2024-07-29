@@ -44,7 +44,6 @@ Build Example With cbuild2cmake
     [Documentation]     Build the csolution example with cbuild2cmake
     [Arguments]         ${input_file}     ${expect}        ${args}=@{EMPTY}
     Append To List        ${args}    --cbuild2cmake
-    # ${args}=    Insert At Front     ${args}    ${input_file}
     ${ret_code}=        Run cbuild        ${input_file}    ${EMPTY}    ${args}
     Should Be Equal     ${ret_code}       ${expect}        msg=Unexpected status returned by cbuild2cmake execution
 
@@ -73,8 +72,10 @@ Get Contexts From Project
 
 Build CSolution Example
     [Arguments]                        ${input_file}    ${expect}    ${args}=@{EMPTY}
-    ${res_cbuildgen}=       Run Keyword And Ignore Error    Build Example With cbuild2cmake    ${input_file}    ${expect}    ${args}
-    ${res_cbuild2cmake}=    Run Keyword And Ignore Error    Build Example With cbuildgen       ${input_file}    ${expect}    ${args}
+    ${res_cbuild2cmake}=       Run Keyword And Ignore Error
+    ...                            Build Example With cbuild2cmake    ${input_file}    ${expect}    ${args}
+    ${res_cbuildgen}=          Run Keyword And Ignore Error
+    ...                            Build Example With cbuildgen       ${input_file}    ${expect}    ${args}
 
     # Check the result of the first run
     ${success}=    Set Variable    ${res_cbuildgen[0]}
@@ -88,7 +89,7 @@ Build CSolution Example
     Run Keyword If    '${success}' == 'PASS'    Log    cbuild2cmake ran successfully
     ...    ELSE    Log    cbuild2cmake failed with message: ${message}
 
-    Should Be Equal    ${res_cbuildgen[0]}    ${res_cbuild2cmake[0]}    build status doesn't match
+    Should Be Equal    ${res_cbuildgen[0]}    ${res_cbuild2cmake[0]}    cbuildgen build status doesn't match with cbuild2cmake
     ${parent_path}=    Get Parent Directory Path     ${input_file}
     ${result}=         Run Keyword And Return
     ...                    Compare Elf Information   ${input_file}
