@@ -8,6 +8,8 @@ solution:
   target-types:
     - type: ARMCM0
       device: ARMCM0
+      add-path-asm:
+        - ./project/target
 
   build-types:
     - type: AC6
@@ -15,7 +17,7 @@ solution:
 
     - type: GCC
       compiler: GCC
-
+    
     # - type: IAR
       # compiler: IAR
 

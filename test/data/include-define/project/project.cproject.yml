@@ -9,13 +9,30 @@ project:
     - component: ARM::Device:Startup&C Startup
       add-path:
         - ./inc2
+      add-path-asm:
+        - ./component
       define:
         - DEF2: 1
 
   groups:
     - group: Source1
+      add-path-asm:
+        - ./group
       files:
+        - file: asm.s
+          for-context: [.AC6, .GCC, .CLANG]
+          add-path-asm:
+            - ./file
         - file: source1.c
+        - file: source3.c
+          add-path:
+            - ./inc3
+          define:
+            - DEF3
+          del-path:
+            - ./inc1
+          undefine:
+            - DEF1
       add-path:
         - ./inc1
       define:
@@ -40,11 +57,7 @@ project:
             - ./inc2
           define:
             - DEF2
-          del-path:
-            - ./not-supported
-          undefine:
-            - not-supported
 
     - group: Headers
       files:
-        - file: ./inc3/inc.h
+        - file: ./inc1/inc.h

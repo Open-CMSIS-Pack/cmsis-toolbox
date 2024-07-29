@@ -23,7 +23,7 @@ solution:
           - -lc
     
     # - type: IAR
-    #   compiler: IAR
+      # compiler: IAR
 
     - type: CLANG
       compiler: CLANG

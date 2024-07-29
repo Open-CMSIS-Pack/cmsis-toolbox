@@ -56,7 +56,7 @@ Run Csolution Project
     Run Keyword If    '${success}' == 'PASS'    Log    cbuild2cmake ran successfully
     ...    ELSE    Log    cbuild2cmake failed with message: ${message}
 
-    Should Be Equal    ${res_cbuildgen[0]}    ${res_cbuild2cmake[0]}    build status doesn't match
+    Should Be Equal    ${res_cbuildgen[0]}    ${res_cbuild2cmake[0]}    cbuildgen build status doesn't match with cbuild2cmake
     ${parent_path}=    Get Parent Directory Path    ${input_file}
     ${result}=         Run Keyword And Return
     ...                    Compare Elf Information   ${input_file}
