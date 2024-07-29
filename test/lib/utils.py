@@ -1,8 +1,8 @@
 import glob
 from pathlib import Path
-import shutil
 import subprocess
 import re
+# import os
 
 def glob_files_in_directory(directory:str, pattern: str, recursive: bool):
     yaml_files = glob.glob(directory + '/**/' + pattern, recursive=recursive)
@@ -13,7 +13,9 @@ def get_parent_directory_name(file_path:str):
     return parent_dir.name
 
 def get_parent_directory_path(file_path:str):
-    return Path(file_path).parent.absolute()
+    absPath = Path(file_path).parent.absolute()
+    path = str(absPath).replace('\\', '/')
+    return path
 
 def write_test_environment(test_env_file:str):
     toolList = ["cbuild", "cpackget", "csolution", "cbuild2cmake", "cbuildgen"]

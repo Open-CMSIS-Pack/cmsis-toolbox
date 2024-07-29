@@ -4,14 +4,15 @@ Suite Setup             Global Setup
 Suite Teardown          Global Teardown
 Resource                resources${/}global.resource
 Resource                resources${/}utils.resource
+Resource                resources${/}exec.resource
 Library                 String
 Library                 Collections
-Library                 lib${/}elf_compare.py
 Library                 lib${/}utils.py
-Test Template           Run CSolution Project
+Library                 lib${/}elf_compare.py
+Test Template           Build Local CSolution Example
 
 *** Variables ***
-# The directory name of the example to be built
+# The directory name of the examples to be built
 ${build-asm}                build-asm
 ${build-c}                  build-c
 ${build-cpp}                build-cpp
@@ -55,13 +56,7 @@ Validate trustzone Example
      ${TEST_DATA_DIR}${/}${trustzone}${/}solution.csolution.yml    ${Pass}
 
 *** Keywords ***
-Run Csolution Project
-    [Arguments]                      ${input_file}      ${expect}    ${args}=@{EMPTY}
-    Run Project With cbuildgen       ${input_file}    ${expect}    ${args}
-    Run Project with cbuild2cmake    ${input_file}    ${expect}    ${args}
-    ${parent_path}=                  Get Parent Directory Path    ${input_file}
-    ${result}=                       Run Keyword And Return
-    ...    Compare Elf Information   ${input_file}
-    ...    ${parent_path}${/}${Out_Dir}${/}${Default_Out_Dir}
-    ...    ${parent_path}${/}${Default_Out_Dir}
-    Should Be True    ${result}
+Build Local CSolution Example
+    [Arguments]                              ${input_file}      ${expect}    ${args}=@{EMPTY}
+    ${result}=    Build CSolution Example    ${input_file}      ${expect}    ${args}
+    Should Be True                           ${result}

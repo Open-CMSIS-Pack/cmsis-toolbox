@@ -1,0 +1,6 @@
+*** Test Cases ***;${pack_id};${expect};[Tags];[Documentation]
+NXP::FRDM-K32L3A6_BSP.17.0.0;NXP::FRDM-K32L3A6_BSP@17.0.0;${0};;
+NXP::LPCXpresso55S69_BSP.18.0.0;NXP::LPCXpresso55S69_BSP@18.0.0;${0};;
+NXP::LPCXpresso55S69_USB_Examples.1.0.0;NXP::LPCXpresso55S69_USB_Examples@1.0.0;${0};;
+NXP::FRDM-K32L3A6_BSP.18.0.0;NXP::FRDM-K32L3A6_BSP@18.0.0;${0};;
+NXP::MIMXRT1060-EVKB_BSP.18.0.0;NXP::MIMXRT1060-EVKB_BSP@18.0.0;${0};;
