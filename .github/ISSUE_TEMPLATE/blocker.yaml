@@ -46,11 +46,11 @@ body:
       options:
         - label: cbuild
           required: false
-        - label: cbuild-gen
+        - label: csolution
+          required: false
+        - label: cbridge
           required: false
         - label: cpackget
-          required: false
-        - label: csolution
           required: false
         - label: packchk
           required: false
