@@ -48,8 +48,6 @@ body:
           required: false
         - label: csolution
           required: false
-        - label: cbridge
-          required: false
         - label: cpackget
           required: false
         - label: packchk
