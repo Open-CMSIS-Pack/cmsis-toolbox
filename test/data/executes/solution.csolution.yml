@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Open-CMSIS-Pack/devtools/main/tools/projmgr/schemas/csolution.schema.json
+
+solution:
+  cdefault:
+
+  packs:
+    - pack: ARM::Cortex_DFP
+    - pack: ARM::CMSIS
+      
+  target-types:
+    - type: ARMCM0
+      device: ARMCM0
+
+  build-types:
+    - type: Debug
+    - type: Release
+
+  compiler: AC6
+
+  projects:
+    - project: project/project.cproject.yml
+
+  executes:
+    - execute: Generate Project Sources
+      run: ${CMAKE_COMMAND} -DINPUT_1=$input(1)$ -DOUTPUT_0=$output(0)$ -DOUTPUT_1=$output(1)$ -P $input(0)$
+      input:
+        - script/generate-sources.cmake
+        - $ProjectDir(project)$/source.c.template
+      output:
+        - $ProjectDir(project)$/source0.c
+        - $ProjectDir(project)$/source1.c
+    - execute: Archive Artifacts
+      run: ${CMAKE_COMMAND} -DINPUT=$input$ -DOUTPUT=$output$ -P $input(0)$
+      input:
+        - script/archive.cmake
+        - $elf(project.Release+ARMCM0)$
+        - $elf(project.Release+ARMCM0)$.signed
+      output:
+        - $SolutionDir()$/artifacts.zip
+    - execute: Run Always
+      run: ${CMAKE_COMMAND} -E echo "Execute Run Always"
+      always:
+    - execute: Run After Archiving 
+      run: ${CMAKE_COMMAND} -E echo "Archive has been updated"
+      input:
+        - $SolutionDir()$/artifacts.zip

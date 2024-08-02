@@ -6,4 +6,8 @@
    .error "GAS_DEF is not defined!"
    .endif
 
+   .ifndef GROUP_ASM_GCC_CLANG_DEF
+   .error "GROUP_ASM_GCC_CLANG_DEF is not defined!"
+   .endif
+
    .end

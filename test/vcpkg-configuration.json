@@ -12,7 +12,7 @@
     }
   ],
   "requires": {
-    "microsoft:cmake": "^3.25.2",
+    "arm:tools/kitware/cmake": "^3.27.1",
     "arm:tools/ninja-build/ninja": "^1.12.0",
     "arm:compilers/arm/armclang":"^6.21.0",
     "arm:compilers/arm/arm-none-eabi-gcc": "^13.2.1",

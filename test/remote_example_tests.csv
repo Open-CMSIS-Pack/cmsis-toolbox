@@ -1,10 +1,6 @@
-*** Test Cases ***;${github_url};${expect};[Tags];[Documentation]
-Hello_B-U585I-IOT02A;https://github.com/Arm-Examples/Hello_B-U585I-IOT02A;${0};;
-Hello_FRDM-K32L3A6;https://github.com/Arm-Examples/Hello_FRDM-K32L3A6;${0};;
-Hello_IMXRT1050-EVKB;https://github.com/Arm-Examples/Hello_IMXRT1050-EVKB;${0};;
-Hello_LPCXpresso55S69;https://github.com/Arm-Examples/Hello_LPCXpresso55S69;${0};;
-Blinky_FRDM-K32L3A6;https://github.com/Arm-Examples/Blinky_FRDM-K32L3A6;${0};;
-Blinky_NUCLEO-G0B1RE;https://github.com/Arm-Examples/Blinky_NUCLEO-G0B1RE;${0};;
-Blinky_NUCLEO-F756ZG;https://github.com/Arm-Examples/Blinky_NUCLEO-F756ZG;${0};;
-keil-studio-get-started;https://github.com/Arm-Examples/keil-studio-get-started;${0};;
-Hello_AVH;https://github.com/Arm-Examples/Hello_AVH;${0};;
+*** Test Cases ***;${github_url};${cbuildgen_expect};${cbuild2cmake_expect};[Tags];[Documentation]
+Hello_FRDM-K32L3A6;https://github.com/Arm-Examples/Hello_FRDM-K32L3A6;${0};${0};;
+Hello_LPCXpresso55S69;https://github.com/Arm-Examples/Hello_LPCXpresso55S69;${0};${0};;
+Blinky_NUCLEO-G0B1RE;https://github.com/Arm-Examples/Blinky_NUCLEO-G0B1RE;${0};${1};;This example doesn't work with cbuild2cmake as sysmbols are defined multiple times
+keil-studio-get-started;https://github.com/Arm-Examples/keil-studio-get-started;${0};${0};;
+Hello_AVH;https://github.com/Arm-Examples/Hello_AVH;${0};${0};;

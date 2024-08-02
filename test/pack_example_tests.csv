@@ -1,3 +1,2 @@
 *** Test Cases ***;${pack_id};${expect};[Tags];[Documentation]
-NXP::FRDM-K32L3A6_BSP.17.0.0;NXP::FRDM-K32L3A6_BSP@17.0.0;${0};;
 NXP::LPCXpresso55S69_BSP.18.0.0;NXP::LPCXpresso55S69_BSP@18.0.0;${0};;

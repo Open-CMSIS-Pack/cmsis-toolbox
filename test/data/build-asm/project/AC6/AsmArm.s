@@ -13,4 +13,8 @@
      INFO   1, "STRING_TEST failed!"
      ENDIF
 
+     IF     :LNOT::DEF:GROUP_ASM_AC6_DEF
+     INFO   1, "GROUP_ASM_AC6_DEF is not defined!"
+     ENDIF
+
      END

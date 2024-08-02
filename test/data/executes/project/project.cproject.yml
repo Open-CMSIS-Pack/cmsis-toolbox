@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Open-CMSIS-Pack/devtools/main/tools/projmgr/schemas/cproject.schema.json
+
+project:
+
+  components:
+    - component: ARM::CMSIS:CORE
+    - component: ARM::Device:Startup&C Startup
+
+  groups:
+    - group: Source
+      files:
+        - file: ./source0.c
+        - file: ./source1.c
+  
+  executes:
+    - execute: Sign Artifact
+      run: ${CMAKE_COMMAND} -DINPUT=$input$ -DOUTPUT=$output$ -P $input(0)$
+      input:
+        - $SolutionDir()$/script/sign.cmake
+        - $elf()$
+      output:
+        - $elf()$.signed
+      for-context:
+        - .Release

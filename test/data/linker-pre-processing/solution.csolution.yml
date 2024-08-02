@@ -15,7 +15,7 @@ solution:
 
     - type: GCC
       compiler: GCC
-    
+
     # - type: IAR
     #   compiler: IAR
 

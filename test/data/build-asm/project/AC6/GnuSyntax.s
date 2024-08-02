@@ -6,5 +6,9 @@
    .error "GAS_DEF is not defined!"
    .endif
 
+   .ifndef GROUP_ASM_AC6_DEF
+   .error "GROUP_ASM_AC6_DEF is not defined!"
+   .endif
+
    .end
    
