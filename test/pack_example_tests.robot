@@ -1,6 +1,6 @@
 *** Settings ***
 Documentation           Tests to build pack csolution examples
-Suite Setup             Global Setup
+Suite Setup             Create Test Data Directory
 Suite Teardown          Global Teardown
 Library                 BuiltIn
 Library                 Collections
@@ -36,13 +36,15 @@ Test packs examples
     END
 
 Run Csolution Project
-    [Arguments]                      ${input_file}    ${expect}    ${args}=@{EMPTY}
-    ${contexts}=        Get Contexts From Project        ${input_file}    ${expect}    ${args}
+    [Arguments]         ${input_file}    ${expect}     ${args}=@{EMPTY}
+    ${contexts}=        Get Contexts From Project      ${input_file}    ${expect}    ${args}
     ${filcontexts}=     Convert And Filter Contexts    ${contexts}
-    @{args_ex}      Create List    @{args}    @{filcontexts}
+    @{args_ex}          Create List                    @{args}    @{filcontexts}
     
-    ${res_cbuildgen}=       Run Keyword And Ignore Error    Build Example With cbuildgen       ${input_file}    ${expect}    ${args_ex}
-    ${res_cbuild2cmake}=    Run Keyword And Ignore Error    Build Example with cbuild2cmake    ${input_file}    ${expect}    ${args_ex}
+    ${res_cbuildgen}=       Run Keyword And Ignore Error
+    ...                         Build Example With cbuildgen      ${input_file}    ${expect}    ${args_ex}
+    ${res_cbuild2cmake}=    Run Keyword And Ignore Error
+    ...                        Build Example with cbuild2cmake    ${input_file}    ${expect}    ${args_ex}
 
     # Check the result of the first run
     ${success}=    Set Variable    ${res_cbuildgen[0]}

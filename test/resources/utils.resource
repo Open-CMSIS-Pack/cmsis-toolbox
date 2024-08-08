@@ -13,14 +13,20 @@ Resource         global.resource
 ${TEST_ENV_FILE}    test_env.md
 
 *** Keywords ***
-Global Setup
+Create Test Data Directory
+    [Documentation]      Create test data directory
     # Set the global variable for test data directory
+    ${dest_dir}=                    Get Test Data Directory
+    Set Global Variable             ${TEST_DATA_DIR}    ${dest_dir}
+    # Remove previous test data
+    Run Keyword And Ignore Error    Remove Directory with Content    ${TEST_DATA_DIR}
+
+Copy Test Data
+    Create Test Data Directory
+    # Copy test data under build tree
     ${parent_dir}=                    Join Paths    ${CURDIR}        ..
     ${src_dir}=                       Join Paths    ${parent_dir}    ${Data}
-    ${dest_dir}=                      Get Test Data Directory
-    Set Global Variable               ${TEST_DATA_DIR}           ${dest_dir}
-    # Copy test data under build tree
-    Copy Directory                    ${src_dir}                 ${dest_dir}
+    Copy Directory                    ${src_dir}                 ${TEST_DATA_DIR}
     # Generate test_env.md file under output directory
     ${output_file_path}=              Get Output File Path
     ${parent_path}=                   Get Parent Directory Path    ${output_file_path}
@@ -45,11 +51,12 @@ Change Directory Permissions
 
 Remove Directory with Content
     [Documentation]                 Remove directory and its content from target directory
-    [Arguments]                     ${target_dir}
+    [Arguments]                         ${target_dir}
     ${target_dir}=    Normalize Path    ${target_dir}
-    Change Directory Permissions    ${target_dir}
-    Remove Directory                ${target_dir}      recursive=${True}
-    Wait Until Removed              ${target_dir}      timeout=5 seconds
+    Change Directory Permissions        ${target_dir}
+    Run Keyword And Ignore Error    Remove Directory
+    ...                                ${target_dir}      recursive=${True}
+    Wait Until Removed              ${target_dir}
 
 Append Additional Arguments
     [Documentation]              Append values to the list

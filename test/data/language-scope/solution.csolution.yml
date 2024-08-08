@@ -21,7 +21,7 @@ solution:
         - Library:
           - -lm
           - -lc
-    
+
     # - type: IAR
     #   compiler: IAR
 

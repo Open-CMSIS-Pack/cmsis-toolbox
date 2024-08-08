@@ -4,83 +4,63 @@
 
 |:white_check_mark: Passed|:x: Failed|:fast_forward: Skipped|Total|
 |:----:|:----:|:-----:|:---:|
-|39|30|0|69|
+|54|0|0|54|
 
 ## Passed Tests
 
 |Tag|Test|:clock1030: Duration|Suite|
 |:---:|:---:|:---:|:---:|
-|windows-amd64|Validate build-c Example|6.16 s|Local Example Tests|
-|windows-amd64|Validate build-cpp Example|9.34 s|Local Example Tests|
-|windows-amd64|Validate linker-pre-processing Example|6.21 s|Local Example Tests|
-|windows-amd64|Validate pre-include Example|6.53 s|Local Example Tests|
-|windows-amd64|Validate whitespace Example|6.19 s|Local Example Tests|
-|windows-amd64|Validate trustzone Example|43.75 s|Local Example Tests|
-|windows-amd64|Hello_B-U585I-IOT02A|44.89 s|Remote Example Tests|
-|windows-amd64|Hello_FRDM-K32L3A6|26.63 s|Remote Example Tests|
-|windows-amd64|Hello_IMXRT1050-EVKB|40.38 s|Remote Example Tests|
-|windows-amd64|Hello_LPCXpresso55S69|34.32 s|Remote Example Tests|
-|windows-amd64|Blinky_FRDM-K32L3A6|31.87 s|Remote Example Tests|
-|windows-amd64|keil-studio-get-started|7.74 s|Remote Example Tests|
-|windows-amd64|Hello_AVH|66.01 s|Remote Example Tests|
-|linux-amd64|Validate build-c Example|1.56 s|Local Example Tests|
-|linux-amd64|Validate build-cpp Example|2.36 s|Local Example Tests|
-|linux-amd64|Validate linker-pre-processing Example|1.58 s|Local Example Tests|
-|linux-amd64|Validate pre-include Example|1.67 s|Local Example Tests|
-|linux-amd64|Validate whitespace Example|1.56 s|Local Example Tests|
-|linux-amd64|Validate trustzone Example|7.31 s|Local Example Tests|
-|linux-amd64|Hello_B-U585I-IOT02A|18.62 s|Remote Example Tests|
-|linux-amd64|Hello_FRDM-K32L3A6|7.96 s|Remote Example Tests|
-|linux-amd64|Hello_IMXRT1050-EVKB|10.29 s|Remote Example Tests|
-|linux-amd64|Hello_LPCXpresso55S69|9.72 s|Remote Example Tests|
-|linux-amd64|Blinky_FRDM-K32L3A6|9.19 s|Remote Example Tests|
-|linux-amd64|keil-studio-get-started|3.48 s|Remote Example Tests|
-|linux-amd64|Hello_AVH|21.13 s|Remote Example Tests|
-|darwin-amd64|Validate build-c Example|6.21 s|Local Example Tests|
-|darwin-amd64|Validate build-cpp Example|7.63 s|Local Example Tests|
-|darwin-amd64|Validate linker-pre-processing Example|5.42 s|Local Example Tests|
-|darwin-amd64|Validate pre-include Example|5.73 s|Local Example Tests|
-|darwin-amd64|Validate whitespace Example|6.03 s|Local Example Tests|
-|darwin-amd64|Validate trustzone Example|25.30 s|Local Example Tests|
-|darwin-amd64|Hello_B-U585I-IOT02A|37.63 s|Remote Example Tests|
-|darwin-amd64|Hello_FRDM-K32L3A6|16.78 s|Remote Example Tests|
-|darwin-amd64|Hello_IMXRT1050-EVKB|17.91 s|Remote Example Tests|
-|darwin-amd64|Hello_LPCXpresso55S69|16.27 s|Remote Example Tests|
-|darwin-amd64|Blinky_FRDM-K32L3A6|19.12 s|Remote Example Tests|
-|darwin-amd64|keil-studio-get-started|11.36 s|Remote Example Tests|
-|darwin-amd64|Hello_AVH|57.27 s|Remote Example Tests|
-
-## Failed Tests
-
-|Tag|Test|Message|:clock1030: Duration|Suite|
-|:---:|:---:|:---:|:---:|:---:|
-|windows-amd64|Validate build-asm Example|build status doesn't match: PASS != FAIL|20.27 s|Local Example Tests|
-|windows-amd64|Validate include-define Example|build status doesn't match: FAIL != PASS|5.27 s|Local Example Tests|
-|windows-amd64|Validate language-scope Example|build status doesn't match: PASS != FAIL|8.75 s|Local Example Tests|
-|windows-amd64|NXP::FRDM-K32L3A6_BSP.17.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|23.57 s|Pack Example Tests|
-|windows-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|12.32 s|Pack Example Tests|
-|windows-amd64|NXP::LPCXpresso55S69_USB_Examples.1.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|30.55 s|Pack Example Tests|
-|windows-amd64|NXP::FRDM-K32L3A6_BSP.18.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|8.08 s|Pack Example Tests|
-|windows-amd64|NXP::MIMXRT1060-EVKB_BSP.18.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|16.00 s|Pack Example Tests|
-|windows-amd64|Blinky_NUCLEO-G0B1RE|build status doesn't match: FAIL != PASS|42.22 s|Remote Example Tests|
-|windows-amd64|Blinky_NUCLEO-F756ZG|build status doesn't match: FAIL != PASS|44.33 s|Remote Example Tests|
-|linux-amd64|Validate build-asm Example|build status doesn't match: PASS != FAIL|4.49 s|Local Example Tests|
-|linux-amd64|Validate include-define Example|build status doesn't match: FAIL != PASS|1.36 s|Local Example Tests|
-|linux-amd64|Validate language-scope Example|build status doesn't match: PASS != FAIL|2.21 s|Local Example Tests|
-|linux-amd64|NXP::FRDM-K32L3A6_BSP.17.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|12.43 s|Pack Example Tests|
-|linux-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|7.63 s|Pack Example Tests|
-|linux-amd64|NXP::LPCXpresso55S69_USB_Examples.1.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|15.19 s|Pack Example Tests|
-|linux-amd64|NXP::FRDM-K32L3A6_BSP.18.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|5.31 s|Pack Example Tests|
-|linux-amd64|NXP::MIMXRT1060-EVKB_BSP.18.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|9.13 s|Pack Example Tests|
-|linux-amd64|Blinky_NUCLEO-G0B1RE|build status doesn't match: FAIL != PASS|10.70 s|Remote Example Tests|
-|linux-amd64|Blinky_NUCLEO-F756ZG|build status doesn't match: FAIL != PASS|12.31 s|Remote Example Tests|
-|darwin-amd64|Validate build-asm Example|build status doesn't match: PASS != FAIL|11.88 s|Local Example Tests|
-|darwin-amd64|Validate include-define Example|build status doesn't match: FAIL != PASS|4.25 s|Local Example Tests|
-|darwin-amd64|Validate language-scope Example|build status doesn't match: PASS != FAIL|7.10 s|Local Example Tests|
-|darwin-amd64|NXP::FRDM-K32L3A6_BSP.17.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|31.85 s|Pack Example Tests|
-|darwin-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|19.25 s|Pack Example Tests|
-|darwin-amd64|NXP::LPCXpresso55S69_USB_Examples.1.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|44.59 s|Pack Example Tests|
-|darwin-amd64|NXP::FRDM-K32L3A6_BSP.18.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|13.90 s|Pack Example Tests|
-|darwin-amd64|NXP::MIMXRT1060-EVKB_BSP.18.0.0|Unexpected status returned by cbuildgen execution: 1 != 0|25.17 s|Pack Example Tests|
-|darwin-amd64|Blinky_NUCLEO-G0B1RE|build status doesn't match: FAIL != PASS|27.46 s|Remote Example Tests|
-|darwin-amd64|Blinky_NUCLEO-F756ZG|build status doesn't match: FAIL != PASS|40.96 s|Remote Example Tests|
+|windows-amd64|Validate build-asm Example|25.77 s|Local Example Tests|
+|windows-amd64|Validate build-c Example|6.94 s|Local Example Tests|
+|windows-amd64|Validate build-cpp Example|10.70 s|Local Example Tests|
+|windows-amd64|Validate build-set Example|4.23 s|Local Example Tests|
+|windows-amd64|Validate executes Example|6.11 s|Local Example Tests|
+|windows-amd64|Validate include-define Example|7.85 s|Local Example Tests|
+|windows-amd64|Validate language-scope Example|10.17 s|Local Example Tests|
+|windows-amd64|Validate library-rtos Example|11.85 s|Local Example Tests|
+|windows-amd64|Validate linker-pre-processing Example|7.09 s|Local Example Tests|
+|windows-amd64|Validate pre-include Example|7.22 s|Local Example Tests|
+|windows-amd64|Validate whitespace Example|6.97 s|Local Example Tests|
+|windows-amd64|Validate trustzone Example|48.04 s|Local Example Tests|
+|windows-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|955.02 s|Pack Example Tests|
+|windows-amd64|Hello_FRDM-K32L3A6|35.11 s|Remote Example Tests|
+|windows-amd64|Hello_LPCXpresso55S69|30.37 s|Remote Example Tests|
+|windows-amd64|Blinky_NUCLEO-G0B1RE|27.52 s|Remote Example Tests|
+|windows-amd64|keil-studio-get-started|8.24 s|Remote Example Tests|
+|windows-amd64|Hello_AVH|65.48 s|Remote Example Tests|
+|linux-amd64|Validate build-asm Example|8.28 s|Local Example Tests|
+|linux-amd64|Validate build-c Example|1.67 s|Local Example Tests|
+|linux-amd64|Validate build-cpp Example|2.66 s|Local Example Tests|
+|linux-amd64|Validate build-set Example|1.12 s|Local Example Tests|
+|linux-amd64|Validate executes Example|1.33 s|Local Example Tests|
+|linux-amd64|Validate include-define Example|1.93 s|Local Example Tests|
+|linux-amd64|Validate language-scope Example|2.48 s|Local Example Tests|
+|linux-amd64|Validate library-rtos Example|4.01 s|Local Example Tests|
+|linux-amd64|Validate linker-pre-processing Example|1.69 s|Local Example Tests|
+|linux-amd64|Validate pre-include Example|1.78 s|Local Example Tests|
+|linux-amd64|Validate whitespace Example|1.67 s|Local Example Tests|
+|linux-amd64|Validate trustzone Example|7.48 s|Local Example Tests|
+|linux-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|754.88 s|Pack Example Tests|
+|linux-amd64|Hello_FRDM-K32L3A6|13.17 s|Remote Example Tests|
+|linux-amd64|Hello_LPCXpresso55S69|10.68 s|Remote Example Tests|
+|linux-amd64|Blinky_NUCLEO-G0B1RE|14.93 s|Remote Example Tests|
+|linux-amd64|keil-studio-get-started|3.92 s|Remote Example Tests|
+|linux-amd64|Hello_AVH|27.26 s|Remote Example Tests|
+|darwin-amd64|Validate build-asm Example|10.46 s|Local Example Tests|
+|darwin-amd64|Validate build-c Example|7.23 s|Local Example Tests|
+|darwin-amd64|Validate build-cpp Example|10.51 s|Local Example Tests|
+|darwin-amd64|Validate build-set Example|5.01 s|Local Example Tests|
+|darwin-amd64|Validate executes Example|5.72 s|Local Example Tests|
+|darwin-amd64|Validate include-define Example|7.85 s|Local Example Tests|
+|darwin-amd64|Validate language-scope Example|10.57 s|Local Example Tests|
+|darwin-amd64|Validate library-rtos Example|10.81 s|Local Example Tests|
+|darwin-amd64|Validate linker-pre-processing Example|6.28 s|Local Example Tests|
+|darwin-amd64|Validate pre-include Example|6.12 s|Local Example Tests|
+|darwin-amd64|Validate whitespace Example|5.62 s|Local Example Tests|
+|darwin-amd64|Validate trustzone Example|22.82 s|Local Example Tests|
+|darwin-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|1559.94 s|Pack Example Tests|
+|darwin-amd64|Hello_FRDM-K32L3A6|26.55 s|Remote Example Tests|
+|darwin-amd64|Hello_LPCXpresso55S69|22.71 s|Remote Example Tests|
+|darwin-amd64|Blinky_NUCLEO-G0B1RE|28.29 s|Remote Example Tests|
+|darwin-amd64|keil-studio-get-started|9.56 s|Remote Example Tests|
+|darwin-amd64|Hello_AVH|61.67 s|Remote Example Tests|

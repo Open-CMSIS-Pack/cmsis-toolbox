@@ -11,6 +11,8 @@ project:
 
     - group: GCC-CLANG
       for-compiler: [GCC, CLANG]
+      define-asm:
+        - GROUP_ASM_GCC_CLANG_DEF
       files:
         - file: ./GCC/GAS.s
           for-compiler: GCC
@@ -26,6 +28,8 @@ project:
 
     - group: AC6
       for-compiler: AC6
+      define-asm:
+        - GROUP_ASM_AC6_DEF
       files:
         - file: ./AC6/AsmArm.s
           define:
@@ -47,6 +51,8 @@ project:
 
     - group: IAR
       for-compiler: IAR
+      define-asm:
+        - GROUP_ASM_IAR_DEF
       files:
         - file: ./IAR/Asm.s
           define:

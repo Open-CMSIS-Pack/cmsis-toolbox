@@ -4,12 +4,11 @@ solution:
   packs:
     - pack: ARM::Cortex_DFP
     - pack: ARM::CMSIS
+    - pack: ARM::CMSIS-RTX
 
   target-types:
     - type: ARMCM0
       device: ARMCM0
-      add-path-asm:
-        - ./project/target
 
   build-types:
     - type: AC6
@@ -17,6 +16,10 @@ solution:
 
     - type: GCC
       compiler: GCC
+      misc: 
+        - Library:
+          - -lm
+          - -lc
 
     # - type: IAR
     #   compiler: IAR

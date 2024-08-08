@@ -4,6 +4,10 @@
 #error "IAR_ASM_DEF is not defined!"
 #endif
 
+#ifndef GROUP_ASM_IAR_DEF
+#error "GROUP_ASM_IAR_DEF is not defined!"
+#endif
+
                 EXTERN   Reset_Handler_C
 
                 PUBWEAK  Reset_Handler

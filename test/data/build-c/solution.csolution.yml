@@ -4,7 +4,7 @@ solution:
   packs:
     - pack: ARM::Cortex_DFP
     - pack: ARM::CMSIS
-
+      
   target-types:
     - type: ARMCM0
       device: ARMCM0
@@ -19,7 +19,7 @@ solution:
         - Library:
           - -lm
           - -lc
-    
+
     # - type: IAR
     #   compiler: IAR
 
