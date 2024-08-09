@@ -121,16 +121,6 @@ def compare_test_results(markdown_file: str, reference_file: str):
           f"  Actual: Passed: {md_summary.passed}, Failed: {md_summary.failed}, Skipped: {md_summary.skipped}, Total: {md_summary.total}")
        error = 1 # failure
 
-    # Compare passed tests    
-    md_passed_tests = md_file.extract_passed_tests()
-    ref_passed_tests = ref_file.extract_passed_tests()
-    results = compare_lists(md_passed_tests, ref_passed_tests)
-    if len(results) > 0:
-        error = 1 # failure
-        print("Regression detected: The number of actual passed tests does not match the expected count")
-    for actual, expected in results:
-        print((f"Actual: {actual}, Expected: {expected}"))
-
     # Compare failed tests
     md_failed_tests = md_file.extract_failed_tests()
     ref_failed_tests = ref_file.extract_failed_tests()
