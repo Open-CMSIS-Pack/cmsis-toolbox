@@ -45,6 +45,8 @@ This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects)
       - [Install a repository](#install-a-repository)
     - [List all software packs](#list-all-software-packs)
     - [Remove packs](#remove-packs)
+  - [DevOps Usage](#devops-usage)
+    - [Examples](#examples)
 
 ## Requirements
 
@@ -388,6 +390,10 @@ This command downloads missing packs, creates [build information files](YML-CBui
 cbuild setup example.csolution.yml --context-set --packs
 ```
 
+> **Note:**
+>
+> - `cbuild setup` always enables the option `--schema` to validate the correct YML syntax in the *csolution project* files.
+
 ## `cpackget` Details
 
 ### Specify CMSIS-Pack root directory
@@ -628,3 +634,45 @@ Same as above, but also remove the cached files that relate to this pack in the 
 ```bash
 ~ $ cpackget rm --purge Vendor.PackName`
 ```
+
+## DevOps Usage
+
+The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The `./out` directory contains all build artifacts of an application for execution on physical hardware or simulation models. [Arm Virtual Hardware - Fixed Virtual Platforms (AVH-FVP)](https://github.com/ARM-software/AVH) enable unit tests and integration tests with simulation models and various virtual interfaces. Using layers allows a [Project Setup for Multiple Targets](build-overview.md#project-setup-for-multiple-targets-and-builds), for example to test on physical hardware or AVH-FVP simulation models. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.
+
+The commands below show typical builds in a CI system. Using `--packs` installs all public packs with implicit acceptance of licenses. Without further option the command builds all projects, target-types, and build-types. Using [`--context`](build-overview.md#context) reduces the scope of the build. Using [`--frozen-packs`](build-overview.md#reproducible-builds) uses exactly the packs that are specified in the file `*.cbuild-pack.yml`.
+
+```bash
+~ $ cbuild Hello.csolution.yml --packs                          # install packs and build all
+~ $ cbuild Hello.csolution.yml --packs --context +AVH-SSE-300   # only build target +AVH-SSE-300
+~ $ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack verstions
+```
+
+Packs are that not public are installed using `cpackget`.  The following commands use the MDK-Middleware development repository to install a pre-release pack in a GitHub Actions CI workflow. The `cbuild` command above uses then the MDK-Middleware development repository instead of the public MDK-Middleware pack.
+
+```yml
+    - name: Checkout MDK-Middleware
+      uses: actions/checkout@v4
+      with:
+        repository: ARM-software/MDK-Middleware
+        path: ./MDK-Middleware
+
+    - name: Initialize CMSIS pack system and use MDK-Middleware pack from development repo
+      run: |
+        cpackget init https://www.keil.com/pack/index.pidx
+        cpackget update-index
+        cpackget add ./MDK-Middleware/Keil.MDK-Middleware.pdsc        
+```
+
+### Examples
+
+There are several examples that show CI workflows using the CMSIS-Toolbox.
+
+Example            | Description
+:------------------|:------------------
+[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Four different examples that execute CI tests with showing various concepts including matrix tests and AVH FVP simulation.
+[AVH-Hello](https://github.com/Arm-Examples/AVH-Hello) | Build and execution test for "Hello World" example using a GitHub Action matrix to target all Cortex-M processors, Arm Compiler or GCC, and AVH simulation.
+[AVH_CI_Template](https://github.com/Arm-Examples/AVH_CI_Template)     | CI Template for unit test automation that uses GitHub Actions.
+[CMSIS Version 6](https://github.com/ARM-software/CMSIS_6/actions) | Runs a CMSIS-Core validation test across the supported processors using multiple compilers.
+[RTOS2 Validation](https://github.com/ARM-software/CMSIS-RTX/actions) | Runs the CMSIS-RTOS2 validation across Keil RTX using source and library variants.
+[STM32H743I-EVAL_BSP](https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP) | Build test of a Board Support Pack (BSP) with MDK-Middleware [Reference Applications](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/ReferenceApplications.md) using Arm Compiler or GCC. The artifacts store the various example projects for testing on the hardware board.
+[TFL Micro Speech](https://github.com/arm-software/AVH-TFLmicrospeech) | This example project shows the Virtual Streaming Interface with Audio input and uses [software layers](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/build-overview.md#software-layers) for retargeting.
