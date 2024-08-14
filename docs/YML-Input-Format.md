@@ -470,19 +470,19 @@ Keyword                          | Description
 
 ### `cdefault:`
 
-When [`cdefault:`](#solution) is specified in the `*.csolution.yml` file, the **`csolution` Project Manager** uses a file with the name [`cdefault.yml` or `cdefault.yaml`](build-overview.md#cdefaultyml) to setup 
+When [`cdefault:`](#solution) is specified in the `*.csolution.yml` file, the **`csolution` Project Manager** uses a file with the name [`cdefault.yml`](build-overview.md#cdefaultyml) to setup 
 the compiler with specific default controls. The search order for this file is:
 
-- A [`cdefault.yml` or `cdefault.yaml`](build-overview.md#cdefaultyml) file in the same directory as the `<solution-name>.csolution.yml` file. 
-- A [`cdefault.yml` or `cdefault.yaml`](build-overview.md#cdefaultyml) file in the directory specified by the environment variable [`CMSIS_COMPILER_ROOT`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables).
-- A [`cdefault.yml` or `cdefault.yaml`](build-overview.md#cdefaultyml) file in the directory [`<cmsis-toolbox-installation-dir>/etc`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md##etccmake).
+- A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the same directory as the `<solution-name>.csolution.yml` file. 
+- A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the directory specified by the environment variable [`CMSIS_COMPILER_ROOT`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables).
+- A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the directory [`<cmsis-toolbox-installation-dir>/etc`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md##etccmake).
 
-The `default:` node is the start of a [`cdefault.yml` or `cdefault.yaml`](build-overview.md#cdefaultyml) file and contains the following.
+The `default:` node is the start of a [`cdefault.yml`](build-overview.md#cdefaultyml) file and contains the following.
 
 `default:`                                                |            | Content
 :---------------------------------------------------------|:-----------|:------------------------------------
 &nbsp;&nbsp; [`compiler:`](#compiler)                     |  Optional  | Toolchain selection (usage will be deprecated in CMSIS-Toolbox 3.0; specify in [`*.csolution.yml`](#solution) instead).
-&nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls. Refer to [`cdefault.yml`](build-overview.md#cdefaultyml) for an example.
+&nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls. Refer to [Build Overview - `cdefault.yml`](build-overview.md#cdefaultyml) for an example.
 
 ### `solution:`
 

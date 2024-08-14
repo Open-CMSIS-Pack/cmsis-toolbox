@@ -338,7 +338,7 @@ Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.m
 >
 > - The [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file should be committed to a repository to ensure reproducible builds.
 > - The `cbuild` option `--frozen-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file exists and reports an error if any pack is changed or not available.
-> - To update to pack versions, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) and use the command `csolution convert` to generate the build information.
+> - To update a pack to a new version, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) or remove the information about a specific pack in this file.
 
 #### Repository (version control)
 

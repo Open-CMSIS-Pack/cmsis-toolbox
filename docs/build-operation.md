@@ -203,7 +203,7 @@ CMake Variable                                   | Description
 
 ## CMake Integration
 
-The [`executes:`](YML-Input-Format.md#executes) node in the *csolution project* files allows to integrate other CMake scripts.
+The [`executes:`](YML-Input-Format.md#executes) node in the *csolution project* files allows to integrate other CMake projects or scripts.
 
 ### Example
 

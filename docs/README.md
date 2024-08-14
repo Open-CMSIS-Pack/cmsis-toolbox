@@ -76,7 +76,7 @@ The CMSIS-Toolbox is a set of command line tools that are designed for stand-alo
 
 ![Operation of `csolution` tool](./images/tool-overview.png "Operation of `csolution` tool")
 
-The [VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) IDE integration available from Arm is a viewer to the [CMSIS Solution Project Files](YML-Input-Format.md) and provides graphical ways to modify the content. Refer to [DevOps Usage](build-tools.md#devops-usage) for more information on integration into CI workflows.
+The [VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) IDE integration available from Arm is a viewer to the [*csolution project files*](YML-Input-Format.md) and provides graphical ways to modify the content. Refer to [DevOps Usage](build-tools.md#devops-usage) for more information on integration into CI workflows.
 
 ## Benefits
 
