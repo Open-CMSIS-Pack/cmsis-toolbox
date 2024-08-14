@@ -470,62 +470,19 @@ Keyword                          | Description
 
 ### `cdefault:`
 
-When [`cdefault:`](#solution) is specified in the `*.csolution.yml` file, the **`csolution` Project Manager** uses a file with the name `cdefault.yml` or `cdefault.yaml` to setup 
-the compiler along with some specific default controls. The search order for this file is:
+When [`cdefault:`](#solution) is specified in the `*.csolution.yml` file, the **`csolution` Project Manager** uses a file with the name [`cdefault.yml`](build-overview.md#cdefaultyml) to setup 
+the compiler with specific default controls. The search order for this file is:
 
-- A `cdefault.yml` or `cdefault.yaml` file in the same directory as the `<solution-name>.csolution.yml` file. 
-- A `cdefault.yml` or `cdefault.yaml` file in the directory specified by the environment variable [`CMSIS_COMPILER_ROOT`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables).
-- A `cdefault.yml` or `cdefault.yaml` file in the directory [`<cmsis-toolbox-installation-dir>/etc`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md##etccmake).
+- A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the same directory as the `<solution-name>.csolution.yml` file. 
+- A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the directory specified by the environment variable [`CMSIS_COMPILER_ROOT`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables).
+- A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the directory [`<cmsis-toolbox-installation-dir>/etc`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md##etccmake).
 
-The `default:` node is the start of a `cdefault.yml` or `cdefault.yaml` file and contains the following.
+The `default:` node is the start of a [`cdefault.yml`](build-overview.md#cdefaultyml) file and contains the following.
 
-`default:`                                                | Content
+`default:`                                                |            | Content
 :---------------------------------------------------------|:-----------|:------------------------------------
-&nbsp;&nbsp;&nbsp; [`select-compiler:`](#select-compiler) |  Optional  | Lists the possible compiler selection that this project is tested with. 
-&nbsp;&nbsp; [`compiler:`](#compiler)                     |  Optional  | Toolchain selection.
-&nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls.
-
-**Example:**
-
-```yml
-default:
-
-  compiler: AC6
-
-  misc:
-    - for-compiler: AC6
-      C-CPP:
-        - -Wno-macro-redefined
-        - -Wno-pragma-pack
-        - -Wno-parentheses-equality
-        - -Wno-license-management
-      C:
-        - -std=gnu11
-      ASM:
-        - -masm=auto
-      Link:
-        - --entry=Reset_Handler
-        - --map
-        - --info summarysizes
-        - --summary_stderr
-        - --diag_suppress=L6314W
-
-    - for-compiler: GCC
-      ASM:
-        - -gdwarf-4
-      C-CPP:
-        - -masm-syntax-unified
-        - -fomit-frame-pointer
-        - -ffunction-sections
-        - -fdata-sections
-        - -gdwarf-4
-      C:
-        - -std=gnu11
-      Link:
-        - --specs=nano.specs
-        - -Wl,-Map=$elf()$.map
-        - -Wl,--gc-sections
-```
+&nbsp;&nbsp; [`compiler:`](#compiler)                     |  Optional  | Toolchain selection (usage will be deprecated in CMSIS-Toolbox 3.0; specify in [`*.csolution.yml`](#solution) instead).
+&nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls. Refer to [Build Overview - `cdefault.yml`](build-overview.md#cdefaultyml) for an example.
 
 ### `solution:`
 
@@ -535,11 +492,10 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 `solution:`                                          |            | Content
 :----------------------------------------------------|:-----------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `created-by:`                     |  Optional  | Identifies the tool that created this solution.
-&nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this solution, i.e. **CMSIS-Toolbox@2.2.0**
+&nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this solution, i.e. **CMSIS-Toolbox@2.5.0**
 &nbsp;&nbsp;&nbsp; `description:`                    |  Optional  | Brief description text of this solution.
 &nbsp;&nbsp;&nbsp; [`select-compiler:`](#select-compiler) |  Optional  | Lists the possible compiler selection that this project is tested with. 
-&nbsp;&nbsp;&nbsp; `cdefault:`                       |  Optional  | When specified, the [`cdefault.yml`](#cdefault) file is used to setup compiler specific controls. 
-&nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
+&nbsp;&nbsp;&nbsp; [`cdefault:`](#cdefault)          |  Optional  | When specified, the [`cdefault.yml`](build-overview.md#cdefaultyml) file is used to setup compiler specific controls. 
 &nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)      |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)  |  Optional  | Set the language standard for C++ source file compilation.
@@ -797,18 +753,21 @@ rte:
 
 Toolchain options may be used at various places such as:
 
-- [`solution:`](#solution) level to specify options for a collection of related projects
-- [`project:`](#projects) level to specify options for a project
+- [`solution:`](#solution) level to specify options for a collection of related projects.
+- [`project:`](#projects) level to specify options for a project.
 
 ### `select-compiler:`
 
 Lists the compilers that this *csolution project* is tested with. This information is used by the [`cbuild setup` command](build-operation.md#details-of-the-setup-mode) to determine possible compiler choices. The actual compiler to be used is selected with the [`compiler:`](#compiler) node. 
 
-> **Note:** New in CMSIS-Toolbox 2.5.0
+> **Notes:**
+> 
+> - [`select-compiler:`](#select-compiler) is only supported in the [`*.csolution.yml`](#solution) project file.
+> - This control is new in CMSIS-Toolbox 2.5.0
 
 `select-compiler:`                                          |            | Content
 :-----------------------------------------------------------|:-----------|:-------------------------------------------
-`- compiler:`                                               |**Required**| Path and file name of `<regions_file>.h`, used to 
+`- compiler:`                                               |**Required**| Specifies a supported compiler.
 
 **Example:**
 
@@ -839,7 +798,7 @@ compiler: GCC              # Select GCC Compiler
 ```
 
 ```yml
-compiler: AC6@6.18.0       # Select Arm Compiler version 6
+compiler: AC6@6.18.0       # Select Arm Compiler version 6.18.0
 ```
 
 ### `linker:`
@@ -1964,6 +1923,8 @@ The CMSIS-Toolbox supports pre-build and post-build steps that utilize external 
 ### `executes:`
 
 Execute and external command for pre or post build steps used in `*.csolution.yml` and `*.cproject.yml` files. The `input:` and `output:` files are used for dependency checking and schedule the execution (as pre-build or post-build step) during the build process.
+
+Other CMake Build scripts may be integrated into the overall build process using the `executes:` node. Refer to [Build Operation - CMake Integration](build-operation.md#cmake-integration) for an example that utilizes a file converter for web site images.
 
 The structure of the `executes:` node is:
 

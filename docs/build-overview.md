@@ -23,6 +23,7 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
     - [Minimal Project Setup](#minimal-project-setup)
     - [Context](#context)
     - [Toolchain Agnostic Project](#toolchain-agnostic-project)
+      - [cdefault.yml](#cdefaultyml)
       - [Compiler Selection](#compiler-selection)
     - [Reproducible builds](#reproducible-builds)
       - [Repository (version control)](#repository-version-control)
@@ -225,22 +226,32 @@ project:
 
 ### Context
 
-A [`context:`](YML-Input-Format.md#context-name-conventions) identifies a configuration with `project-name`, `built-type`, and `target-type` and is used on various places in the CMSIS-Toolbox. This example selects the project `Sample`, with `build-type: Debug` and `target-type: FRDM-K32L3A6`:
+A [context](YML-Input-Format.md#context-name-conventions) is defined in the `*.csolution.yml` file with `projects:`, `target-types:`, and `build-types:`. It identifies a configuration with `project-name`, `built-type`, and `target-type` and is used on various places in the CMSIS-Toolbox.
 
-`Sample.Debug+FRDM-K32L3A6`
+This [context](YML-Input-Format.md#context-name-conventions) refers to the example above and selects the `project: Sample.cproject.yml`, with `build-type: Debug` and `target-type: FRDM-K32L3A6`:
+
+```txt
+Sample.Debug+FRDM-K32L3A6
+```
 
 The [context](YML-Input-Format.md#context-name-conventions) allows to refer each possible build combination that by default uses a different [output directory](#output-directory-structure). A context may be partly specified in many places.
 
 ### Toolchain Agnostic Project
 
-With generic [**Translation Control**](YML-Input-Format.md#translation-control) settings it is possible to create projects that work across the range of supported compilers (AC6, GCC, IAR, CLANG). The `cdefault.yml` file contains compiler specific settings and selects the default [`compiler:`](YML-Input-Format.md#compiler). By replacing the `cdefault.yml` file it is therefore possible to change the compiler or toolchain for the application project. The [**Translation Control**](YML-Input-Format.md#translation-control) settings are mapped to specify compiler by the build tools.
+Generic [**Translation Control**](YML-Input-Format.md#translation-control) settings enable projects that work across the range of supported compilers (AC6, GCC, IAR, CLANG). The [**Translation Control**](YML-Input-Format.md#translation-control) settings are mapped to specify compiler controls by the build tools.
 
-**Default settings in `cdefault.yml` for multiple compiler toolchains**
+#### cdefault.yml
+
+The `cdefault.yml` file contains a common set of compiler specific settings that select reasonable defaults with [`misc:`](YML-Input-Format.md#misc) controls for each compiler. The [`cdefault:`](YML-Input-Format.md#cdefault) node in the `*.csolution.yml` file enables the usage of this file. The directory [`<cmsis-toolbox-installation-dir>/etc`](installation.md) contains a `cdefault.yml` file that is used when no local copy of the `cdefault.yml` file is provided.
+
+> **Note:**
+>
+> - It is recommended to provide a local copy of the `cdefault.yml` file in the same directory that stores the `*.csolution.yml` file.
+
+**Example:**
 
 ```yml
 default:
-
-  compiler: GCC                  # default compiler that is used without explicit selection                
 
   misc:
     - for-compiler: AC6
@@ -270,9 +281,10 @@ default:
         - -std=gnu11
       Link:
         - --specs=nano.specs
-        - --specs=rdimon.specs
+        - --specs=nosys.specs
         - -Wl,-Map=$elf()$.map
         - -Wl,--gc-sections
+        - -Wl,--no-warn-rwx-segments   # suppress incorrect linker warning
 
     - for-compiler: CLANG
       C-CPP:
@@ -282,8 +294,7 @@ default:
       C:
         - -std=gnu11
       Link:
-        - -lcrt0-semihost
-        - -lsemihost
+        - -lcrt0
         - -Wl,-Map=$elf()$.map
         - -Wl,--gc-sections
 
@@ -291,31 +302,30 @@ default:
       C-CPP: 
         - --dlib_config DLib_Config_Full.h
       Link:
-        - --semihosting
         - --map=$elf()$.map
 ```
 
 #### Compiler Selection
 
-There are multiple ways to select a toolchain:
+Toolchain agnostic project do not contain a [`compiler:`](YML-Input-Format.md#compiler) selection in the `*.csolution.yml` project file. Instead the [`select-compiler:`](YML-Input-Format.md#select-compiler) node may list the compilers that this *csolution project* is tested with.
 
-- With `cdefault:` in the `*.csolution.yml` file, the `compiler:` selection of the `cdefault.yml` file is used. An installation can provide a `cdefault.yml` file in the directory [`<cmsis-toolbox-installation-dir>/etc`](installation.md) and select in this way the toolchain used.
-  
-- An explicit `compiler:` definition in `*.csolution.yml` or `*.cproject.yml` project file overwrites the setting in `cdefault.yml`.
-  
+There are two ways to select a toolchain:
+
+- An explicit [`compiler:`](YML-Input-Format.md#compiler) selection in the `*.csolution.yml` project file:
+
+   ```yml
+   solution:
+     cdefault:                      # use default setup of toolchain specific controls
+     compiler: AC6                  # select Arm Compiler
+
+     :
+   ```
+
 - The command line option `--toolchain` of the `cbuild` or `csolution` tool overwrites any `compiler:` definition in the csolution project files.
 
-Toolchain agnostic project examples may therefore omit the `compiler:` setting and rely on the `compiler:` setting of the `cdefault.yml` file in the directory [`<cmsis-toolbox-installation-dir>/etc`](installation.md). Such projects would then use the compiler of that is defined in the installation environment.
-
-**Example: Compiler selection in `Sample.csolution.yml`**
-
-```yml
-solution:
-  cdefault:                      # use default setup of toolchain specific controls
-  compiler: AC6                  # without explicit compiler selection, the setting of cdefault.yml is used
-
-   :
-```
+   ```bash
+   > cbuild Hello.csolution.yml --toolchain GCC
+   ```
 
 ### Reproducible builds
 
@@ -328,18 +338,18 @@ Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.m
 >
 > - The [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file should be committed to a repository to ensure reproducible builds.
 > - The `cbuild` option `--frozen-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file exists and reports an error if any pack is changed or not available.
-> - To update to pack versions, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) and use the command `csolution convert` to generate the build information.
+> - To update a pack to a new version, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) or remove the information about a specific pack in this file.
 
 #### Repository (version control)
 
 To support reproducible builds the following files should be committed to a repository of a version control system.
 
 - All user source code files.
-- All csolution project files (`*.csolution.yml`, `*.cproject.yml`, etc.).
+- All csolution project files (`cdefault.yml`, `*.csolution.yml`, `*.cproject.yml`, etc.).
 - All files in the RTE directory
   - Ensure that there are no files with the extension *.update@* as this indicates that configuration files are not up-to-date due to updated software packs.
-- The file `*.cbuild-pack` to allow reproducible builds.
-- Optionally, the file `*.cbuild-set` which defines the context set of the application that should be generated.
+- The file `*.cbuild-pack.yml` to allow [reproducible builds](#reproducible-builds).
+- Optionally, the file `*.cbuild-set.yml` which defines the context set of the application that should be generated.
 
 > **Note:**
 >

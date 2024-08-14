@@ -72,15 +72,17 @@ The build steps are:
 
 ## Command Line and IDE Usage
 
-The CMSIS-Toolbox is a set of command line tools that is designed for stand-alone usage and integration into IDEs or DevOps (for CI workflows).
+The CMSIS-Toolbox is a set of command line tools that are designed for stand-alone usage and integration into IDEs or DevOps systems for Continuous Integration (CI) workflows.
 
 ![Operation of `csolution` tool](./images/tool-overview.png "Operation of `csolution` tool")
+
+The [VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) IDE integration available from Arm is a viewer to the [*csolution project files*](YML-Input-Format.md) and provides graphical ways to modify the content. Refer to [DevOps Usage](build-tools.md#devops-usage) for more information on integration into CI workflows.
 
 ## Benefits
 
 The overall benefits of the CMSIS-Toolbox are:
 
-- Flexible CLI tools that can be used stand-alone or integrated into [VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) or DevOps systems for Continuous Integration (CI).
+- Flexible command line tools that can be used stand-alone or integrated into [VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) or [DevOps systems for Continuous Integration (CI)](build-tools.md#devops-usage).
 - Stand-alone tools are available [for all host platforms](https://artifacts.keil.arm.com/cmsis-toolbox/) (Windows, Mac, Linux) for flexible deployment.
 - [Software Packs](https://www.keil.arm.com/packs/) simplify tool setup with `device:` or `board:` selection and project creation with access to reusable software components.
 - Organize solutions with projects that are independently managed simplifies a wide range of use cases including  multi-processor applications or unit testing.
