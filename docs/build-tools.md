@@ -644,7 +644,7 @@ The commands below show typical builds in a CI system. Using `--packs` installs 
 ```bash
 ~ $ cbuild Hello.csolution.yml --packs                          # install packs and build all
 ~ $ cbuild Hello.csolution.yml --packs --context +AVH-SSE-300   # only build target +AVH-SSE-300
-~ $ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack verstions
+~ $ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack versions
 ```
 
 Packs are that not public are installed using `cpackget`.  The following commands use the MDK-Middleware development repository to install a pre-release pack in a GitHub Actions CI workflow. The `cbuild` command above uses then the MDK-Middleware development repository instead of the public MDK-Middleware pack.
