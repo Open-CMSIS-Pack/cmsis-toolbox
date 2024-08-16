@@ -121,12 +121,51 @@ jobs:
         run: |
           GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/cbuild2cmake${{ matrix.binary_extension }} ./cmd/cbuild2cmake
 
+      # Download and build cbridge executable
+      - name: Checkout cbridge repository
+        uses: actions/checkout@v4
+        with:
+          repository: Open-CMSIS-PACK/generator-bridge
+          path: cbridge
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: cbridge/go.mod
+          cache-dependency-path: |
+            **/go.mod
+            **/go.sum
+
+      - name: Build cbridge executable
+        working-directory: cbridge
+        shell: bash
+        run: |
+          GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/cbridge${{ matrix.binary_extension }} ./cmd
+
       # Download projmgr and cbuildgen from nightly
       - name: Download Open-CMSIS-Pack/devtools nightly artifacts
         shell: bash
         run : |
           gh run download -D projmgr-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n projmgr-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
           gh run download -D cbuildgen-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n cbuildgen-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
+          gh run download -D packchk-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n packchk-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
+          gh run download -D svdconv-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n svdconv-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
+
+      - name: Unzip files
+        shell: bash
+        run: |
+          mkdir -p packchk
+          mkdir -p svdconv
+          packchk_dir="packchk-${{ matrix.target }}-${{ matrix.arch }}"
+          svdconv_dir="svdconv-${{ matrix.target }}-${{ matrix.arch }}"         
+          if [[ "$RUNNER_OS" == "Linux" || "$RUNNER_OS" == "macOS" ]]; then
+            tar -xvf ${packchk_dir}/packchk-*-${{ matrix.target }}-${{ matrix.arch }}.tbz2 -C packchk
+            tar -xvf ${svdconv_dir}/svdconv-*-${{ matrix.target }}-${{ matrix.arch }}.tbz2 -C svdconv
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            unzip ${packchk_dir}/packchk-\*-${{ matrix.target }}-${{ matrix.arch }}.zip -d packchk
+            unzip ${svdconv_dir}/svdconv-\*-${{ matrix.target }}-${{ matrix.arch }}.zip -d svdconv
+          fi
 
       - name: Checkout cmsis-toolbox repo
         uses: actions/checkout@v4
@@ -140,10 +179,14 @@ jobs:
           mkdir -p ./cmsis-toolbox/bin
           mkdir -p ./cmsis-toolbox/etc
           cp ./projmgr-${{ matrix.target }}-${{ matrix.arch }}/csolution${{ matrix.binary_extension }}      ./cmsis-toolbox/bin/csolution${{ matrix.binary_extension }}
-          cp ./cbuildgen-${{ matrix.target }}-${{ matrix.arch }}/cbuildgen${{ matrix.binary_extension }}*    ./cmsis-toolbox/bin/cbuildgen${{ matrix.binary_extension }}
-          cp ./cbuild/build/cbuild${{ matrix.binary_extension }}              ./cmsis-toolbox/bin/cbuild${{ matrix.binary_extension }}
-          cp ./cpackget/build/cpackget${{ matrix.binary_extension }}          ./cmsis-toolbox/bin/cpackget${{ matrix.binary_extension }}
-          cp ./cbuild2cmake/build/cbuild2cmake${{ matrix.binary_extension }}  ./cmsis-toolbox/bin/cbuild2cmake${{ matrix.binary_extension }}
+          cp ./cbuildgen-${{ matrix.target }}-${{ matrix.arch }}/cbuildgen${{ matrix.binary_extension }}*   ./cmsis-toolbox/bin/cbuildgen${{ matrix.binary_extension }}
+          cp ./packchk/packchk${{ matrix.binary_extension }}                                                ./cmsis-toolbox/bin/packchk${{ matrix.binary_extension }}
+          cp ./svdconv/svdconv${{ matrix.binary_extension }}                                                ./cmsis-toolbox/bin/svdconv${{ matrix.binary_extension }}
+          cp ./cbuild/build/cbuild${{ matrix.binary_extension }}                                            ./cmsis-toolbox/bin/cbuild${{ matrix.binary_extension }}
+          cp ./cpackget/build/cpackget${{ matrix.binary_extension }}                                        ./cmsis-toolbox/bin/cpackget${{ matrix.binary_extension }}
+          cp ./cbuild2cmake/build/cbuild2cmake${{ matrix.binary_extension }}                                ./cmsis-toolbox/bin/cbuild2cmake${{ matrix.binary_extension }}
+          cp ./cbridge/build/cbridge${{ matrix.binary_extension }}                                          ./cmsis-toolbox/bin/cbridge${{ matrix.binary_extension }}
+          cp ./cbridge/scripts/MCUXpresso_Config_Tools/${{ matrix.target }}-${{ matrix.arch }}/launch-MCUXpressoConfigTools*  ./cmsis-toolbox/bin/
           cp -r devtools/tools/projmgr/templates/*                ./cmsis-toolbox/etc
           cp -r devtools/tools/projmgr/schemas/*                  ./cmsis-toolbox/etc
           cp -r devtools/tools/buildmgr/cbuildgen/scripts/*       ./cmsis-toolbox/etc
