@@ -17,6 +17,8 @@ on:
       - 'test/**'
       - '!test/RobotTests.md'
       - '!test/tests.py'
+env:
+  retention-days: 7
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -43,6 +45,8 @@ jobs:
       matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Authenticate with GitHub CLI
         shell: bash
         run: |
@@ -167,7 +171,7 @@ jobs:
             unzip ${svdconv_dir}/svdconv-\*-${{ matrix.target }}-${{ matrix.arch }}.zip -d svdconv
           fi
 
-      - name: Checkout cmsis-toolbox repo
+      - name: Checkout Open-CMSIS-PACK/devtools repo
         uses: actions/checkout@v4
         with:
           repository: Open-CMSIS-PACK/devtools
@@ -178,6 +182,7 @@ jobs:
         run: |
           mkdir -p ./cmsis-toolbox/bin
           mkdir -p ./cmsis-toolbox/etc
+          mkdir -p ./cmsis-toolbox/doc
           cp ./projmgr-${{ matrix.target }}-${{ matrix.arch }}/csolution${{ matrix.binary_extension }}      ./cmsis-toolbox/bin/csolution${{ matrix.binary_extension }}
           cp ./cbuildgen-${{ matrix.target }}-${{ matrix.arch }}/cbuildgen${{ matrix.binary_extension }}*   ./cmsis-toolbox/bin/cbuildgen${{ matrix.binary_extension }}
           cp ./packchk/packchk${{ matrix.binary_extension }}                                                ./cmsis-toolbox/bin/packchk${{ matrix.binary_extension }}
@@ -191,6 +196,9 @@ jobs:
           cp -r devtools/tools/projmgr/schemas/*                  ./cmsis-toolbox/etc
           cp -r devtools/tools/buildmgr/cbuildgen/scripts/*       ./cmsis-toolbox/etc
           cp -r devtools/tools/buildmgr/cbuildgen/config/*        ./cmsis-toolbox/etc
+          cp ./docs/LICENSE.txt ./cmsis-toolbox
+          cp ./docs/index.html ./cmsis-toolbox/doc
+          touch ./cmsis-toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}-$(date '+%Y-%m-%d_%H-%M-%S')
 
       - name: Update toolchain config files
         if: ${{ matrix.target == 'windows' }}
@@ -207,6 +215,7 @@ jobs:
         with:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: cmsis-toolbox
+          retention-days: ${{ env.retention-days }}
 
   run-tests:
     needs: [ matrix_prep, create-toolbox ]
@@ -287,6 +296,7 @@ jobs:
         with:
           name: reports-${{ matrix.target }}-${{ matrix.arch }}
           path: reports-${{ matrix.target }}-${{ matrix.arch }}
+          retention-days: ${{ env.retention-days }}
 
   consolidate-report:
     if: always()
@@ -341,3 +351,4 @@ jobs:
       with:
         name: consolidated-reports
         path: artifacts/collective_robot_results
+        retention-days: ${{ env.retention-days }}
