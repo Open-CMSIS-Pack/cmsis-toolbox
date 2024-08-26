@@ -1,4 +1,4 @@
-# Generate Application from Components
+# Create Applications
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
@@ -9,14 +9,46 @@
 
 The following chapter explains the structure of a software pack and how it can be used in an application.
 
-- [Generate Application from Components](#generate-application-from-components)
-  - [Overall Process](#overall-process)
+- [Create Applications](#create-applications)
+  - [Start a Project](#start-a-project)
+  - [Configure Linker Scripts](#configure-linker-scripts)
+  - [Using Components](#using-components)
   - [Software Component](#software-component)
     - [Required Interfaces](#required-interfaces)
   - [Example: Network Stack](#example-network-stack)
   - [Update Software Packs](#update-software-packs)
 
-## Overall Process
+## Start a Project
+
+An application is based on a *device* and/or *board* that are supported by a Device Family Pack (DFP) or Board Support Pack (BSP). The steps to start a project are:
+
+1. Step: **Install the DFP and BSP**
+   - Use [Device search](https://www.keil.arm.com/devices/) or [Board search](https://www.keil.arm.com/boards/) available on web portals to identify the software packs required for your target.
+   - Download the DFP and BSP using the [`cpackget`](build-tools.md#install-public-packs) tool. Alternatively, you may use [`cbuild` with option `--packs`](build-tools.md#build-project) to install missing packs.
+
+2. Step: **Use a Template Project to create the application**
+   - Select a suitable generic [Template Project](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) or refer to the DFP documentation as some devices have specific template projects.
+   - Enter the device and/or board information along with software packs in `csolution.yml`.
+   - Add source files, software components, and potentially software layers to `cproject.yml`. As a starting point, you may use a simple `main` function.
+
+3. Step: **Configure software components and build project** 
+   - Use the command `cbuild <name>.csolution.yml --update-rte --packs` to translate the application with default configuration. Alternatively, if the packs are already downloaded in step 1, use `csolution convert <name>.csolution.yml` to get the default configuration files.
+   - Review and adjust the configuration files in the [RTE directory](build-overview.md#rte-directory-structure) that have been copied from software packs for selected software components.
+
+> **Note:**
+>
+> - The Arm CMSIS Solution extension for VS Code guides you thru these steps with the `Create provides New Solution`. This extension is for example part of the [Arm Keil Studio Pack](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack).
+
+**Example:**
+
+The following application is based on the [Simple Template Project](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/Simple) and uses an [AmbiqMicro board](https://www.keil.arm.com/boards/?q=&vendor=ambiq-micro).
+
+
+  - pack: AmbiqMicro::Apollo_DFP@1.4.1
+## Configure Linker Scripts
+
+
+## Using Components
 
 The steps to create an application based on software components are:
 

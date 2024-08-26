@@ -173,10 +173,14 @@ xattr -dr com.apple.quarantine <cmsis-toolbox-installation-dir>/bin/
 - Add execution permissions for all executables in `./bin`
 
 ```Shell
-chmod +x <cmsis-toolbox-installation-dir>/bin/cbuildgen
+chmod +x <cmsis-toolbox-installation-dir>/bin/cbridge
 chmod +x <cmsis-toolbox-installation-dir>/bin/cbuild
 ...
 ```
+
+> **Note:**
+>
+> - A signed version of the CMSIS-Toolbox is available via the [Arm Tools Artifactory](https://artifacts.tools.arm.com/cmsis-toolbox/).
 
 ### Registering CMSIS_PACK_ROOT with cpackget
 
@@ -252,8 +256,8 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
    ```txt
    vcpkg new --application
    vcpkg add artifact arm:cmsis-toolbox [--version major.minor.patch]
-   vcpkg add artifact microsoft:cmake
-   vcpkg add artifact microsoft:ninja
+   vcpkg add artifact arm:cmake
+   vcpkg add artifact arm:ninja
    vcpkg add artifact arm:arm-none-eabi-gcc
    vcpkg activate
    ```  
