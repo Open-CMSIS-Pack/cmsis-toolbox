@@ -332,11 +332,11 @@ Access Sequence                                | Description
 `$Dpack$`                                      | Path to the pack that defines the selected device (DFP).
 `$Pack(vendor::name)$`                         | Path to a specific pack. Example: `$Pack(NXP::K32L3A60_DFP)$`.
 
-For a [`context`](#context-name-conventions) the `project-name`, `.build-type`, and `+target-type` are optional; when omitted the current processed context is used. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file.
+For a [`context`](#context-name-conventions) the `project-name`, `.build-type`, and `+target-type` are optional. An **access sequence** that specifies only `project-name` uses the context that is currently processed. It is important that the `project` is part of the [context-set](build-overview.md#working-with-context-set) in the build process. is used. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file. When 
 
 **Example:**
 
-For the example below we assume the following `build-type`, `target-type`, and `projects` definitions.
+This example uses the following `build-type`, `target-type`, and `projects` definitions.
 
 ```yml
 solution:
@@ -345,7 +345,7 @@ solution:
       board: NUCLEO-L552ZE-Q    # specifies board
 
     - type: Production-HW       # target-type: Production-HW
-      device: STM32U5X          # specifies device
+      device: STM32L5X          # specifies device
       
   build-types:
     - type: Debug               # build-type: Debug
@@ -361,34 +361,34 @@ solution:
     - project: ./application/MQTT_AWS.cproject.yml            # relative path
 ```
 
-The `project: /application/MQTT_AWS.cproject.yml` can now use **Access Sequences** to reference files or directories in
-other projects that belong to a solution. For example, these references are possible in the file `MQTT_AWS.cproject.yml`.
+The `project: /application/MQTT_AWS.cproject.yml` may use **access sequences** to reference files or directories in other projects that belong to the same *csolution project*. 
 
-The example below uses the `build-type` and `target-type` of the current processed context. In practice this means that
-the same `build-type` and `target-type` is used as for the `MQTT_AWS.cproject.yml` project.
+For example, these references are possible in the file `MQTT_AWS.cproject.yml`.
 
 ```yml
     files:
-    - file: $cmse-lib(TFM)$                              # use the symbol output file of the TFM Project
+    - file: $cmse-lib(TFM)$                         # use symbol output file of TFM Project
+```
+
+The example above uses the `build-type` and `target-type` of the processed context for the project `TFM`. With a [context-set](build-overview.md#working-with-context-set) you may mix different `build-types` for an application. Note that it is important to build both projects in the same build process.
+
+```bash
+cbuild iot-product.csolution.yml --context-set --context TFM.Release+Board --context MQTT_AWS.Debug+Board 
 ```
 
 The example below uses from the TFM project always `build-type: Debug` and the `target-type: Production-HW`.
 
 ```yml
     files:
-    - file: `$cmse-lib(TFM.Release+Production-HW)$`      # use the symbol output file of the TFM Project
+    - file: `$cmse-lib(TFM.Release+Production-HW)$` # use symbol output file of TFM Project
 ```
 
-The example below uses the `build-type: Debug`. The `target-type` of the current processed context is used.
-
-> **Note:** 
-> 
-> Implementation of `executes:` is scheduled for implementation in CMSIS-Toolbox 2.4 (Q2'24)
+The example below uses the `build-type: Debug` and the `target-type` of the current processed context is used.
 
 ```yml
   executes:
-    - execute: Generate Image
-      run: gen_image %input% -o %output%           # DFP the get_image tool
+    - execute: GenImage
+      run: gen_image %input% -o %output%
       input:
         - $elf(TFM.Debug)$
         - $elf(Bootloader.Release)$
@@ -1965,7 +1965,7 @@ The structure of the `executes:` node is:
 
 `executes:`                                 |              | Content
 :-------------------------------------------|:-------------|:------------------------------------
-`- execute:`                                | **Required** | Description of the build step.
+`- execute:`                                | **Required** | Short identifier of the build step. Note: identifier is part of path names during build process. 
 &nbsp;&nbsp;&nbsp; `run:`                   | **Required** | Command string with name of the program or script (optionally with path) along with argument string.
 &nbsp;&nbsp;&nbsp; `always:`                |  Optional    | When present, the build step always runs and bypasses check for outdated `output:` files.
 &nbsp;&nbsp;&nbsp; `input:`                 |  Optional    | A list of input files (may contain [Access Sequences](#access-sequences)). 
@@ -1987,7 +1987,7 @@ The `run:` command string uses these sequences to access input files and output 
 ```yml
 solution:                       # executed as part of a project build
   executes:
-    - execute: Generate Download Image
+    - execute: GenImage         # generate final download image
       run: gen_image $input$ -o $output$ --sign    # Command line string
       input:
         - $elf(Application)$                       # combine these project parts
@@ -2010,7 +2010,7 @@ project:                       # executed as part of a project build
 ```yml
 solution:                      # executed as part of a solution build
   executes:                    # uses a CMake script
-    - execute: Archive Artifacts
+    - execute: SaveArtifacts
       run: ${CMAKE_COMMAND} -DINPUT=$input$ -DOUTPUT=$output$ -P $input(0)$
       always:
       input:
@@ -2025,7 +2025,7 @@ solution:                      # executed as part of a solution build
 ```yml
 project:                       # executed as part of a project build
   executes:                    # uses a CMake script
-    - execute: Sign ELF Image
+    - execute: SignImage
       run: ${CMAKE_COMMAND} -DINPUT=$input(1)$ -DOUTPUT=$output$ -P $input(0)$
       input:
         - $SolutionDir()$/script/sign.cmake   #CMake script
