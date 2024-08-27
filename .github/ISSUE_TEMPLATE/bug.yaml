@@ -40,6 +40,8 @@ body:
       options:
         - label: cbuild
           required: false
+        - label: cbuild2cmake
+          required: false
         - label: cpackget
           required: false
         - label: csolution

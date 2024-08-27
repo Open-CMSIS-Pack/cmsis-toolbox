@@ -46,9 +46,11 @@ body:
       options:
         - label: cbuild
           required: false
-        - label: csolution
+        - label: cbuild2cmake
           required: false
         - label: cpackget
+          required: false
+        - label: csolution
           required: false
         - label: packchk
           required: false
