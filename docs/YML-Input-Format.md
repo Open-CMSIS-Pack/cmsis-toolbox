@@ -932,6 +932,8 @@ Value                                                 | Select C Language Standa
 `gnu99`                                               | same as `c99` but with additional GNU extensions.
 `c11`                                                 | compile C source files as defined in C11 standard (ISO/IEC 9899:2011).
 `gnu11`                                               | same as `c11` but with additional GNU extensions.
+`c17`                                                 | compile C source files as defined in C17 standard (ISO/IEC 9899:2017). Experimental compiler feature new in CMSIS-Toolbox 2.6.0. 
+`c23`                                                 | compile C source files as defined in C23 standard (ISO/IEC 9899:2023). Experimental compiler feature new in CMSIS-Toolbox 2.6.0.
 
 ### `language-CPP:`
 
@@ -1321,14 +1323,16 @@ The `processor:` keyword specifies the usage of processor features for this proj
 &nbsp;&nbsp;&nbsp; `trustzone:`         | Select TrustZone mode: `secure` \| `secure-only` \| `non-secure` \| `off`.
 &nbsp;&nbsp;&nbsp; `branch-protection:` | Select Branch Protection mode: `bti` (branch target identification) \| `bti-signret` (branch target identification and pointer authentication) \| `off` (disabled).
 
-ToDo: explain trustzone
-
 The default setting enables the available features of the device. For example `fpu: dp` is selected for devices that offer double precision floating point hardware.  
 
-For `trustzone:` the default setting is:
+For `trustzone:` the possible settings are:
 
-- `off` for devices that support this option, but TrustZone is configurable.
-- `non-secure` for devices that have TrustZone enabled.
+`trustzone:`  | Description
+:-------------|:----------------
+`off`         | TrustZone disabled, classic Cortex-M programmers model. Default for devices with configurable TrustZone feature.
+`non-secure`  | Non-secure mode. Default for devices with enabled TrustZone feature.
+`secure`      | Secure mode with veneers for non-secure calls. Related options to generate `cmse` library are enabled.
+`secure-only` | Secure mode without veneers for non-secure calls. No `cmse` library generated (new in CMSIS-Toolbox 2.6.0).
 
 **Example:**
 
