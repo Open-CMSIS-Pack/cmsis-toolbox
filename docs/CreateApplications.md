@@ -5,7 +5,7 @@
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD032 -->
 
-[**CMSIS-Toolbox**](README.md) **> Generate Application from Components**
+[**CMSIS-Toolbox**](README.md) **> Create Applications**
 
 The following chapter explains the structure of a software pack and how it can be used in an application.
 
@@ -26,38 +26,79 @@ An application is based on a *device* and/or *board* that are supported by a Dev
 
 1. Step: **Install the DFP and BSP**
    - Use [Device search](https://www.keil.arm.com/devices/) or [Board search](https://www.keil.arm.com/boards/) available on web portals to identify the software packs required for your target.
-   - Download the DFP and BSP using the [`cpackget`](build-tools.md#install-public-packs) tool. Alternatively, you may use [`cbuild` with option `--packs`](build-tools.md#build-project) to install missing packs.
-
-2. Step: **Use a Template Project to create the application**
+   - Use `CMSIS Pack` to download the Device Family Pack (DFP) and optionally the Board Support Pack (BSP) with [`cpackget`](build-tools.md#install-public-packs). Note that a BSP is only required if you want to work with a specific board. For custom hardware, typically the DFP is sufficient. 
+   
+2. Step: **Use a Template Project and add DFP and BSP**
    - Select a suitable generic [Template Project](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) or refer to the DFP documentation as some devices have specific template projects.
-   - Enter the device and/or board information along with software packs in `csolution.yml`.
-   - Add source files, software components, and potentially software layers to `cproject.yml`. As a starting point, you may use a simple `main` function.
+   - Copy the template project and open the `*.csolution.yml` file.  Add under [`packs:`](YML-Input-Format.md#packs) the packs identified in step (1). You may omit the version number during initial project development.
 
-3. Step: **Configure software components and build project** 
-   - Use the command `cbuild <name>.csolution.yml --update-rte --packs` to translate the application with default configuration. Alternatively, if the packs are already downloaded in step 1, use `csolution convert <name>.csolution.yml` to get the default configuration files.
-   - Review and adjust the configuration files in the [RTE directory](build-overview.md#rte-directory-structure) that have been copied from software packs for selected software components.
+    ```yml
+      :
+      compiler: AC6
+
+      # List the packs that define the device and/or board.
+      packs:
+        - pack: AnalogDevices::ADuCM320_DFP
+      :
+    ```
+   
+3. Step: **Use `csolution list` commands to identify device or board**
+   - Use `csolution list devices <name>.csolution.yml` or `csolution list boards <name>.csolution.yml` to get the device or board names.
+   - Enter the device or board name under [`target-types:`](YML-Input-Format.md#target-types). A device is typically used for custom hardware.
+
+    ```yml
+      :
+      target-types:
+        - type: ADuCM320-Board    # choose a brief name for your target hardware
+        # device: MyDeviceName    # replace with your device or comment out to use a board
+          board: Analog Devices::EVAL-ADuCM320EBZ     # you may omit version information
+      :
+    ```
+
+   - Most projects require `- component: Device:Startup` or a variant. Use `csolution list components <name>.csolution.yml` to identify the name of the startup component and add it to the file `*.cproject.yml` of your project.
+   - Now, the project should already compile with the command `cbuild <name>.csolution.yml --update-rte --packs --context .Debug`. Note that this step downloads missing packs and copies configuration files to the [RTE directory](build-overview.md#rte-directory-structure). 
+
+4. Step: **Review and configure RTE files** 
+   - Review the configuration files in the [RTE directory](build-overview.md#rte-directory-structure) and refer to the documentation of the software components for instructions.
+   - [Configure Linker Scripts](#configure-linker-scripts) below explains how to setup physical memory.
+   - For simple projects the default settings should be sufficient.
+   - The [build information file](YML-CBuild-Format.md#cbuild-output-files) `<name>.cbuild.Debug+<target-name>.yml` lists configuration files of components and other useful information such as links to documentation of the component.
+  
+5. Step: **Add application functionality**
+   - Implement the application code in C/C++ source files. Use the [`groups:`](YML-Input-Format.md#groups) section in `<name>.cproject.yml` to add new source files.
+   - Use `csolution list components  <name>.csolution.yml` to identify additional software components from the selected packs. Use the [`components:`](YML-Input-Format.md#components) in `<name>.cproject.yml` to add new components and refer to related documentation for usage instructions. Note that you may omit vendor and version information for components as this is defined already by the packs that are selected.
+
+    ```yml
+      :
+      groups:
+        - group: Source Files
+          files: 
+            - file: main.c
+            - file: MyFile1.c
+      :
+      components:
+        - component: ARM::CMSIS:CORE
+        - component: Device:Startup
+        - component: Device:Peripheral Libraries:ADC
+      :
+    ```
+
+   - Again, the project should compile with the command `cbuild <name>.csolution.yml --update-rte --packs --context .Debug`. Repeat step (4) when you added new components that require configuration.
 
 > **Note:**
 >
-> - The Arm CMSIS Solution extension for VS Code guides you thru these steps with the `Create provides New Solution`. This extension is for example part of the [Arm Keil Studio Pack](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack).
-
-**Example:**
-
-ToDo
-
-The following application is based on the [Simple Template Project](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/Simple) and uses an [AmbiqMicro board](https://www.keil.arm.com/boards/?q=&vendor=ambiq-micro).
-
-  - pack: AmbiqMicro::Apollo_DFP@1.4.1
-
+> - The Arm CMSIS Solution extension for VS Code guides you through these steps with the `Create New Solution` workflow. This extension is for example part of the [Arm Keil Studio Pack](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack).
 
 ## Configure Linker Scripts
 
-A *linker script file* defines the physical memory layout for a `*.cproject.yml` based. It may also allocate specific program sections (i.e. DMA buffers) to special memory regions. The **`csolution` Project Manager** implements a [linker script management](build-overview.md#linker-script-management) that uses a generic *regions header file* in combination with a toolchain-specific *linker script template*. These files are combined by a C preprocessor into the final *linker script file*.
+A *linker script file* defines the physical memory layout for a `*.cproject.yml` based. It may also allocate specific program sections (for example DMA buffers or non-volatile variables) to special memory regions. While complex devices may use a bespoke linker script to manage multi-core and multi-master bus systems, many single core devices can use the [automatic linker script generation](build-overview.md#automatic-linker-script-generation) of the **`csolution` Project Manager** which uses a generic *regions header file* in combination with a toolchain-specific *linker script template*.
+
+The following section describes the usage of a *linker script template* and a *regions header file* which is combined by a C preprocessor into the final *linker script file*. It uses [auto-generated files](build-overview.md#automatic-linker-script-generation), but the methods also apply somewhat to bespoke linker scripts.
 
 The overall process to configure linker scripts for independent projects is:
 
-1. Review and adjust the physical memory layout in the *regions header file*.
-2. Optionally add specific program sections to the *linker script template* or change the default behavior of that file. 
+1. Step: Review and adjust the physical memory layout in the *regions header file*.
+2. Step: Optionally add specific program sections to the *linker script template* or change the default behavior of that file. 
 
 ### Regions Header File
 
@@ -266,7 +307,7 @@ ToDo: Use the command `csolution list components` to display available implement
 
 ## Example: Network Stack
 
-In this example, the application requires TCP Socket connectivity. Using the steps described under [Overall Process](#overall-process) delivers this content for *.cproject.yml file.
+In this example, the application requires TCP Socket connectivity. Using the steps described under [Using Components](#using-components) delivers this content for `*.cproject.yml` file.
 
 ```yml
   packs:
@@ -276,16 +317,16 @@ In this example, the application requires TCP Socket connectivity. Using the ste
     - pack: Keil::LPC1700_DFP@2.7.1
 
   components:
-    - component: Keil::Network&MDK-Pro Net_v6:Socket:TCP
-    - component: Keil::Network&MDK-Pro Net_v6:CORE&Release
-    - component: Keil::Network&MDK-Pro Net_v6:Interface:ETH
-    - component: ARM::CMSIS:CORE
-    - component: ARM::CMSIS:RTOS2:Keil RTX5&Source
-    - component: Keil::CMSIS Driver:Ethernet:KSZ8851SNL
-    - component: Keil::CMSIS Driver:SPI:SPI
-    - component: Keil::Device:PIN
-    - component: Keil::Device:GPIO
-    - component: Keil::Device:Startup
+    - component: Network&MDK-Pro Net_v6:Socket:TCP
+    - component: Network&MDK-Pro Net_v6:CORE&Release
+    - component: Network&MDK-Pro Net_v6:Interface:ETH
+    - component: CMSIS:CORE
+    - component: CMSIS:RTOS2:Keil RTX5&Source
+    - component: CMSIS Driver:Ethernet:KSZ8851SNL
+    - component: CMSIS Driver:SPI:SPI
+    - component: Device:PIN
+    - component: Device:GPIO
+    - component: Device:Startup
 ```
 
 The required interfaces are identified using `csolution list dependencies`:
@@ -297,6 +338,8 @@ Adding more components such as a IoT Client would be the next step.
 ![Network Stack - Class View](./images/Network-classes.png "Network Stack - Class View")
 
 ## Update Software Packs
+
+ToDo: this section needs review!
 
 The update of software packs can be performed with these steps:
 

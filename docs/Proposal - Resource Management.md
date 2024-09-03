@@ -48,7 +48,7 @@ The following is the `*.csolution.yml` file.  It contains 4 projects: `Core2`, `
 
 `regions-MyTarget.h`
 
-```
+```c
 // <h>ROM Configuration
 // =======================
 // <h> __ROM0=Flash
@@ -81,7 +81,7 @@ The linker script is extended for each project using the project name.  The copy
 
 Generic linker script `ac6_linker_script.sct.src`
 
-```
+```txt
 LR_ROM0 __ROM0_BASE_TFM __ROM0_SIZE_TFM  {
 
   ER_ROM0 __ROM0_BASE_TFM __ROM0_SIZE_TFM {
@@ -109,7 +109,7 @@ LR_ROM0 __ROM0_BASE_TFM __ROM0_SIZE_TFM  {
 
 `ac6_linker_script.sct.src` expanded for TFM project
 
-```
+```txt
 LR_ROM0 __ROM0_BASE_TFM __ROM0_SIZE_TFM  {
 
   ER_ROM0 __ROM0_BASE_TFM __ROM0_SIZE_TFM {
@@ -134,4 +134,3 @@ LR_ROM0 __ROM0_BASE_TFM __ROM0_SIZE_TFM  {
   }
   :
 ```
-

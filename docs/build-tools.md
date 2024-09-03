@@ -46,6 +46,9 @@ This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects)
     - [Remove packs](#remove-packs)
   - [DevOps Usage](#devops-usage)
     - [Examples](#examples)
+  - [IDE Usage](#ide-usage)
+    - [Project Outline View](#project-outline-view)
+    - [Build Process](#build-process)
 
 ## Requirements
 
@@ -244,12 +247,16 @@ cbuild example.csolution.yml --toolchain GCC
 > - Testing a new compiler or new compiler version on the overall project.
 > - For unit test applications to allow the usage of different compilers.
 
-In CI systems that run a matrix build it is sometimes required to add a prefix to the [output directory](YML-Input-Format.md#output-dirs) names for `outdir:`. The following command builds the project with the AC6 and GCC compiler and separates the directories for output and temporary files.
+In [DevOps systems](#devops-usage) that run CI test with a matrix build it is sometimes required separate the output of various builds. The option `--output` adds a prefix to the [output directory](YML-Input-Format.md#output-dirs) for `outdir:`, `tmpdir:` and build information files. The following command builds the project with the AC6 and GCC compiler and separates the directories for output and temporary files.
 
 ```bash
 cbuild example.csolution.yml --toolchain AC6 --output outAC6
 cbuild example.csolution.yml --toolchain GCC --output outGCC
 ```
+
+> **Note:**
+>
+> The `--output` option is not recommended in a IDE environment as it changes the location of mandatory build information files that are [used by the IDE](#ide-usage).
 
 ### Update RTE Configuration Files
 
@@ -662,3 +669,45 @@ Example            | Description
 [RTOS2 Validation](https://github.com/ARM-software/CMSIS-RTX/actions) | Runs the CMSIS-RTOS2 validation across Keil RTX using source and library variants.
 [STM32H743I-EVAL_BSP](https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP) | Build test of a Board Support Pack (BSP) with MDK-Middleware [Reference Applications](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/ReferenceApplications.md) using Arm Compiler or GCC. The artifacts store the various example projects for testing on the hardware board.
 [TFL Micro Speech](https://github.com/arm-software/AVH-TFLmicrospeech) | This example project shows the Virtual Streaming Interface with Audio input and uses [software layers](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/build-overview.md#software-layers) for retargeting.
+
+## IDE Usage
+
+An IDE may use the following `cbuild setup` command to setup the project outline view and get information about components and software layers.
+
+```bash
+cbuild setup example.csolution.yml --context-set [--packs] [--update-rte]
+```
+
+The command above is used when the IDE starts.
+
+- The option `--context-set` uses one `target-type` and optionally multiple related projects that are selected by a user in the file `*.cbuild-set.yml`. If this file is missing it is created with the first `target-type` and the first `build-type` that are defined in the `*.csolution.yml` file.  
+- The option `--packs` can be enabled to download missing software packs that are public.
+- The option `--update-rte` is used when the IDE changes `device:`, `board:` or `component:` settings.
+
+The `cbuild setup` command creates [build information files](YML-CBuild-Format.md) and generates the file `compile_commands.json` for IntelliSense in an VS Code IDE environment. Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
+
+### Project Outline View
+
+The project outline view in an IDE may utilize the project files as described below:
+
+- The file `*.csolution.yml` contains the overall structure of projects, `build-types`, and `target-types`.
+- The file `*cbuild-set.yml` specifies the selected contexts; if it does not exist the IDE may select the first project, first `build-type`, and first `target-type` from the file `*.csolution.yml`.
+- The files `*.cproject.yml` provides the source groups, source files and the list of components (but without source files).
+- The files `*.clayer.yml` or `*.cgen.yml` contain software layers with additional source groups, source files, and components. The `*.cbuild.<context>.yml` files provide the exact location of these files, for example when variables are used.
+
+Using above information it is possible to create an outline view, but without the file list for components. For software layers, the content may required the `*.cbuild.<context>.yml` files that are generated with the `cbuild setup` command.
+
+The `cbuild-idx.yml` file provides the exact location of all `*.cbuild.<context>.yml` files that are used in this context-set. The `*.cbuild.<context>.yml` files contain for the components source files, configuration file information, API header files, user code templates, generator information, and links to documentation. The project outline view may provide access to this information.
+
+### Build Process
+
+An IDE may use the following `cbuild` command to build the overall application.
+
+```bash
+cbuild example.csolution.yml --context-set [--packs] [--quite] [--rebuild] 
+```
+
+- The option `--context-set` selects the projects along with `target-type` and `build-type` for the application.
+- The option `--packs` can be enabled to download missing software packs that are public.
+- The option `--quite` suppresses details about the build process.
+- The option `--rebuild` may be used to force a complete rebuild of the output files.
