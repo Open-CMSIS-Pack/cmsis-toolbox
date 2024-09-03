@@ -61,18 +61,19 @@ Tool                     | Description
 [cbuild](build-tools.md#cbuild-invocation)      | Build Invocation: orchestrate the build steps utilizing CMSIS tools and a CMake compilation process.
 [csolution](build-tools.md#csolution-invocation)| Project Manager: create build information for embedded applications that consist of one or more related projects.
 
-The tools processes *csolution project files* (in YAML format) and *software packs*
+The tools process *csolution project files* (in YAML format) and *software packs*
 (in Open-CMSIS-Pack format) to generate independent projects which may be a part of a more complex application.
 
 > **Notes:**
 >
 > - This documentation uses the filename extension `*.yml`, but the extension `*.yaml` is also supported.
 > - The term *CMSIS solution* refers to an application project that is specified with *csolution project files*.
+> - *Software packs* describe software components in Open-CMSIS-Pack format that contain middleware, drivers, board support, or device support. *Software packs* also provide documentation, examples, and reusable software layers.
 
 The overall features are:
 
 - Access to the content of software packs in Open-CMSIS-Pack format to:
-  - Setup the tool chain based on a *Device* or *Board* that is defined in the CMSIS-Packs.
+  - Setup the tool chain based on a *Device* or *Board* that is defined in software packs.
   - Add software components that are provided in the various software packs to the application.
 - Organize applications (with a `*.csolution.yml` file) into projects that are independently managed
   (using `*.cproject.yml` files).
@@ -80,9 +81,9 @@ The overall features are:
 - Manage multiple hardware targets to allow application deployment to different hardware
   (test board, production hardware, etc.).
 - Manage multiple build types to support software verification (debug build, test build, release build, ect.)
-- Support multiple compiler toolchains (GCC, Arm Compiler 6, IAR, etc.) for project deployment.
+- Support multiple compiler toolchains (GCC, Arm Compiler 6, IAR, LLVM) for project deployment.
 
-The diagram below outlines the operation of the `csolution` command `convert` that processes one or more [`context`](YML-Input-Format.md#context) configurations of the application project (called solution). Refer to [Project Examples](#project-examples) for more information.
+The diagram below outlines the operation of the `csolution` command `convert` that processes one or more [`context`](YML-Input-Format.md#context) configurations of the application (called *csolution project*). Refer to [Project Examples](#project-examples) for more information.
 
 ![Operation Overview](./images/operation-overview.png "Operation Overview")
 
@@ -146,7 +147,7 @@ The following repositories provide several working examples:
 
 Repository            | Description
 :---------------------|:-------------------------------------
-[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains several `Hello World` examples that show single-core, multi-core, and TrustZone setup.
+[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains several getting started examples that show single-core, multi-core, and TrustZone setup and usage a generator (CubeMX).
 [vscode-get-started](https://github.com/Open-CMSIS-Pack/vscode-get-started) | Contains the setup for a VS Code development environment including an example project.
 [github.com/Arm-Examples](https://github.com/Arm-Examples) | Contains many examples that include CMSIS-Toolbox setup.
 
@@ -220,7 +221,7 @@ project:
         - file: ./main.c
 
   components:
-    - component: ARM::CMSIS:CORE
+    - component: CMSIS:CORE
     - component: Device:Startup
 ```
 
@@ -375,7 +376,7 @@ project:
         - file: ./main.c
 
   components:
-    - component: ARM::CMSIS:CORE
+    - component: CMSIS:CORE
     - component: Device:Startup
 
   layers:
@@ -882,7 +883,7 @@ An example that uses STM32CubeMX is provided in [github.com/Open-CMSIS-Pack/csol
 To list the *Generator* configuration of a `*.csolution.yml` use:
 
 ```bash
->csolution CubeMX.csolution.yml list generators -v
+>csolution CubeMX.csolution.yml list generators --verbose
 CubeMX (Global Registered Generator)                 # Name of the Generator
   base-dir: STM32CubeMX/MyBoard                      # Generator output directory for contexts listed below
     cgen-file: STM32CubeMX/MyBoard/CubeMX.cgen.yml   # Generator import file for contexts listed below
@@ -893,7 +894,7 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
 To run the generator (in this case CubeMX) use:
 
 ```bash
->csolution CubeMX.csolution.yml run -g CubeMX
+>csolution CubeMX.csolution.yml run --generator CubeMX
 ```
 
 ### Configure Generator Output
