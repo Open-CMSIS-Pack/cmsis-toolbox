@@ -40,7 +40,7 @@ body:
       options:
         - label: cbuild
           required: false
-        - label: cbuild-gen
+        - label: cbuild2cmake
           required: false
         - label: cpackget
           required: false
