@@ -39,6 +39,7 @@ jobs:
           mkdir -p toolbox/cbuild
           mkdir -p toolbox/packchk
           mkdir -p toolbox/svdconv
+          mkdir -p toolbox/vidx2pidx
           mkdir -p toolbox/distribution/bin
           mkdir -p toolbox/distribution/etc
           mkdir -p toolbox/distribution/doc
@@ -72,9 +73,20 @@ jobs:
           target: "toolbox/svdconv/"
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download vidx2pidx release assets
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Open-CMSIS-Pack/vidx2pidx"
+          version: tags/v0.0.4
+          regex: true
+          file: "vidx2pidx_.*\\.(zip|gz)"
+          target: "toolbox/vidx2pidx/"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Unzip and copy files
         run: |
           curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.37/schema/PACK.xsd --output distribution/etc/PACK.xsd
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/main/schema/PackIndex.xsd --output distribution/etc/PackIndex.xsd
           sudo chmod +x ./cbuild/cbuild_install.sh
           ./cbuild/cbuild_install.sh -x cbuild
           cp -r cbuild/bin/* distribution/bin
@@ -91,6 +103,12 @@ jobs:
           tar -xvf svdconv/svdconv-*-linux-arm64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.lin-arm64
           unzip svdconv/svdconv-\*-windows-amd64.zip -d svdconv && mv svdconv/svdconv.exe distribution/bin/svdconv.exe-amd64
           unzip svdconv/svdconv-\*-windows-arm64.zip -d svdconv && mv svdconv/svdconv.exe distribution/bin/svdconv.exe-arm64
+          tar -xvf vidx2pidx/vidx2pidx_*_linux_amd64.tar.gz -C vidx2pidx && mv vidx2pidx/vidx2pidx_*_linux_amd64/vidx2pidx distribution/bin/vidx2pidx.lin-amd64
+          tar -xvf vidx2pidx/vidx2pidx_*_linux_arm64.tar.gz -C vidx2pidx && mv vidx2pidx/vidx2pidx_*_linux_arm64/vidx2pidx distribution/bin/vidx2pidx.lin-arm64
+          tar -xvf vidx2pidx/vidx2pidx_*_darwin_amd64.tar.gz -C vidx2pidx && mv vidx2pidx/vidx2pidx_*_darwin_amd64/vidx2pidx distribution/bin/vidx2pidx.mac-amd64
+          tar -xvf vidx2pidx/vidx2pidx_*_darwin_arm64.tar.gz -C vidx2pidx && mv vidx2pidx/vidx2pidx_*_darwin_arm64/vidx2pidx distribution/bin/vidx2pidx.mac-arm64
+          unzip vidx2pidx/vidx2pidx_\*_windows_amd64.zip -d vidx2pidx && mv vidx2pidx/vidx2pidx_*_windows_amd64/vidx2pidx.exe distribution/bin/vidx2pidx.exe-amd64
+          unzip vidx2pidx/vidx2pidx_\*_windows_arm64.zip -d vidx2pidx && mv vidx2pidx/vidx2pidx_*_windows_arm64/vidx2pidx.exe distribution/bin/vidx2pidx.exe-arm64
           cp ../docs/LICENSE.txt distribution
           cp ../docs/index.html distribution/doc
         working-directory: toolbox
@@ -112,6 +130,7 @@ jobs:
           cp distribution/bin/csolution.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/csolution.exe
           cp distribution/bin/packchk.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/packchk.exe
           cp distribution/bin/svdconv.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/svdconv.exe
+          cp distribution/bin/vidx2pidx.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/vidx2pidx.exe
           cp distribution/bin/cbuild.exe-arm64    zip/cmsis-toolbox-windows-arm64/bin/cbuild.exe
           cp distribution/bin/cbuild2cmake.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/cbuild2cmake.exe
           cp distribution/bin/cbuildgen.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/cbuildgen.exe
@@ -121,6 +140,7 @@ jobs:
           cp distribution/bin/csolution.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/csolution.exe
           cp distribution/bin/packchk.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/packchk.exe
           cp distribution/bin/svdconv.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/svdconv.exe
+          cp distribution/bin/vidx2pidx.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/vidx2pidx.exe
           cp distribution/bin/cbuild.lin-amd64    zip/cmsis-toolbox-linux-amd64/bin/cbuild
           cp distribution/bin/cbuild2cmake.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuild2cmake
           cp distribution/bin/cbuildgen.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuildgen
@@ -130,6 +150,7 @@ jobs:
           cp distribution/bin/csolution.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/csolution
           cp distribution/bin/packchk.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/packchk
           cp distribution/bin/svdconv.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/svdconv
+          cp distribution/bin/vidx2pidx.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/vidx2pidx
           cp distribution/bin/cbuild.lin-arm64    zip/cmsis-toolbox-linux-arm64/bin/cbuild
           cp distribution/bin/cbuild2cmake.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/cbuild2cmake
           cp distribution/bin/cbuildgen.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/cbuildgen
@@ -139,6 +160,7 @@ jobs:
           cp distribution/bin/csolution.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/csolution
           cp distribution/bin/packchk.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/packchk
           cp distribution/bin/svdconv.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/svdconv
+          cp distribution/bin/vidx2pidx.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/vidx2pidx
           cp distribution/bin/cbuild.mac-amd64    zip/cmsis-toolbox-darwin-amd64/bin/cbuild
           cp distribution/bin/cbuild2cmake.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/cbuild2cmake
           cp distribution/bin/cbuildgen.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/cbuildgen
@@ -148,6 +170,7 @@ jobs:
           cp distribution/bin/csolution.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/csolution
           cp distribution/bin/packchk.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/packchk
           cp distribution/bin/svdconv.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/svdconv
+          cp distribution/bin/vidx2pidx.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/vidx2pidx
           cp distribution/bin/cbuild.mac-arm64    zip/cmsis-toolbox-darwin-arm64/bin/cbuild
           cp distribution/bin/cbuild2cmake.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/cbuild2cmake
           cp distribution/bin/cbuildgen.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/cbuildgen
@@ -157,6 +180,7 @@ jobs:
           cp distribution/bin/csolution.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/csolution
           cp distribution/bin/packchk.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/packchk
           cp distribution/bin/svdconv.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/svdconv
+          cp distribution/bin/vidx2pidx.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/vidx2pidx
           cp distribution/LICENSE.txt             zip/cmsis-toolbox-windows-amd64/LICENSE.txt
           cp distribution/LICENSE.txt             zip/cmsis-toolbox-windows-arm64/LICENSE.txt
           cp distribution/LICENSE.txt             zip/cmsis-toolbox-linux-amd64/LICENSE.txt

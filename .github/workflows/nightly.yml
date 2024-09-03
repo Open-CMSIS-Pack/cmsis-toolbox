@@ -125,6 +125,28 @@ jobs:
         run: |
           GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/cbuild2cmake${{ matrix.binary_extension }} ./cmd/cbuild2cmake
 
+      # Download and build vidx2pidx executable
+      - name: Checkout vidx2pidx repository
+        uses: actions/checkout@v4
+        with:
+          repository: Open-CMSIS-PACK/vidx2pidx
+          path: vidx2pidx
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: vidx2pidx/go.mod
+          cache-dependency-path: |
+            **/go.mod
+            **/go.sum
+
+      - name: Build vidx2pidx executable
+        working-directory: vidx2pidx
+        shell: bash
+        run: |
+          GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/vidx2pidx${{ matrix.binary_extension }} ./cmd
+
       # Download and build cbridge executable
       - name: Checkout cbridge repository
         uses: actions/checkout@v4
@@ -196,6 +218,7 @@ jobs:
           cp -r devtools/tools/projmgr/schemas/*                  ./cmsis-toolbox/etc
           cp -r devtools/tools/buildmgr/cbuildgen/scripts/*       ./cmsis-toolbox/etc
           cp -r devtools/tools/buildmgr/cbuildgen/config/*        ./cmsis-toolbox/etc
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/main/schema/PackIndex.xsd --output ./cmsis-toolbox/etc/PackIndex.xsd
           cp ./docs/LICENSE.txt ./cmsis-toolbox
           cp ./docs/index.html ./cmsis-toolbox/doc
           touch ./cmsis-toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}-$(date '+%Y-%m-%d_%H-%M-%S')
