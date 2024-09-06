@@ -218,6 +218,7 @@ jobs:
           cp -r devtools/tools/projmgr/schemas/*                  ./cmsis-toolbox/etc
           cp -r devtools/tools/buildmgr/cbuildgen/scripts/*       ./cmsis-toolbox/etc
           cp -r devtools/tools/buildmgr/cbuildgen/config/*        ./cmsis-toolbox/etc
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/main/schema/PACK.xsd --output ./cmsis-toolbox/etc/PACK.xsd
           curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/main/schema/PackIndex.xsd --output ./cmsis-toolbox/etc/PackIndex.xsd
           cp ./docs/LICENSE.txt ./cmsis-toolbox
           cp ./docs/index.html ./cmsis-toolbox/doc
