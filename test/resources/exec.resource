@@ -44,7 +44,6 @@ Build Example With cbuild2cmake
     [Documentation]     Build the csolution example with cbuild2cmake
     [Arguments]         ${input_file}     ${expect}        ${args}=@{EMPTY}
     ${args_Ex}=         Copy List         ${args}
-    Append To List      ${args_Ex}        --cbuild2cmake
     ${ret_code}=        Run cbuild        ${input_file}    ${EMPTY}    ${args_Ex}
     Should Be Equal     ${ret_code}       ${expect}        msg=Unexpected status returned when building with cbuild2cmake
 
