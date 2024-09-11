@@ -13,16 +13,19 @@ def test_check_archive(base_path):
     Test to check the archive content
     """
     dirDict = dict()
-    dirDict["bin"] = {'cbuild', 'cbuildgen', 'cpackget', 'csolution', 'packchk', 'svdconv', 'launch-MCUXpressoConfigTools'}
+    dirDict["bin"] = {'cbridge', 'cbuild', 'cbuild2cmake', 'cbuildgen', 'cpackget', 'csolution', 'launch-MCUXpressoConfigTools', 'packchk', 'svdconv',  'vidx2pidx'}
     dirDict["doc"] = {'index.html'}
     dirDict["etc"] = {
-        "{{ProjectName}}.cproject.yml",
-        "{{SolutionName}}.csolution.yml",
         "AC6.6.16.2.cmake",
         "ac6_linker_script.sct.src",
         "cbuild.schema.json",
+        "cbuild-gen.schema.json",
+        "cbuild-gen-idx.schema.json",
+        "cbuild-pack.schema.json",
+        "cbuild-set.schema.json",
         "cdefault.schema.json",
         "cdefault.yml",
+        "cgen.schema.json",
         "CLANG.17.0.1.cmake",
         "clang_linker_script.ld.src",
         "clayer.schema.json",
@@ -34,9 +37,12 @@ def test_check_archive(base_path):
         "csolution.schema.json",
         "GCC.10.3.1.cmake",
         "gcc_linker_script.ld.src",
+        "generator.schema.json",
+        "global.generator.json",
         "IAR.9.32.1.cmake",
         "iar_linker_script.icf.src",
-        "PACK.xsd"}
+        "PACK.xsd",
+        "PackIndex.xsd"}
 
     assert(True == path.isfile(path.join(base_path,"LICENSE.txt")))
     for dir in dirDict:
