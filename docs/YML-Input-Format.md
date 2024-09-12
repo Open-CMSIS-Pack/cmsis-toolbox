@@ -1955,13 +1955,9 @@ The CMSIS-Toolbox supports pre-build and post-build steps that utilize external 
 - add a timestamp to an image (`always:` ensures execution in every build).
 - sign images for a boot laoder.
 
-> **Note:**
->
-> In CMSIS-Toolbox 2.4.0 this requires the option `--cbuild2cmake` that enables the direct CMake interface.
-
 ### `executes:`
 
-Execute and external command for pre or post build steps used in `*.csolution.yml` and `*.cproject.yml` files. The `input:` and `output:` files are used for dependency checking and schedule the execution (as pre-build or post-build step) during the build process.
+Execute an external command for pre or post build steps used in `*.csolution.yml` and `*.cproject.yml` files. The `input:` and `output:` files are used for dependency checking and schedule the execution (as pre-build or post-build step) during the build process of an application (option `--context` is not used).
 
 Other CMake Build scripts may be integrated into the overall build process using the `executes:` node. Refer to [Build Operation - CMake Integration](build-operation.md#cmake-integration) for an example that utilizes a file converter for web site images.
 

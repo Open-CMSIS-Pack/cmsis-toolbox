@@ -34,7 +34,7 @@ This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects)
   - [`cpackget` Details](#cpackget-details)
     - [Specify CMSIS-Pack root directory](#specify-cmsis-pack-root-directory)
     - [Initialize CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory)
-    - [Pack Index File](#pack-index-file)
+    - [Update Pack Index](#update-pack-index)
     - [Add packs](#add-packs)
       - [Install public packs](#install-public-packs)
       - [Install a list of software packs](#install-a-list-of-software-packs)
@@ -430,12 +430,30 @@ Sub-Directory   | Content
 `.Download`     | Packs that are installed from a web service. Stores `*.PDSC` pack description file, `*.pack` content file, and related license information.
 `.Local`        | Index file `local_repository.pidx` that points to local installations for development of a software pack. Contains also the `*.PDSC` files from private software packs.
 
-### Pack Index File
+The `cpackget init` command [initializes the CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory) but does not download PDSC files. Combined with the option `--all-pdsc-files` it also downloads all PDSC files that are available in the public index.
+
+```bash
+cpackget init https://www.keil.com/pack/indexpidx --all-pdsc-files
+```
+
+### Update Pack Index
 
 When new software packs are available in on a public web service, the local copy of the **Pack Index File** requires an update. To update the **Pack Index File**, run the command:
 
 ```bash
 cpackget update-index
+```
+
+The option `--sparse` avoids the update of the PDSC files and improves therefore the speed.
+
+```bash
+cpackget update-index --sparse
+```
+
+To download all PDSC files that are available in the public index use the option `--all-pdsc-files`.
+
+```bash
+cpackget update-index --all-pdsc-files
 ```
 
 ### Add packs

@@ -102,10 +102,11 @@ The overall process to configure linker scripts for independent projects is:
 
 ### Regions Header File
 
-An initial *regions header file* is generated based on the memory information in the used software packs (DFP and BSP). This file is located in the directory [`./RTE/Device/<device>`](build-overview.md#rte-directory-structure). The user may modify this file:
+An initial *regions header file* is generated based on the memory information in the used software packs (DFP and BSP). 
+This file is located in the directory [`./RTE/Device/<device>`](build-overview.md#rte-directory-structure). Memory that has the attribute default is used for __ROM*n* and __RAM*n* region configuration. Other memory is listed under *Resources that are not allocated to linker regions*. The user may modify this file:
 
 - to adapt the physical memory layout of the project.
-- to add additional memory resources in unused regions.
+- to add not allocated memory resources in regions __ROM*n* and __RAM*n*.
 
 **Example: `regions_B-U585-IOT02A.h` header file for a board**
 
@@ -116,14 +117,13 @@ An initial *regions header file* is generated based on the memory information in
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 //------ With VS Code: Open Preview for Configuration Wizard -------------------
 
-// <n> Auto-generated linker regions using information from packs
-// <i> Device Family Pack (DFP):   Keil::STM32U5xx_DFP@3.0.0
-// <i> Board Support Pack (BSP):   Keil::B-U585I-IOT02A_BSP@2.0.0
-// <i> generated-by: csolution version 2.5.0
+// <n> Auto-generated using information from packs
+// <i> Device Family Pack (DFP):   Keil::STM32U5xx_DFP@3.0.0-dev0
+// <i> Board Support Pack (BSP):   Keil::B-U585I-IOT02A_BSP@2.0.0-dev0
 
 // <h> ROM Configuration
 // =======================
-// <h> __ROM0 (is rx memory: Flash0+Flash1 from DFP)
+// <h> __ROM0 (is rx memory: Flash from DFP)
 //   <o> Base address <0x0-0xFFFFFFFF:8>
 //   <i> Defines base address of memory region. Default: 0x08000000
 //   <i> Contains Startup and Vector Table
@@ -133,13 +133,13 @@ An initial *regions header file* is generated based on the memory information in
 #define __ROM0_SIZE 0x00200000
 // </h>
 
-// <h> __ROM1 (is rwx memory: Flash-External from BSP)
+// <h> __ROM1 (unused)
 //   <o> Base address <0x0-0xFFFFFFFF:8>
-//   <i> Defines base address of memory region. Default: 0x70000000
-#define __ROM1_BASE 0x70000000
+//   <i> Defines base address of memory region.
+#define __ROM1_BASE 0
 //   <o> Region size [bytes] <0x0-0xFFFFFFFF:8>
-//   <i> Defines size of memory region. Default: 0x04000000
-#define __ROM1_SIZE 0x04000000
+//   <i> Defines size of memory region.
+#define __ROM1_SIZE 0
 // </h>
 
 // <h> __ROM2 (unused)
@@ -164,32 +164,32 @@ An initial *regions header file* is generated based on the memory information in
 
 // <h> RAM Configuration
 // =======================
-// <h> __RAM0 (is rw memory: SRAM1+SRAM2 from DFP)
+// <h> __RAM0 (is rwx memory: SRAM1_2 from DFP)
 //   <o> Base address <0x0-0xFFFFFFFF:8>
 //   <i> Defines base address of memory region. Default: 0x20000000
-//   <i> Contains uninitialized RAM, Stack, and Heap 
+//   <i> Contains uninitialized RAM, Stack, and Heap
 #define __RAM0_BASE 0x20000000
 //   <o> Region size [bytes] <0x0-0xFFFFFFFF:8>
-//   <i> Defines size of memory region. Default: 0x000C0000
-#define __RAM0_SIZE 0x000C0000
+//   <i> Defines size of memory region. Default: 0x00040000
+#define __RAM0_SIZE 0x00040000
 // </h>
 
-// <h> __RAM1 (is rwx memory: SRAM3 from DFP)
+// <h> __RAM1 (unused)
 //   <o> Base address <0x0-0xFFFFFFFF:8>
-//   <i> Defines base address of memory region. Default: 0x20040000
-#define __RAM1_BASE 0x20040000
+//   <i> Defines base address of memory region.
+#define __RAM1_BASE 0
 //   <o> Region size [bytes] <0x0-0xFFFFFFFF:8>
-//   <i> Defines size of memory region. Default: 0x00080000
-#define __RAM1_SIZE 0x00080000
+//   <i> Defines size of memory region.
+#define __RAM1_SIZE 0
 // </h>
 
-// <h> __RAM2 (is rw memory: Ext-RAM from BSP)
+// <h> __RAM2 (unused)
 //   <o> Base address <0x0-0xFFFFFFFF:8>
-//   <i> Defines base address of memory region. Default: 0x90000000
-#define __RAM2_BASE 0x90000000
+//   <i> Defines base address of memory region.
+#define __RAM2_BASE 0
 //   <o> Region size [bytes] <0x0-0xFFFFFFFF:8>
-//   <i> Defines size of memory region. Default: 0x00800000
-#define __RAM2_SIZE 0x00800000
+//   <i> Defines size of memory region.
+#define __RAM2_SIZE 0
 // </h>
 
 // <h> __RAM3 (unused)
@@ -207,13 +207,13 @@ An initial *regions header file* is generated based on the memory information in
 //   <o0> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
 //   <o1> Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
 #define __STACK_SIZE 0x00000200
-#define __HEAP_SIZE 0x00000000
+#define __HEAP_SIZE 0x00000C00
 // </h>
 
 // <n> Resources that are not allocated to linker regions
-// <i> rwx RAM: SRAM3 from DFP:     BASE 0x50000000  SIZE: 0x00080000   
-// <i> rx ROM:  Ext-Flash from BSP: BASE 0x90000000  SIZE: 0x00800000
-// <i> rw RAM:  SRAM4 from DFP:     BASE 0x70000000  SIZE: 0x00010000   Pname: Core2
+// <i> rwx RAM:  SRAM3 from DFP:           BASE: 0x20040000  SIZE: 0x00080000
+// <i> rwx RAM:  RAM-External from BSP:    BASE: 0x90000000  SIZE: 0x00800000
+// <i> rx ROM:   Flash-External from BSP:  BASE: 0x70000000  SIZE: 0x04000000
 
 #endif /* REGIONS_B_U585I_IOT02A_H */
 ```
@@ -290,7 +290,7 @@ For example the LwIP network stack:
 - CMSIS-Drivers for the communication interface.
 - List API header files for their interfaces.
 
-> ToDo: Create a pack datasheet to display information about software components.
+> ToDo: A potential improvement is a pack data sheet that displays information about software components.
 
 ### Required Interfaces
 
@@ -303,7 +303,7 @@ There are two ways to describe required interfaces as shown in the diagram below
 
 The API definition has the benefit that components which implement the interface can be added over time. The exact component names need not to be known by the component that requires an interface.
 
-ToDo: Use the command `csolution list components` to display available implementations for a required interface.
+> ToDo: A potential improvement is to use the command `csolution list components` to show available implementations for a required interface.
 
 ## Example: Network Stack
 
