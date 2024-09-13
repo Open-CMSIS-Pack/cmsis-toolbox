@@ -33,7 +33,8 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
     - [Project Setup for Multiple Targets and Builds](#project-setup-for-multiple-targets-and-builds)
     - [Project Setup for Related Projects](#project-setup-for-related-projects)
     - [Working with context-set](#working-with-context-set)
-    - [External Tools and Project Dependencies](#external-tools-and-project-dependencies)
+    - [External Tools and Build Order](#external-tools-and-build-order)
+      - [Project Dependency](#project-dependency)
   - [Project Structure](#project-structure)
     - [Working Areas](#working-areas)
     - [Project Area](#project-area)
@@ -611,9 +612,9 @@ cbuild iot-product.csolution.yml -S
 - Only one [build-type](#context)  can be selected for a project.
 - Projects that are not required can be excluded.
 
-### External Tools and Project Dependencies
+### External Tools and Build Order
 
-The [`executes:`](YML-Input-Format.md#executes) node integrates [CMake](build-operation.md#cmake-integration) scripts, projects, and external tools. The `input:` and  `output:` list defines the build order of projects:
+The [`executes:`](YML-Input-Format.md#executes) node integrates [CMake](build-operation.md#cmake-integration) scripts, projects, and external tools. The `input:` and  `output:` list typically refers to files and defines therefore the build order of projects:
 
 - When `input:` contains files that are the [output](YML-Input-Format.md#output) of a `cproject.yml` this project part is build first.
 - When `output:` contains files that are the input of a `cproject.yml` the `execute:` node is build first.
@@ -638,6 +639,8 @@ solution:
       output:
         - $SolutionDir()$/keys.c            # output keys source file (input to other projects)
 ```
+
+#### Project Dependency
 
 An [access sequence](YML-Input-Format.md#access-sequences) that refers to the output of another project also impacts the build order.
 

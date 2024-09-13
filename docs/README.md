@@ -2,12 +2,12 @@
 
 Thank you for using the **CMSIS-Toolbox** that provides command-line tools for:
 
-- Project creation and build of embedded applications utilizing [Software Packs](https://www.keil.arm.com/packs/) with support for multiple compilation tools.
-- Software Pack creation, maintenance, and distribution utilizing the [CMSIS-Pack format](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
+- Project creation and build of embedded applications that utilize [*software packs*](https://www.keil.arm.com/packs/). Various compilation tools are supported.
+- Pack creation, maintenance, and distribution of *software packs* in [Open-CMSIS-Pack format](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
 
 ## Manual Chapters
 
-- [**Overview**](#content-of-overview-chapter) of the CMSIS-Toolbox (this chapter) and explanations of the other manual chapters.
+- [**Overview**](#content-of-overview-chapter) of the CMSIS-Toolbox (this chapter).
 
 - [**Installation**](installation.md) explains the setup of the CMSIS-Toolbox along with a build environment for embedded applications that are based on Arm Cortex-M processors.
 
@@ -100,6 +100,7 @@ The overall benefits of the CMSIS-Toolbox are:
 
 Version            | Description
 :------------------|:-------------------------
+2.6.0              | CMSIS-Toolbox [2.6.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.6.0); adds for [trustzone: secure-only](YML-Input-Format.md#processor) for projects without secure entries, adds [API](YML-CBuild-Format.md#apis) and [messages](YML-CBuild-Format.md#cbuilds) information to cbuild.yml, fixes several minor issues.
 2.5.0              | CMSIS-Toolbox [2.5.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.5.0); direct CMake interface is now default, [`tmpdir:`](YML-Input-Format.md#output-dirs) controls location of interim files, adds [`add-path-asm:`](YML-Input-Format.md#add-path-asm), adds [`define-asm`](YML-Input-Format.md#define-asm), adds [regular expression](YML-Input-Format.md#regular-expressions) search to `for-context:`/`not-for-context`, and contains several corrections.
 2.4.0              | CMSIS-Toolbox [2.4.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.4.0); adds [CubeMX integration](CubeMX.md), [pre/post-build steps](YML-Input-Format.md#prepost-build-steps), simplifies the [generator integration](build-operation.md#generator-integration), and contains several corrections.
 2.3.0              | CMSIS-Toolbox [2.3.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) adds in the csolution project files [component instances](YML-Input-Format.md#instances) and [optimize: debug](YML-Input-Format.md#optimize). Tools are extended with [cbuild setup command](build-operation.md#details-of-the-setup-mode), [--frozen-pack option](build-overview.md#reproducible-builds). Refer to [release information](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) for more details.
