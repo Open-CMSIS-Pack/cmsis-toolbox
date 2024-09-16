@@ -38,7 +38,7 @@ def test_check_archive(base_path):
         "GCC.10.3.1.cmake",
         "gcc_linker_script.ld.src",
         "generator.schema.json",
-        "global.generator.json",
+        "global.generator.yml",
         "IAR.9.32.1.cmake",
         "iar_linker_script.icf.src",
         "PACK.xsd",
