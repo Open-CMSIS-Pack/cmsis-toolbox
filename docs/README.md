@@ -42,7 +42,7 @@ Thank you for using the **CMSIS-Toolbox** that provides command-line tools for:
 
 ## Target Audience
 
-This user's guide assumes some top-level knowledge about Cortex-M software development. It is written for embedded developers that want to utilize microcontroller devices that incorporate Cortex-M processors, Ethos-U NPUs, and work with C/C++ compiler toolchains. The CMSIS-Toolbox supports currently:
+This user's guide assumes basic knowledge about Cortex-M software development. It is written for embedded software developers that work with C/C++ compiler toolchains and utilize microcontroller devices with Cortex-M processors and Ethos-U NPUs. The CMSIS-Toolbox supports currently:
 
 - [Arm Compiler for Embedded](https://developer.arm.com/Tools%20and%20Software/Arm%20Compiler%20for%20Embedded) version 6.18 or higher
   - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
@@ -52,7 +52,7 @@ This user's guide assumes some top-level knowledge about Cortex-M software devel
 
 ## Overall Workflow
 
-The CMSIS-Toolbox uses Software Packs for device/board support and access reusable software components.  The operation is controlled via intuitive [*csolution project files* in YAML format](YML-Input-Format.md). The overall application is defined in the `*.csolution.yml` file and contains one or more projects that can utilize pre-configured software layers. The build engine CMake/Ninja calls the C/C++ compiler toolchain that generates the Build Output.
+The CMSIS-Toolbox uses *software packs* for device/board support and access reusable software components.  The operation is controlled via intuitive [*csolution project files* in YAML format](YML-Input-Format.md). The overall application is defined in the `*.csolution.yml` file and contains one or more projects that can utilize pre-configured software layers. The build engine CMake/Ninja calls the C/C++ compiler toolchain that generates the Build Output.
 
 The [**cbuild: Build Invocation**](build-tools.md#cbuild-invocation) command orchestrates the overall build steps. This command calls individual command line tools to generate the application as outlined in the following diagram.
 
@@ -100,7 +100,7 @@ The overall benefits of the CMSIS-Toolbox are:
 
 Version            | Description
 :------------------|:-------------------------
-2.6.0              | CMSIS-Toolbox [2.6.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.6.0); adds for [trustzone: secure-only](YML-Input-Format.md#processor) for projects without secure entries, adds [API](YML-CBuild-Format.md#apis) and [messages](YML-CBuild-Format.md#cbuilds) information to cbuild.yml, fixes several minor issues.
+2.6.0              | CMSIS-Toolbox [2.6.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.6.0); extends [pack:](YML-Input-Format.md#pack-name-conventions) version specifier and [C language](YML-Input-Format.md#language-c) support to C17 and C23. Improved is [regions header file generation](CreateApplications.md#regions-header-file) for linker scripts. It adds [trustzone: secure-only](YML-Input-Format.md#processor) for projects without secure entries, [apis](YML-CBuild-Format.md#apis) and [messages](YML-CBuild-Format.md#cbuilds) to cbuild.yml information, and fixes several minor issues.
 2.5.0              | CMSIS-Toolbox [2.5.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.5.0); direct CMake interface is now default, [`tmpdir:`](YML-Input-Format.md#output-dirs) controls location of interim files, adds [`add-path-asm:`](YML-Input-Format.md#add-path-asm), adds [`define-asm`](YML-Input-Format.md#define-asm), adds [regular expression](YML-Input-Format.md#regular-expressions) search to `for-context:`/`not-for-context`, and contains several corrections.
 2.4.0              | CMSIS-Toolbox [2.4.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.4.0); adds [CubeMX integration](CubeMX.md), [pre/post-build steps](YML-Input-Format.md#prepost-build-steps), simplifies the [generator integration](build-operation.md#generator-integration), and contains several corrections.
 2.3.0              | CMSIS-Toolbox [2.3.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) adds in the csolution project files [component instances](YML-Input-Format.md#instances) and [optimize: debug](YML-Input-Format.md#optimize). Tools are extended with [cbuild setup command](build-operation.md#details-of-the-setup-mode), [--frozen-pack option](build-overview.md#reproducible-builds). Refer to [release information](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) for more details.

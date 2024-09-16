@@ -107,9 +107,9 @@ Input/Output Files       | Description
 Output Files             | Description
 :------------------------|:---------------------------------
 [*.cbuild-idx.yml](YML-CBuild-Format.md#file-structure-of-cbuild-idxyml)  | Index file of all `*.cbuild.yml` build descriptions; contains also overall information for the application.
-[*.cbuild.yml](YML-CBuild-Format.md#file-structure-of-cbuild-idxyml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file (replaces *.CPRJ in CMSIS-Toolbox 2.3 - schedule for Q1'24)
+[*.cbuild.yml](YML-CBuild-Format.md#file-structure-of-cbuild-idxyml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file for each context.
 [Project Build Files *.cprj](https://arm-software.github.io/CMSIS_5/Build/html/cprjFormat_pg.html) | Project build information in legacy format.
-[Run-Time Environment (RTE)](#rte-directory-structure)  | Contains the user configured files of a project along with RTE_Components.h inventory file.
+[Run-Time Environment (RTE)](#rte-directory-structure)  | Contains the user configured files of a project along with `RTE_Components.h` inventory file.
 [Linker Script Files](#automatic-linker-script-generation) | Header file that describes the memory resources.
 
 To build an application project, the `csolution` command `convert` executes the following steps:

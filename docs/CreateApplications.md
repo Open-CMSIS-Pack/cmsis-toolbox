@@ -102,11 +102,22 @@ The overall process to configure linker scripts for independent projects is:
 
 ### Regions Header File
 
-An initial *regions header file* is generated based on the memory information in the used software packs (DFP and BSP). 
-This file is located in the directory [`./RTE/Device/<device>`](build-overview.md#rte-directory-structure). Memory that has the attribute default is used for __ROM*n* and __RAM*n* region configuration. Other memory is listed under *Resources that are not allocated to linker regions*. The user may modify this file:
+An initial *regions header file* is generated based on the memory information in the used software packs (DFP and BSP). This file has the name `regions_<device_or_board>.h` and is located in the directory [`./RTE/Device/<device>`](build-overview.md#rte-directory-structure).
+
+For memory with the [*default* attribute set](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory) in DFP or BSP the following region settings are generated:
+
+- The region \_\_ROM0 is the startup region and contains memory with the [*startup* attribute set](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory).
+- The region \_\_RAM0 contains uninitialized memory, STACK and HEAP. 
+  - STACK default is 0x200.
+  - HEAP default is 0xC00 for devices with more than 6KB RAM (otherwise HEAP is set to 0).
+- Contiguous memory with same access (rw, rwx, rx) is combined into one region.
+
+For memory with the [*default* attribute no set](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory) in DFP or BSP the memory is listed under **resources that are not allocated to linker regions**.
+
+The user may modify this generated *regions header file*:
 
 - to adapt the physical memory layout of the project.
-- to add not allocated memory resources in regions __ROM*n* and __RAM*n*.
+- to add **not allocated memory resources** to regions \_\_ROM*n* and \_\_RAM*n*.
 
 **Example: `regions_B-U585-IOT02A.h` header file for a board**
 

@@ -67,7 +67,7 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.5.0 (C) 2024 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.6.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -78,8 +78,7 @@ Commands:
   setup       Generate project data for IDE environment
 
 Options:
-      --cbuild2cmake       Use build information files with cbuild2cmake backend (default)
-      --cbuildgen          Use build information files with cbuildgen backend
+      --cbuildgen          Generate legacy *.cprj files and use cbuildgen backend
   -C, --clean              Remove intermediate and output directories
   -c, --context arg [...]  Input context names [<project-name>][.<build-type>][+<target-type>]
   -S, --context-set        Select the context names from cbuild-set.yml for generating the target application
@@ -113,7 +112,7 @@ Use "cbuild [command] --help" for more information about a command.
 Create build information for embedded applications that consist of one or more related projects.
 
 ```text
-csolution: Project Manager 2.5.0 (C) 2024 Arm Ltd. and Contributors
+csolution: Project Manager 2.6.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   csolution <command> [<name>.csolution.yml] [options]
@@ -146,7 +145,7 @@ Options:
   -m, --missing                 List only required packs that are missing in the pack repository
   -n, --no-check-schema         Skip schema check
   -N, --no-update-rte           Skip creation of RTE directory and files
-  -O, --output arg              Add prefix to 'outdir' and 'tmpdir'
+  -o,-O --output arg            Add prefix to 'outdir' and 'tmpdir'
   -q, --quiet                   Run silently, printing only error messages
   -R, --relative-paths          Print paths relative to project or ${CMSIS_PACK_ROOT}
   -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
@@ -159,6 +158,8 @@ Use 'csolution <command> -h' for more information about a command.
 
 ## `cpackget` Invocation
 
+Manage the installation of *software packs* on the Host computer.
+
 ``` txt
 Usage:
   cpackget [command] [flags]
@@ -168,21 +169,23 @@ Available Commands:
   checksum-create  Generates a .checksum file containing the digests of a pack
   checksum-verify  Verifies the integrity of a pack using its .checksum file
   completion       Generate the autocompletion script for the specified shell
+  connection       Check online connection to default or given URL
   help             Help about any command
   init             Initializes a pack root folder
   list             List installed packs
   rm               Remove Open-CMSIS-Pack packages
   signature-create Digitally signs a pack with a X.509 certificate or PGP key
   signature-verify Verifies a signed pack
+  update           Update Open-CMSIS-Pack packages to latest
   update-index     Update the public index
 
 Flags:
-  -C, --concurrent-downloads uint   Number of concurrent batch downloads. Set to 0 to disable concurrency (default 5)
+  -C, --concurrent-downloads uint   Number of concurrent batch downloads. Set to 0 to disable concurrency (default 20)
   -h, --help                        help for cpackget
-  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable
+  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable 
   -q, --quiet                       Run cpackget silently, printing only error messages
   -T, --timeout uint                Set maximum duration (in seconds) of a download. Disabled by default
-  -v, --verbose                     Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging). Specify "-q" for no messages
+  -v, --verbose                     Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging).
   -V, --version                     Prints the version number of cpackget and exit
 
 Use "cpackget [command] --help" for more information about a command.

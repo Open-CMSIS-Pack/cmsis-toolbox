@@ -1982,6 +1982,8 @@ The `run:` command string uses these sequences to access input files and output 
 `$output$`                                  | List of all output files separated by semicolon (;) character.
 `$output(<n>)$`                             | Output file in the list with index `<n>`; first item is `<n>=0`.
 
+The `run:` command string also accepts these [access sequences](#access-sequences): $Bname$, $Dname$, $Pname$, $BuildType$, $TargetType$, $Compiler$, $Solution$, $Project$. It does not accept [access sequences](#access-sequences) that reference directories or files as this bypasses the [project dependency check](build-overview.md#project-dependency). Instead use the `input:` list to pass files or directories.
+
 > **Notes:**
 > 
 > - The `execute:` node is processed by the CMake build system. The order of execution depends on `$input$` and `$output` files and is evaluated by CMake.
