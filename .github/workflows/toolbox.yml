@@ -48,7 +48,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/buildmgr/2.5.0
+          version: tags/tools/buildmgr/2.6.0
           file: cbuild_install.sh
           target: toolbox/cbuild/cbuild_install.sh
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -85,8 +85,8 @@ jobs:
 
       - name: Unzip and copy files
         run: |
-          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.37/schema/PACK.xsd --output distribution/etc/PACK.xsd
-          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.37/schema/PackIndex.xsd --output distribution/etc/PackIndex.xsd
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.40/schema/PACK.xsd --output distribution/etc/PACK.xsd
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.40/schema/PackIndex.xsd --output distribution/etc/PackIndex.xsd
           sudo chmod +x ./cbuild/cbuild_install.sh
           ./cbuild/cbuild_install.sh -x cbuild
           cp -r cbuild/bin/* distribution/bin
