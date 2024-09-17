@@ -649,6 +649,12 @@ Same as above, but also remove the cached files that relate to this pack in the 
 cpackget rm --purge Vendor.PackName`
 ```
 
+Remove a pack that was [installed via a repository](#install-a-repository).
+
+```bash
+cpackget rm Vendor.PackName.pdsc
+```
+
 ## DevOps Usage
 
 The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The `./out` directory contains all build artifacts of an application for execution on physical hardware or simulation models. [Arm Virtual Hardware - Fixed Virtual Platforms (AVH FVP)](https://github.com/ARM-software/AVH) enable unit tests and integration tests with simulation models and various virtual interfaces. Using layers allows a [Project Setup for Multiple Targets](build-overview.md#project-setup-for-multiple-targets-and-builds), for example to test on physical hardware or AVH-FVP simulation models. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.

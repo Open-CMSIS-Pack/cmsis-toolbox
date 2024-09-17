@@ -198,6 +198,10 @@ cpackget init https://www.keil.com/pack/index.pidx
 
 The [vcpkg](https://vcpkg.io/en/) is a management tool for packages and includes features to manage tool artifacts. Arm provides a artifactory system for tools. Refer to [Arm Tools Available in vcpkg](https://www.keil.arm.com/packages/) for more information.
 
+> **Note:**
+>
+> Microsoft changed the name of the shell version from `vcpkg` to `vcpkg-shell`. Depending on the version that you are using, you may need to call `vcpkg-shell` from the command line instead of `vcpkg`.
+
 The following setups describe how to setup the CMSIS-Toolbox using a command line (CLI) environment. In many examples there is already the file `vcpkg-configuration.json` which describes the tool environment required for the example. Refer to the last step to create an new `vcpkg-configuration.json` file.
 
 1. Install and enable vcpkg; the command depends on the shell.

@@ -6,7 +6,7 @@
 
 [**CMSIS-Toolbox**](README.md) **> CMSIS Solution Project File Format**
 
-The following chapter explains the CMSIS Solution Project File Format (short form *csolution project files*), the YAML files that that describes the software of an embedded application.
+The following chapter explains the CMSIS Solution Project File Format (short form *csolution project files*), the YAML files that describe the software of an embedded application.
 
 **Table of Contents**
 
@@ -485,8 +485,11 @@ The `default:` node is the start of a [`cdefault.yml`](build-overview.md#cdefaul
 
 `default:`                                                |            | Content
 :---------------------------------------------------------|:-----------|:------------------------------------
-&nbsp;&nbsp; [`compiler:`](#compiler)                     |  Optional  | Toolchain selection (usage will be deprecated in CMSIS-Toolbox 3.0; specify in [`*.csolution.yml`](#solution) instead).
 &nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls. Refer to [Build Overview - `cdefault.yml`](build-overview.md#cdefaultyml) for an example.
+
+> **Note:**
+>
+> The [`compiler:`](#compiler) selection in `cdefault.yml` has been deprecated in CMSIS-Toolbox 2.6.0.
 
 ### `solution:`
 

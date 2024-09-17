@@ -600,7 +600,6 @@ Keyword          | Description
 &nbsp;&nbsp;&nbsp; `implemented-by:`                           | Refers to the software componeent that implements the API.
 &nbsp;&nbsp;&nbsp; [`files:`](#files-of-a-component)           | List of files that belong to this API.
 
-
 ### `generator:`
 
 `generator:`                                                   | Content
@@ -617,6 +616,10 @@ Keyword          | Description
 &nbsp;&nbsp;&nbsp; [`attr:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileAttributeEnum) | File category according Open-CMSIS-Pack specification; `api` refers to header files that define the api of a component.
 &nbsp;&nbsp;&nbsp; [`condition:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_conditions_pg.html#element_condition) | Reference to the condition ID of the software pack that triggered inclusion of this file.
 &nbsp;&nbsp;&nbsp; `select:` | Selection text for user code template files and api header files.
+&nbsp;&nbsp;&nbsp; [`version:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#element_files)     | For files that belong to components the version specified in the PDSC file.
+&nbsp;&nbsp;&nbsp; [`base:`](build-overview.md#plm-of-configuration-files)     | Unmodified configuration file (base file from the *software pack*) that is currently in use.
+&nbsp;&nbsp;&nbsp; [`update:`](build-overview.md#plm-of-configuration-files)   | New configuration file from an updated *software pack*.
+&nbsp;&nbsp;&nbsp; `status:`                                                   | Action for configuration file update: suggested, recommended, required.
 
 ### `constructed-files:`
 
