@@ -33,6 +33,8 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
     - [Project Setup for Multiple Targets and Builds](#project-setup-for-multiple-targets-and-builds)
     - [Project Setup for Related Projects](#project-setup-for-related-projects)
     - [Working with context-set](#working-with-context-set)
+    - [External Tools and Build Order](#external-tools-and-build-order)
+      - [Project Dependency](#project-dependency)
   - [Project Structure](#project-structure)
     - [Working Areas](#working-areas)
     - [Project Area](#project-area)
@@ -105,9 +107,9 @@ Input/Output Files       | Description
 Output Files             | Description
 :------------------------|:---------------------------------
 [*.cbuild-idx.yml](YML-CBuild-Format.md#file-structure-of-cbuild-idxyml)  | Index file of all `*.cbuild.yml` build descriptions; contains also overall information for the application.
-[*.cbuild.yml](YML-CBuild-Format.md#file-structure-of-cbuild-idxyml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file (replaces *.CPRJ in CMSIS-Toolbox 2.3 - schedule for Q1'24)
+[*.cbuild.yml](YML-CBuild-Format.md#file-structure-of-cbuild-idxyml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file for each context.
 [Project Build Files *.cprj](https://arm-software.github.io/CMSIS_5/Build/html/cprjFormat_pg.html) | Project build information in legacy format.
-[Run-Time Environment (RTE)](#rte-directory-structure)  | Contains the user configured files of a project along with RTE_Components.h inventory file.
+[Run-Time Environment (RTE)](#rte-directory-structure)  | Contains the user configured files of a project along with `RTE_Components.h` inventory file.
 [Linker Script Files](#automatic-linker-script-generation) | Header file that describes the memory resources.
 
 To build an application project, the `csolution` command `convert` executes the following steps:
@@ -236,6 +238,8 @@ Sample.Debug+FRDM-K32L3A6
 ```
 
 The [context](YML-Input-Format.md#context-name-conventions) allows to refer each possible build combination that by default uses a different [output directory](#output-directory-structure). A context may be partly specified in many places.
+
+The [context-set](#working-with-context-set) defines a combination of projects and is useful when an application is composed of [multiple related projects](#project-setup-for-related-projects). Using a [context-set](#working-with-context-set) allows to compile the  is defined, that are translated into  
 
 ### Toolchain Agnostic Project
 
@@ -608,6 +612,51 @@ cbuild iot-product.csolution.yml -S
 - Only one [build-type](#context)  can be selected for a project.
 - Projects that are not required can be excluded.
 
+### External Tools and Build Order
+
+The [`executes:`](YML-Input-Format.md#executes) node integrates [CMake](build-operation.md#cmake-integration) scripts, projects, and external tools. The `input:` and  `output:` list typically refers to files and defines therefore the build order of projects:
+
+- When `input:` contains files that are the [output](YML-Input-Format.md#output) of a `cproject.yml` this project part is build first.
+- When `output:` contains files that are the input of a `cproject.yml` the `execute:` node is build first.
+
+**Example:**
+
+The `KeyGenerator` tool builds the file `keys.c` which is added as source [file:](YML-Input-Format.md#files) in other projects. Using `cbuild My.csolution.yml [--context-set]` starts the build process of the application and runs the `KeyGenerator` before the build step of projects that use the source file `keys.c` as input.
+
+> **Note:**
+>
+> - Using `cbuild` with the option `--context` does not run `execute:` nodes as it triggers project builds only. The option `--context-set` can be used.
+
+```yml
+solution:
+    :
+  executes:
+    - execute: GenKeys                      # is a CMake target name
+      run: KeyGenerator -k $input(0)$ -p $input(1)$ -o $output$
+      input:
+        - $SolutionDir()$/keyfile.txt       # input(0) contains key in text format
+        - $SolutionDir()$/passcode.txt      # input(1) contains pass code in text format
+      output:
+        - $SolutionDir()$/keys.c            # output keys source file (input to other projects)
+```
+
+#### Project Dependency
+
+An [access sequence](YML-Input-Format.md#access-sequences) that refers to the output of another project also impacts the build order.
+
+**Example:**
+
+The [access sequence](YML-Input-Format.md#access-sequences) `$cmse-lib(Project_S)$` includes to secure entry library of `Project_S`. Hence, the build step for `Project_S` is before the non-secure project part of the application.
+
+```yml
+project:                                 # Non-secure project
+    :
+  groups:
+    - group: CMSE Library
+      files:
+        - file: $cmse-lib(Project_S)$    # Secure part of an application
+```
+
 ## Project Structure
 
 This section describes how the files of a `csolution` based project should be organized to allow the scenarios described above. This section gives also guidelines for a directory structure.
@@ -847,6 +896,10 @@ Both files, the Linker Script template and the `<regions>.h` are located in the 
 - `Dname` when the project context only uses a [`device:`](YML-Input-Format.md#device-name-conventions) specification, i.e. `regions_stm32u585xx.h`.
   
 Both files, the Linker Script template and the `<regions>.h` can be modified by the user as it might be required to adjust the memory regions or give additional attributes (such as `noinit`).
+
+> **Note:**
+>
+> - Refer to [Create Applications - Configure Linker Scripts](CreateApplications.md#configure-linker-scripts) for more information.
 
 #### Linker Script Templates
 

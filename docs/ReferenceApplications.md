@@ -69,8 +69,10 @@ The Reference example uses [`connections:`](YML-Input-Format.md#connections) to 
 
 As the *Reference Application* is not hardware specific it does not define a target type. It does also not add the board specific software layer. With two steps the `*.csolution.yml` file of such an example is configured for an evaluation board.
 
-1. Specify the evaluation board under `target-types:`. This board should also provide a suitable board specific software layer for the application.
-2. Use the command `cbuild setup` to identify the compatible board specific software layer. Add this software layer to your application.
+1. Step: Choose a board that provides a suitable software layer for the application. Then:
+    - Specify the under `packs:` the DFP and BSP to load the device and board pack.
+    - Specify under `target-types:` the `board:` name.
+2. Step: Use the command `cbuild setup` to identify the compatible board specific software layer. Use the `configuration:` information in the `*.cbuild-idx.yml` file Add this software layer to your application.
   
 ***Reference Application* `*.csolution.yml` file**
 
@@ -79,13 +81,18 @@ solution:
   cdefault:
   compiler: AC6
   :
+  packs:
+# Step 1: Specify DFP and BSP for the device and board, for example with:
+#   - pack: Keil::STM32U5xx_DFP
+#   - pack: Keil::B-U585I-IOT02A_BSP
+
   target-types:
 # Step 1: Specify your board, for example with:
-#   - type: IMXRT1050-EVKB Board
-#     board: NXP::IMXRT1050-EVKB
+#   - type: STM32U585
+#     board: B-U585I-IOT02A
 # Step 2: Run `cbuild setup` and use cbuild-idx.yml to identify variables, for example:
 #     variables:
-#       - Board-Layer:  %SolutionDir()$/board/IMXRT1050-EVKB/board.clayer.yml
+#       - Board-Layer:  $SolutionDir()$/Board/B-U585I-IOT02A/Board.clayer.yml
 ```
 
 ### Sensor Reference Applications
@@ -143,14 +150,18 @@ layer:
 
 A *Reference Applications* is an incomplete `*.csolution.yml` project file that requires the following steps to compile the project:
 
-1. Add in the `*.csolution.yml` file under `target-types:` your board:
+1. Add in the `*.csolution.yml` file under `packs:` the DFP (for the device) BSP (for the board) and under `target-types:` your board.
 
    ```yml
    solution:
      cdefault:
      :
+     packs:
+       - pack: Keil::STM32U5xx_DFP
+       - pack: Keil::B-U585I-IOT02A_BSP
+
      target-types:
-       - type: B-U585I-IOT02A
+       - type: MyBoard
          board: B-U585I-IOT02A         # name of a target board
    ```
    

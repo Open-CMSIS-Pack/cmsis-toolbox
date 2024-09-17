@@ -34,7 +34,7 @@ This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects)
   - [`cpackget` Details](#cpackget-details)
     - [Specify CMSIS-Pack root directory](#specify-cmsis-pack-root-directory)
     - [Initialize CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory)
-    - [Pack Index File](#pack-index-file)
+    - [Update Pack Index](#update-pack-index)
     - [Add packs](#add-packs)
       - [Install public packs](#install-public-packs)
       - [Install a list of software packs](#install-a-list-of-software-packs)
@@ -67,7 +67,7 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.5.0 (C) 2024 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.6.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -78,8 +78,7 @@ Commands:
   setup       Generate project data for IDE environment
 
 Options:
-      --cbuild2cmake       Use build information files with cbuild2cmake backend (default)
-      --cbuildgen          Use build information files with cbuildgen backend
+      --cbuildgen          Generate legacy *.cprj files and use cbuildgen backend
   -C, --clean              Remove intermediate and output directories
   -c, --context arg [...]  Input context names [<project-name>][.<build-type>][+<target-type>]
   -S, --context-set        Select the context names from cbuild-set.yml for generating the target application
@@ -113,7 +112,7 @@ Use "cbuild [command] --help" for more information about a command.
 Create build information for embedded applications that consist of one or more related projects.
 
 ```text
-csolution: Project Manager 2.5.0 (C) 2024 Arm Ltd. and Contributors
+csolution: Project Manager 2.6.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   csolution <command> [<name>.csolution.yml] [options]
@@ -146,7 +145,7 @@ Options:
   -m, --missing                 List only required packs that are missing in the pack repository
   -n, --no-check-schema         Skip schema check
   -N, --no-update-rte           Skip creation of RTE directory and files
-  -O, --output arg              Add prefix to 'outdir' and 'tmpdir'
+  -o,-O --output arg            Add prefix to 'outdir' and 'tmpdir'
   -q, --quiet                   Run silently, printing only error messages
   -R, --relative-paths          Print paths relative to project or ${CMSIS_PACK_ROOT}
   -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
@@ -159,6 +158,8 @@ Use 'csolution <command> -h' for more information about a command.
 
 ## `cpackget` Invocation
 
+Manage the installation of *software packs* on the Host computer.
+
 ``` txt
 Usage:
   cpackget [command] [flags]
@@ -168,21 +169,23 @@ Available Commands:
   checksum-create  Generates a .checksum file containing the digests of a pack
   checksum-verify  Verifies the integrity of a pack using its .checksum file
   completion       Generate the autocompletion script for the specified shell
+  connection       Check online connection to default or given URL
   help             Help about any command
   init             Initializes a pack root folder
   list             List installed packs
   rm               Remove Open-CMSIS-Pack packages
   signature-create Digitally signs a pack with a X.509 certificate or PGP key
   signature-verify Verifies a signed pack
+  update           Update Open-CMSIS-Pack packages to latest
   update-index     Update the public index
 
 Flags:
-  -C, --concurrent-downloads uint   Number of concurrent batch downloads. Set to 0 to disable concurrency (default 5)
+  -C, --concurrent-downloads uint   Number of concurrent batch downloads. Set to 0 to disable concurrency (default 20)
   -h, --help                        help for cpackget
-  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable
+  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable 
   -q, --quiet                       Run cpackget silently, printing only error messages
   -T, --timeout uint                Set maximum duration (in seconds) of a download. Disabled by default
-  -v, --verbose                     Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging). Specify "-q" for no messages
+  -v, --verbose                     Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging).
   -V, --version                     Prints the version number of cpackget and exit
 
 Use "cpackget [command] --help" for more information about a command.
@@ -430,12 +433,30 @@ Sub-Directory   | Content
 `.Download`     | Packs that are installed from a web service. Stores `*.PDSC` pack description file, `*.pack` content file, and related license information.
 `.Local`        | Index file `local_repository.pidx` that points to local installations for development of a software pack. Contains also the `*.PDSC` files from private software packs.
 
-### Pack Index File
+The `cpackget init` command [initializes the CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory) but does not download PDSC files. Combined with the option `--all-pdsc-files` it also downloads all PDSC files that are available in the public index.
+
+```bash
+cpackget init https://www.keil.com/pack/indexpidx --all-pdsc-files
+```
+
+### Update Pack Index
 
 When new software packs are available in on a public web service, the local copy of the **Pack Index File** requires an update. To update the **Pack Index File**, run the command:
 
 ```bash
 cpackget update-index
+```
+
+The option `--sparse` avoids the update of the PDSC files and improves therefore the speed.
+
+```bash
+cpackget update-index --sparse
+```
+
+To download all PDSC files that are available in the public index use the option `--all-pdsc-files`.
+
+```bash
+cpackget update-index --all-pdsc-files
 ```
 
 ### Add packs
@@ -626,6 +647,12 @@ Same as above, but also remove the cached files that relate to this pack in the 
 
 ```bash
 cpackget rm --purge Vendor.PackName`
+```
+
+Remove a pack that was [installed via a repository](#install-a-repository).
+
+```bash
+cpackget rm Vendor.PackName.pdsc
 ```
 
 ## DevOps Usage

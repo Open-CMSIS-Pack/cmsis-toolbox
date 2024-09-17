@@ -2,16 +2,16 @@
 
 Thank you for using the **CMSIS-Toolbox** that provides command-line tools for:
 
-- Project creation and build of embedded applications utilizing [Software Packs](https://www.keil.arm.com/packs/) with support for multiple compilation tools.
-- Software Pack creation, maintenance, and distribution utilizing the [CMSIS-Pack format](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
+- Project creation and build of embedded applications that utilize [*software packs*](https://www.keil.arm.com/packs/). Various compilation tools are supported.
+- Pack creation, maintenance, and distribution of *software packs* in [Open-CMSIS-Pack format](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
 
 ## Manual Chapters
 
-- [**Overview**](#content-of-overview-chapter) of the CMSIS-Toolbox (this chapter) and explanations of the other manual chapters.
+- [**Overview**](#content-of-overview-chapter) of the CMSIS-Toolbox (this chapter).
 
 - [**Installation**](installation.md) explains the setup of the CMSIS-Toolbox along with a build environment for embedded applications that are based on Arm Cortex-M processors.
 
-- [**Build Overview**](build-overview.md): describes the overall concept, outlines the *csolution project files* that describes the software application, and contains references to examples and project templates.
+- [**Build Overview**](build-overview.md) describes the overall concept, outlines the *csolution project files* that describes the software application, and contains references to examples and project templates.
 
 - [**Build Tools**](build-tools.md) contains command line descriptions for `cbuild` (build projects), `csolution` (transform *csolution project files*), and `cpackget` (manage software packs).
 
@@ -42,7 +42,7 @@ Thank you for using the **CMSIS-Toolbox** that provides command-line tools for:
 
 ## Target Audience
 
-This user's guide assumes some top-level knowledge about Cortex-M software development. It is written for embedded developers that want to utilize microcontroller devices that incorporate Cortex-M processors, Ethos-U NPUs, and work with C/C++ compiler toolchains. The CMSIS-Toolbox supports currently:
+This user's guide assumes basic knowledge about Cortex-M software development. It is written for embedded software developers that work with C/C++ compiler toolchains and utilize microcontroller devices with Cortex-M processors and Ethos-U NPUs. The CMSIS-Toolbox supports currently:
 
 - [Arm Compiler for Embedded](https://developer.arm.com/Tools%20and%20Software/Arm%20Compiler%20for%20Embedded) version 6.18 or higher
   - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
@@ -52,7 +52,7 @@ This user's guide assumes some top-level knowledge about Cortex-M software devel
 
 ## Overall Workflow
 
-The CMSIS-Toolbox uses Software Packs for device/board support and access reusable software components.  The operation is controlled via intuitive [*csolution project files* in YAML format](YML-Input-Format.md). The overall application is defined in the `*.csolution.yml` file and contains one or more projects that can utilize pre-configured software layers. The build engine CMake/Ninja calls the C/C++ compiler toolchain that generates the Build Output.
+The CMSIS-Toolbox uses *software packs* for device/board support and access reusable software components.  The operation is controlled via intuitive [*csolution project files* in YAML format](YML-Input-Format.md). The overall application is defined in the `*.csolution.yml` file and contains one or more projects that can utilize pre-configured software layers. The build engine CMake/Ninja calls the C/C++ compiler toolchain that generates the Build Output.
 
 The [**cbuild: Build Invocation**](build-tools.md#cbuild-invocation) command orchestrates the overall build steps. This command calls individual command line tools to generate the application as outlined in the following diagram.
 
@@ -84,22 +84,22 @@ The overall benefits of the CMSIS-Toolbox are:
 
 - Flexible command line tools that can be used stand-alone or integrated into [VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) or [DevOps systems for Continuous Integration (CI)](build-tools.md#devops-usage).
 - Stand-alone tools are available [for all host platforms](https://artifacts.keil.arm.com/cmsis-toolbox/) (Windows, Mac, Linux) for flexible deployment.
-- [Software Packs](https://www.keil.arm.com/packs/) simplify tool setup with `device:` or `board:` selection and project creation with access to reusable software components.
+- [*Software packs*](https://www.keil.arm.com/packs/) simplify tool setup with `device:` or `board:` selection and project creation with access to reusable software components.
 - Organize solutions with projects that are independently managed simplifies a wide range of use cases including  multi-processor applications or unit testing.
-- Integrates with domain specific [generators](build-overview.md#use-a-generator) (i.e. CubeMX) that simplify configuration of devices/boards and complex software stacks such as motor control.
-- Provisions for product lifecycle management (PLM) with versioned software packs that are easy to update and management for configuration files.
+- Integrates with domain specific [generators](build-overview.md#use-a-generator) (i.e. CubeMX) that support configuration of devices/boards and complex software stacks such as motor control.
+- Provisions for product lifecycle management (PLM) with versioned *software packs* that ease update and management for configuration files.
 - Software layers enable code reuse across similar applications with a pre-configured set of source files and software components.
-- Target types allow application deployment to different hardware (test board, production hardware, virtual hardware, etc.).
+- Target types allow application deployment to different hardware (test board, production hardware, virtual simulation models, etc.).
 - Build types support software testing and verification (debug build, test build, release build, ect.).
 - Support for multiple toolchains, even within the same set of *project files* and command line options to select different toolchains during verification.
-- [Linker Script Management](build-overview.md#linker-script-management) utilizes device and board information to define the  available memory and allows flexible control of the linker operation.
-- [Generator Support](build-overview.md#generator-support) for utilizing tools such as CubeMX or MCUxpresso Config Tools to configure devices or software stacks.
+- [Linker Script Management](build-overview.md#linker-script-management) utilizes device and board information of *software packs* to define available memory and allows flexible control of linker operation.
 - Uses a CMake backend for the build process that integrates with other tools such as VS Code intellisense.
 
 ## Revision History
 
 Version            | Description
 :------------------|:-------------------------
+2.6.0              | CMSIS-Toolbox [2.6.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.6.0); extends [pack:](YML-Input-Format.md#pack-name-conventions) version specifier and [C language](YML-Input-Format.md#language-c) support to C17 and C23. Improved is [regions header file generation](CreateApplications.md#regions-header-file) for linker scripts. It adds [trustzone: secure-only](YML-Input-Format.md#processor) for projects without secure entries, [apis](YML-CBuild-Format.md#apis), [messages](YML-CBuild-Format.md#cbuilds), and [PLM status for config files](YML-CBuild-Format.md#files-of-a-component) to cbuild.yml information, and fixes several minor issues. It is no longer possible to specify [compiler](YML-Input-Format.md#compiler) in the [`cdefault.yml`](YML-Input-Format.md#cdefault) file.
 2.5.0              | CMSIS-Toolbox [2.5.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.5.0); direct CMake interface is now default, [`tmpdir:`](YML-Input-Format.md#output-dirs) controls location of interim files, adds [`add-path-asm:`](YML-Input-Format.md#add-path-asm), adds [`define-asm`](YML-Input-Format.md#define-asm), adds [regular expression](YML-Input-Format.md#regular-expressions) search to `for-context:`/`not-for-context`, and contains several corrections.
 2.4.0              | CMSIS-Toolbox [2.4.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.4.0); adds [CubeMX integration](CubeMX.md), [pre/post-build steps](YML-Input-Format.md#prepost-build-steps), simplifies the [generator integration](build-operation.md#generator-integration), and contains several corrections.
 2.3.0              | CMSIS-Toolbox [2.3.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) adds in the csolution project files [component instances](YML-Input-Format.md#instances) and [optimize: debug](YML-Input-Format.md#optimize). Tools are extended with [cbuild setup command](build-operation.md#details-of-the-setup-mode), [--frozen-pack option](build-overview.md#reproducible-builds). Refer to [release information](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0) for more details.

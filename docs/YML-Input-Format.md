@@ -6,7 +6,7 @@
 
 [**CMSIS-Toolbox**](README.md) **> CMSIS Solution Project File Format**
 
-The following chapter explains the CMSIS Solution Project File Format (short form *csolution project files*), the YAML files that that describes the software of an embedded application.
+The following chapter explains the CMSIS Solution Project File Format (short form *csolution project files*), the YAML files that describe the software of an embedded application.
 
 **Table of Contents**
 
@@ -485,8 +485,11 @@ The `default:` node is the start of a [`cdefault.yml`](build-overview.md#cdefaul
 
 `default:`                                                |            | Content
 :---------------------------------------------------------|:-----------|:------------------------------------
-&nbsp;&nbsp; [`compiler:`](#compiler)                     |  Optional  | Toolchain selection (usage will be deprecated in CMSIS-Toolbox 3.0; specify in [`*.csolution.yml`](#solution) instead).
 &nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls. Refer to [Build Overview - `cdefault.yml`](build-overview.md#cdefaultyml) for an example.
+
+> **Note:**
+>
+> The [`compiler:`](#compiler) selection in `cdefault.yml` has been deprecated in CMSIS-Toolbox 2.6.0.
 
 ### `solution:`
 
@@ -1148,7 +1151,7 @@ Add miscellaneous literal tool-specific controls that are directly passed to the
 &nbsp;&nbsp;&nbsp; `Link:`                 |   Optional   | Applies to the linker (added before `Link-C:` or `Link-CPP:`).
 &nbsp;&nbsp;&nbsp; `Link-C:`               |   Optional   | Applies to the linker; added when no C++ files are part of the project.
 &nbsp;&nbsp;&nbsp; `Link-CPP:`             |   Optional   | Applies to the linker; added when C++ files are part of the project.
-&nbsp;&nbsp;&nbsp; `Library:`              |   Optional   | Applies to the library manager or archiver.
+&nbsp;&nbsp;&nbsp; `Library:`              |   Optional   | Set libraries to the correct position in the linker command line (for GCC).
 
 **Example:**
 
@@ -1955,13 +1958,9 @@ The CMSIS-Toolbox supports pre-build and post-build steps that utilize external 
 - add a timestamp to an image (`always:` ensures execution in every build).
 - sign images for a boot laoder.
 
-> **Note:**
->
-> In CMSIS-Toolbox 2.4.0 this requires the option `--cbuild2cmake` that enables the direct CMake interface.
-
 ### `executes:`
 
-Execute and external command for pre or post build steps used in `*.csolution.yml` and `*.cproject.yml` files. The `input:` and `output:` files are used for dependency checking and schedule the execution (as pre-build or post-build step) during the build process.
+Execute an external command for pre or post build steps used in `*.csolution.yml` and `*.cproject.yml` files. The `input:` and `output:` files are used for dependency checking and schedule the execution (as pre-build or post-build step) during the build process of an application (option `--context` is not used).
 
 Other CMake Build scripts may be integrated into the overall build process using the `executes:` node. Refer to [Build Operation - CMake Integration](build-operation.md#cmake-integration) for an example that utilizes a file converter for web site images.
 
@@ -1969,7 +1968,7 @@ The structure of the `executes:` node is:
 
 `executes:`                                 |              | Content
 :-------------------------------------------|:-------------|:------------------------------------
-`- execute:`                                | **Required** | Short identifier of the build step. Note: identifier is part of path names during build process. 
+`- execute:`                                | **Required** | The identifier is used as CMake target name and must not contain spaces and special characters; recommended is less then 32 characters.
 &nbsp;&nbsp;&nbsp; `run:`                   | **Required** | Command string with name of the program or script (optionally with path) along with argument string.
 &nbsp;&nbsp;&nbsp; `always:`                |  Optional    | When present, the build step always runs and bypasses check for outdated `output:` files.
 &nbsp;&nbsp;&nbsp; `input:`                 |  Optional    | A list of input files (may contain [Access Sequences](#access-sequences)). 
@@ -1981,64 +1980,75 @@ The `run:` command string uses these sequences to access input files and output 
 
 `run:` command file access                  | Description
 :-------------------------------------------|:-------------------------------------------------
-`$input$`                                   | Comma separated list of all input files.
+`$input$`                                   | List of all input files separated by semicolon (;) character.
 `$input(<n>)$`                              | Input file in the list with index `<n>`; first item is `<n>=0`.
-`$output$`                                  | Comma separated list of all output files.
+`$output$`                                  | List of all output files separated by semicolon (;) character.
 `$output(<n>)$`                             | Output file in the list with index `<n>`; first item is `<n>=0`.
+
+The `run:` command string also accepts these [access sequences](#access-sequences): $Bname$, $Dname$, $Pname$, $BuildType$, $TargetType$, $Compiler$, $Solution$, $Project$. It does not accept [access sequences](#access-sequences) that reference directories or files as this bypasses the [project dependency check](build-overview.md#project-dependency). Instead use the `input:` list to pass files or directories.
+
+> **Notes:**
+> 
+> - The `execute:` node is processed by the CMake build system. The order of execution depends on `$input$` and `$output` files and is evaluated by CMake.
+>
+> - The `execute:` node is processed only for an application build when no `--context` option is specified. The option `--context-set` can be used.
+> 
+> - CMake uses Linux-style path names with `/` characters, it does not accept the Windows-style `\` characters in the `run:` node to specify the location of an executeable tool.
+>
+> - [CMake provides several builtin command-line tools](https://cmake.org/cmake/help/latest/manual/cmake.1.html#run-a-command-line-tool) (copy, checksum, etc.) that run on every Host OS. Consider using these command-line tools instead of Windows or Linux specific commands. Use `CMake -E help` to list the available commands. 
+> 
+> - The base directory for execution is not controlled by the CMSIS-Toolbox and typically the `tmp` directory. The commands specified by `run:` should be in the path of the Host OS or the path/tool should be passed using an `$input(<n>)$` argument.
+> 
+> - At the `*.csolution.yml` level `for-context:` and `not-for-context:` is not evaluated.
 
 **Examples:**
 
+The tool `gen_image` combines multiple input images. It is called with the list of [elf files](#output) that are created by the various projects. It runs when `cbuild` executes a solution build (option `--context` is not used).
+
 ```yml
-solution:                       # executed as part of a project build
+solution:                                     # executed as part of a complete solution build
+    :
   executes:
-    - execute: GenImage         # generate final download image
-      run: gen_image $input$ -o $output$ --sign    # Command line string
+    - execute: GenImage                       # generate final download image
+      run: gen_image $input$ -o $output$ --sign    # command string
       input:
-        - $elf(Application)$                       # combine these project parts
+        - $elf(Application)$                  # combine these project parts
         - $elf(TFM)$
         - $elf(Bootloader)$
       output:
-        - $SolutionDir$/$Solution$.out             # output file name
+        - $SolutionDir()$/$Solution$.out      # output file name
 ```
+
+The Windows batch file `KeyGen.bat` converts a input file `keyfile.txt` to a C source file. combines multiple input images. It is called with the list of [elf files](#output) that are created by the various projects. It runs when `cbuild` executes a solution build (option `--context` is not used).
+
+```yml
+project:                                      # executed as part of a project build
+  executes:
+    - execute: Generate Encryption Keys
+      run: $input(1)$ $input(0)$ -o $output$
+      always:                                 # always generate the keyfile.c as it has a timestamp
+      input:
+        - $ProjectDir()$/keyfile.txt          # contains the key in text format
+        - $SolutionDir()$/KeyGen.bat
+      output:
+        - $ProjectDir()$/keyfile.c            # output as C source file that is part of this project
+```
+
+The builtin CMake command-line tool `copy` is used to copy the `ELF` output file.
 
 ```yml
 project:                       # executed as part of a project build
   executes:
-    - execute: Generate Encryption Keys
-      run: KeyGen $input$ -o $output$
-      always:                  # always generate the keyfile.c as it contains a timestamp
-      input:  keyfile.txt      # contains the key in text format
-      output: keyfile.c        # output as C source file that is part of this project
+    - execute: copy-elf
+      run: ${CMAKE_COMMAND} -E copy $input$ $output$
+      input:  
+        - $elf()$
+      output: 
+        - $OutDir()$/Project.out
+      for-context: .Release
 ```
 
-```yml
-solution:                      # executed as part of a solution build
-  executes:                    # uses a CMake script
-    - execute: SaveArtifacts
-      run: ${CMAKE_COMMAND} -DINPUT=$input$ -DOUTPUT=$output$ -P $input(0)$
-      always:
-      input:
-        - script/archive.cmake
-        - $elf(project.Release+ARMCM0)$
-        - $elf(project.Release+ARMCM0)$.signed
-        - $elf(bootloader.Release+ARMCM0)$
-      output:
-        - $SolutionDir()$/artifacts.zip
-```
-
-```yml
-project:                       # executed as part of a project build
-  executes:                    # uses a CMake script
-    - execute: SignImage
-      run: ${CMAKE_COMMAND} -DINPUT=$input(1)$ -DOUTPUT=$output$ -P $input(0)$
-      input:
-        - $SolutionDir()$/script/sign.cmake   #CMake script
-        - $elf()$             # ELF file generated by project
-      output:
-        - $elf()$.signed
-      for-context:            # only for build-type: Release
-        - .Release
-```
+Refer to [Build Operation - CMake Integration](build-operation.md) for examples that integrate CMake scripts.
 
 ## `connections:`
 
