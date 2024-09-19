@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - '.github/workflows/toolbox.yml'
+      - 'debian/**'
       - 'test/test.py'
       - 'scripts/**'
       - '!docs/**'
@@ -275,6 +276,27 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+      # Debian Package
+      - name: Update dependencies
+        run: |
+            sudo apt-get update
+            sudo apt-get install ninja-build
+
+      - name: Create Debian Package
+        run: |
+            mkdir -p ./debian/build
+            cmake -G Ninja -S ./debian -B ./debian/build -DTOOLBOX_ROOT=$(realpath ./toolbox/zip/cmsis-toolbox-linux-amd64) -DTOOLBOX_VERSION=$(echo ${{ github.ref }} | cut -d'/' -f3)
+            cd ./debian/build
+            cpack -G DEB
+
+      - name: Archive Debian Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: cmsis-toolbox-debian-package
+          path: ./debian/build/cmsis-toolbox_*_amd64.deb
+          retention-days: 1
+          if-no-files-found: error
+
   tests:
     if: |
       ${{ github.event_name == 'pull_request' || github.event_name == 'release' }}
@@ -469,6 +491,22 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: toolbox/zip/cmsis-toolbox-*
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
+
+      # Debian Package
+      - name: Download Debian Package
+        uses: actions/download-artifact@v4
+        with:
+          name: cmsis-toolbox-debian-package
+          path: debian
+
+      - name: Attach Debian Package to release assets
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: debian/cmsis-toolbox_*_amd64.deb
           tag: ${{ github.ref }}
           overwrite: true
           file_glob: true

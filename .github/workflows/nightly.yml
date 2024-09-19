@@ -14,6 +14,7 @@ on:
     paths:
       - '.github/workflows/nightly.yml'
       - '.github/matrix_includes.json'
+      - 'debian/**'
       - 'test/**'
       - '!test/RobotTests.md'
       - '!test/tests.py'
@@ -240,6 +241,30 @@ jobs:
         with:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: cmsis-toolbox
+          retention-days: ${{ env.retention-days }}
+
+      # Debian Package
+      - name: Update dependencies
+        if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
+        run: |
+            sudo apt-get update
+            sudo apt-get install ninja-build
+
+      - name: Create Debian Package
+        if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
+        run: |
+            git fetch --unshallow
+            mkdir -p ./debian/build
+            cmake -G Ninja -S ./debian -B ./debian/build -DTOOLBOX_ROOT=$(realpath ./cmsis-toolbox) -DTOOLBOX_VERSION=$(git describe --tags --abbrev=0)+nightly-$(date +%Y%m%d%H%M)
+            cd ./debian/build
+            cpack -G DEB
+
+      - name: Archive Debian Package
+        if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cmsis-toolbox-debian-package
+          path: ./debian/build/cmsis-toolbox_*_amd64.deb
           retention-days: ${{ env.retention-days }}
 
   run-tests:
