@@ -355,7 +355,7 @@ jobs:
           path: artifacts
 
       - name: publish test results
-        uses: EnricoMi/publish-unit-test-result-action/composite@v2
+        uses: EnricoMi/publish-unit-test-result-action/linux@v2
         with:
           commit: ${{ github.event.workflow_run.head_sha }}
           report_individual_runs: true
