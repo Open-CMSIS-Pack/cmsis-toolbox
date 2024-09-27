@@ -5,6 +5,7 @@ on:
       - main
     paths:
       - '.github/workflows/toolbox.yml'
+      - '.github/matrix_release_includes.json'
       - 'debian/**'
       - 'test/test.py'
       - 'scripts/**'
@@ -13,6 +14,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/toolbox.yml'
+      - '.github/matrix_release_includes.json'
       - 'test/test.py'
       - 'scripts/**'
       - '!docs/**'
@@ -25,11 +27,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  matrix_prep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: JoshuaTheMiller/conditional-build-matrix@v2.0.1
+        id: set-matrix
+        with:
+          inputFile: '.github/matrix_release_includes.json'
+          filter: '[?runOnBranch==`always`]'
+
   create_archives:
     if: |
       ${{ github.event_name == 'pull_request' || github.event_name == 'release' }}
-    runs-on: ubuntu-20.04
     timeout-minutes: 15
+    needs: [ matrix_prep ]
+    runs-on: ${{ matrix.runs_on }}
+    continue-on-error: true
+    strategy:
+      matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
 
     steps:
       - name: Checkout devtools
@@ -37,21 +55,64 @@ jobs:
 
       - name: Create folders
         run: |
-          mkdir -p toolbox/cbuild
-          mkdir -p toolbox/packchk
-          mkdir -p toolbox/svdconv
-          mkdir -p toolbox/vidx2pidx
-          mkdir -p toolbox/distribution/bin
-          mkdir -p toolbox/distribution/etc
-          mkdir -p toolbox/distribution/doc
+          mkdir -p toolbox
 
-      - name: Download cbuild release asset
+      - name: Download buildmgr release asset
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: "Open-CMSIS-Pack/devtools"
           version: tags/tools/buildmgr/2.6.0
           file: cbuild_install.sh
-          target: toolbox/cbuild/cbuild_install.sh
+          target: toolbox/cbuild_install.sh
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download projmgr release asset
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Open-CMSIS-Pack/devtools"
+          version: tags/tools/projmgr/2.6.0
+          file: projmgr.zip
+          target: toolbox/projmgr.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download cbridge release assets
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Open-CMSIS-Pack/generator-bridge"
+          version: tags/v0.9.11
+          regex: true
+          file: "cbridge_.*\\.(zip|gz)"
+          target: "toolbox/"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download cbuild release assets
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Open-CMSIS-Pack/cbuild"
+          version: tags/v2.6.0
+          regex: true
+          file: "cbuild_.*\\.(zip|gz)"
+          target: "toolbox/"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Download cbuild2cmake release assets
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Open-CMSIS-Pack/cbuild2cmake"
+          version: tags/v0.9.4
+          regex: true
+          file: "cbuild2cmake_.*\\.(zip|gz)"
+          target: "toolbox/"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download cpackget release assets
+        uses: dsaltares/fetch-gh-release-asset@master
+        with:
+          repo: "Open-CMSIS-Pack/cpackget"
+          version: tags/v2.1.4
+          regex: true
+          file: "cpackget_.*\\.(zip|gz)"
+          target: "toolbox/"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download packchk release assets
@@ -61,7 +122,7 @@ jobs:
           version: tags/tools/packchk/1.4.1
           regex: true
           file: "packchk-.*\\.(zip|tbz2)"
-          target: "toolbox/packchk/"
+          target: "toolbox/"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download svdconv release assets
@@ -71,7 +132,7 @@ jobs:
           version: tags/tools/svdconv/3.3.47
           regex: true
           file: "svdconv-.*\\.(zip|tbz2)"
-          target: "toolbox/svdconv/"
+          target: "toolbox/"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download vidx2pidx release assets
@@ -81,215 +142,138 @@ jobs:
           version: tags/v0.0.4
           regex: true
           file: "vidx2pidx_.*\\.(zip|gz)"
-          target: "toolbox/vidx2pidx/"
+          target: "toolbox/"
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Unzip and copy files
+      - name: Unzip files
+        shell: bash
+        run: |
+          mkdir -p buildmgr
+          mkdir -p projmgr
+          mkdir -p cbridge
+          mkdir -p cbuild
+          mkdir -p cbuild2cmake
+          mkdir -p cpackget
+          mkdir -p packchk
+          mkdir -p svdconv
+          mkdir -p vidx2pidx
+          mkdir -p distribution/bin
+          mkdir -p distribution/etc
+          mkdir -p distribution/doc
+        working-directory: toolbox
+
+      - name: Unzip files Windows
+        if: ${{ matrix.target == 'windows'}}
+        shell: bash
+        run: |
+          unzip cbridge_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d cbridge
+          unzip cbuild_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d cbuild
+          unzip cbuild2cmake_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d cbuild2cmake
+          unzip cpackget_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d cpackget
+          unzip packchk\*-${{ matrix.target }}-${{ matrix.arch }}.zip -d packchk
+          unzip svdconv-\*-${{ matrix.target }}-${{ matrix.arch }}.zip -d svdconv
+          unzip vidx2pidx_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d vidx2pidx
+          unzip projmgr.zip -d projmgr
+          ./cbuild_install.sh -x buildmgr
+        working-directory: toolbox
+
+      - name: Unzip files Linux Darwin
+        if: ${{ matrix.target == 'linux' || matrix.target == 'darwin'}}
+        shell: bash
+        run: |
+          tar -xvf cbridge_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C cbridge
+          tar -xvf cbuild_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C cbuild
+          tar -xvf cbuild2cmake_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C cbuild2cmake
+          tar -xvf cpackget_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C cpackget
+          tar -xvf packchk-*-${{ matrix.target }}-${{ matrix.arch }}.tbz2 -C packchk
+          tar -xvf svdconv-*-${{ matrix.target }}-${{ matrix.arch }}.tbz2 -C svdconv
+          tar -xvf vidx2pidx_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C vidx2pidx
+          unzip projmgr.zip -d projmgr
+          sudo chmod +x ./cbuild_install.sh && ./cbuild_install.sh -x buildmgr
+        working-directory: toolbox
+
+      - name: Copy Files
+        shell: bash
         run: |
           curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.40/schema/PACK.xsd --output distribution/etc/PACK.xsd
           curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.40/schema/PackIndex.xsd --output distribution/etc/PackIndex.xsd
-          sudo chmod +x ./cbuild/cbuild_install.sh
-          ./cbuild/cbuild_install.sh -x cbuild
-          cp -r cbuild/bin/* distribution/bin
-          cp -r cbuild/etc/* distribution/etc
-          tar -xvf packchk/packchk-*-darwin-amd64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.mac-amd64
-          tar -xvf packchk/packchk-*-darwin-arm64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.mac-arm64
-          tar -xvf packchk/packchk-*-linux-amd64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.lin-amd64
-          tar -xvf packchk/packchk-*-linux-arm64.tbz2 -C packchk && mv packchk/packchk distribution/bin/packchk.lin-arm64
-          unzip packchk/packchk-\*-windows-amd64.zip -d packchk && mv packchk/packchk.exe distribution/bin/packchk.exe-amd64
-          unzip packchk/packchk-\*-windows-arm64.zip -d packchk && mv packchk/packchk.exe distribution/bin/packchk.exe-arm64
-          tar -xvf svdconv/svdconv-*-darwin-amd64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.mac-amd64
-          tar -xvf svdconv/svdconv-*-darwin-arm64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.mac-arm64
-          tar -xvf svdconv/svdconv-*-linux-amd64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.lin-amd64
-          tar -xvf svdconv/svdconv-*-linux-arm64.tbz2 -C svdconv && mv svdconv/svdconv distribution/bin/svdconv.lin-arm64
-          unzip svdconv/svdconv-\*-windows-amd64.zip -d svdconv && mv svdconv/svdconv.exe distribution/bin/svdconv.exe-amd64
-          unzip svdconv/svdconv-\*-windows-arm64.zip -d svdconv && mv svdconv/svdconv.exe distribution/bin/svdconv.exe-arm64
-          tar -xvf vidx2pidx/vidx2pidx_*_linux_amd64.tar.gz -C vidx2pidx && mv vidx2pidx/vidx2pidx_*_linux_amd64/vidx2pidx distribution/bin/vidx2pidx.lin-amd64
-          tar -xvf vidx2pidx/vidx2pidx_*_linux_arm64.tar.gz -C vidx2pidx && mv vidx2pidx/vidx2pidx_*_linux_arm64/vidx2pidx distribution/bin/vidx2pidx.lin-arm64
-          tar -xvf vidx2pidx/vidx2pidx_*_darwin_amd64.tar.gz -C vidx2pidx && mv vidx2pidx/vidx2pidx_*_darwin_amd64/vidx2pidx distribution/bin/vidx2pidx.mac-amd64
-          tar -xvf vidx2pidx/vidx2pidx_*_darwin_arm64.tar.gz -C vidx2pidx && mv vidx2pidx/vidx2pidx_*_darwin_arm64/vidx2pidx distribution/bin/vidx2pidx.mac-arm64
-          unzip vidx2pidx/vidx2pidx_\*_windows_amd64.zip -d vidx2pidx && mv vidx2pidx/vidx2pidx_*_windows_amd64/vidx2pidx.exe distribution/bin/vidx2pidx.exe-amd64
-          unzip vidx2pidx/vidx2pidx_\*_windows_arm64.zip -d vidx2pidx && mv vidx2pidx/vidx2pidx_*_windows_arm64/vidx2pidx.exe distribution/bin/vidx2pidx.exe-arm64
-          cp ../docs/LICENSE.txt distribution
-          cp ../docs/index.html distribution/doc
+          cp ./buildmgr/bin/cbuildgen${{ matrix.temp_extension }}-${{ matrix.arch }}                        ./distribution/bin/cbuildgen${{ matrix.binary_extension }}
+          cp -r ./buildmgr/etc/*                                                                            ./distribution/etc
+          rm ./distribution/etc/setup
+          cp ./projmgr/bin/${{ matrix.target }}-${{ matrix.arch }}/csolution${{ matrix.binary_extension }}  ./distribution/bin/csolution${{ matrix.binary_extension }}
+          cp -r ./projmgr/etc/*                                                                             ./distribution/etc
+          cp ./cbridge/*/cbridge${{ matrix.binary_extension }}                                              ./distribution/bin/cbridge${{ matrix.binary_extension }}
+          cp ./cbridge/*/launch-MCUXpressoConfigTools*                                                      ./distribution/bin/
+          cp ./cbuild/*/cbuild${{ matrix.binary_extension }}                                                ./distribution/bin/cbuild${{ matrix.binary_extension }}
+          cp ./cbuild2cmake/*/cbuild2cmake${{ matrix.binary_extension }}                                    ./distribution/bin/cbuild2cmake${{ matrix.binary_extension }}
+          cp ./cpackget/*/cpackget${{ matrix.binary_extension }}                                            ./distribution/bin/cpackget${{ matrix.binary_extension }}
+          cp ./packchk/packchk${{ matrix.binary_extension }}                                                ./distribution/bin/packchk${{ matrix.binary_extension }}
+          cp ./svdconv/svdconv${{ matrix.binary_extension }}                                                ./distribution/bin/svdconv${{ matrix.binary_extension }}
+          cp ./vidx2pidx/*/vidx2pidx${{ matrix.binary_extension }}                                          ./distribution/bin/vidx2pidx${{ matrix.binary_extension }}
+          cp ../docs/LICENSE.txt                                                                            ./distribution
+          cp ../docs/index.html                                                                             ./distribution/doc
         working-directory: toolbox
 
-      - name: Copy files separated by target for archiving
+      - name: Update toolchain config files
+        if: ${{ matrix.target == 'windows' }}
+        shell: bash
         run: |
-          mkdir -p zip/cmsis-toolbox-windows-amd64/bin zip/cmsis-toolbox-windows-amd64/etc zip/cmsis-toolbox-windows-amd64/doc
-          mkdir -p zip/cmsis-toolbox-windows-arm64/bin zip/cmsis-toolbox-windows-arm64/etc zip/cmsis-toolbox-windows-arm64/doc
-          mkdir -p zip/cmsis-toolbox-linux-amd64/bin   zip/cmsis-toolbox-linux-amd64/etc   zip/cmsis-toolbox-linux-amd64/doc
-          mkdir -p zip/cmsis-toolbox-linux-arm64/bin   zip/cmsis-toolbox-linux-arm64/etc   zip/cmsis-toolbox-linux-arm64/doc
-          mkdir -p zip/cmsis-toolbox-darwin-amd64/bin  zip/cmsis-toolbox-darwin-amd64/etc  zip/cmsis-toolbox-darwin-amd64/doc
-          mkdir -p zip/cmsis-toolbox-darwin-arm64/bin  zip/cmsis-toolbox-darwin-arm64/etc  zip/cmsis-toolbox-darwin-arm64/doc
-          cp distribution/bin/cbuild.exe-amd64    zip/cmsis-toolbox-windows-amd64/bin/cbuild.exe
-          cp distribution/bin/cbuild2cmake.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/cbuild2cmake.exe
-          cp distribution/bin/cbuildgen.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/cbuildgen.exe
-          cp distribution/bin/cpackget.exe-amd64  zip/cmsis-toolbox-windows-amd64/bin/cpackget.exe
-          cp distribution/bin/cbridge.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/cbridge.exe
-          cp distribution/bin/launch-MCUXpressoConfigTools.bat-amd64 zip/cmsis-toolbox-windows-amd64/bin/launch-MCUXpressoConfigTools.bat
-          cp distribution/bin/csolution.exe-amd64 zip/cmsis-toolbox-windows-amd64/bin/csolution.exe
-          cp distribution/bin/packchk.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/packchk.exe
-          cp distribution/bin/svdconv.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/svdconv.exe
-          cp distribution/bin/vidx2pidx.exe-amd64   zip/cmsis-toolbox-windows-amd64/bin/vidx2pidx.exe
-          cp distribution/bin/cbuild.exe-arm64    zip/cmsis-toolbox-windows-arm64/bin/cbuild.exe
-          cp distribution/bin/cbuild2cmake.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/cbuild2cmake.exe
-          cp distribution/bin/cbuildgen.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/cbuildgen.exe
-          cp distribution/bin/cpackget.exe-arm64  zip/cmsis-toolbox-windows-arm64/bin/cpackget.exe
-          cp distribution/bin/cbridge.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/cbridge.exe
-          cp distribution/bin/launch-MCUXpressoConfigTools.bat-arm64 zip/cmsis-toolbox-windows-arm64/bin/launch-MCUXpressoConfigTools.bat
-          cp distribution/bin/csolution.exe-arm64 zip/cmsis-toolbox-windows-arm64/bin/csolution.exe
-          cp distribution/bin/packchk.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/packchk.exe
-          cp distribution/bin/svdconv.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/svdconv.exe
-          cp distribution/bin/vidx2pidx.exe-arm64   zip/cmsis-toolbox-windows-arm64/bin/vidx2pidx.exe
-          cp distribution/bin/cbuild.lin-amd64    zip/cmsis-toolbox-linux-amd64/bin/cbuild
-          cp distribution/bin/cbuild2cmake.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuild2cmake
-          cp distribution/bin/cbuildgen.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/cbuildgen
-          cp distribution/bin/cpackget.lin-amd64  zip/cmsis-toolbox-linux-amd64/bin/cpackget
-          cp distribution/bin/cbridge.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/cbridge
-          cp distribution/bin/launch-MCUXpressoConfigTools.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/launch-MCUXpressoConfigTools
-          cp distribution/bin/csolution.lin-amd64 zip/cmsis-toolbox-linux-amd64/bin/csolution
-          cp distribution/bin/packchk.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/packchk
-          cp distribution/bin/svdconv.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/svdconv
-          cp distribution/bin/vidx2pidx.lin-amd64   zip/cmsis-toolbox-linux-amd64/bin/vidx2pidx
-          cp distribution/bin/cbuild.lin-arm64    zip/cmsis-toolbox-linux-arm64/bin/cbuild
-          cp distribution/bin/cbuild2cmake.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/cbuild2cmake
-          cp distribution/bin/cbuildgen.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/cbuildgen
-          cp distribution/bin/cpackget.lin-arm64  zip/cmsis-toolbox-linux-arm64/bin/cpackget
-          cp distribution/bin/cbridge.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/cbridge
-          cp distribution/bin/launch-MCUXpressoConfigTools.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/launch-MCUXpressoConfigTools
-          cp distribution/bin/csolution.lin-arm64 zip/cmsis-toolbox-linux-arm64/bin/csolution
-          cp distribution/bin/packchk.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/packchk
-          cp distribution/bin/svdconv.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/svdconv
-          cp distribution/bin/vidx2pidx.lin-arm64   zip/cmsis-toolbox-linux-arm64/bin/vidx2pidx
-          cp distribution/bin/cbuild.mac-amd64    zip/cmsis-toolbox-darwin-amd64/bin/cbuild
-          cp distribution/bin/cbuild2cmake.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/cbuild2cmake
-          cp distribution/bin/cbuildgen.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/cbuildgen
-          cp distribution/bin/cpackget.mac-amd64  zip/cmsis-toolbox-darwin-amd64/bin/cpackget
-          cp distribution/bin/cbridge.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/cbridge
-          cp distribution/bin/launch-MCUXpressoConfigTools.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/launch-MCUXpressoConfigTools
-          cp distribution/bin/csolution.mac-amd64 zip/cmsis-toolbox-darwin-amd64/bin/csolution
-          cp distribution/bin/packchk.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/packchk
-          cp distribution/bin/svdconv.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/svdconv
-          cp distribution/bin/vidx2pidx.mac-amd64   zip/cmsis-toolbox-darwin-amd64/bin/vidx2pidx
-          cp distribution/bin/cbuild.mac-arm64    zip/cmsis-toolbox-darwin-arm64/bin/cbuild
-          cp distribution/bin/cbuild2cmake.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/cbuild2cmake
-          cp distribution/bin/cbuildgen.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/cbuildgen
-          cp distribution/bin/cpackget.mac-arm64  zip/cmsis-toolbox-darwin-arm64/bin/cpackget
-          cp distribution/bin/cbridge.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/cbridge
-          cp distribution/bin/launch-MCUXpressoConfigTools.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/launch-MCUXpressoConfigTools
-          cp distribution/bin/csolution.mac-arm64 zip/cmsis-toolbox-darwin-arm64/bin/csolution
-          cp distribution/bin/packchk.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/packchk
-          cp distribution/bin/svdconv.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/svdconv
-          cp distribution/bin/vidx2pidx.mac-arm64   zip/cmsis-toolbox-darwin-arm64/bin/vidx2pidx
-          cp distribution/LICENSE.txt             zip/cmsis-toolbox-windows-amd64/LICENSE.txt
-          cp distribution/LICENSE.txt             zip/cmsis-toolbox-windows-arm64/LICENSE.txt
-          cp distribution/LICENSE.txt             zip/cmsis-toolbox-linux-amd64/LICENSE.txt
-          cp distribution/LICENSE.txt             zip/cmsis-toolbox-linux-arm64/LICENSE.txt
-          cp distribution/LICENSE.txt             zip/cmsis-toolbox-darwin-amd64/LICENSE.txt
-          cp distribution/LICENSE.txt             zip/cmsis-toolbox-darwin-arm64/LICENSE.txt
-          rm distribution/etc/setup
-          cp -r distribution/etc/*                zip/cmsis-toolbox-windows-amd64/etc
-          cp -r distribution/etc/*                zip/cmsis-toolbox-windows-arm64/etc
-          cp -r distribution/etc/*                zip/cmsis-toolbox-linux-amd64/etc
-          cp -r distribution/etc/*                zip/cmsis-toolbox-linux-arm64/etc
-          cp -r distribution/etc/*                zip/cmsis-toolbox-darwin-amd64/etc
-          cp -r distribution/etc/*                zip/cmsis-toolbox-darwin-arm64/etc
-          cp -r distribution/doc/*                zip/cmsis-toolbox-windows-amd64/doc
-          cp -r distribution/doc/*                zip/cmsis-toolbox-windows-arm64/doc
-          cp -r distribution/doc/*                zip/cmsis-toolbox-linux-amd64/doc
-          cp -r distribution/doc/*                zip/cmsis-toolbox-linux-arm64/doc
-          cp -r distribution/doc/*                zip/cmsis-toolbox-darwin-amd64/doc
-          cp -r distribution/doc/*                zip/cmsis-toolbox-darwin-arm64/doc
+          sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/AC6.6.16.2.cmake
+          sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/GCC.10.3.1.cmake
+          sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/IAR.9.32.1.cmake
+          sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/CLANG.17.0.1.cmake
         working-directory: toolbox
-        
-      - name: Set toolchain default paths
+
+      - name: Create output folders
         run: |
-          ./scripts/set-default.sh Windows toolbox/zip/cmsis-toolbox-windows-amd64/etc
-          ./scripts/set-default.sh Windows toolbox/zip/cmsis-toolbox-windows-arm64/etc
-          ./scripts/set-default.sh Linux toolbox/zip/cmsis-toolbox-linux-amd64/etc
-          ./scripts/set-default.sh Linux toolbox/zip/cmsis-toolbox-linux-arm64/etc
-          ./scripts/set-default.sh Darwin toolbox/zip/cmsis-toolbox-darwin-amd64/etc
-          ./scripts/set-default.sh Darwin toolbox/zip/cmsis-toolbox-darwin-arm64/etc
+          mkdir cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+          cp -r distribution/* cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+        working-directory: toolbox
 
       - name: Add execution permission to the binaries and set files ownership
+        if: ${{ matrix.target == 'linux' || matrix.target == 'darwin'}}
         run: |
-          sudo chmod -R +x */bin/*
-          sudo chown -R root:root *
-        working-directory: toolbox/zip
+          sudo chmod -R +x bin/*
+          sudo chown -R root: *
+        working-directory: toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
 
-      - name: Zip folders
+      - name: Zip folders Windows
+        if: ${{ matrix.target == 'windows'}}
         run: |
-          zip -r cmsis-toolbox-windows-amd64.zip       cmsis-toolbox-windows-amd64
-          zip -r cmsis-toolbox-windows-arm64.zip       cmsis-toolbox-windows-arm64
-          tar -czvf cmsis-toolbox-linux-amd64.tar.gz   cmsis-toolbox-linux-amd64
-          tar -czvf cmsis-toolbox-linux-arm64.tar.gz   cmsis-toolbox-linux-arm64
-          tar -czvf cmsis-toolbox-darwin-amd64.tar.gz  cmsis-toolbox-darwin-amd64
-          tar -czvf cmsis-toolbox-darwin-arm64.tar.gz  cmsis-toolbox-darwin-arm64
-        working-directory: toolbox/zip
+          Compress-Archive -Path cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }} -Destination cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}${{ matrix.archive_extension }}
+        working-directory: toolbox
 
-      - name: Archive windows amd64 binaries
+      - name: Zip folders Linux Darwin
+        if: ${{ matrix.target == 'linux' || matrix.target == 'darwin'}}
+        run: |
+          tar -czvf cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}${{ matrix.archive_extension }} cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+        working-directory: toolbox
+
+      - name: Archive binaries
         uses: actions/upload-artifact@v4
         with:
-          name: cmsis-toolbox-windows-amd64
-          path: ./toolbox/zip/cmsis-toolbox-windows-amd64.zip
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Archive windows arm64 binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: cmsis-toolbox-windows-arm64
-          path: ./toolbox/zip/cmsis-toolbox-windows-arm64.zip
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Archive linux amd64 binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: cmsis-toolbox-linux-amd64
-          path: ./toolbox/zip/cmsis-toolbox-linux-amd64.tar.gz
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Archive linux arm64 binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: cmsis-toolbox-linux-arm64
-          path: ./toolbox/zip/cmsis-toolbox-linux-arm64.tar.gz
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Archive darwin amd64 binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: cmsis-toolbox-darwin-amd64
-          path: ./toolbox/zip/cmsis-toolbox-darwin-amd64.tar.gz
-          retention-days: 1
-          if-no-files-found: error
-
-      - name: Archive darwin arm64 binaries
-        uses: actions/upload-artifact@v4
-        with:
-          name: cmsis-toolbox-darwin-arm64
-          path: ./toolbox/zip/cmsis-toolbox-darwin-arm64.tar.gz
+          name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+          path: ./toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}${{ matrix.archive_extension }}
           retention-days: 1
           if-no-files-found: error
 
       # Debian Package
       - name: Update dependencies
+        if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
         run: |
             sudo apt-get update
             sudo apt-get install ninja-build
 
       - name: Create Debian Package
+        if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
         run: |
             mkdir -p ./debian/build
-            cmake -G Ninja -S ./debian -B ./debian/build -DTOOLBOX_ROOT=$(realpath ./toolbox/zip/cmsis-toolbox-linux-amd64) -DTOOLBOX_VERSION=$(echo ${{ github.ref }} | cut -d'/' -f3)
+            cmake -G Ninja -S ./debian -B ./debian/build -DTOOLBOX_ROOT=$(realpath ./toolbox/cmsis-toolbox-linux-amd64) -DTOOLBOX_VERSION=$(echo ${{ github.ref }} | cut -d'/' -f3)
             cd ./debian/build
             cpack -G DEB
 
       - name: Archive Debian Package
+        if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
         uses: actions/upload-artifact@v4
         with:
           name: cmsis-toolbox-debian-package
