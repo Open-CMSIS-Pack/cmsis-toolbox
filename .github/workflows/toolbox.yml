@@ -45,7 +45,6 @@ jobs:
     timeout-minutes: 15
     needs: [ matrix_prep ]
     runs-on: ${{ matrix.runs_on }}
-    continue-on-error: true
     strategy:
       matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
 
