@@ -78,7 +78,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: "Open-CMSIS-Pack/generator-bridge"
-          version: tags/v0.9.11
+          version: tags/v0.9.12
           regex: true
           file: "cbridge_.*\\.(zip|gz)"
           target: "toolbox/"
@@ -88,7 +88,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@master
         with:
           repo: "Open-CMSIS-Pack/cbuild"
-          version: tags/v2.6.0
+          version: tags/v2.6.1
           regex: true
           file: "cbuild_.*\\.(zip|gz)"
           target: "toolbox/"
