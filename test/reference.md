@@ -25,7 +25,7 @@
 |windows-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|955.02 s|Pack Example Tests|
 |windows-amd64|Hello_FRDM-K32L3A6|35.11 s|Remote Example Tests|
 |windows-amd64|Hello_LPCXpresso55S69|30.37 s|Remote Example Tests|
-|windows-amd64|Blinky_NUCLEO-G0B1RE|27.52 s|Remote Example Tests|
+|windows-amd64|Csolution-examples|27.52 s|Remote Example Tests|
 |windows-amd64|keil-studio-get-started|8.24 s|Remote Example Tests|
 |windows-amd64|Hello_AVH|65.48 s|Remote Example Tests|
 |linux-amd64|Validate build-asm Example|8.28 s|Local Example Tests|
@@ -43,7 +43,7 @@
 |linux-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|754.88 s|Pack Example Tests|
 |linux-amd64|Hello_FRDM-K32L3A6|13.17 s|Remote Example Tests|
 |linux-amd64|Hello_LPCXpresso55S69|10.68 s|Remote Example Tests|
-|linux-amd64|Blinky_NUCLEO-G0B1RE|14.93 s|Remote Example Tests|
+|linux-amd64|Csolution-examples|14.93 s|Remote Example Tests|
 |linux-amd64|keil-studio-get-started|3.92 s|Remote Example Tests|
 |linux-amd64|Hello_AVH|27.26 s|Remote Example Tests|
 |darwin-amd64|Validate build-asm Example|10.46 s|Local Example Tests|
@@ -61,6 +61,6 @@
 |darwin-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|1559.94 s|Pack Example Tests|
 |darwin-amd64|Hello_FRDM-K32L3A6|26.55 s|Remote Example Tests|
 |darwin-amd64|Hello_LPCXpresso55S69|22.71 s|Remote Example Tests|
-|darwin-amd64|Blinky_NUCLEO-G0B1RE|28.29 s|Remote Example Tests|
+|darwin-amd64|Csolution-examples|28.29 s|Remote Example Tests|
 |darwin-amd64|keil-studio-get-started|9.56 s|Remote Example Tests|
 |darwin-amd64|Hello_AVH|61.67 s|Remote Example Tests|

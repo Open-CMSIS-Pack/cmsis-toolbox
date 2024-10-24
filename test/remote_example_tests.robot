@@ -20,12 +20,17 @@ Test github examples
     [Arguments]                             ${github_url}    ${cbuildgen_expect}    ${cbuild2cmake_expect}
     ${dest_dir}=    Get Destination Path    ${github_url}
     Checkout GitHub Repository              ${github_url}    ${dest_dir}       
-    ${files}    Glob Files In Directory     ${dest_dir}    *.csolution.*    ${True}
+    ${files}    Glob Files In Directory     ${dest_dir}    *.csolution.*    ${True}    Templates
     FOR    ${file}    IN    @{files}
         Build Remote CSolution Example    ${file}    ${cbuildgen_expect}    ${cbuild2cmake_expect}
     END
 
+# Build Remote CSolution Example
+#     [Arguments]                              ${input_file}      ${cbuildgen_expect}    ${cbuild2cmake_expect}    ${args}=@{EMPTY}
+#     ${result}=    Build CSolution Example    ${input_file}      ${cbuildgen_expect}    ${cbuild2cmake_expect}    ${args}
+#     Should Be True                           ${result}
+
 Build Remote CSolution Example
     [Arguments]                              ${input_file}      ${cbuildgen_expect}    ${cbuild2cmake_expect}    ${args}=@{EMPTY}
-    ${result}=    Build CSolution Example    ${input_file}      ${cbuildgen_expect}    ${cbuild2cmake_expect}    ${args}
+    ${result}=    Run Csolution Project      ${input_file}            ${cbuildgen_expect}        ${args}
     Should Be True                           ${result}
