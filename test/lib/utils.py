@@ -2,11 +2,26 @@ import glob
 from pathlib import Path
 import subprocess
 import re
-# import os
+import os
+import fnmatch
 
-def glob_files_in_directory(directory:str, pattern: str, recursive: bool):
-    yaml_files = glob.glob(directory + '/**/' + pattern, recursive=recursive)
-    return yaml_files
+def glob_files_in_directory(directory: str, pattern: str, recursive: bool, ignore_dir: str = None):
+    matched_files = []
+    
+    # Use os.walk to iterate over the directory
+    for root, dirs, files in os.walk(directory):
+        # If ignore_dir is specified, filter out directories to ignore
+        if ignore_dir:
+            dirs[:] = [d for d in dirs if d != ignore_dir]
+        
+        # Use glob to match files in the current root directory
+        matched_files.extend(glob.glob(os.path.join(root, pattern)))
+        
+        # If not recursive, break after the first iteration (top-level)
+        if not recursive:
+            break
+
+    return matched_files
 
 def get_parent_directory_name(file_path:str):
     parent_dir = Path(file_path).parent
