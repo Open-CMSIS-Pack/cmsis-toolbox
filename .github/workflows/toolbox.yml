@@ -32,8 +32,18 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: JoshuaTheMiller/conditional-build-matrix@v2.0.1
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: JoshuaTheMiller/conditional-build-matrix@81b51eb8d89e07b86404934b5fecde1cea1163a5 # v2.0.1
         id: set-matrix
         with:
           inputFile: '.github/matrix_release_includes.json'
@@ -49,15 +59,20 @@ jobs:
       matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
 
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
       - name: Checkout devtools
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Create folders
         run: |
           mkdir -p toolbox
 
       - name: Download buildmgr release asset
-        uses: dsaltares/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/devtools"
           version: tags/tools/buildmgr/2.6.0
@@ -66,7 +81,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download projmgr release asset
-        uses: dsaltares/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/devtools"
           version: tags/tools/projmgr/2.6.0
@@ -75,7 +90,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download cbridge release assets
-        uses: dsaltares/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/generator-bridge"
           version: tags/v0.9.12
@@ -85,7 +100,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download cbuild release assets
-        uses: dsaltares/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/cbuild"
           version: tags/v2.6.1
@@ -95,7 +110,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Download cbuild2cmake release assets
-        uses: dsaltares/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/cbuild2cmake"
           version: tags/v0.9.4
@@ -105,7 +120,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download cpackget release assets
-        uses: dsaltares/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/cpackget"
           version: tags/v2.1.4
@@ -115,7 +130,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download packchk release assets
-        uses: dsaltares/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/devtools"
           version: tags/tools/packchk/1.4.1
@@ -125,7 +140,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download svdconv release assets
-        uses: dsaltares/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/devtools"
           version: tags/tools/svdconv/3.3.47
@@ -135,7 +150,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download vidx2pidx release assets
-        uses: dsaltares/fetch-gh-release-asset@master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/vidx2pidx"
           version: tags/v0.0.4
@@ -249,7 +264,7 @@ jobs:
         working-directory: toolbox
 
       - name: Archive binaries
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: ./toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}${{ matrix.archive_extension }}
@@ -273,7 +288,7 @@ jobs:
 
       - name: Archive Debian Package
         if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
           name: cmsis-toolbox-debian-package
           path: ./debian/build/cmsis-toolbox_*_amd64.deb
@@ -298,13 +313,18 @@ jobs:
           - { os: ubuntu-20.04, target: linux, arch: amd64}
           - { os: ubuntu-20.04, target: linux, arch: arm64}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
       - name: Checkout cmsis-toolbox
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           submodules: recursive
 
       - name: Download cmsis toolbox ${{ matrix.config.target }} ${{ matrix.config.arch }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }}
           path: archive
@@ -322,7 +342,7 @@ jobs:
         run: tar -xvf archive/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }}.tar.gz -C toolbox
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
           python-version: '3.10'
 
@@ -336,7 +356,7 @@ jobs:
           pytest --base-path=toolbox/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }} test/tests.py -rA --junitxml=test-results-${{ matrix.config.target }}-${{ matrix.config.arch }}.xml
 
       - name: Archive test report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
           name: toolbox-test-${{ matrix.config.target }}-${{ matrix.config.arch }}
           path: ./test-results-*.xml
@@ -354,13 +374,18 @@ jobs:
       checks: write
       pull-requests: write
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
       - name: Download Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           path: artifacts
 
       - name: publish test results
-        uses: EnricoMi/publish-unit-test-result-action/linux@v2
+        uses: EnricoMi/publish-unit-test-result-action/linux@170bf24d20d201b842d7a52403b73ed297e6645b # v2.18.0
         with:
           commit: ${{ github.event.workflow_run.head_sha }}
           report_individual_runs: true
@@ -374,73 +399,73 @@ jobs:
 
     steps:
       - name: Download cmsis toolbox windows amd64 zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: cmsis-toolbox-windows-amd64
           path: toolbox/zip
 
       - name: Download cmsis toolbox windows arm64 zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: cmsis-toolbox-windows-arm64
           path: toolbox/zip
 
       - name: Download cmsis toolbox linux amd64 zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: cmsis-toolbox-linux-amd64
           path: toolbox/zip
 
       - name: Download cmsis toolbox linux arm64 zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: cmsis-toolbox-linux-arm64
           path: toolbox/zip
 
       - name: Download cmsis toolbox darwin amd64 zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: cmsis-toolbox-darwin-amd64
           path: toolbox/zip
 
       - name: Download cmsis toolbox darwin arm64 zip
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: cmsis-toolbox-darwin-arm64
           path: toolbox/zip
 
       - name: Download test report windows-amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: toolbox-test-windows-amd64
           path: testreports/
 
       - name: Download test report windows-arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: toolbox-test-windows-arm64
           path: testreports/
 
       - name: Download unit test report linux-amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: toolbox-test-linux-amd64
           path: testreports/
 
       - name: Download unit test report linux-arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: toolbox-test-linux-arm64
           path: testreports/
 
       - name: Download unit test report darwin-amd64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: toolbox-test-darwin-amd64
           path: testreports/
 
       - name: Download unit test report darwin-arm64
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: toolbox-test-darwin-arm64
           path: testreports/
@@ -450,7 +475,7 @@ jobs:
         working-directory: testreports
 
       - name: Attach test report archive to release assets
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: testreports/testreports.zip
@@ -470,7 +495,7 @@ jobs:
 
       - name: Attach installer to release assets
         id: release_assets
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: toolbox/zip/cmsis-toolbox-*
@@ -480,13 +505,13 @@ jobs:
 
       # Debian Package
       - name: Download Debian Package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: cmsis-toolbox-debian-package
           path: debian
 
       - name: Attach Debian Package to release assets
-        uses: svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: debian/cmsis-toolbox_*_amd64.deb
