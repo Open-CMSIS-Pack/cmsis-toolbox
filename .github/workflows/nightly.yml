@@ -31,8 +31,13 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: JoshuaTheMiller/conditional-build-matrix@v2.0.1        
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: JoshuaTheMiller/conditional-build-matrix@81b51eb8d89e07b86404934b5fecde1cea1163a5 # v2.0.1        
         id: set-matrix
         with:
           inputFile: '.github/matrix_includes.json'
@@ -46,7 +51,12 @@ jobs:
       matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Authenticate with GitHub CLI
         shell: bash
@@ -62,14 +72,14 @@ jobs:
 
       # Download and build cbuild executable
       - name: Checkout cbuild repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: Open-CMSIS-PACK/cbuild
           path: cbuild
           fetch-depth: 0
 
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
         with:
           go-version-file: cbuild/go.mod
           cache-dependency-path: |
@@ -84,14 +94,14 @@ jobs:
 
       # Download and build cpackget executable
       - name: Checkout cpackget repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: Open-CMSIS-PACK/cpackget
           path: cpackget
           fetch-depth: 0
 
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
         with:
           go-version-file: cpackget/go.mod
           cache-dependency-path: |
@@ -106,14 +116,14 @@ jobs:
 
       # Download and build cbuild2cmake executable
       - name: Checkout cbuild2cmake repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: Open-CMSIS-PACK/cbuild2cmake
           path: cbuild2cmake
           fetch-depth: 0
 
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
         with:
           go-version-file: cbuild2cmake/go.mod
           cache-dependency-path: |
@@ -128,14 +138,14 @@ jobs:
 
       # Download and build vidx2pidx executable
       - name: Checkout vidx2pidx repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: Open-CMSIS-PACK/vidx2pidx
           path: vidx2pidx
           fetch-depth: 0
 
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
         with:
           go-version-file: vidx2pidx/go.mod
           cache-dependency-path: |
@@ -150,14 +160,14 @@ jobs:
 
       # Download and build cbridge executable
       - name: Checkout cbridge repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: Open-CMSIS-PACK/generator-bridge
           path: cbridge
           fetch-depth: 0
 
       - name: Install Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
         with:
           go-version-file: cbridge/go.mod
           cache-dependency-path: |
@@ -195,7 +205,7 @@ jobs:
           fi
 
       - name: Checkout Open-CMSIS-PACK/devtools repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: Open-CMSIS-PACK/devtools
           path: devtools
@@ -237,7 +247,7 @@ jobs:
 
       - name: Archieve test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: cmsis-toolbox
@@ -261,7 +271,7 @@ jobs:
 
       - name: Archive Debian Package
         if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
           name: cmsis-toolbox-debian-package
           path: ./debian/build/cmsis-toolbox_*_amd64.deb
@@ -275,11 +285,16 @@ jobs:
       matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
 
     steps:     
+      - name: Harden Runner
+        uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+        with:
+          egress-policy: audit
+
       - name: Checkout toolbox repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
     
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -290,7 +305,7 @@ jobs:
             pip install -r test/requirements.txt
 
       - name: Setup vcpkg environment
-        uses: ARM-software/cmsis-actions/vcpkg@v1
+        uses: ARM-software/cmsis-actions/vcpkg@f608f32a6d83e90d79e1f2bbb7812fdb94bf1679 # v1
         with:
           config: "./test/vcpkg-configuration.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
@@ -302,7 +317,7 @@ jobs:
         working-directory: ./test
 
       - name: Download cmsis toolbox ${{ matrix.target }} ${{ matrix.arch }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: cmsis-toolbox
@@ -342,7 +357,7 @@ jobs:
 
       - name: Archieve test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
           name: reports-${{ matrix.target }}-${{ matrix.arch }}
           path: reports-${{ matrix.target }}-${{ matrix.arch }}
@@ -355,10 +370,15 @@ jobs:
     permissions: write-all
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Harden Runner
+      uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7 # v2.10.1
+      with:
+        egress-policy: audit
+
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
       with:
         python-version: '3.11'
         cache: 'pip'
@@ -369,7 +389,7 @@ jobs:
           pip install -r test/requirements.txt
 
     - name: Download reports
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
       with:
         path: artifacts
         pattern: reports-*
@@ -397,7 +417,7 @@ jobs:
 
     - name: Archieve consolidated test results
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
       with:
         name: consolidated-reports
         path: artifacts/collective_robot_results
