@@ -338,11 +338,11 @@ The [environment variable `CMSIS_PACK_ROOT`](#environment-variables) defines loc
 Content of `CMSIS_PACK_ROOT` | Description
 :----------------------------|:----------------
 `pack.idx`                   | Empty file that is touched (timestamp is updated) when packs are added or removed.
-`\.Web`                      | Contains `*.pdsc` files available on public web pages.
-`\.Web\.pidx`                | An index file that lists public available software packs.
-`\.Download`                 | A local cache of packs that are downloaded.
-`\.Local`                    | Stores the file `local_repository.pidx` that refers local `*.pdsc` files during pack development. Refer to  [install a repository](build-tools.md#install-a-repository) for more information.
-`\<vendor>\<name>\<version>` | Extracted software packs that are available for development using the CMSIS-Toolbox.
+`/.Web`                      | Contains `*.pdsc` files available on public web pages.
+`/.Web/index.pidx`           | An index file that lists public available software packs.
+`/.Download`                 | A local cache of packs that are downloaded.
+`/.Local`                    | Stores the file `local_repository.pidx` that refers local `*.pdsc` files during pack development. Refer to  [install a repository](build-tools.md#install-a-repository) for more information.
+`/<vendor>/<name>/<version>` | Extracted software packs that are available for development using the CMSIS-Toolbox.
 
 > **Note:**
 >
