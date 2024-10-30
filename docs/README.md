@@ -74,9 +74,11 @@ The build steps are:
 
 The CMSIS-Toolbox is a set of command line tools that are designed for stand-alone usage and integration into IDEs or DevOps systems for Continuous Integration (CI) workflows.
 
-![Operation of `csolution` tool](./images/tool-overview.png "Operation of `csolution` tool")
+- The [VS Code - Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) is a viewer to the [*csolution project files*](YML-Input-Format.md) and provides graphical ways to modify the content.
 
-The [VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) IDE integration available from Arm is a viewer to the [*csolution project files*](YML-Input-Format.md) and provides graphical ways to modify the content. Refer to [DevOps Usage](build-tools.md#devops-usage) for more information on integration into CI workflows.
+- For CI workflow integration refer to [DevOps Usage](build-tools.md#devops-usage) or [Arm AVH examples](https://arm-software.github.io/AVH/main/examples/html/index.html) available on github.
+
+![Operation of `csolution` tool](./images/tool-overview.png "Operation of `csolution` tool")
 
 ## Benefits
 
@@ -94,6 +96,7 @@ The overall benefits of the CMSIS-Toolbox are:
 - Support for multiple toolchains, even within the same set of *project files* and command line options to select different toolchains during verification.
 - [Linker Script Management](build-overview.md#linker-script-management) utilizes device and board information of *software packs* to define available memory and allows flexible control of linker operation.
 - Uses a CMake backend for the build process that integrates with other tools such as VS Code intellisense.
+- Provides a [list of software licenses](YML-CBuild-Format.md#licenses) used by the various software packs and software components.
 
 ## Revision History
 
