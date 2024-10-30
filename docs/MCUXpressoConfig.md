@@ -1,20 +1,22 @@
-# Configure STM32 Devices with CubeMX
+# Configure NXP Devices with MCUXpresso Config Tools
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **> Configure STM32 Devices with CubeMX**
+[**CMSIS-Toolbox**](README.md) **> Configure NXP Devices with MCUXpresso Config Tools**
 
-This chapter explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) with the CMSIS-Toolbox to manage device and board configuration.
+This is ToDo!
+
+This chapter explains how to use the [MCUXpresso Config Tool](https://www.nxp.com/configtools) with the CMSIS-Toolbox to manage device and board configuration.
 
 > **Note:**
 > 
-> - For the CMSIS-Toolbox CubeMX integration [STM32 packs with generator support](https://github.com/Open-CMSIS-Pack#stm32-packs-with-generator-support) are required. These software packs contain in the release information: **Updated for new CMSIS-Toolbox CubeMX integration**.
+> - For the CMSIS-Toolbox CubeMX integration new `STM32*_DFP` software packs are required (will be released in July 2024). These software packs contain in the release information: **Updated for new CMSIS-Toolbox CubeMX integration**.
 
 **Chapter Contents:**
 
-- [Configure STM32 Devices with CubeMX](#configure-stm32-devices-with-cubemx)
+- [Configure NXP Devices with MCUXpresso Config Tools](#configure-nxp-devices-with-mcuxpresso-config-tools)
   - [Overview](#overview)
   - [Simple Project](#simple-project)
   - [Add RTOS](#add-rtos)
@@ -27,9 +29,9 @@ This chapter explains how to use [STM32CubeMX](https://www.st.com/en/development
 
 ## Overview
 
-[STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) (CubeMX) is a graphical tool for configuration of a STM32 device or board. CubeMX generates C code for project and peripheral initialization based on user settings. Depending on the device configuration related drivers are added to the user application. The CMSIS-Toolbox interacts with CubeMX using the [generic interface for generators](build-operation.md#generator-integration).
+The [MCUXpresso Config Tool](https://www.nxp.com/configtools) is a graphical tool for configuration of a NXP device or board. CubeMX generates C code for project and peripheral initialization based on user settings. Depending on the device configuration related drivers are added to the user application. The CMSIS-Toolbox interacts with CubeMX using the [generic interface for generators](build-operation.md#generator-integration).
 
-The `component: Device:CubeMX` connects a *csolution project* to CubeMX. This component imports the CubeMX generated files for a selected `device:` or `board:` using the [generator import file](YML-CBuild-Format.md#generator-import-file) (`*.cgen.yml`). This `*.cgen.yml` file is similar to a [software layer](build-overview.md#software-layers) but managed by CubeMX and should be not modified directly.
+The `component: Device:Config Tools` connects a *csolution project* to CubeMX. This component imports the CubeMX generated files for a selected `device:` or `board:` using the [generator import file](YML-CBuild-Format.md#generator-import-file) (`*.cgen.yml`). This `*.cgen.yml` file is similar to a [software layer](build-overview.md#software-layers) but managed by CubeMX and should be not modified directly.
 
 An example project created with CubeMX can be found in [**csolution-examples/CubeMX**](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/CubeMX).
 

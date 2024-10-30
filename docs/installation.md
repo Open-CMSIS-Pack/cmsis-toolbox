@@ -30,6 +30,7 @@ There are three different ways to setup the CMSIS-Toolbox:
     - [GitHub Actions](#github-actions)
     - [Other CI Systems](#other-ci-systems)
   - [vcpkg - Setup in VS Code](#vcpkg---setup-in-vs-code)
+  - [CMSIS\_PACK\_ROOT](#cmsis_pack_root)
   
 ## Manual Setup
 
@@ -43,11 +44,15 @@ The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The instal
 
 - [**CMake**](https://cmake.org/download) version 3.25.2 or higher.
 
-> **Note:** For Win64, enable the install option *Add CMake to the system PATH*.
+  > **Note:**
+  >
+  > For Win64, enable the install option *Add CMake to the system PATH*.
 
 - [**Ninja**](https://github.com/ninja-build/ninja/releases) version 1.10.2 or higher.
 
-> **Note:** [**Ninja**](https://github.com/ninja-build/ninja/releases) may be copied to the `<cmsis-toolbox-installation-dir>/bin` directory.
+  > **Note:**
+  >
+  > [**Ninja**](https://github.com/ninja-build/ninja/releases) may be copied to the `<cmsis-toolbox-installation-dir>/bin` directory.
 
 ### Compiler Toolchains
 
@@ -73,22 +78,16 @@ The various tools use the following environment variables.
 Environment Variable     | Description
 :------------------------|:------------
 `<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the compiler binaries where `<name>` is one of AC6, GCC, IAR, CLANG
-**CMSIS_PACK_ROOT**      | Path to the [CMSIS-Pack Root Directory](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory) that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
+**CMSIS_PACK_ROOT**      | Path to the [CMSIS-Pack Root](#cmsis_pack_root) directory that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
 **CMSIS_COMPILER_ROOT**  | Optional: Path to the CMSIS-Toolbox `etc` directory (i.e. `/c/cmsis-toolbox/etc`).
 **Path**                 | Add to the system path the CMSIS-Toolbox `bin` directory (i.e. `/c/cmsis-toolbox/bin`) as well as CMake and Ninja.
-**CMSIS_BUILD_ROOT**     | **DEPRECATED**: Must not be set in your environment, otherwise `cbuild` will use tools from the directory specified instead of the tools located side by side.
-
-The **CMSIS_COMPILER_ROOT** environment variable is optional. If it is missing the path to the CMSIS-Toolbox is used and extended with `/etc`.  It is used to locate:
-
-- Toolchain cmake files `<compiler-name>.<major>.<minor>.<patch>.cmake` for the selected [compiler](YML-Input-Format.md#compiler).
-- Default [linker script files](build-overview.md#linker-script-management) (to be preprocessed): `<compiler-name>_linker_script.<ext>.src`
-- The `cdefault.yml` that is used when no other [`cdefault.yml`](YML-Input-Format.md#cdefault) file is found.
 
 #### Default Values
 
 The environment variable **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are optional. If missing, default settings are used.
 
 - **CMSIS_PACK_ROOT** default values:
+
   Platform    | Default path
   :-----------|:------------
   Linux       | `${HOME}/.cache/arm/packs`
@@ -96,7 +95,11 @@ The environment variable **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are opt
   MacOS       | `${HOME}/.cache/arm/packs`
   WSL_Windows | `${LOCALAPPDATA}/Arm/Packs`
 
-- **CMSIS_COMPILER_ROOT** default is `<toolbox>/bin/../etc`, i.e., `etc` folder relative to the toolbox executables.
+- **CMSIS_COMPILER_ROOT** default is `<toolbox>/bin/../etc`, i.e., `etc` folder relative to the toolbox executables. It is used to locate:
+
+  - Toolchain cmake files `<compiler-name>.<major>.<minor>.<patch>.cmake` for the selected [compiler](YML-Input-Format.md#compiler).
+  - Default [linker script files](build-overview.md#linker-script-management) (to be preprocessed): `<compiler-name>_linker_script.<ext>.src`
+  - The `cdefault.yml` that is used when no other [`cdefault.yml`](YML-Input-Format.md#cdefault) file is found.
 
 #### Compiler Registration
 
@@ -327,3 +330,20 @@ In CI Systems without a vcpkg integration:
 Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal.
 
 Alternatively use `View` and open the `CMSIS` Extension. Then use the `Build` buttons to translate the project, flash your connected board and/or launch a debug connection.
+
+## CMSIS_PACK_ROOT
+
+The [environment variable `CMSIS_PACK_ROOT`](#environment-variables) defines location of the directory that stores the software packs. This directory has the following structure.
+
+Content of `CMSIS_PACK_ROOT` | Description
+:----------------------------|:----------------
+`pack.idx`                   | Empty file that is touched (timestamp is updated) when packs are added or removed.
+`\.Web`                      | Contains `*.pdsc` files available on public web pages.
+`\.Web\.pidx`                | An index file that lists public available software packs.
+`\.Download`                 | A local cache of packs that are downloaded.
+`\.Local`                    | Stores the file `local_repository.pidx` that refers local `*.pdsc` files during pack development. Refer to  [install a repository](build-tools.md#install-a-repository) for more information.
+`\<vendor>\<name>\<version>` | Extracted software packs that are available for development using the CMSIS-Toolbox.
+
+> **Note:**
+>
+> For more details refer to the [CMSIS_PACK_ROOT Directory Wiki page](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory).
