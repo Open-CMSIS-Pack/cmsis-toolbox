@@ -65,7 +65,7 @@ Get Contexts From Project
     [Arguments]         ${input_file}    ${expect}        ${args}=@{EMPTY}
     ${parent_path}=     Get Parent Directory Path         ${input_file}
 
-    ${result}    Run Process    csolution     list    contexts    ${input_File}
+    ${result}    Run Process    csolution     list    contexts    --yml-order    ${input_File}
     ...                     -q    shell=True    stdout=${CURDIR}/stdout.txt
     ${ret_code}=        Set Variable If    ${result.rc} == ${0}    ${result.rc}    ${1}
     Should Be Equal     ${ret_code}      ${expect}        msg=Unexpected status returned by list context command
@@ -81,23 +81,6 @@ Build CSolution Example
         RETURN    ${True}
     END
 
-    # ${res_cbuild2cmake}=       Run Keyword And Ignore Error    Build Example With cbuild2cmake    ${input_file}    ${cbuild2cmake_expect}    ${args}
-    # ${res_cbuildgen}=          Run Keyword And Ignore Error    Build Example With cbuildgen       ${input_file}    ${cbuildgen_expect}    ${args}
-
-    # # Check the result of the first run
-    # ${success}=    Set Variable    ${res_cbuildgen[0]}
-    # ${message}=    Set Variable    ${res_cbuildgen[1]}
-    # Run Keyword If    '${success}' == 'PASS'    Log    cbuildgen ran successfully
-    # ...    ELSE    Log    cbuildgen failed with message: ${message}
-
-    # # Check the result of the second run
-    # ${success}=    Set Variable    ${res_cbuild2cmake[0]}
-    # ${message}=    Set Variable    ${res_cbuild2cmake[1]}
-    # Run Keyword If    '${success}' == 'PASS'    Log    cbuild2cmake ran successfully
-    # ...    ELSE    Log    cbuild2cmake failed with message: ${message}
-
-    # Should Be Equal    ${res_cbuildgen[0]}    ${res_cbuild2cmake[0]}    build status doesn't match
-
     ${parent_path}=    Get Parent Directory Path     ${input_file}
     ${result}=         Run Keyword And Return
     ...                    Compare Elf Information   ${input_file}
@@ -112,3 +95,55 @@ Checkout GitHub Repository
     Log                             ${result.stdout}
     Log                             ${result.stderr}
     Should Be Equal As Integers     ${result.rc}          ${0}
+
+Run Csolution Project
+    [Arguments]         ${input_file}    ${expect}     ${args}=@{EMPTY}
+    ${contexts}=        Get Contexts From Project      ${input_file}    ${expect}    ${args}
+    ${filcontexts}=     Convert And Filter Contexts    ${contexts}
+    @{args_ex}          Create List                    @{args}    @{filcontexts}
+    
+    ${res_cbuildgen}=       Run Keyword And Ignore Error
+    ...                         Build Example With cbuildgen      ${input_file}    ${expect}    ${args_ex}
+    ${res_cbuild2cmake}=    Run Keyword And Ignore Error
+    ...                        Build Example with cbuild2cmake    ${input_file}    ${expect}    ${args_ex}
+
+    # Check the result of the first run
+    ${success}=    Set Variable    ${res_cbuildgen[0]}
+    ${message}=    Set Variable    ${res_cbuildgen[1]}
+    Run Keyword If    '${success}' == 'PASS'    Log    cbuildgen ran successfully
+    ...    ELSE    Log    cbuildgen failed with message: ${message}
+
+    # Check the result of the second run
+    ${success}=    Set Variable    ${res_cbuild2cmake[0]}
+    ${message}=    Set Variable    ${res_cbuild2cmake[1]}
+    Run Keyword If    '${success}' == 'PASS'    Log    cbuild2cmake ran successfully
+    ...    ELSE    Log    cbuild2cmake failed with message: ${message}
+
+    Should Be Equal    ${res_cbuildgen[0]}    ${res_cbuild2cmake[0]}    build status doesn't match
+    ${parent_path}=    Get Parent Directory Path    ${input_file}
+    ${result}=         Run Keyword And Return
+    ...                    Compare Elf Information   ${input_file}
+    ...                    ${parent_path}${/}${Out_Dir}${/}${Default_Out_Dir}  
+    ...                    ${parent_path}${/}${Default_Out_Dir}
+    Should Be True     ${result}
+
+Convert And Filter Contexts
+    [Documentation]    Example test to convert a string to an array, filter it, and join it
+    [Arguments]        ${all_contexts}
+    @{lines}=    Split String    ${all_contexts}    \n
+
+    # Filter out items containing '+iar'
+    @{filtered_lines}=    Create List
+    FOR    ${line}    IN    @{lines}
+        log    ${line}
+        ${result}=    Run Keyword And Return Status    Should Contain    ${line}    iar
+        Run Keyword If    ${result}==False    Append To List    ${filtered_lines}    ${line}
+    END
+
+    # Prefix remaining items with '-c ' and join them
+    @{context_list_args}=    Create List
+    FOR    ${line}    IN    @{filtered_lines}
+        Append To List    ${context_list_args}    -c    ${line}
+    END
+
+    RETURN    ${context_list_args}
