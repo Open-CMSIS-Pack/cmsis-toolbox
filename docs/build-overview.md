@@ -134,7 +134,7 @@ To build an application project, the `csolution` command `convert` executes the 
 
 Software packs and the related [components:](#software-components) allow you to share and reuse code. The content of a software pack is therefore *read-only* (with the exception of [configuration files](#configuration-settings) that are copied to the [RTE directory](#rte-directory-structure)) as these source code should not be modified by a user.
 
-The **benefit** is a clean project directory that only only the user code and [configuration files](#configuration-settings) for [components:](#software-components). This keeps a [repository](#repository-version-control) small and makes it easy to upgrade to a [new pack version](#plm-of-configuration-files).
+The **benefit** is a clean project directory that only contains the user code and [configuration files](#configuration-settings) for [components:](#software-components). This keeps a [repository](#repository-version-control) small and makes it easy to upgrade to a [new pack version](#plm-of-configuration-files).
 
 > **Notes:**
 >
