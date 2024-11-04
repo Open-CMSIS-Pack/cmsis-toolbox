@@ -4,7 +4,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **> CMSIS Solution Project File Format**
+[**CMSIS-Toolbox**](README.md) **&raquo; CMSIS Solution Project File Format**
 
 The following chapter explains the CMSIS Solution Project File Format (short form *csolution project files*), the YAML files that that describes the software of an embedded application.
 

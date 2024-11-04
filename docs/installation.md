@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **> Installation**
+[**CMSIS-Toolbox**](README.md) **&raquo; Installation**
 
 This chapter explains the setup of the CMSIS-Toolbox along with a build environment.
 
@@ -23,7 +23,7 @@ There are three different ways to setup the CMSIS-Toolbox:
       - [Compiler Registration](#compiler-registration)
       - [Setup Win64](#setup-win64)
       - [Setup Linux or Bash](#setup-linux-or-bash)
-      - [Setup MacOS](#setup-macos)
+      - [Setup macOS](#setup-macos)
     - [Registering CMSIS\_PACK\_ROOT with cpackget](#registering-cmsis_pack_root-with-cpackget)
   - [vcpkg - Setup using CLI](#vcpkg---setup-using-cli)
   - [vcpkg - Setup in CI](#vcpkg---setup-in-ci)
@@ -36,7 +36,7 @@ There are three different ways to setup the CMSIS-Toolbox:
 
 Download the CMSIS-Toolbox from the [**Arm tools artifactory**](https://artifacts.keil.arm.com/cmsis-toolbox/). Signed binaries are provided for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (amd64, arm64) in an archive file.
 
-To setup the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example to `/c/cmsis-toolbox`.
+To setup the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example to `~/cmsis-toolbox`.
 
 ### Requirements
 
@@ -60,7 +60,7 @@ The CMSIS-Toolbox works with the following compiler toolchains. Install one or m
 
 - [**GNU Arm Embedded Compiler**](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads) version 10.3.1 or higher.
 
-- [**Keil MDK**](http://www.keil.com/mdk5/install) version 5.36 or higher.
+- [**Keil MDK**](https://www.keil.com/mdk5/install) version 5.36 or higher.
 
 - [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18.0 or higher
   - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
@@ -91,7 +91,7 @@ The environment variable **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are opt
   Platform    | Default path
   :-----------|:------------
   Linux       | `${HOME}/.cache/arm/packs`
-  Windows     | `${LOCALAPPDATA}/Arm/Packs`
+  Windows     | `%LOCALAPPDATA%\Arm\Packs`
   MacOS       | `${HOME}/.cache/arm/packs`
   WSL_Windows | `${LOCALAPPDATA}/Arm/Packs`
 
@@ -112,7 +112,7 @@ The registration of a compiler toolchain is manually defined by an environment v
 For example in Windows:
 
 ```txt
-set AC6_TOOLCHAIN_6_19_0=C:/Keil_v5/ARM/ARMCLANG/bin
+set AC6_TOOLCHAIN_6_19_0=C:\Keil_v5\ARM\ARMCLANG\bin
 ```
 
 For example in Unix:
@@ -134,7 +134,7 @@ command line without the need to specify the full path (default: `C:\Keil_v5\ARM
 
 For sharing the pack directory between MDK and the CMSIS-Toolbox it is required that both **CMSIS_PACK_ROOT** environment variable
 and the **RTE_PATH** setting in the MDK's TOOLS.INI (default: C:\Keil_v5\TOOLS.INI) point to the same directory.
-Note that in case the default location `%localappdata%\Arm\Packs` was selected during installation, the setting of **CMSIS_PACK_ROOT**
+Note that in case the default location `%LOCALAPPDATA%\Arm\Packs` was selected during installation, the setting of **CMSIS_PACK_ROOT**
 environment variable is not required.
 
 The **CMSIS_COMPILER_ROOT** environment variable is not required if the compiler configuration files provided in cmsis-toolbox/etc are used.
@@ -145,9 +145,9 @@ The **CMSIS_COMPILER_ROOT** environment variable is not required if the compiler
 >
 > Keil µVision may be used to:
 >
-> - [*import*](https://www.keil.com/support/man/docs/uv4/uv4_ui_import.htm) project files in `*.CPRJ` format.
+> - [*open*](https://developer.arm.com/documentation/101407/latest/User-Interface/Project-Menu-and-Commands) projects in `*.csolution.yml` format (since v5.40).
 > - [*export*](https://www.keil.com/support/man/docs/uv4/uv4_ui_export.htm) project files in `*.csolution.yml` format.
-> - [*open*](https://developer.arm.com/documentation/101407/0539/User-Interface/Project-Menu-and-Commands) CMSIS-Toolbox build information files for debug start (experimental in MDK v5.39).
+> - [*import*](https://www.keil.com/support/man/docs/uv4/uv4_ui_import.htm) project files in `*.CPRJ` format.
 
 #### Setup Linux or Bash
 
@@ -163,27 +163,15 @@ export PATH=/opt/cmsis-toolbox/bin:$PATH
 
 > Note: The command `printenv` should list these environment variables.
 
-#### Setup MacOS
+#### Setup macOS
 
-MacOS protects by default execution of files that are downloaded and/or not signed. As the CMSIS-Toolbox is not signed, it is required to execute the following commands after installation:
-
-- Remove the flags that prevent execution for downloaded executables
-
-```Shell
-xattr -dr com.apple.quarantine <cmsis-toolbox-installation-dir>/bin/
-```
-
-- Add execution permissions for all executables in `./bin`
+Add execution permissions for all executables in `./bin`
 
 ```Shell
 chmod +x <cmsis-toolbox-installation-dir>/bin/cbridge
 chmod +x <cmsis-toolbox-installation-dir>/bin/cbuild
 ...
 ```
-
-> **Note:**
->
-> - A signed version of the CMSIS-Toolbox is available via the [Arm Tools Artifactory](https://artifacts.tools.arm.com/cmsis-toolbox/).
 
 ### Registering CMSIS_PACK_ROOT with cpackget
 
@@ -195,17 +183,17 @@ cpackget init https://www.keil.com/pack/index.pidx
 
 > **Note:**
 >
-> Arm is running a public indexing server at the URL provided. You can specify any indexing server URL if not using this service.
+> Arm is running a public indexing server at the URL provided. You can specify any indexing server URL if you do not wish to use this service.
 
 ## vcpkg - Setup using CLI
 
-The [vcpkg](https://vcpkg.io/en/) is a management tool for packages and includes features to manage tool artifacts. Arm provides a artifactory system for tools. Refer to [Arm Tools Available in vcpkg](https://www.keil.arm.com/packages/) for more information.
+The [vcpkg](https://vcpkg.io/en/) is a management tool for packages and includes features to manage tool artifacts. Arm provides an artifactory system for tools. Refer to [Arm Tools Available in vcpkg](https://www.keil.arm.com/packages/) for more information.
 
 > **Note:**
 >
 > Microsoft changed the name of the shell version from `vcpkg` to `vcpkg-shell`. Depending on the version that you are using, you may need to call `vcpkg-shell` from the command line instead of `vcpkg`.
 
-The following setups describe how to setup the CMSIS-Toolbox using a command line (CLI) environment. In many examples there is already the file `vcpkg-configuration.json` which describes the tool environment required for the example. Refer to the last step to create an new `vcpkg-configuration.json` file.
+The following describes how to setup the CMSIS-Toolbox with `vcpkg` in a command line (CLI) environment. In many examples there is already the file `vcpkg-configuration.json` which describes the tool environment required for the example. Refer to the last step to create an new `vcpkg-configuration.json` file.
 
 1. Install and enable vcpkg; the command depends on the shell.
 
@@ -223,7 +211,7 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
       . ~/.vcpkg/vcpkg-init.ps1
       ```
 
-   - Linux (x64) / macOS
+   - Linux (x64)/macOS
 
       ```sh
       . <(curl https://aka.ms/vcpkg-init.sh -L)
@@ -236,9 +224,9 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
     > - MSYS Bash (such as Git Bash) on Windows.
     > - Linux (aarch64)
 
-1. Activate required tools using one of the following methods:
+2. Activate required tools using one of the following methods:
   
-   `vcpkg-configuration.json` configuration file in current directory or any parent directory
+   Prerequisite: a `vcpkg-configuration.json` file is present in the current directory or any parent directory.
 
     ```txt
     vcpkg activate
@@ -246,19 +234,19 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
 
    > **Note:**
    >
-   > In case that activate fails, update registries to access latest versions of the tools artifacts.
+   > In case that activate fails, update registries to access latest versions of the tools artifacts:
    >
    > ```txt
    > vcpkg x-update-registry --all
    > ```
 
-1. Deactivate previous configuration
+3. Deactivate previous configuration
 
    ```txt
    vcpkg deactivate
    ```
 
-1. Create a new `vcpkg-configuration.json` file with these commands:
+4. Create a new `vcpkg-configuration.json` file with these commands:
 
    ```txt
    vcpkg new --application
@@ -269,19 +257,19 @@ The following setups describe how to setup the CMSIS-Toolbox using a command lin
    vcpkg activate
    ```  
 
-Alternatively you may use an existing repository, for example [github.com/Open-CMSIS-Pack/vscode-get-started](
-https://github.com/Open-CMSIS-Pack/vscode-get-started) with a vcpkg-configuration.json file.
+Alternatively, you may use an existing repository, for example [github.com/Open-CMSIS-Pack/vscode-get-started](
+https://github.com/Open-CMSIS-Pack/vscode-get-started) with a `vcpkg-configuration.json` file.
 
 ## vcpkg - Setup in CI
 
-Using vcpkg in Continuous Integration (CI) environments is basically like [using it manually CLI](#vcpkg---setup-using-cli).
+Using vcpkg in Continuous Integration (CI) environments is basically like [using it in a CLI environment](#vcpkg---setup-using-cli).
 
-The way how vcpkg artifacts updates the current shell environment needs to be taken into account when creating CI
+The way how `vcpkg artifacts` updates the current shell environment needs to be taken into account when creating CI
 pipelines. The command `vcpkg activate` updates the current environment variables by extending `PATH` and adding
 additional variables required by installed artifacts. These modifications are only visible in the current running
 shell and spawned subprocesses.
 
-This enables also manual usage on a local prompt, given a typical user runs subsequent command from the same
+This enables also manual usage on a local prompt, given a typical user runs subsequent commands from the same
 parent shell process. In contrast, typical CI systems such as GitHub Actions or Jenkins spawn a new sub-shell for each
 step of a pipeline. Hence, modifications made to the environment in one sub-shell by running the `vcpkg activate`
 command are not persisted into the subsequent steps.
@@ -295,14 +283,14 @@ This may cause massive bandwidth requirements for downloading the same (huge) ar
 GitHub Actions allow you to preserve environment settings via the files
 exposed in `$GITHUB_PATH` and `$GITHUB_ENV`. Refer to the custom action provided in [github.com/ARM-software/cmsis-actions - Action: vcpkg](https://github.com/ARM-software/cmsis-actions) for more information.
 
-Preserving the runners vcpkg cache between runs is achieved with an `actions/cache` step preceding the
+Preserving the runners, between runs `vcpkg cache` is achieved with an `actions/cache` step preceding the
 first `vcpkg activate` command. The above custom action uses this `actions/cache` step.
 
 ### Other CI Systems
 
 In CI Systems without a vcpkg integration:
 
-- Keep all tool installation depending on an activated environment within the same shell block, or
+- Keep all tool installations depending on an activated environment within the same shell block, or
 - Repeat activation for each new shell block before running any dependent command.
 
   ```sh
@@ -318,16 +306,16 @@ In CI Systems without a vcpkg integration:
 4. Specify the destination folder to clone to and select 'Open' when asked 'Would you like to open the cloned directory?'
 5. Use `View` menu 'Explorer' and select the file `vcpkg-configuration.json`. This file instructs [Microsoft vcpkg](https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts) to install the prerequisite artifacts required for building the solution and installs therefore:
 
-    - CMSIS-Toolbox 2.2.0
-    - cmake 3.25.2
-    - ninja 1.10.2
-    - arm-none-eabi-gcc 12.2.1-mpacbti (GNU Arm Embedded Toolchain 12.2.1)
+    - CMSIS-Toolbox 2.6.1
+    - cmake 3.28.4
+    - ninja 1.12.0
+    - arm-none-eabi-gcc 13.3.1-mpacbti (GNU Arm Embedded Toolchain 13.3.1)
 
 > **Note:**
 >
 > In case vcpkg shows an error in the VSCode status bar, you can see further information in the `vcpkg` output.
 
-Once the tools are installed you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal for the environment settings updates triggered by the vcpkg activation to be reflected in the terminal.
+Once the tools are installed, you may use the [CMSIS-Toolbox commands](build-tools.md) in a **Terminal** window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal. This ensures that the environment settings updates triggered by the vcpkg activation are reflected in the terminal.
 
 Alternatively use `View` and open the `CMSIS` Extension. Then use the `Build` buttons to translate the project, flash your connected board and/or launch a debug connection.
 
@@ -347,3 +335,5 @@ Content of `CMSIS_PACK_ROOT` | Description
 > **Note:**
 >
 > For more details refer to the [CMSIS_PACK_ROOT Directory Wiki page](https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory).
+
+[**Overview**](overview.md) **&laquo; Chapters &raquo;** [**Build Overview**](build-overview.md)

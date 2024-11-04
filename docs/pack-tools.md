@@ -1,8 +1,8 @@
 # Pack Creation
 
-[**CMSIS-Toolbox**](README.md) **> Pack Creation**
+[**CMSIS-Toolbox**](README.md) **&raquo; Pack Creation**
 
-This chapter describes how to create software packs and explains the tools `packchk` (software pack verification) and `svdconv` (SVD file converter).
+This chapter describes how to create software packs and explains the tools [`packchk`](https://github.com/Open-CMSIS-Pack/devtools/tree/main/tools/packchk) (software pack verification) and [`svdconv`](https://github.com/Open-CMSIS-Pack/devtools/tree/main/tools/svdconv/SVDConv) (SVD file converter).
 
 **Chapter Contents:**
 
@@ -53,3 +53,5 @@ Hands-on Tutorial         | Description
 ## Examples
 
 Several [packs](https://github.com/Open-CMSIS-Pack#cmsis-software-pack-examples) available on [github.com/Open-CMSIS-Pack](https://github.com/Open-CMSIS-Pack) exemplify how to create software packs. Other packs that are a good reference are the various [Arm CMSIS packs](https://www.keil.arm.com/packs/cmsis-arm) or the [MDK Middleware pack](https://www.keil.arm.com/packs/mdk-middleware-keil).  The source of these packs is available on [Github/Arm-software](https://github.com/ARM-software).
+
+[**Build Operation**](build-operation.md) **&laquo; Chapters**

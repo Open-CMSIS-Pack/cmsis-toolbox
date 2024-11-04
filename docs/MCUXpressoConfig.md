@@ -4,7 +4,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **> Configure NXP Devices with MCUXpresso Config Tools**
+[**CMSIS-Toolbox**](README.md) **&raquo; Configure NXP Devices with MCUXpresso Config Tools**
 
 This is ToDo!
 
