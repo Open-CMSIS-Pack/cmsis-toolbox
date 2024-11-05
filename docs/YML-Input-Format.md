@@ -131,7 +131,7 @@ Element      |              | Description
 > **Notes:**
 >
 > - When no version is specified, the **`csolution` Project Manager** only loads the latests installed version of a software pack. This also applies when wildcards are used in the `pack-name`. 
-> - Use [**`cpackget`**](build-tools.md#cpackget-details) to download and install new pack versions.
+> - Use [**`cpackget`**](build-tools.md#cpackget-invocation) to download and install new pack versions.
 
 **Examples:**
 

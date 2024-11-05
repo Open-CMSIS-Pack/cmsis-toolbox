@@ -56,7 +56,7 @@ An application is based on a *device* and/or *board* supported by a Device Famil
     ```
 
 4. Step: **Add required software components**
-   - Most projects at least require the `CMSIS:CORE` and `Device:Startup` (or a variant) [software components](#software-component) to be present. Use `csolution list components <name>.csolution.yml` to identify the name of the startup component and add it to the file `*.cproject.yml` of your project.
+   - Most projects at least require the `CMSIS:CORE` and `Device:Startup` (or a variant) [software components](#software-components) to be present. Use `csolution list components <name>.csolution.yml` to identify the name of the startup component and add it to the file `*.cproject.yml` of your project.
    - Use `csolution list components  <name>.csolution.yml` to identify additional software components from the selected packs. Use the [`components:`](YML-Input-Format.md#components) in the `<name>.cproject.yml` file to add new components and refer to related documentation for usage instructions. Note that you may omit vendor and version information for components as this is defined already by the packs that are selected.
    
    ```yml
@@ -67,6 +67,7 @@ An application is based on a *device* and/or *board* supported by a Device Famil
        - component: Device:Peripheral Libraries:ADC
      :
    ```
+
    - Refer to [Using Components](#using-components) for more information.
    - Now, the project should already compile with the command `cbuild <name>.csolution.yml --update-rte --packs --context .Debug`. Note that this step downloads missing packs and copies configuration files to the [RTE directory](build-overview.md#rte-directory-structure). 
 

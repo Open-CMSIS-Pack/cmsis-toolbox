@@ -50,6 +50,8 @@ The CMSIS-Pack format supports different types of project examples:
  
 The following sections explain the usage, structure, and creation of *Reference Applications* that can target many different evaluation boards.
 
+Refer to [Pack Creation s&raquo; Project Examples](pack-tools.md#project-examples) for information on how to publish projects examples as part of software packs.
+
 ## Types of Reference Applications
 
 *Reference Applications* may show the usage of middleware, software libraries, and custom code that can run on many different target hardware boards. Such software uses [application programming interfaces (APIs)](https://en.wikipedia.org/wiki/API) to interface with hardware interfaces or other software components.

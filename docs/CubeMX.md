@@ -23,7 +23,7 @@ This chapter explains how to use [STM32CubeMX](https://www.st.com/en/development
   - [TrustZone or Multi-Core Project](#trustzone-or-multi-core-project)
   - [CubeMX Runtime Context Mapping](#cubemx-runtime-context-mapping)
   - [Migration to CMSIS-Toolbox CubeMX Integration](#migration-to-cmsis-toolbox-cubemx-integration)
-    - [µVision - Update STM32 DFP Packs](#µvision---update-stm32-dfp-packs)
+    - [uVision - Update STM32 DFP Packs](#uvision---update-stm32-dfp-packs)
 
 ## Introduction
 
@@ -125,7 +125,7 @@ Directory `STM32CubeMX/MyBoard`     | Content
 :-----------------------------------|:---------------
 `CubeMX.cgen.yml`                   | Generator import file that adds the CubeMX generated files to  the *csolution project*.
 `MX_Device/CubeMX/MX_Device.h`      | Header file with configuration settings for CMSIS software components.
-`STM32CubeMX/STM32CubeMX.ioc`       | CubeMX's native project file that includes settings.
+`STM32CubeMX/STM32CubeMX.ioc`       | CubeMX native project file that includes settings.
 `STM32CubeMX/Src`                   | CubeMX generated application code: `main.c` and STM32 setup code.
 `STM32CubeMX/Inc`                   | Header files for CubeMX generated application code.
 `STM32CubeMX/EWARM`                 | Project files for IAR; only startup code and linker scripts are used for *csolution projects*.
@@ -313,7 +313,7 @@ To migrate existing projects that where using the previous STM32CubeMX integrati
    - In the tab `Project Manager - Code Generator` under *STM32Cube MCU packages and embedded software packs* select `Copy only necessary library files`.
    - Click `GENERATE CODE` to complete the migration.
 
-### &micro;Vision - Update STM32 DFP Packs
+### uVision - Update STM32 DFP Packs
 
 The [Generator Integration](build-operation.md#generator-integration) of the CMSIS-Toolbox is also available with uVision version 5.40 or higher. 
 

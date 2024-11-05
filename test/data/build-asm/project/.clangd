@@ -1,3 +1,2 @@
 CompileFlags:
-  CompilationDatabase: >-
-    /Users/chrsei01/02_Git/Open-CMSIS-Pack/cmsis-toolbox/test/data/build-asm/out/project/ARMCM0/AC6
+  CompilationDatabase: c:\w\cmsis-toolbox\test\data\build-asm\out\project\ARMCM0\AC6

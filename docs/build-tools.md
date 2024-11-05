@@ -56,7 +56,7 @@ The CMSIS-Pack repository must be present in the host development environment.
 
 There are several ways to configure the CMSIS-Pack repository:
 
-- Use the **`cpackget` Package Installer** command `init` to [initialize the CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory), [update the pack index file](#update-pack-index-file). Then [add software packs](build-tools.md#add-packs).
+- Use the **`cpackget` Package Installer** command `init` to [initialize the CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory), [update the pack index file](#update-pack-index). Then [add software packs](build-tools.md#add-packs).
 
 - Share an existing CMSIS-Pack repository (i.e. from an IDE) via the environment variable `CMSIS_PACK_ROOT`.
 
@@ -236,7 +236,7 @@ cbuild example.csolution.yml --toolchain GCC
 > **Note:**
 >
 > The `--toolchain` option is useful for:
-> 
+>
 > - Testing a new compiler or a different compiler version on the overall project.
 > - For unit test applications to allow the usage of different compilers.
 
@@ -604,7 +604,7 @@ cpackget list --public
 
 >**Note:**
 >
-> [Update Pack Index File](#update-pack-index-file) before using the `list` command to list all public software packs.
+> [Update Pack Index File](#update-pack-index) before using the `list` command to list all public software packs.
 
 ### Remove packs
 
@@ -648,7 +648,7 @@ cbuild Hello.csolution.yml --packs --context +AVH-SSE-300   # only build target 
 cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack versions
 ```
 
-Packs are that not public are installed using `cpackget`.  The following commands use the MDK-Middleware development repository to install a pre-release pack in a GitHub Actions CI workflow. 
+Packs are that not public are installed using `cpackget`.  The following commands use the MDK-Middleware development repository to install a pre-release pack in a GitHub Actions CI workflow.
 
 ```yml
     - name: Checkout MDK-Middleware
