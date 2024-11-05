@@ -6,8 +6,8 @@ on:
       - '.github/workflows/e2e_test.yaml'
       - '.github/matrix_includes.json'
       - 'test/**'
-      - '!test/RobotTests.md'
       - '!test/tests.py'
+      - '!**/*.md'
   workflow_dispatch:
 
 concurrency:
