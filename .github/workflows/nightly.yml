@@ -16,8 +16,8 @@ on:
       - '.github/matrix_includes.json'
       - 'debian/**'
       - 'test/**'
-      - '!test/RobotTests.md'
       - '!test/tests.py'
+      - '!**/*.md'
 env:
   retention-days: 7
 

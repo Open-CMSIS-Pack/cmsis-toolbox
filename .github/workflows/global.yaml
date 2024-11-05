@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - '!docs/**'
-      - '!README.md'
+      - '!**/*.md'
   release:
     types: [ published ]
 
