@@ -30,7 +30,7 @@ This chapter explains the overall build process that of the CMSIS-Toolbox and ho
 
 ## Build Process Overview
 
-This section contains details of the build process. Refer to [Overall Workflow](README.md#overall-workflow) for a high-level description of the build process.
+This section contains details of the build process. Refer to [Overall Workflow](overview.md#overall-workflow) for a high-level description of the build process.
 
 > **Note:** 
 >

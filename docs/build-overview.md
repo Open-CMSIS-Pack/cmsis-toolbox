@@ -123,7 +123,7 @@ To build an application project, the `csolution` command `convert` executes the 
    - Apply [`pack:`](YML-Input-Format.md#pack), [`device:`](YML-Input-Format.md#device), [`board:`](YML-Input-Format.md#board), and [`compiler:`](YML-Input-Format.md#compiler) to filter the content of software packs.
    - From [`groups:`](YML-Input-Format.md#groups) add the list of user source files.
    - From [`components:`](YML-Input-Format.md#components) add the list of component source files.
-   - From [*.GPDSC files](build-tools.md#use-generators-ie-cubemx) add the list of generated source files.
+   - From [*.GPDSC files](build-tools.md#use-generators) add the list of generated source files.
 
 3. Generate output files:
    - Update [configuration files](#plm-of-configuration-files) in RTE directory (disable with option: `--no-update-rte`).
@@ -134,7 +134,7 @@ To build an application project, the `csolution` command `convert` executes the 
 
 Software packs and the related [components:](#software-components) allow you to share and reuse code. The content of a software pack is therefore *read-only* (with the exception of [configuration files](#configuration-settings) that are copied to the [RTE directory](#rte-directory-structure)) as these source code files should not be modified by a user.
 
-The **benefit** is a clean project directory that only contains the user code as well as [configuration files](#configuration-settings) for [components:](#software-components). This keeps a [repository](#repository-version-control) small and makes it easy to upgrade to a [new pack version](#plm-of-configuration-files).
+The **benefit** is a clean project directory that only contains the user code as well as [configuration files](#configuration-settings) for [components:](#software-components). This keeps a [repository](#repository-contents) small and makes it easy to upgrade to a [new pack version](#plm-of-configuration-files).
 
 > **Notes:**
 >
@@ -239,7 +239,7 @@ Sample.Debug+FRDM-K32L3A6
 
 The [context](YML-Input-Format.md#context-name-conventions) allows to refer to each possible build combination that by default uses a different [output directory](#output-directory-structure). A context may be partly specified in many places.
 
-The [context-set](#working-with-context-set) defines a combination of projects and is useful when an application is composed of [multiple related projects](#project-setup-for-related-projects). 
+The [context-set](#working-with-context-set) defines a combination of projects and is useful when an application is composed of [multiple related projects](#project-setup-for-related-projects).
 
 ### Toolchain Agnostic Project
 
@@ -425,8 +425,7 @@ can share a `layer` with common configuration settings.
 
 #### Software Layers in Packs
 
-A collection of software layers can be stored in software packs using the element [`<clayers>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_clayers_pg.html). Using the `csolution` command `list layers` it is possible to identify compatible software by iterating the [`layers:` - `type:`](YML-Input-Format.md#layer---type)
- [`connections`](YML-Input-Format.md#connections) filter conditions to it. In combination with interfaces specifications, an IDE is able to display suitable layers that could be added to an application.
+Software layers for [*reference applications*](ReferenceApplications.md) may be published in software packs. Refer to [Pack Creation &raquo; Layers](pack-tools.md#layers) for more information.
 
 ### Project Setup for Multiple Targets and Builds
 
@@ -715,7 +714,7 @@ The `<context-dir>` has the following format: `_<build-type>_<target-type>`.
 
 ### Output Directory Structure
 
-By default, the following output directories are used. Use [`cbuild`](build-tools.md#build-project) to generate the content of these output directories.
+By default, the following output directories are used. Use [`cbuild`](build-tools.md#build-a-project) to generate the content of these output directories.
 
 Output                                        | Content
 :---------------------------------------------|:---------------

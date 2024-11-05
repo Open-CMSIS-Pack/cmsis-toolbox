@@ -7,7 +7,7 @@ Thank you for using the **CMSIS-Toolbox** that provides command-line tools for:
 
 ## Manual Chapters
 
-- [**Overview**](overview.md) of the CMSIS-Toolbox.
+- [**Overview**](overview.md) of the CMSIS-Toolbox with tool workflow and benefits such as command-line and IDE usage.
 
 - [**Installation**](installation.md) explains the setup of the CMSIS-Toolbox along with a build environment for embedded applications that are based on Arm Cortex-M processors.
 
