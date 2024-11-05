@@ -3,7 +3,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **> Build Overview**
+[**CMSIS-Toolbox**](README.md) **&raquo; Build Overview**
 
 This chapter describes the overall concept of the CMSIS-Toolbox build process. It outlines the content of *csolution project files* that describes the software application, and contains references to examples and project templates.
 
@@ -26,7 +26,7 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
       - [cdefault.yml](#cdefaultyml)
       - [Compiler Selection](#compiler-selection)
     - [Reproducible builds](#reproducible-builds)
-      - [Repository (version control)](#repository-version-control)
+      - [Repository Contents](#repository-contents)
     - [Software Layers](#software-layers)
       - [Configuration Settings](#configuration-settings)
       - [Software Layers in Packs](#software-layers-in-packs)
@@ -64,13 +64,13 @@ Tool                     | Description
 [csolution](build-tools.md#csolution-invocation)| Project Manager: create build information for embedded applications that consist of one or more related projects.
 
 The tools process *csolution project files* (in YAML format) and *software packs*
-(in Open-CMSIS-Pack format) to generate independent projects which may be a part of a more complex application.
+(in [Open-CMSIS-Pack](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html) format) to generate independent projects which may be a part of a more complex application.
 
 > **Notes:**
 >
 > - This documentation uses the filename extension `*.yml`, but the extension `*.yaml` is also supported.
 > - The term *CMSIS solution* refers to an application project that is specified with *csolution project files*.
-> - *Software packs* describe software components in Open-CMSIS-Pack format that contain middleware, drivers, board support, or device support. *Software packs* also provide documentation, examples, and reusable software layers.
+> - *Software packs* describe software components in Open-CMSIS-Pack format that can contain middleware, drivers, board support, or device support. *Software packs* also provide documentation, examples, and reusable software layers.
 
 The overall features are:
 
@@ -82,7 +82,7 @@ The overall features are:
 - Organize software layers (with a `*.clayer.yml` file) with pre-configured software components that enable code reuse across similar applications.
 - Manage multiple hardware targets to allow application deployment to different hardware
   (test board, production hardware, etc.).
-- Manage multiple build types to support software verification (debug build, test build, release build, ect.)
+- Manage multiple build types to support software verification (debug build, test build, release build, etc.)
 - Support multiple compiler toolchains (GCC, Arm Compiler 6, IAR, LLVM) for project deployment.
 
 The diagram below outlines the operation of the `csolution` command `convert` that processes one or more [`context`](YML-Input-Format.md#context) configurations of the application (called *csolution project*). Refer to [Project Examples](#project-examples) for more information.
@@ -132,13 +132,13 @@ To build an application project, the `csolution` command `convert` executes the 
 
 ### Source Code of Software Packs
 
-Software packs and the related [components:](#software-components) allow you to share and reuse code. The content of a software pack is therefore *read-only* (with the exception of [configuration files](#configuration-settings) that are copied to the [RTE directory](#rte-directory-structure)) as these source code should not be modified by a user.
+Software packs and the related [components:](#software-components) allow you to share and reuse code. The content of a software pack is therefore *read-only* (with the exception of [configuration files](#configuration-settings) that are copied to the [RTE directory](#rte-directory-structure)) as these source code files should not be modified by a user.
 
-The **benefit** is a clean project directory that only only the user code and [configuration files](#configuration-settings) for [components:](#software-components). This keeps a [repository](#repository-version-control) small and makes it easy to upgrade to a [new pack version](#plm-of-configuration-files).
+The **benefit** is a clean project directory that only contains the user code as well as [configuration files](#configuration-settings) for [components:](#software-components). This keeps a [repository](#repository-version-control) small and makes it easy to upgrade to a [new pack version](#plm-of-configuration-files).
 
 > **Notes:**
 >
-> - During development of a software pack you may [install a repository](build-tools.md#install-a-repository) the contains the source of the software pack.
+> - During development of a software pack you may [install a repository](build-tools.md#install-a-repository) that contains the source of the software pack.
 > - You may copy the content of a software pack to your project workspace and provide a [path to the pack](YML-Input-Format.md#pack).
 
 ## Project Examples
@@ -149,21 +149,21 @@ The following repositories provide several working examples:
 
 Repository            | Description
 :---------------------|:-------------------------------------
-[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains several getting started examples that show single-core, multi-core, and TrustZone setup and usage a generator (CubeMX).
+[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains several getting started examples that show single-core, multi-core, and TrustZone setup as well as how to use a generator (CubeMX).
 [vscode-get-started](https://github.com/Open-CMSIS-Pack/vscode-get-started) | Contains the setup for a VS Code development environment including an example project.
 [github.com/Arm-Examples](https://github.com/Arm-Examples) | Contains many examples that include CMSIS-Toolbox setup.
 
-The section below explains the overall concepts consider by the **`csolution` Project Manager** based on examples.
+The section below explains the overall concepts considered by the **`csolution` Project Manager** based on examples.
 
 ### Template Projects
 
-The following `*.csolution.yml` templates may be used to create own embedded applications.
+The following `*.csolution.yml` templates may be used to create embedded applications.
 
 Template    | Description
 :-----------|:------------------------------
 [Simple](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/Simple)        | A csolution.yml template with a single `*.cproject.yml`.
-[Multicore](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/Multicore)  | A csolution.yml template with multiple `*.cproject.yml` each targeting one processor of a multicore device.
-[TrustZone](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/TrustZone)  | A csolution.yml template with a non-secure `*.cproject.yml` and an optional secure cproject.yml.
+[Multicore](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/Multicore)  | A csolution.yml template with multiple `*.cproject.yml` files, each targeting one processor of a multicore device.
+[TrustZone](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/TrustZone)  | A csolution.yml template with a non-secure `*.cproject.yml` and an optional secure `*.cproject.yml` file.
 [UnitTest](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/UnitTest)    | A csolution.yml template that shares one HAL `*.clayer.yml` with multiple `*.cproject.yml` files for unit testing.
 
 To use these templates, copy the content of the folder to your own application folder. Then adapt the names accordingly and add missing information.
@@ -174,7 +174,7 @@ Refer to [CMSIS-Toolbox Templates](https://github.com/Open-CMSIS-Pack/csolution-
 
 A minimal application requires two files:
 
-- `Sample.csolution.yml` that defines the a [target type](YML-Input-Format.md#target-types) with [board](YML-Input-Format.md#board) or [device](YML-Input-Format.md#device). It includes [projects](YML-Input-Format.md#projects) and selects a [compiler](YML-Input-Format.md#compiler).
+- `Sample.csolution.yml` that defines a [target type](YML-Input-Format.md#target-types) with [board](YML-Input-Format.md#board) or [device](YML-Input-Format.md#device). It includes a [project](YML-Input-Format.md#projects) and selects a [compiler](YML-Input-Format.md#compiler).
   
 - `Sample.cproject.yml` that defines the files and software components that are translated into an image or library archive.
 
@@ -229,17 +229,17 @@ project:
 
 ### Context
 
-A [context](YML-Input-Format.md#context-name-conventions) is defined in the `*.csolution.yml` file with `projects:`, `target-types:`, and `build-types:`. It identifies a configuration with `project-name`, `built-type`, and `target-type` and is used on various places in the CMSIS-Toolbox.
+A [context](YML-Input-Format.md#context-name-conventions) is defined in the `*.csolution.yml` file by `projects:`, `target-types:`, and `build-types:`. It identifies a configuration with `project-name`, `build-type`, and `target-type` and is used on various places in the CMSIS-Toolbox.
 
-This [context](YML-Input-Format.md#context-name-conventions) refers to the example above and selects the `project: Sample.cproject.yml`, with `build-type: Debug` and `target-type: FRDM-K32L3A6`:
+The following [context](YML-Input-Format.md#context-name-conventions) refers to the example above and selects the `project: Sample.cproject.yml`, with `build-type: Debug` and `target-type: FRDM-K32L3A6`:
 
 ```txt
 Sample.Debug+FRDM-K32L3A6
 ```
 
-The [context](YML-Input-Format.md#context-name-conventions) allows to refer each possible build combination that by default uses a different [output directory](#output-directory-structure). A context may be partly specified in many places.
+The [context](YML-Input-Format.md#context-name-conventions) allows to refer to each possible build combination that by default uses a different [output directory](#output-directory-structure). A context may be partly specified in many places.
 
-The [context-set](#working-with-context-set) defines a combination of projects and is useful when an application is composed of [multiple related projects](#project-setup-for-related-projects). Using a [context-set](#working-with-context-set) allows to compile the  is defined, that are translated into  
+The [context-set](#working-with-context-set) defines a combination of projects and is useful when an application is composed of [multiple related projects](#project-setup-for-related-projects). 
 
 ### Toolchain Agnostic Project
 
@@ -251,7 +251,7 @@ The `cdefault.yml` file contains a common set of compiler specific settings that
 
 > **Note:**
 >
-> - It is recommended to provide a local copy of the `cdefault.yml` file in the same directory that stores the `*.csolution.yml` file.
+> It is recommended to provide a local copy of the `cdefault.yml` file in the same directory that stores the `*.csolution.yml` file.
 
 **Example:**
 
@@ -312,7 +312,7 @@ default:
 
 #### Compiler Selection
 
-Toolchain agnostic project do not contain a [`compiler:`](YML-Input-Format.md#compiler) selection in the `*.csolution.yml` project file. Instead the [`select-compiler:`](YML-Input-Format.md#select-compiler) node may list the compilers that this *csolution project* is tested with.
+Toolchain agnostic projects do not contain a [`compiler:`](YML-Input-Format.md#compiler) selection in the `*.csolution.yml` project file. Instead the [`select-compiler:`](YML-Input-Format.md#select-compiler) node may list the compilers that this *csolution project* is tested with.
 
 There are two ways to select a toolchain:
 
@@ -320,8 +320,8 @@ There are two ways to select a toolchain:
 
    ```yml
    solution:
-     cdefault:                      # use default setup of toolchain specific controls
-     compiler: AC6                  # select Arm Compiler
+     cdefault:           # use the cdefault.yml file with toolchain specific controls
+     compiler: AC6       # select Arm Compiler
 
      :
    ```
@@ -345,7 +345,7 @@ Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.m
 > - The `cbuild` option `--frozen-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file exists and reports an error if any pack is changed or not available.
 > - To update a pack to a new version, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) or remove the information about a specific pack in this file.
 
-#### Repository (version control)
+#### Repository Contents
 
 To support reproducible builds the following files should be committed to a repository of a version control system.
 
@@ -358,7 +358,7 @@ To support reproducible builds the following files should be committed to a repo
 
 > **Note:**
 >
-> - If the file `*.cbuild-set` is missing, the `setup` command creates a `*.cbuild-set` file with selection of the first `target-type` and the first `build-type`.
+> If the file `*.cbuild-set.yml` file is missing, the `setup` command creates a `*.cbuild-set` file with selection of the first `target-type` and the first `build-type`.
 
 ### Software Layers
 
@@ -409,15 +409,14 @@ The project [AVH-MLOps-Main](https://github.com/ARM-software/AVH-MLOps/tree/main
 The project [AWS_MQTT_MutualAuth_SW_Framework](https://github.com/Open-CMSIS-Pack/AWS_MQTT_MutualAuth_SW_Framework) provides an IoT cloud application that is composed of various layers:
 
 - **Demo.cproject.yml**: Implements the IoT Reference example.
-- **Socket.clayer.yml**: A software layer that provides the Socket interface for internet connectivity.
+- **Socket.clayer.yml**: A software layer that provides the socket interface for Internet connectivity.
 - **Board.clayer.yml**: A software layer that provides the hardware interfaces to the device hardware.
 
 **Example:**
 
 #### Configuration Settings
 
-A software layer is a set of source files and pre-configured software components that can be shared across multiple projects. For sharing the configuration settings of software components across multiple projects,
-the configuration files of a [`layer`](YML-Input-Format.md#layer) are stored within the directory structure of the software layer. This separate [RTE Directory Structure](#rte-directory-structure) allows that projects
+A software layer is a set of source files and pre-configured software components that can be shared across multiple projects. To achieve this, the configuration files of a [`layer`](YML-Input-Format.md#layer) are stored within the directory structure of the software layer. This separate [RTE Directory Structure](#rte-directory-structure) allows that projects
 can share a `layer` with common configuration settings.
 
 > **Note:**
@@ -427,8 +426,7 @@ can share a `layer` with common configuration settings.
 #### Software Layers in Packs
 
 A collection of software layers can be stored in software packs using the element [`<clayers>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_clayers_pg.html). Using the `csolution` command `list layers` it is possible to identify compatible software by iterating the [`layers:` - `type:`](YML-Input-Format.md#layer---type)
- [`connections`](YML-Input-Format.md#connections).
-filter conditions to it. In combination with interfaces specifications, an interactive IDE should be able to display suitable layers that could be added to an application.
+ [`connections`](YML-Input-Format.md#connections) filter conditions to it. In combination with interfaces specifications, an IDE is able to display suitable layers that could be added to an application.
 
 ### Project Setup for Multiple Targets and Builds
 
@@ -437,25 +435,24 @@ picture below shows a setup during software development that supports:
 
 - Unit/Integration Testing on simulation models (called Virtual Hardware) where Virtual Drivers implement the interface
   to simulated I/O.
-- Unit/Integration Testing the same software setup on a physical board where Hardware Drivers implement the interface to
+- Unit/Integration Testing for the same software setup on a physical board where Hardware Drivers implement the interface to
   physical I/O.
 - System Testing where the software is combined with more software components that compose the final application.
 
 ![Target and Build Types](./images/Target-Layer.png "Target and Build Types")
 
-As the software may share a large set of common files, provisions are required to manage such projects. The common way
-in other IDE's is to add:
+As the software may share a large set of common files, provisions are required to manage such projects. The common is to add:
 
 - **target-types** (required) that select a target system. In the example this would be:
-  - `Virtual`: for Simulation Models.
+  - `Virtual`: for simulation models.
   - `Board`: for a physical evaluation board.
-  - `Production-HW`: for system integration test and the final product delivery.
-- **build-types** (optional) add the flexibility to configure each target build towards a specific testing. It might be:
-  - `Debug`: for a full debug build of the software for interactive debug.
-  - `Test`: for a specific timing test using a test interface with code maximal optimization.
-  - `Release`: for the final code deployment to the systems.
+  - `Production-HW`: for system integration test and product delivery on the final hardware.
+- **build-types** (optional) add the flexibility to configure each target build towards a specific test. For example:
+  - `Debug`: for a full debug build of the software used in an interactive debug session.
+  - `Test`: for a specific timing test using a test interface with maximum code optimization.
+  - `Release`: for the final code deployment to the system.
 
-**Flexible Builds for multi-target projects**
+**Flexible Builds for Multi-Target Projects**
 
 Multi-target projects may be created using `target-types` that select different physical or virtual hardware systems.
 
@@ -463,7 +460,7 @@ Multi-target projects may be created using `target-types` that select different 
 
 ```yml
 solution:
-  cdefault:                        # use default setup of toolchain specific controls
+  cdefault:
   compiler: AC6
 
     :                              # pack definition not shown
@@ -539,24 +536,22 @@ previous section under [Project Setup for Multiple Targets and Builds](#project-
 
 The picture below shows a system that is composed of:
 
-- Project A: that implements a time-critical control algorithm running on a independent processor #2.
-- Project B: which is a diagram of a cloud connected IoT application with Machine Learning (ML) functionality.
-- Project C: that is the data model of the Machine Learning algorithm and separate to allow independent updates.
-- Project D: that implements the device security (for example with TF-M that runs with TrustZone in secure mode).
+- Project A that implements a time-critical control algorithm running on a independent processor #2.
+- Project B that is a cloud connected IoT application with Machine Learning (ML) functionality.
+- Project C that is the separate data model of the ML algorithm allowing independent updates.
+- Project D that implements the device security (for example with TF-M that runs with TrustZone in secure mode).
 
-In addition such systems may have a boot-loader that can be also viewed as another independent project.
+In addition, such systems may have a boot-loader that can also be implemented as another independent project.
 
 ![Related Projects of an Embedded System](./images/Solution.png "Related Projects of an Embedded System")
 
-At the level of the `*.csolution.yml` file the `target-types:` and `build-types:` are managed, so that a common set is available across all `*.cproject.yml` files the system.
+At the level of the `*.csolution.yml` file, the `target-types:` and `build-types:` are managed, so that a common set is available across all `*.cproject.yml` files the system.
 
 - `target-types:` typically describe a different hardware target system.
 
 - `build-types:` typically describe a build variant of the same hardware target system.
 
-Both  for
-  peripherals and the same hardware configuration, but may compile a different variant (i.e. with test I/O enabled) of
-  an application.
+Both types are used for peripherals and the same hardware configuration, but may compile a different variant (i.e. with test I/O enabled) of an application.
 
 **Related Projects: `iot-product.csolution.yml`**
 
@@ -594,7 +589,7 @@ solution:
 
 ### Working with context-set
 
-Frequently it is required to build applications with different [context](#context) types. The following command line example generates the `iot-product.csolution.yml` with build type `Debug` for the project `MQTT_AWS.cproject.yml` while the other projects use the build type `Release`. When using the option `-S` or `--context-set` this selection is saved to the file `iot-product.cbuild-set.yml` located in the same directory as the `*.csolution.yml` file.  Refer to [File Structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-setyml) for details.
+Frequently, it is required to build applications with different [context](#context) types. The following command line example generates the `iot-product.csolution.yml` with build type `Debug` for the project `MQTT_AWS.cproject.yml`, while the other projects use the build type `Release`. When using the option `-S` or `--context-set`, this selection is saved to the file `iot-product.cbuild-set.yml` located in the same directory as the `*.csolution.yml` file. Refer to [File Structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-setyml) for details.
 
 ```txt
 cbuild iot-product.csolution.yml -c TFM.Release+Board -c MQTT_AWS.Debug+Board -c Bootloader.Release+Board -S
@@ -614,18 +609,18 @@ cbuild iot-product.csolution.yml -S
 
 ### External Tools and Build Order
 
-The [`executes:`](YML-Input-Format.md#executes) node integrates [CMake](build-operation.md#cmake-integration) scripts, projects, and external tools. The `input:` and  `output:` list typically refers to files and defines therefore the build order of projects:
+The [`executes:`](YML-Input-Format.md#executes) node integrates [CMake](build-operation.md#cmake-integration) scripts, projects, and external tools. The `input:` and  `output:` list typically refers to files and therefore defines the build order of projects:
 
 - When `input:` contains files that are the [output](YML-Input-Format.md#output) of a `cproject.yml` this project part is build first.
 - When `output:` contains files that are the input of a `cproject.yml` the `execute:` node is build first.
 
 **Example:**
 
-The `KeyGenerator` tool builds the file `keys.c` which is added as source [file:](YML-Input-Format.md#files) in other projects. Using `cbuild My.csolution.yml [--context-set]` starts the build process of the application and runs the `KeyGenerator` before the build step of projects that use the source file `keys.c` as input.
+The `KeyGenerator` tool builds the file `keys.c` which is added as source [file:](YML-Input-Format.md#files) in other projects. Using `cbuild My.csolution.yml [--context-set]` starts the build process of the application and runs the `KeyGenerator` before building projects that use the source file `keys.c` as input.
 
 > **Note:**
 >
-> - Using `cbuild` with the option `--context` does not run `execute:` nodes as it triggers project builds only. The option `--context-set` can be used.
+> - Using `cbuild` with the option `--context` does not run `execute:` nodes as it triggers project builds only. The option `--context-set` must be used.
 
 ```yml
 solution:
@@ -646,7 +641,7 @@ An [access sequence](YML-Input-Format.md#access-sequences) that refers to the ou
 
 **Example:**
 
-The [access sequence](YML-Input-Format.md#access-sequences) `$cmse-lib(Project_S)$` includes to secure entry library of `Project_S`. Hence, the build step for `Project_S` is before the non-secure project part of the application.
+The [access sequence](YML-Input-Format.md#access-sequences) `$cmse-lib(Project_S)$` includes the secure entry library of `Project_S`. Hence, `Project_S` is built before the non-secure project part of the application.
 
 ```yml
 project:                                 # Non-secure project
@@ -659,9 +654,9 @@ project:                                 # Non-secure project
 
 ## Project Structure
 
-This section describes how the files of a `csolution` based project should be organized to allow the scenarios described above. This section gives also guidelines for a directory structure.
+This section describes how the `csolution` based project files should be organized to allow the scenarios described above. This section gives also guidelines for a directory structure.
 
-Refer to [Directory Control](./YML-Input-Format.md#directory-control) for information about configuring this directories.
+Refer to [Directory Control](./YML-Input-Format.md#directory-control) for information about configuring these directories.
 
 ### Working Areas
 
@@ -670,25 +665,25 @@ The table below explains the different working area sections of an application p
 Working Area                                                      | Access | Description
 :-----------------------------------------------------------------|:------:|:------------------
 [Project Area](#project-area)                                     | RW     | Contains user source code files managed by the user along with the  project files (see next item).
-[Project files](./YML-Input-Format.md#project-file-structure)     | RW     | Created by a user or an IDE front-end to describe the application project.
-Component source code                                             | RO     | Content of software packs; specified by environment variable [`CMSIS_PACK_ROOT`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables) or [`pack: path`](./YML-Input-Format.md#pack) in project files.
+[Project files](./YML-Input-Format.md#project-file-structure)     | RW     | Created by a user or an IDE to describe the application project.
+Component source code                                             | RO     | Content of software packs; the location is specified by the environment variable [`CMSIS_PACK_ROOT`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables) or the node [`pack: path`](./YML-Input-Format.md#pack) in project files.
 [Component Configuration​](#rte-directory-structure)               | RW     | User editable config files of software components that are copied to the RTE directory.
-Generator artifacts​                                               | RO (*) | Managed by domain specific configuration tools such as STM32CubeMX or MCUXpresso.
+Generator artifacts​                                               | RO (see note) | Managed by domain specific configuration tools such as STM32CubeMX or MCUXpresso.
 [Build artifacts](./YML-Input-Format.md#directory-control)        | RW     | Created during the build process for example by a compiler.
 
 > **Note:**
 >
-> - Some generators allow user modification to the generated files. For example, STM32CubeMX allows to modify source code between `/* USER CODE BEGIN */` and `/* USER CODE END */` and preserves this modification even when the STM32CubeMX regenerates the files.
+> Some generators allow user modification to the generated files. For example, STM32CubeMX allows to modify source code between `/* USER CODE BEGIN */` and `/* USER CODE END */` and preserves this modification even when the STM32CubeMX regenerates the files.
 
 ### Project Area
 
-There are no strict rules on how to organize the project area that stores the user source code. However the following guidelines are given:
+There are no strict rules on how to organize the project area that stores the user source code. However, the following guidelines apply:
 
 - Each [solution](#project-examples) should have a distinct base directory. This directory contains the file `*.csolution.yml` which refers to the independent projects defined with `*.cproject.yml` files.
 
-- Each project should have a distinct base directory. This directory contains the file `*.cproject.yml` that defines the content of the project. The source code of the project might be grouped in sub-directories that are typically stored in this base directory. The [component configuration​](#rte-directory-structure) of the software components is typically stored in a sub-directory with the name `./RTE`. A `*.cproject.yml` may refer one or more [software layers](#software-layers) with `*.clayer.yml` files.
+- Each project should have a distinct base directory. This directory contains the file `*.cproject.yml` that defines the content of the project. The source code of the project might be grouped in sub-directories that are typically stored in this base directory. The [configuration​ files](#rte-directory-structure) of the software components are typically stored in a sub-directory with the name `./RTE`.
 
-- Each software layer should have a distinct base directory with a similar structure as a project. This base directory contains the file `*.clayer.yml` that defines the content of the software layer. It also contains the user source code (optionally organized in sub-directories and the [component configuration​](#rte-directory-structure) of software components that belong to this layer, typically stored in a sub-directory with the name `./RTE`.
+- A `*.cproject.yml` may refer one or more [software layers](#software-layers) with `*.clayer.yml` files. Each software layer should have a distinct base directory with a similar structure as a project. This base directory contains the file `*.clayer.yml` that defines the content of the software layer. It also contains the user source code (optionally organized in sub-directories) and the [configuration​ files](#rte-directory-structure) of software components that belong to this layer, typically stored in a sub-directory with the name `./RTE`.
 
 ### RTE Directory Structure
 
@@ -699,28 +694,28 @@ The table below summarizes the overall directory structure and further details t
 
 > **Note:**
 >
-> The `./RTE` directory structure is maintained by tools. You should not modify the structure of this directory.  However the complete directory should be committed to a repository of a version control system.
+> The `./RTE` directory structure is maintained by tools. You should not modify the structure of this directory. However, the complete directory should be committed to a repository of a version control system.
 
 Directory Structure                 | Content
 :-----------------------------------|:---------------
 `<csolution>`                       | Base directory that contains one or more `*.csolution.yml` files.
-`<project>`                         | Each project has its own directory, this base directory contains the `*.cproject.yml` file.
+`<project>`                         | Each project has its own directory; this base directory contains the `*.cproject.yml` file.
 `<project>/RTE/<Cclass>`            | Configurable files for each component `Cclass` have a common directory.
 `<project>/RTE/<Cclass>/<device>`   | Configurable files for components that have a condition to a `device` are in a separate directory.
 `<project>/RTE/<context-dir>`       | Directory for `RTE_components.h` and pre-include files that are generated by the **`csolution` Project Manager**.
 `<layer>`                           | Each layer has its own base directory; this directory contains the `*.clayer.yml` file.
-`<layer>/RTE/<Cclass>`              | Configurable files for each component `Cclass` have a common directory.
-`<layer>/RTE/<Cclass>/<device>`     | Configurable files for components that have a condition to a `device` are in a separate directory.
+`<layer>/RTE/<Cclass>`              | Configurable files for each component `Cclass` have a common directory below the layer base directory.
+`<layer>/RTE/<Cclass>/<device>`     | Configurable files for components that have a condition to a `device` are in a separate directory below the layer base directory.
 
-- The `<context-dir>` has the following format: `_<build-type>_<target-type>`.
+The `<context-dir>` has the following format: `_<build-type>_<target-type>`.
 
 > **Note:**
 >
-> CBuild does no longer generate the `<context-dir>` by default. It is therefore required to align the naming of `<context-dir>` with other tools (MDK, CMSIS-Pack-Eclipse, etc.) that support the CMSIS-Pack system.
+> `cbuild` does no longer generate the `<context-dir>` by default. It is therefore required to align the naming of `<context-dir>` with other tools (MDK, CMSIS-Pack-Eclipse, etc.) that support the CMSIS-Pack system.
 
 ### Output Directory Structure
 
-By default the following output directories are used. Use [`cbuild`](build-tools.md#build-project) to generate the content of these output directories.
+By default, the following output directories are used. Use [`cbuild`](build-tools.md#build-project) to generate the content of these output directories.
 
 Output                                        | Content
 :---------------------------------------------|:---------------
@@ -735,7 +730,7 @@ Optionally, configurable source and header files are provided that allow to set 
 - Libraries, source, and header files that are not configurable (and need no modification) are stored in the directory
   of the software component (typically part of CMSIS_Pack_ROOT) and get included directly from this location into the
   project.
-- An Include Path to the header files of the software component is added to the C/C++ Compiler control string.
+- An include path to the header files of the software component is added to the C/C++ Compiler control string.
 
 > **Note:**
 >
@@ -749,8 +744,7 @@ Configurable source and header files have a version information that is required
 (PLM) of a project. The version number is important when the underlying software pack changes and provides a newer
 configuration file version.
 
-Depending on the PLM status of the application, the `csolution` performs for configuration files the following
-operation:
+Depending on the PLM status of the application, `csolution` performs the following operation for configuration files:
 
 1. **Add** a software component for the first time: the related config file is copied twice into the related `RTE`
    project directory. The first copy can be modified by the user with the parameters for the user application. The
@@ -764,7 +758,7 @@ operation:
                                                         // information; used as a base for version comparison
     ```
 
-    The `csolution` outputs a user notification to indicate that files are added:
+    `csolution` shows a user notification to indicate that files are added:
 
     ```text
     ./RTE/component_class/ConfigFile.h -  info: component 'name' added configuration file version '1.2.0'
@@ -772,13 +766,13 @@ operation:
 
     >**Note:**
     >
-    > The unmodified files with `@version` information should be committed to the repository of the version control system as this files are used to upgrade configuration information using merge utilities.
+    > The unmodified files with `@version` information should be committed to the repository of the version control system as these files are used to upgrade configuration information using merge utilities.
 
 2. **Upgrade** (or downgrade) a software component: if the version of the unmodified backup file is identical, no
    operation is performed. If the version differs, the new configuration file is copied with the format
    `<configfile>.<ext>.update@version`.
 
-    **Example:** after configuration file `ConfigFile.h` to version `1.3.0` the directory contains these files:
+    **Example:** after updating the configuration file `ConfigFile.h` to version `1.3.0`, the directory contains these files:
 
     ```c
     ./RTE/component_class/ConfigFile.h                  // user editable configuration file (based on current version)
@@ -787,7 +781,7 @@ operation:
                                                         // information; used as a base for version comparison
     ```
 
-    The `csolution` outputs a user notification to indicate that configuration files have changed:
+    `csolution` displays a user notification to indicate that configuration files have changed:
 
     ```text
     ./RTE/component_class/ConfigFile.h - warning: component 'name' upgrade for configuration file version '1.3.0'
@@ -796,8 +790,7 @@ operation:
 
 3. **User action to complete upgrade**: The user has now several options (outside of `csolution`) to merge the
    configuration file information. A potential way could be to use a 3-way merge utility. After merging the
-   configuration file, the hidden backup should be deleted and the unmodified new version should become the hidden
-   backup. The previous configuration file may be stored as backup as shown below.
+   configuration file, the original `base@version` file should be deleted and the unmodified new version should become the new `base@version`. The previous configuration file may be stored as backup as shown below.
 
     ```c
     ./RTE/component_class/ConfigFile.h                  // new configuration file with merge configuration
@@ -810,7 +803,7 @@ operation:
 >
 >The system is also capable of handling multiple instances of configuration files as explained in the CMSIS-Pack specification under
 >[Component Instances](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances).
->In this case the instance %placeholder% is expanded as shown below:
+>In this case, the instance %placeholder% is expanded as shown below:
 >
 > ```c
 > ./RTE/component_class/ConfigFile_0.h
@@ -821,9 +814,7 @@ operation:
 
 ### RTE_Components.h
 
-The file `./RTE/RTE_Components.h` is automatically created by the CMSIS Project Manager (during CONVERT). For each
-selected software component it contains `#define` statements required by the component. These statements are defined in
-the `*.PDSC` file for that component. The following example shows a sample content of a RTE_Components.h file:
+The file `./RTE/RTE_Components.h` is automatically created by the CMSIS Project Manager (during `convert`). For each selected software component, it contains `#define` statements required by the component. These statements are defined in the `*.PDSC` file for that component. The following example shows a sample content of a RTE_Components.h file:
 
 ```c
 /* Auto generated Run-Time-Environment Component Configuration File *** Do not modify ! *** */
@@ -842,8 +833,7 @@ the `*.PDSC` file for that component. The following example shows a sample conte
 #endif /* RTE_COMPONENTS_H */
 ```
 
-The typical usage of the `RTE_Components.h` file is in header files to control the inclusion of files that are related
-to other components of the same software pack.
+The typical usage of the `RTE_Components.h` file is in other header files to control the inclusion of files that are related to other components of the same software pack.
 
 ```c
 #include "RTE_Components.h"
@@ -860,7 +850,7 @@ The `CMSIS_device_header` represents the [device header file](https://arm-softwa
 
 ## Linker Script Management
 
-A Linker Script contains a series of Linker directives that specify the available memory and how it should be used by a project. The Linker directives reflect exactly the available memory resources and memory map for the project context.
+A Linker Script contains a series of Linker directives that specify the available memory and how it should be used in a project. The Linker directives reflect exactly the available memory resources and memory map for the project context.
 
 This section describes the Linker Script management of the **`csolution` Project Manager**:
 
@@ -876,7 +866,7 @@ This section describes the Linker Script management of the **`csolution` Project
 
 ![Linker Script File Generation](./images/linker-script-file.png "Linker Script File Generation")
 
-A standard C processors is used for the Linker Script file when:
+A standard C preprocessor is used for the Linker Script file when:
 
 - the linker script file extension is `*.src`.
 - the [`linker:`](YML-Input-Format.md#linker) node contains a `regions:` header file or a `define:`.
@@ -885,7 +875,7 @@ Otherwise, no preprocessor is used and the Linker Script file is directly passed
 
 ### Automatic Linker Script generation
 
-The automatic Linker Script generation uses Linker Script template and generates a `<regions>.h` file based on information of the software packs using the:
+The automatic Linker Script generation uses a Linker Script template and generates a `<regions>.h` file based on information of the software packs using the:
 
 - [`<device>` - `<memory>` element in the DFP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_boards_pg.html#element_board_memory)
 - [`<board>` - `<memory>` element in the BSP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory)
@@ -914,7 +904,7 @@ Linker Script Template       | Linker control file for ...
 
 ## Generator Support
 
-*Generators* such as STM32CubeMX or MCUXpresso Config Tools simplify the configuration for devices and boards. The CMSIS-Toolbox implements a [generic interface for generators](build-operation.md#generator-integration). *Generators* may be used to:
+*Generators*, such as STM32CubeMX or MCUXpresso Config Tools, simplify the configuration for devices and boards. The CMSIS-Toolbox implements a [generic interface for generators](build-operation.md#generator-integration). *Generators* may be used to:
 
 - Configure device and/or board settings, for example clock configuration or pinout.
 - Add and configure software drivers, for example for UART, SPI, or I/O ports.
@@ -936,7 +926,7 @@ An example that uses STM32CubeMX is provided in [github.com/Open-CMSIS-Pack/csol
 To list the *Generator* configuration of a `*.csolution.yml` use:
 
 ```bash
->csolution CubeMX.csolution.yml list generators --verbose
+> csolution CubeMX.csolution.yml list generators --verbose
 CubeMX (Global Registered Generator)                 # Name of the Generator
   base-dir: STM32CubeMX/MyBoard                      # Generator output directory for contexts listed below
     cgen-file: STM32CubeMX/MyBoard/CubeMX.cgen.yml   # Generator import file for contexts listed below
@@ -947,7 +937,7 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
 To run the generator (in this case CubeMX) use:
 
 ```bash
->csolution CubeMX.csolution.yml run --generator CubeMX
+> csolution CubeMX.csolution.yml run --generator CubeMX
 ```
 
 ### Configure Generator Output
@@ -969,4 +959,6 @@ A Generator output configuration is useful for:
 
 ### Detailed Usage Instructions
 
-- [**Configure STM32 Devices with CubeMX**](CubeMX.md) explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) to manage device and board configuration.
+[**Configure STM32 Devices with CubeMX**](CubeMX.md) explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) to manage device and board configuration.
+
+[**Installation**](installation.md) **&laquo; Chapters &raquo;** [**Build Tools**](build-tools.md)
