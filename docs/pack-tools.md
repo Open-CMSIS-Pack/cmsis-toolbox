@@ -170,32 +170,58 @@ project:
 
 ### Examples
 
-*Examples* are complete projects that typically run on a board. They should therefore contain `board:` specification. *Examples* that work with several compiler toolchains should use the `select-compiler:` definition and no `compiler:` node as this is added once the *example* is used. Refer to [Toolchain Agnostic Project](build-overview.md#toolchain-agnostic-project)
+*Examples* are complete projects that typically run on a board. They should therefore specify a `target-type` with [`board:`](YML-Input-Format.md#board) and list the [`packs:`](YML-Input-Format.md#packs) that are used, specifically the DFP and BSP.
 
-For [reproducible builds](build-overview.md#reproducible-builds) the `*.cbuild-pack.yml` file may be part of the *example* project. To avoid that an *examples* requires re-work when pack updates are available it is better to specify a minimum pack version in the `*.csolution.yml` file as shown below. In this case the `*.cbuild-pack.yml` file should be not part of the *example*.
+To minimize maintenance of *Examples* that are part of a pack, consider these rules:
 
-**`csolution.yml` file of an *example*:**
+- **IMPORTANT:** Store all files that are part of the [`./RTE` directory](build-overview.md#rte-directory-structure). These files store configuration and are important for [PLM](build-overview.md#plm-of-configuration-files).
+- Use [`select-compiler:`](YML-Input-Format.md#select-compiler) when the *Example* works with several toolchains.  Do not specify `compiler:`.
+- Specify [minimum pack version](YML-Input-Format.md#pack-name-conventions). Do not store `*.cbuild-pack.yml`.
+- The tool selects first `target-type` and first `build-type` when `cbuild-set.yml` is missing. For simple projects do not store `*.cbuild-set.yml`.
+- For simple projects, rely on the `cdefault.yml` file that is provided with CMSIS-Toolbox.
+
+*Examples* that work with several compiler toolchains should use [`select-compiler:`](YML-Input-Format.md#select-compiler) and not define `compiler:` explicit. The `compiler:` node of the available toolchain is added when the *Example* is loaded into the IDE.
+
+When [minimum pack versions](YML-Input-Format.md#pack-name-conventions) are specified, the semantic versioning of packs should ensure that newer pack versions work also. As the `*.cbuild-pack.yml` file fixes pack versions, this file should be not stored in the pack.
+
+*Examples* may contain in the `*.csolution.yml` file multiple related projects that for example cover different aspects of a peripheral or middleware. For such *Examples* it is not required to store the `*.cbuild-set.yml` file as the tools select the first `target-type` and `build-type` of the `*.csolution.yml` file.
+
+*Examples* that do not require special compiler controls may rely on the [`cdefault.yml` file](build-overview.md#cdefaultyml) that is provided with CMSIS-Toolbox as this file contains reasonable default settings. For more complex *Examples*, provide a local copy of the `cdefault.yml` file in the same directory as the `*.csolution.yml` file.
+
+Refer to [Toolchain Agnostic Project](build-overview.md#toolchain-agnostic-project) for further information.
+
+**`csolution.yml` file of an *Example*:**
 
 ```yml
 solution:
+# Optional: Add a brief description line (recommendation less than 128 characters)
+  description: Example that shows the usage of Fault component on an Cortex-M33 with TrustZone
 
-  created-for: CMSIS-Toolbox@2.6.0
+  created-for: CMSIS-Toolbox@2.6.0          # minimum CMSIS-Toolbox version, newer versions will work also
   cdefault:
 
+  select-compiler:
+    - compiler: GCC               # GCC is supported
+    - compiler: AC6               # AC6 is supported
+    - compiler: IAR               # IAR is supported
+
   packs:
-    - pack: Keil::STM32U5xx_DFP@^2.1.0            # minimum compatible pack version
+    - pack: Keil::STM32U5xx_DFP@^2.1.0      # minimum compatible pack version
     - pack: Keil::B-U585I-IOT02A_BSP@^1.0.0
 
   target-types:
-    - type: HW
+    - type: B-U585I-IOT02A
       board: STMicroelectronics::B-U585I-IOT02A
       device: STMicroelectronics::STM32U585AIIx
 
   build-types:
     - type: Debug
       debug: on
-      optimize: none
-      :
+      optimize: debug
+
+    - type: Release
+      debug: off
+      optimize: balanced
 
   projects:
     - project: ./Secure/Fault_S.cproject.yml
@@ -209,7 +235,7 @@ solution:
 ```xml
   <examples>
     <example name="Fault example" folder="Examples/Fault/B-U585I-IOT02A" doc="README.md">
-      <description>Example that shows the usage of Fault component on an Cortex-M33 with TrustZone.</description>
+      <description>Example that shows the usage of Fault component on an Cortex-M33 with TrustZone</description>
       <board name="B-U585I-IOT02A" vendor="STMicroelectronics"/>
       <project>
         <environment name="csolution" load="Fault.csolution.yml"/>

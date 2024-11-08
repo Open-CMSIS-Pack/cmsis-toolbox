@@ -19,7 +19,7 @@ This chapter explains how to use [STM32CubeMX](https://www.st.com/en/development
   - [Simple Project](#simple-project)
   - [Adding an RTOS](#adding-an-rtos)
   - [Linker Script](#linker-script)
-  - [Create a Board Layer](#create-a-board-layer)
+  - [Use CubeMX with Board Layer](#use-cubemx-with-board-layer)
   - [TrustZone or Multi-Core Project](#trustzone-or-multi-core-project)
   - [CubeMX Runtime Context Mapping](#cubemx-runtime-context-mapping)
   - [Migration to CMSIS-Toolbox CubeMX Integration](#migration-to-cmsis-toolbox-cubemx-integration)
@@ -236,23 +236,11 @@ For `compiler: GCC` or `compiler: IAR`, a linker script is always provided.
 >
 > The linker script that is provided by CubeMX is defined in the `*.cgen.yml` and imported into the *csolution project*.
 
-## Create a Board Layer
+## Use CubeMX with Board Layer
 
-A [software layer](build-overview.md#software-layers) is a set of pre-configured software components and source files for re-use in multiple projects. A board layer contains typically basic I/O drivers and related device and board configuration. CubeMX does generate a significant part of a board layer.
+A [software layer](build-overview.md#software-layers) is a set of pre-configured software components and source files for re-use in multiple projects. A board layer contains typically basic I/O drivers and related device and board configuration. 
 
-The board layer is stored in an separate directory that is independent of a specific *csolution project*. To create a board layer, copy the related source files, the STM32CubeMX generated files, and the configuration files of the [RTE directory](.) that relate to software components in the board layer.
-
-**Example directory content of a STM32 board layer**
-
-Directory and Files          | Description
-:----------------------------|:---------------------------------------
-`Board.clayer.yml`           | Defines the source files and software components of the board layer.
-`CubeMX/`                    | Directory with CubeMX ioc file and other generated files and folders.
-`CubeMX/Board.cgen.yml`      | Generator import file that lists CubeMX generated files and options.
-`CubeMX/STM32CubeMX/`        | Directory with CubeMX generated files.
-`CubeMX/STM32CubeMX/Drivers/`| Directory with driver related source files.
-
-The `Board.clayer.yml` file defines with the `generators:` node, options to locate the CubeMX generated files in the directory structure of the [software layer](build-overview.md#software-layers). As a board layer is used by many projects, the name of the generator import file should be explicitly specified as shown below:
+For a board layer, CubeMX can be used to generate device configuration and peripheral drivers. As a board layer uses a separate directory that is independent of a specific *csolution project* the location of the  STM32CubeMX generated files should be specified using the [`generators:`](YML-Input-Format.md#generators) node in the `<board>.clayer.yml` file. This locates the CubeMX generated files in the directory structure of the [software layer](build-overview.md#software-layers). As a board layer is used by several projects, the name of the generator import file should be also explicitly specified as shown below:
 
 ```yml
 generators:
@@ -261,6 +249,18 @@ generators:
       path: ./CubeMX              # path relative to the `*.clayer.yml` file
       name: Board                 # generator import file is named `Board.cgen.yml`.
 ```
+
+This configuration results in the following directory structure:
+
+Directory and Files          | Description
+:----------------------------|:---------------------------------------
+`<board>.clayer.yml`           | Defines the source files and software components of the board layer.
+`CubeMX/`                    | Directory with CubeMX ioc file and other generated files and folders.
+`CubeMX/Board.cgen.yml`      | Generator import file that lists CubeMX generated files and options.
+`CubeMX/STM32CubeMX/`        | Directory with CubeMX generated files.
+`CubeMX/STM32CubeMX/Drivers/`| Directory with driver related source files.
+
+Several [STM32 Board Support Packs with Generator Support](https://github.com/Open-CMSIS-Pack) contain board layers that use such a configuration. For examples, the [Nucleo-F756ZG_BSP](https://www.keil.arm.com/packs/nucleo-f756zg_bsp-keil/overview/) or [B-U585I-IOT02A_BSP](https://www.keil.arm.com/packs/b-u585i-iot02a_bsp-keil/overview/).
 
 ## TrustZone or Multi-Core Project
 
