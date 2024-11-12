@@ -75,12 +75,12 @@ It maybe required to customize the installation for the actual setup of your dev
 
 The various tools use the following environment variables.
 
-Environment Variable     | Description
-:------------------------|:------------
-`<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | Path to the compiler binaries where `<name>` is one of AC6, GCC, IAR, CLANG
-**CMSIS_PACK_ROOT**      | Path to the [CMSIS-Pack Root](#cmsis_pack_root) directory that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
-**CMSIS_COMPILER_ROOT**  | Optional: Path to the CMSIS-Toolbox `etc` directory (i.e. `/c/cmsis-toolbox/etc`).
-**Path**                 | Add to the system path the CMSIS-Toolbox `bin` directory (i.e. `/c/cmsis-toolbox/bin`) as well as CMake and Ninja.
+Environment Variable     |             | Description
+:------------------------|:------------|:------------
+`<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | **Required** | Path to the [compiler binaries](#compiler-registration) where `<name>` is one of AC6, GCC, IAR, CLANG.
+**CMSIS_PACK_ROOT**      | Optional | Path to the [CMSIS-Pack Root](#cmsis_pack_root) directory that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
+**CMSIS_COMPILER_ROOT**  | Optional | Path to the CMSIS-Toolbox `etc` directory (i.e. `/c/cmsis-toolbox/etc`).
+**Path**                 | **Required** | Add to the system path the CMSIS-Toolbox `bin` directory (i.e. `/c/cmsis-toolbox/bin`) as well as CMake and Ninja.
 
 #### Default Values
 
@@ -103,19 +103,21 @@ The environment variable **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are opt
 
 #### Compiler Registration
 
-The registration of a compiler toolchain is manually defined by an environment variable with its name and semantic version numbers (major, minor and patch) in the format:
+The compiler toolchain is registered with an environment variable that includes compiler name (AC6, GCC, IAR, LLVM) and version number (major, minor and patch). This information is used by the [`compiler:`](YML-Input-Format.md#compiler) node or the `--toolchain` option to choose the compiler.
+
+**Format:**
 
 ```txt
 <name>_TOOLCHAIN_<major>_<minor>_<patch>=<path/to/toolchain/binaries>
 ```
 
-For example in Windows:
+**Example for Windows:**
 
 ```txt
 set AC6_TOOLCHAIN_6_19_0=C:\Keil_v5\ARM\ARMCLANG\bin
 ```
 
-For example in Unix:
+**Example for Unix:**
 
 ```txt
 export GCC_TOOLCHAIN_10_3_1=/opt/gcc-arm-none-eabi-10.3-2021.10/bin

@@ -44,7 +44,7 @@ This chapter explains how to work with *Reference Applications* that can run on 
 
 The CMSIS-Pack format supports different types of project examples:
 
-- *Templates* are [stub projects](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) that help getting started. Some software packs may contain device specific templates.
+- *Template Projects* are [stub projects](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) that help getting started. Some software packs may contain device specific templates.
 - *Examples* are created for a specific hardware or evaluation board. These are typically complete projects that directly interface with board and device peripherals.
 - *Reference Applications* use defined interfaces (APIs) and are therefore hardware agnostic. These project examples show usage of middleware components and require additional [software layers](build-overview.md#software-layers) with API drivers for the specific target hardware, typically an evaluation board.
  

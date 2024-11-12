@@ -416,7 +416,7 @@ The project [AWS_MQTT_MutualAuth_SW_Framework](https://github.com/Open-CMSIS-Pac
 
 #### Configuration Settings
 
-A software layer is a set of source files and pre-configured software components that can be shared across multiple projects. To achieve this, the configuration files of a [`layer`](YML-Input-Format.md#layer) are stored within the directory structure of the software layer. This separate [RTE Directory Structure](#rte-directory-structure) allows that projects
+A software layer is a set of source files and pre-configured software components or source code that can be shared across multiple projects. To achieve this, the configuration files of a [`layer`](YML-Input-Format.md#layer) are stored within the directory structure of the software layer. This separate [RTE Directory Structure](#rte-directory-structure) allows that projects
 can share a `layer` with common configuration settings.
 
 > **Note:**
@@ -813,7 +813,7 @@ Depending on the PLM status of the application, `csolution` performs the followi
 
 ### RTE_Components.h
 
-The file `./RTE/RTE_Components.h` is automatically created by the CMSIS Project Manager (during `convert`). For each selected software component, it contains `#define` statements required by the component. These statements are defined in the `*.PDSC` file for that component. The following example shows a sample content of a RTE_Components.h file:
+The file `./RTE/RTE_Components.h` is created by the CMSIS Project Manager when the option `--update-rte` is used. This option is default for the `csolution convert` command. For each selected software component, it contains `#define` statements required by the component. These statements are defined in the `*.PDSC` file for that component. The following example shows a sample content of a RTE_Components.h file:
 
 ```c
 /* Auto generated Run-Time-Environment Component Configuration File *** Do not modify ! *** */
