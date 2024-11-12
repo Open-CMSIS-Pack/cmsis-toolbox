@@ -64,8 +64,10 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Checkout devtools
+      - name: Checkout cmsis-toolbox repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
 
       - name: Create folders
         run: |
@@ -250,6 +252,36 @@ jobs:
           sudo chmod -R +x bin/*
           sudo chown -R root: *
         working-directory: toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install pip dependencies
+        run: |
+            pip install --upgrade pip
+            pip install pyyaml
+
+      - name: Generate manifest file
+        shell: bash
+        run: |
+          # Get the toolbox version
+          TOOLBOX_VERSION=$(git describe --tags || echo "untagged")
+
+          # Set binary extension (default to empty string if not set)
+          BINARY_EXTENSION=${{ matrix.binary_extension }}
+          [ -z "$BINARY_EXTENSION" ] && BINARY_EXTENSION=""
+
+          # Get absolute path to the toolbox directory
+          TOOLBOX_ABS_PATH=$(pwd)/toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+          
+          # Run the Python script to generate the manifest file
+          python ./scripts/generate_manifest.py \
+            -d "$TOOLBOX_ABS_PATH" \
+            -v "$TOOLBOX_VERSION" \
+            -e "$BINARY_EXTENSION"
 
       - name: Zip folders Windows
         if: ${{ matrix.target == 'windows'}}
