@@ -12,10 +12,13 @@ This chapter describes how to create software packs and explains the tools `pack
   - [Hands-on Tutorials](#hands-on-tutorials)
   - [Hints for Pack Creation](#hints-for-pack-creation)
   - [Project Examples](#project-examples)
-    - [Templates](#templates)
+    - [Support Multiple Compilers](#support-multiple-compilers)
+    - [Related Examples](#related-examples)
+    - [Template Projects](#template-projects)
     - [Examples](#examples)
     - [Reference Applications](#reference-applications)
   - [Layers](#layers)
+  - [Code Templates](#code-templates)
   - [Pack Examples](#pack-examples)
 
 ## Pack Creation Tools
@@ -59,9 +62,22 @@ Hands-on Tutorial         | Description
 
 Project examples help to get started with new devices, boards, and middleware software components. The CMSIS-Pack format supports therefore different types of project examples:
 
-- [*Templates*](#templates) are [stub projects](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) that help to get started. Some software packs may contain device specific templates.
+- [*Template Projects*](#template-projects) are [stub projects](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) that help to get started. Some software packs may contain device specific templates.
 - [*Examples*](#examples) are created for a specific hardware or evaluation board. These are typically complete projects that directly interface with board and device peripherals.
 - [*Reference Applications*](#reference-applications) are hardware agnostic project examples that required [layers](#layers) to add the hardware abstraction of a target (typically a board).
+
+In addition packs may contain:
+
+- [*Layers*](#layers) are  pre-configured software components or source code that can be shared across multiple projects.
+- [*Code Templates*](#code-templates) are stub source files for middleware components that can be incorporated into user code.
+
+The picture below shows the different packs that are used to publish project examples. These examples are available for software developers on web pages and can be directly accessed from IDEs that are for example enabled with the [VS Code Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension.
+
+![Project Examples in Packs](./images/ExamplesInPacks.png "Project Examples in Packs")
+
+The following section explains how the different types of project examples are structured and registered within a CMSIS-Pack.
+
+### Support Multiple Compilers
 
 To make project examples independent of a specific compiler toolchain, the `*.csolution.yml` file should include the `select-compiler:` node with a list of tested compilers. When a user or IDE starts such an example, the `compiler:` node that selects the compiler gets added.
 
@@ -81,6 +97,8 @@ solution:
       :
 ```
 
+### Related Examples
+
 The `*.csolution.yml` file may contain several related projects that share the same [`target-types:`](YML-Input-Format.md#target-types) and [`build-types:`](YML-Input-Format.md#build-types).
 
 **Example:**
@@ -94,15 +112,13 @@ solution:
     - project: HTTP_Server/HTTP_Server.cproject.yml
 ```
 
-The following section explains how the different types of project examples are structured and registered within a CMSIS-Pack.
+### Template Projects
 
-### Templates
-
-A *template* does not define a [`device:`](YML-Input-Format.md#device) or [`board:`](YML-Input-Format.md#board) in the `*.csolution.yml` file. When a IDE starts such an *template* the `device:` and/or `board:` information along with `pack:` information is added depending on user selection. The [`target-types:`](YML-Input-Format.md#target-types) contains a  `Name` that may be replaced by a descriptive target name.
+A *template project* does not define a [`device:`](YML-Input-Format.md#device) or [`board:`](YML-Input-Format.md#board) in the `*.csolution.yml` file. When a IDE starts such an *template* the `device:` and/or `board:` information along with `pack:` information is added depending on user selection. The [`target-types:`](YML-Input-Format.md#target-types) contains a  `Name` that may be replaced by a descriptive target name.
 
 > **Note:**
 >
-> A *template* should not specify the DFP or BSP with a `pack:` node as this gets added by the IDE during project start.
+> A *template project* should not specify the DFP or BSP with a `pack:` node as this gets added by the IDE during project start.
 
 **Simple Template:**
 
@@ -247,7 +263,7 @@ solution:
 
 ### Reference Applications
 
-[*Reference applications*](ReferenceApplications.md) can run on many different target hardware boards. Similar to [*templates*](#templates) the `device:` and `board:` along with the required DFP and BSP `pack:` is not specified in the `*.csolution.yml` file.
+[*Reference applications*](ReferenceApplications.md) can run on many different target hardware boards. Similar to [*template projects*](#template-projects) the `device:` and `board:` along with the required DFP and BSP `pack:` is not specified in the `*.csolution.yml` file.
 
 ```yml
 solution:
@@ -300,6 +316,34 @@ solution:
     <clayer type="Board" path="Layers/Default" file="Board.clayer.yml" copy-to="Board/MyBoard" condition="Board-Spec"/>
   </csolution>
 ```
+
+> **Note:**
+>
+> Several [STM32 Board Support Packs (BSP)](https://github.com/Open-CMSIS-Pack#stm32-packs-with-generator-support)  contain *layers* that are pre-configured for certain applications. For example, the *layer* in the [ST_NUCLEO-F756ZG_BSP](https://github.com/Open-CMSIS-Pack/ST_NUCLEO-F756ZG_BSP/tree/main/Layers/Default) supports applications that require Ethernet, USB Device, UART, or I2C interfaces.
+
+## Code Templates
+
+*Code templates* are part of the [components files](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Files) in the PDSC file and can be manually added by the user to a software project. *Code templates* show how a software component is used and the source code can be directly adapted to the requirements of the application program.
+
+**Register *Code Templates* in PDSC File:**
+
+[*Code Templates*](build-overview.md#software-layers) are part of a software component and published using the [`<components>` element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html) using `attr="template"` in the PDSC file.
+
+```xml
+  <component Cgroup="Socket" Csub="UDP" condition="Network Interface">
+    :
+    <files>
+      <file category="doc"    name="Documentation/html/Network/group__netUDP__Func.html"/>
+      <file category="header" name="Components/Network/Config/Net_Config_UDP.h" attr="config" version="5.1.1"/>
+      <file category="source" name="Components/Network/Template/UDP_Socket.c" attr="template" select="UDP Socket"/>
+      <!-- Library source files -->
+      <file category="source" name="Components/Network/Source/net_udp.c"/>
+    </files>
+```
+
+> **Note:**
+>
+> The [CMSIS-RTX](https://github.com/ARM-software/CMSIS-RTX) and [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware) pack contains several *code templates* that exemplify the overall structure.
 
 ## Pack Examples
 

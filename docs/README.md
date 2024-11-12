@@ -27,7 +27,7 @@ Thank you for using the **CMSIS-Toolbox** that provides command-line tools for:
 
 - [**Build Operation**](build-operation.md) contains for advanced users further details about build process, CMake backend configuration, and generator integration.
 
-- [**Pack Creation**](pack-tools.md) describes how to create software packs and explains the pack creation tools `packchk` (software pack verification) and `svdconv` (SVD file converter).
+- [**Pack Creation**](pack-tools.md) describes how to create software packs that optionally include examples and explains the pack creation tools `packchk` (software pack verification) and `svdconv` (SVD file converter).
 
 ## Revision History
 
