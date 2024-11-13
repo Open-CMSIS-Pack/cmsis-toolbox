@@ -296,7 +296,7 @@ jobs:
       - name: Create Debian Package
         if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
         run: |
-            git fetch --unshallow
+            git fetch
             mkdir -p ./debian/build
             cmake -G Ninja -S ./debian -B ./debian/build -DTOOLBOX_ROOT=$(realpath ./cmsis-toolbox) -DTOOLBOX_VERSION=$(git describe --tags --abbrev=0)+nightly-$(date +%Y%m%d%H%M)
             cd ./debian/build
