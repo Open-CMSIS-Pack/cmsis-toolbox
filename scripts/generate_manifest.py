@@ -6,6 +6,7 @@ import re
 import os
 import logging
 import sys
+from pathlib import Path
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -15,6 +16,7 @@ BINARY_FILES = ["cbridge", "cbuild", "cbuild2cmake", "cbuildgen", "cpackget", "c
 
 def calculate_checksum(filepath):
     """Calculate SHA-256 checksum of a file."""
+    logging.info(f"Calculating checksum for: {filepath}")
     sha256 = hashlib.sha256()
     try:
         with open(filepath, "rb") as f:
@@ -28,34 +30,65 @@ def calculate_checksum(filepath):
         logging.error(f"Error calculating checksum for {filepath}: {e}")
         return None
 
-def get_version(binary_path):
+def get_version(binary_path: str) -> str:
     """Retrieve the version of the binary using the '-V' flag."""
-    # Ensure the binary is executable
+
+    binary = Path(binary_path)
+    # Check if the binary exists and is executable
+    if not binary.is_file():
+        logging.error(f"Binary not found: {binary_path}")
+        return "unknown"
+    if not os.access(binary, os.X_OK):
+        logging.error(f"Binary is not executable: {binary_path}")
+        return "unknown"
+
     try:
+        logging.info(f"Executing version command: {binary_path} -V")
+        # Execute the binary with the '-V' flag without using shell=True for security
         result = subprocess.run(
-            [binary_path, '-V'],
-            shell=True,
+            [str(binary), '-V'],
             capture_output=True,
-            universal_newlines=True
+            text=True,          # Preferred over universal_newlines=True in newer Python versions
+            check=True,         # Raises CalledProcessError if the command exits with a non-zero status
+            timeout=10          # Prevents the subprocess from hanging indefinitely
         )
-        match = re.search(r'\b\d+\.\d+\.\d+(?:[-+][\w\.]+)?\b', result.stdout)
+
+        output = f"{result.stdout}"
+        logging.debug(f"Version command output: {output}")
+
+        # Regex to capture version numbers more flexibly
+        # Adjust the pattern based on the expected output format
+        version_pattern = r"(\d+\.\d+\.\d+(?:[-+][\w\.]+)?)"
+        match = re.search(version_pattern, output)
+
         if match:
-            return match.group()
+            version = match.group(1)
+            logging.info(f"Version found: {version}")
+            return version
         else:
             logging.warning(f"Version format not found in output for {binary_path}")
             return "unknown"
+
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error retrieving version for {binary_path}: {e}")
-        return "unknown"
+        logging.error(f"CalledProcessError retrieving version for {binary_path}: {e}")
+    except subprocess.TimeoutExpired:
+        logging.error(f"Timeout expired while retrieving version for {binary_path}")
+    except FileNotFoundError:
+        logging.error(f"Binary not found during execution: {binary_path}")
+    except Exception as e:
+        logging.error(f"Unexpected error retrieving version for {binary_path}: {e}")
+
+    return "unknown"    
 
 def generate_manifest(args):
     """Generate the manifest with checksums and versions for binaries."""
     checksums = {}
     for binary in BINARY_FILES:
-        binary_path = os.path.join(args.toolbox_root_dir, f"bin/{binary}{args.bin_extn}")
+        binary_path = args.toolbox_root_dir + f"/bin/{binary}{args.bin_extn}"
         checksum = calculate_checksum(binary_path)
         if checksum:
-            version = get_version(binary_path)
+            new_path = binary_path.replace("-arm64", "-amd64")
+            version = get_version(new_path)
             checksums[binary] = {"version": version, "sha256": checksum}
 
     manifest = {
