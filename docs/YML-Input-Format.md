@@ -1956,7 +1956,7 @@ The CMSIS-Toolbox supports pre-build and post-build steps that utilize external 
 - add checksums to a binary file.
 - combine multiple ELF files into a single image.
 - add a timestamp to an image (`always:` ensures execution in every build).
-- sign images for a boot laoder.
+- sign images for a bootloader.
 
 ### `executes:`
 

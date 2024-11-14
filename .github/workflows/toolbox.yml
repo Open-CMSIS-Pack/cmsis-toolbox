@@ -64,8 +64,10 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Checkout devtools
+      - name: Checkout cmsis-toolbox repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
 
       - name: Create folders
         run: |
@@ -159,7 +161,7 @@ jobs:
           target: "toolbox/"
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Unzip files
+      - name: Create Directories
         shell: bash
         run: |
           mkdir -p buildmgr
@@ -206,6 +208,63 @@ jobs:
           sudo chmod +x ./cbuild_install.sh && ./cbuild_install.sh -x buildmgr
         working-directory: toolbox
 
+      - name: Unzip files Windows & amd64
+        if: ${{ matrix.target == 'windows' && matrix.arch == 'arm64' }}
+        shell: bash
+        run: |
+          unzip cbridge_\*_${{ matrix.target }}_amd64.zip -d cbridge_amd64
+          unzip cbuild_\*_${{ matrix.target }}_amd64.zip -d cbuild_amd64
+          unzip cbuild2cmake_\*_${{ matrix.target }}_amd64.zip -d cbuild2cmake_amd64
+          unzip cpackget_\*_${{ matrix.target }}_amd64.zip -d cpackget_amd64
+          unzip packchk\*-${{ matrix.target }}-amd64.zip -d packchk_amd64
+          unzip svdconv-\*-${{ matrix.target }}-amd64.zip -d svdconv_amd64
+          unzip vidx2pidx_\*_${{ matrix.target }}_amd64.zip -d vidx2pidx_amd64
+        working-directory: toolbox
+
+      - name: Unzip files Linux Darwin & amd64
+        if: ${{ (matrix.target == 'linux' || matrix.target == 'darwin') && matrix.arch == 'arm64'}}
+        shell: bash
+        run: |
+          mkdir -p projmgr_amd64
+          mkdir -p cbridge_amd64
+          mkdir -p cbuild_amd64
+          mkdir -p cbuild2cmake_amd64
+          mkdir -p cpackget_amd64
+          mkdir -p packchk_amd64
+          mkdir -p svdconv_amd64
+          mkdir -p vidx2pidx_amd64
+          tar -xvf cbridge_*_${{ matrix.target }}_amd64.tar.gz -C cbridge_amd64
+          tar -xvf cbuild_*_${{ matrix.target }}_amd64.tar.gz -C cbuild_amd64
+          tar -xvf cbuild2cmake_*_${{ matrix.target }}_amd64.tar.gz -C cbuild2cmake_amd64
+          tar -xvf cpackget_*_${{ matrix.target }}_amd64.tar.gz -C cpackget_amd64
+          tar -xvf packchk-*-${{ matrix.target }}-amd64.tbz2 -C packchk_amd64
+          tar -xvf svdconv-*-${{ matrix.target }}-amd64.tbz2 -C svdconv_amd64
+          tar -xvf vidx2pidx_*_${{ matrix.target }}_amd64.tar.gz -C vidx2pidx_amd64
+        working-directory: toolbox
+
+      - name: Copy Files amd64
+        if: ${{ matrix.arch == 'arm64'}}
+        shell: bash
+        run: |
+          mkdir -p cmsis-toolbox-${{ matrix.target }}-amd64/bin
+          cp ./buildmgr/bin/cbuildgen${{ matrix.temp_extension }}-amd64                        ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/cbuildgen${{ matrix.binary_extension }}
+          cp ./projmgr/bin/${{ matrix.target }}-amd64/csolution${{ matrix.binary_extension }}  ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/csolution${{ matrix.binary_extension }}
+          cp ./cbridge_amd64/*/cbridge${{ matrix.binary_extension }}                           ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/cbridge${{ matrix.binary_extension }}
+          cp ./cbuild_amd64/*/cbuild${{ matrix.binary_extension }}                             ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/cbuild${{ matrix.binary_extension }}
+          cp ./cbuild2cmake_amd64/*/cbuild2cmake${{ matrix.binary_extension }}                 ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/cbuild2cmake${{ matrix.binary_extension }}
+          cp ./cpackget_amd64/*/cpackget${{ matrix.binary_extension }}                         ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/cpackget${{ matrix.binary_extension }}
+          cp ./packchk_amd64/packchk${{ matrix.binary_extension }}                             ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/packchk${{ matrix.binary_extension }}
+          cp ./svdconv_amd64/svdconv${{ matrix.binary_extension }}                             ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/svdconv${{ matrix.binary_extension }}
+          cp ./vidx2pidx_amd64/*/vidx2pidx${{ matrix.binary_extension }}                       ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/vidx2pidx${{ matrix.binary_extension }}
+        working-directory: toolbox
+
+      - name: Add execution permission to the binaries and set files ownership
+        if: ${{ (matrix.target == 'linux' || matrix.target == 'darwin') && matrix.arch == 'arm64'}}
+        run: |
+          sudo chmod -R +x bin/*
+          sudo chown -R root: *
+        working-directory: toolbox/cmsis-toolbox-${{ matrix.target }}-amd64
+
       - name: Copy Files
         shell: bash
         run: |
@@ -250,6 +309,36 @@ jobs:
           sudo chmod -R +x bin/*
           sudo chown -R root: *
         working-directory: toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install pip dependencies
+        run: |
+            pip install --upgrade pip
+            pip install pyyaml
+
+      - name: Generate manifest file
+        shell: bash
+        run: |
+          # Get the toolbox version
+          TOOLBOX_VERSION=$(git describe --tags || echo "untagged")
+
+          # Set binary extension (default to empty string if not set)
+          BINARY_EXTENSION=${{ matrix.binary_extension }}
+          [ -z "$BINARY_EXTENSION" ] && BINARY_EXTENSION=""
+
+          # Get absolute path to the toolbox directory
+          TOOLBOX_ABS_PATH=$(pwd)/toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+          
+          # Run the Python script to generate the manifest file
+          python ./scripts/generate_manifest.py \
+            -d "$TOOLBOX_ABS_PATH" \
+            -v "$TOOLBOX_VERSION" \
+            -e "$BINARY_EXTENSION"
 
       - name: Zip folders Windows
         if: ${{ matrix.target == 'windows'}}
