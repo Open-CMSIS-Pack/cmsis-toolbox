@@ -56,7 +56,10 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Checkout cmsis-toolbox repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
 
       - name: Authenticate with GitHub CLI
         shell: bash
@@ -245,7 +248,37 @@ jobs:
             sed -i '/set(EXT/c\  set(EXT .exe)' ./cmsis-toolbox/etc/IAR.9.32.1.cmake
             sed -i '/set(EXT/c\  set(EXT .exe)' ./cmsis-toolbox/etc/CLANG.17.0.1.cmake
 
-      - name: Archieve test results
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install pip dependencies
+        run: |
+            pip install --upgrade pip
+            pip install pyyaml
+
+      - name: Generate manifest file
+        shell: bash
+        run: |
+          # Get the toolbox version
+          TOOLBOX_VERSION=$(git describe --tags || echo "untagged")
+
+          # Set binary extension (default to empty string if not set)
+          BINARY_EXTENSION=${{ matrix.binary_extension }}
+          [ -z "$BINARY_EXTENSION" ] && BINARY_EXTENSION=""
+
+          # Get absolute path to the toolbox directory
+          TOOLBOX_ABS_PATH=$(pwd)/cmsis-toolbox
+          
+          # Run the Python script to generate the manifest file
+          python ./scripts/generate_manifest.py \
+            -d "$TOOLBOX_ABS_PATH" \
+            -v "$TOOLBOX_VERSION" \
+            -e "$BINARY_EXTENSION"
+
+      - name: Archive cmsis-toolbox
         if: always()
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
@@ -263,7 +296,7 @@ jobs:
       - name: Create Debian Package
         if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
         run: |
-            git fetch --unshallow
+            git fetch
             mkdir -p ./debian/build
             cmake -G Ninja -S ./debian -B ./debian/build -DTOOLBOX_ROOT=$(realpath ./cmsis-toolbox) -DTOOLBOX_VERSION=$(git describe --tags --abbrev=0)+nightly-$(date +%Y%m%d%H%M)
             cd ./debian/build
