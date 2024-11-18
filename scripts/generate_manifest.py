@@ -7,6 +7,7 @@ import os
 import logging
 import sys
 from pathlib import Path
+from datetime import datetime
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -94,6 +95,8 @@ def generate_manifest(args):
     manifest = {
         "name": "CMSIS-Toolbox",
         "version": args.toolbox_version,
+        "host": args.host,
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "binaries": checksums
     }
     return manifest
@@ -113,6 +116,7 @@ def parse_arguments():
     parser.add_argument('-d', '--toolbox_root_dir', type=str, required=True, help='Root directory of CMSIS-Toolbox')
     parser.add_argument('-e', '--bin_extn', type=str, default='', help='Binary extension, e.g., .exe for Windows')
     parser.add_argument('-v', '--toolbox_version', type=str, help='Release version number of CMSIS-Toolbox')
+    parser.add_argument('--host', type=str, help='Host machine configuration')
 
     args = parser.parse_args()
     args.toolbox_version = args.toolbox_version or os.getenv("GITHUB_REF_NAME", "refs/tags/v1.0.0").split('/')[-1]
