@@ -44,6 +44,7 @@ This chapter describes the overall concept of the CMSIS-Toolbox build process. I
     - [PLM of Configuration Files](#plm-of-configuration-files)
     - [RTE\_Components.h](#rte_componentsh)
     - [CMSIS\_device\_header](#cmsis_device_header)
+    - [\_RTE\_ Preprocessor Symbol](#_rte_-preprocessor-symbol)
   - [Linker Script Management](#linker-script-management)
     - [Linker Script Preprocessing](#linker-script-preprocessing)
     - [Automatic Linker Script generation](#automatic-linker-script-generation)
@@ -838,14 +839,26 @@ The typical usage of the `RTE_Components.h` file is in other header files to con
 #include "RTE_Components.h"
 #include  CMSIS_device_header
 
-#ifdef  RTE_Network_Interface_ETH_0  // if component Network Interface ETH 0 is included
-#include "Net_Config_ETH_0.h"        // add the related configuration file for this component
+#ifdef  RTE_Network_Interface_ETH_0     // if component Network Interface ETH 0 is included
+#include "Net_Config_ETH_0.h"           // add the related configuration file for this component
 #endif
 ```
 
 ### CMSIS_device_header
 
-The `CMSIS_device_header` represents the [device header file](https://arm-software.github.io/CMSIS_6/latest/Core/using_pg.html#using_packs) provided by the CMSIS-Core. It defines the registers and interrupt mapping of the device that is used. Refer to [Reference Applications > Header File Structure](ReferenceApplications.md#header-file-structure) for more information.
+The preprocessor symbol `CMSIS_device_header` represents the [device header file](https://arm-software.github.io/CMSIS_6/latest/Core/using_pg.html#using_packs) provided by the CMSIS-Core. It defines the registers and interrupt mapping of the device that is used. Refer to [Reference Applications > Header File Structure](ReferenceApplications.md#header-file-structure) for more information.
+
+### \_RTE\_ Preprocessor Symbol
+
+The preprocessor symbol `_RTE_` is added to the compiler invocation when a CMSIS build system manages the file `RTE_Components.h`. This symbol can be used as follows:
+
+```c
+#ifdef _RTE_                           // Is a CMSIS build system used?
+#include "RTE_Components.h"            // Include Run-Time-Environment symbols
+#else                                  // Otherwise use different ways to supply required symbols
+#define CMSIS_device_header "stm32f10x.h"     
+#endif
+```
 
 ## Linker Script Management
 
