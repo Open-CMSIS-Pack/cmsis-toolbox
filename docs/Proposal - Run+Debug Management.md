@@ -7,6 +7,16 @@
 
 This proposal discusses how the CMSIS-Toolbox may simplify workflows with programming and debug tools.
 
+- [Proposal - Run and Debug Management](#proposal---run-and-debug-management)
+  - [Overview](#overview)
+  - [Run and Debug Information Management](#run-and-debug-information-management)
+    - [The problems to solve](#the-problems-to-solve)
+    - [Proposed solution](#proposed-solution)
+    - [Usage](#usage)
+  - [Questions](#questions)
+
+## Overview
+
 The CMSIS-Pack PDSC files contain information about device/board parameters and software components:
 
 - [Flash algorithms](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html) of device memory (in DFP) and board memory (in BSP).
@@ -19,19 +29,20 @@ The CMSIS-Pack PDSC files contain information about device/board parameters and 
 
 The CMSIS-Toolbox build system manages device/board/software components and controls the build output (typically ELF/DWARF files) and has provisions for HEX, BIN and post-processing. It allows to manage different [target-types](build-overview.md#project-setup-for-multiple-targets-and-builds) and the [context set](build-overview.md#working-with-context-set)  manages the images that belong to a target.
 
-In addition the user may need:
+In addition the user may need the following information which should be added to the YML-Input files for the CMSIS-Toolbox.
 
 - Flash algorithms for external memory in custom hardware.
 - Additional images that should be loaded.
 - Device configuration information.
 - Access information for protected debug ports (i.e. encryption keys).
 
+
 ## Run and Debug Information Management
 
 ### The problems to solve
 
 - Provide information for command line and IDE workflows in a consistent way.
-- Simplify the implementation required in the run and debug tools, reduce dependency to other tools.
+- Simplify the implementation in run and debug tools, reduce dependency to other tools.
 - Ensure that information is portable, i.e from a cloud-hosted CI system to a desktop test system.
 - Provide flexibility and ease-of-use.
 
@@ -66,6 +77,8 @@ In VS Code, [task configurations](https://code.visualstudio.com/docs/editor/task
 
 ![Run and Debug Information Management](./images/cbuild-run.png "Run and Debug Information Management")
 
+The `cbuild-run.yml` file represents a context-set.
+
 **Content of `*.cbuild-run.yml`:**
 
 ```yml
@@ -95,13 +108,15 @@ run:                                         # Start of file, contains run and d
       type:  svd
     - file:  ${CMSIS_PACK_ROOT}/pack-path/<scvd>
       type:  scvd
-      from-pack: 
+      from-pack: <pack>
 
 # information from DFP, BSP specific to the target
-board:
+# https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packFormat.html
+  board:                                     # Board element
     debugProbe:
+      ...     
     debugInterface:
-
+      ...
   debug-port:                                # Information from DFP
     access-port-v1:    
       ...
@@ -124,3 +139,20 @@ board:
   trace:
     ...
 ```
+
+### Usage
+
+The `*.cbuild-run.yml` file can be directly passed to programmers and debug tools, for example using a command line option. It contains all information that needs to be passed.
+
+```bash
+>programmer -csolution MySolution+MyHardware.cbuild-run.yml
+```
+
+## Questions
+
+- What should be done now to simplify above information while making it more future proof?
+
+For CMSIS-Toolbox 3.0:
+
+- Should the location of cbuild information files change to folder `.\.cmsis`?
+- Should the structure of build information file change and include `cbuild-run.yml`? The cbuild information file will then represent a context-set, and not just one context.
