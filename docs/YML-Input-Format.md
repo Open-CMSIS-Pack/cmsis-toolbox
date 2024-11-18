@@ -302,9 +302,9 @@ The `context` name is also used in [`for-context:`](#for-context) and [`not-for-
 
 ## Access Sequences
 
-The following **access sequences** allow to use arguments from the CMSIS Project Manager as arguments of the various
-`*.yml` files in the key values for `define:`, `define-asm:`, `add-path:`, `misc:`, `files:`, and `executes:`. The **access sequences**
-can refer in a different project and provide therefore a method to describe project dependencies.
+The **access sequences** export values from the CMSIS Project Manager for the 
+`*.yml` file nodes `define:`, `define-asm:`, `add-path:`, `misc:`, `files:`, and `executes:`. The **access sequences**
+can specify a different project and describe therefore project dependencies.
 
 Access Sequence                                | Description
 :----------------------------------------------|:--------------------------------------
@@ -332,7 +332,7 @@ Access Sequence                                | Description
 `$Dpack$`                                      | Path to the pack that defines the selected device (DFP).
 `$Pack(vendor::name)$`                         | Path to a specific pack. Example: `$Pack(NXP::K32L3A60_DFP)$`.
 
-For a [`context`](#context-name-conventions) the `project-name`, `.build-type`, and `+target-type` are optional. An **access sequence** that specifies only `project-name` uses the context that is currently processed. It is important that the `project` is part of the [context-set](build-overview.md#working-with-context-set) in the build process. is used. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file. When 
+For a [`context`](#context-name-conventions) the `project-name`, `.build-type`, and `+target-type` are optional. An **access sequence** that specifies only `project-name` uses the context that is currently processed. It is important that the `project` is part of the [context-set](build-overview.md#working-with-context-set) in the build process. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file. 
 
 **Example:**
 
