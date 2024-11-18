@@ -13,7 +13,7 @@ project:
         - file: ./source1.c
   
   executes:
-    - execute: Sign Artifact
+    - execute: Sign_Artifact
       run: ${CMAKE_COMMAND} -DINPUT=$input$ -DOUTPUT=$output$ -P $input(0)$
       input:
         - $SolutionDir()$/script/sign.cmake

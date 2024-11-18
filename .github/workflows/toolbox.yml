@@ -333,12 +333,16 @@ jobs:
 
           # Get absolute path to the toolbox directory
           TOOLBOX_ABS_PATH=$(pwd)/toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
-          
+
+          # Get host machine configuration
+          HOST=${{ matrix.target }}-${{ matrix.arch }}
+
           # Run the Python script to generate the manifest file
           python ./scripts/generate_manifest.py \
             -d "$TOOLBOX_ABS_PATH" \
             -v "$TOOLBOX_VERSION" \
-            -e "$BINARY_EXTENSION"
+            -e "$BINARY_EXTENSION" \
+            --host "$HOST"
 
       - name: Zip folders Windows
         if: ${{ matrix.target == 'windows'}}

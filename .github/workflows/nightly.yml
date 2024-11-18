@@ -237,7 +237,6 @@ jobs:
           curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/main/schema/PackIndex.xsd --output ./cmsis-toolbox/etc/PackIndex.xsd
           cp ./docs/LICENSE.txt ./cmsis-toolbox
           cp ./docs/index.html ./cmsis-toolbox/doc
-          touch ./cmsis-toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}-$(date '+%Y-%m-%d_%H-%M-%S')
 
       - name: Update toolchain config files
         if: ${{ matrix.target == 'windows' }}
@@ -271,12 +270,16 @@ jobs:
 
           # Get absolute path to the toolbox directory
           TOOLBOX_ABS_PATH=$(pwd)/cmsis-toolbox
+
+          # Get host machine configuration
+          HOST=${{ matrix.target }}-${{ matrix.arch }}
           
           # Run the Python script to generate the manifest file
           python ./scripts/generate_manifest.py \
             -d "$TOOLBOX_ABS_PATH" \
             -v "$TOOLBOX_VERSION" \
-            -e "$BINARY_EXTENSION"
+            -e "$BINARY_EXTENSION" \
+            --host "$HOST"
 
       - name: Archive cmsis-toolbox
         if: always()
