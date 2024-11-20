@@ -12,3 +12,7 @@ project:
   linker:
     - define:
         - DEF_LD_PP
+
+  output:
+    type:
+      - map
