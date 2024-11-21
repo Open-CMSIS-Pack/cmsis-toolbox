@@ -24,11 +24,3 @@ solution:
 
   projects:
     - project: ./project/project.cproject.yml
-
-  misc:
-    - for-compiler: AC6
-      Link:
-        - --info summarysizes
-        - --info sizes
-        - --info totals
-        - --info unused

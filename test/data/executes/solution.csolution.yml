@@ -36,8 +36,11 @@ solution:
         - $elf()$.signed
       output:
         - $SolutionDir()$/artifacts.zip
-    - execute: Run_Always
-      run: ${CMAKE_COMMAND} -E echo "Execute Run Always"
+    - execute: Run_Always1
+      run: ${CMAKE_COMMAND} -E echo "Execute Run Always1"
+      always:
+    - execute: Run_Always2
+      run: ${CMAKE_COMMAND} -E echo "Execute Run Always2"
       always:
     - execute: Run_After_Archiving 
       run: ${CMAKE_COMMAND} -E echo "Archive has been updated"
