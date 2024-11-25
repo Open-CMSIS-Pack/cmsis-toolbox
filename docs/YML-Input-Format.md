@@ -562,14 +562,15 @@ The `project:` node is the start of a `*.cproject.yml` file and can contain the 
 &nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)         |  Optional  | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`linker:`](#linker)             |  Optional  | Instructions for the linker.
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)               |  Optional  | Generation of debug information.
-&nbsp;&nbsp;&nbsp; [`define:`](#define)             |   Optional   | Define symbol settings for C/C++ code generation.
-&nbsp;&nbsp;&nbsp; [`define-asm:`](#define-asm)     |   Optional   | Define symbol settings for Assembler code generation.
+&nbsp;&nbsp;&nbsp; [`define:`](#define)             |  Optional  | Define symbol settings for C/C++ code generation.
+&nbsp;&nbsp;&nbsp; [`define-asm:`](#define-asm)     |  Optional  | Define symbol settings for Assembler code generation.
 &nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)         |  Optional  | Remove preprocessor (#define) symbols.
 &nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)         |  Optional  | Additional include file paths.
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)         |  Optional  | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                 |  Optional  | Literal tool-specific controls.
-&nbsp;&nbsp;&nbsp; [`device:`](#device)             |  Optional  | Device setting (specify processor core).
+&nbsp;&nbsp;&nbsp; [`device:`](#device)             |  Optional  | Specify processor core.
 &nbsp;&nbsp;&nbsp; [`processor:`](#processor)       |  Optional  | Processor specific settings.
+&nbsp;&nbsp;&nbsp; [`setups:`](#setups)             |  Optional  | Configurations specific to a compiler, target-type, and/or built-type.
 &nbsp;&nbsp;&nbsp; [`groups:`](#groups)             |**Required**| List of source file groups along with source files.
 &nbsp;&nbsp;&nbsp; [`components:`](#components)     |  Optional  | List of software components used.
 &nbsp;&nbsp;&nbsp; [`layers:`](#layers)             |  Optional  | List of software layers that belong to the project.
