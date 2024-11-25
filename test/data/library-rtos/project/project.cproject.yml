@@ -4,7 +4,7 @@ project:
     - component: ARM::CMSIS:CORE
     - component: ARM::Device:Startup&C Startup
     - component: ARM::CMSIS:RTOS2:Keil RTX5&Library
-    - component: ARM::CMSIS:OS Tick
+    - component: ARM::CMSIS:OS Tick:SysTick
 
   groups:
     - group: Source
