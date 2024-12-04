@@ -75,7 +75,7 @@ The tools process *csolution project files* (in YAML format) and *software packs
 
 The overall features are:
 
-- Access to the content of software packs in Open-CMSIS-Pack format to:
+- Access the content of software packs in Open-CMSIS-Pack format to:
   - Setup the tool chain based on a *Device* or *Board* that is defined in software packs.
   - Add software components that are provided in the various software packs to the application.
 - Organize applications (with a `*.csolution.yml` file) into projects that are independently managed
