@@ -197,7 +197,7 @@ Adding an RTOS kernel requires these steps:
        - component: CMSIS:CORE                   # CMSIS-Core component is required
        - component: Device:CubeMX                # Component that connects to CubeMX    
        - component: CMSIS:RTOS2:Keil RTX5&Source # RTOS component
-       - component: CMSIS:OS Tick                # OS Tick implementation for RTOS
+       - component: CMSIS:OS Tick:SysTick        # OS Tick implementation for RTOS
    ```    
 
    > **Note:**
