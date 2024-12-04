@@ -135,7 +135,7 @@ Adding the binary directory of the cmsis-toolbox directory to your **PATH** envi
 command line without the need to specify the full path (default: `C:\Keil_v5\ARM\cmsis-toolbox\bin`)
 
 For sharing the pack directory between MDK and the CMSIS-Toolbox it is required that both **CMSIS_PACK_ROOT** environment variable
-and the **RTE_PATH** setting in the MDK's TOOLS.INI (default: C:\Keil_v5\TOOLS.INI) point to the same directory.
+and the **RTEPATH** setting in the MDK's TOOLS.INI (default: C:\Keil_v5\TOOLS.INI) point to the same directory.
 Note that in case the default location `%LOCALAPPDATA%\Arm\Packs` was selected during installation, the setting of **CMSIS_PACK_ROOT**
 environment variable is not required.
 
