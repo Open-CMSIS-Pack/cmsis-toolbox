@@ -10,7 +10,7 @@ This chapter explains how to use the [MCUXpresso Config Tool](https://www.nxp.co
 
 > **Note:**
 > 
-> For the CMSIS-Toolbox MCUXpresso integration device family software packs are required starting with version 19.0.0. 
+> MCUXpresso Config Tools integration with CMSIS-Toolbox is available with **CMSIS packs based on MCUXpresso SDK 2.16.0** (or higher).
 
 **Chapter Contents:**
 
@@ -22,11 +22,11 @@ This chapter explains how to use the [MCUXpresso Config Tool](https://www.nxp.co
 
 ## Overview
 
-The [MCUXpresso Config Tool](https://www.nxp.com/configtools) is a graphical tool for configuration of a NXP device or board. MCUXpresso generates C code for project and peripheral initialization based on user settings. Depending on the device configuration related drivers are added to the user application. The CMSIS-Toolbox interacts with MCUXpresso using the [generic interface for generators](build-operation.md#generator-integration).
+The [MCUXpresso Config Tool](https://www.nxp.com/configtools) is a graphical tool for configuration of a NXP device or board. MCUXpresso generates C code for project and peripheral initialization based on user settings. The CMSIS-Toolbox interacts with MCUXpresso Config Tools using the [generic interface for generators](build-operation.md#generator-integration) and automatically adds generated source code to the project.
 
-The `component: Device:Config Tools` connects a *csolution project* to CubeMX. This component imports the CubeMX generated files for a selected `device:` or `board:` using the [generator import file](YML-CBuild-Format.md#generator-import-file) (`*.cgen.yml`). This `*.cgen.yml` file is similar to a [software layer](build-overview.md#software-layers) but managed by CubeMX and should be not modified directly.
+The `component: Device:Config Tools` connects a *csolution project* to MCUXpresso. This component imports the MCUXpresso generated files for a selected `device:` or `board:` using the [generator import file](YML-CBuild-Format.md#generator-import-file) (`*.cgen.yml`). This `*.cgen.yml` file is similar to a [software layer](build-overview.md#software-layers) but managed by MCUXpresso and should be not modified directly.
 
-An example project created with MCUXpresso can be found in [**csolution-examples/DialCore**](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/DualCore).
+An example project created with MCUXpresso can be found in [**csolution-examples/DualCore**](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/DualCore).
 
 >**Notes:**
 >
@@ -46,7 +46,6 @@ Below is a simple project that just adds the MCUXpresso generated components.
 ```yml
 solution:
   created-for: CMSIS-Toolbox@2.6.0
-  cdefault:
 
   # List of tested compilers that can be selected
   select-compiler:
@@ -79,7 +78,6 @@ solution:
   # List related projects.
   projects:
     - project: Simple.cproject.yml
-  compiler: AC6
 ```
 
 **File: `Simple.cproject.yml`**
@@ -93,12 +91,6 @@ project:
       - generator: MCUXpressoConfig
         path: ./MCUXpressoConfig
         name: ConfigTools
-
-  setups:
-    - setup: Options for project
-      processor:
-        fpu: sp
-        trustzone: "off"
 
   # List components to use for your application.
   # A software component is a re-usable unit that may be configurable.
@@ -119,16 +111,9 @@ project:
     - group: Main
       files:
         - file: ./main.c
-
-  linker:
-    - script: RTE/Device/MCXN947VDF_cm33_core0/MCXN947_cm33_core0_flash.scf
-      for-compiler: AC6
-
-    - script: RTE/Device/MCXN947VDF_cm33_core0/MCXN947_cm33_core0_flash.ld
-      for-compiler: GCC
 ```
 
-Such a project cannot be directly generated as initially the `*.cgen.yml` file is missing. It requires to run the MCUXpresso generator.  Before you start, you may need to [`install missing packs`](build-tools.md#install-missing-packs).
+Such a project cannot be built directly as initially the `*.cgen.yml` file is missing. It requires to run the MCUXpresso generator. Before you start, you may need to [`install missing packs`](build-tools.md#install-missing-packs).
 
 1. Identify the required generator and the directory where the generated files are stored with:
    
@@ -147,7 +132,7 @@ Such a project cannot be directly generated as initially the `*.cgen.yml` file i
    ❯ csolution Simple.csolution.yml run --generator MCUXpressoConfig --context Simple.Debug+MCXN947VDF
    ```
 
-   It starts MCUXpresso and passes the information about the selected board, device, and select toolchain. For a project that selects a board, MCUXpresso imports the default configuration for the evaluation kit. In MCUXpresso, review and adjust configuration options as required for your application, then just click the button `Close and Updat Code`. The generated files will be stored in the directory `./MCUXpressoConfig`.
+   It starts MCUXpresso and passes the information about the selected board, device, and selected toolchain. For a project that selects a board, MCUXpresso imports the default configuration for the evaluation kit. In MCUXpresso, review and adjust configuration options as required for your application, then just click the button `Update Code`. The generated files will be stored in the directory `./MCUXpressoConfig`.
 
 3. Build the project using this command:
  
@@ -197,11 +182,12 @@ generator-import:
 ## Linker Script
 
 Depending on the toolchain, NXP provides a linker script. For Arm Compiler 6, a scatter file with the ending `*.scf` is
-provided. For GCC, a linker script file with the ending `*.ld` is provided.
+provided, for GCC, a linker script file with the ending `*.ld` is provided and for IAR, the provided linker script files
+end with `*.icf` extension.
 
 ## Create a Board Layer
 
-A [software layer](build-overview.md#software-layers) is a set of pre-configured software components and source files for re-use in multiple projects. A board layer contains typically basic I/O drivers and related device and board configuration. CubeMX does generate a significant part of a board layer.
+A [software layer](build-overview.md#software-layers) is a set of pre-configured software components and source files for re-use in multiple projects. A board layer contains typically basic I/O drivers and related device and board configuration. MCUXpresso does generate a significant part of a board layer.
 
 The board layer is stored in an separate directory that is independent of a specific *csolution project*. To create a board layer, copy the related source files, the MCUXpresso generated files, and the configuration files of the [RTE directory](.) that relate to software components in the board layer.
 
@@ -210,7 +196,6 @@ The board layer is stored in an separate directory that is independent of a spec
 Directory and Files               | Description
 :---------------------------------|:---------------------------------------
 `Board.clayer.yml`                | Defines the source files and software components of the board layer.
-`Driver/`                         | Directory with driver related source files.
 `MCUXpressoConfig/`               | Directory with MCUXpresso generated files.
 `MCUXpressoConfig/Board.cgen.yml` | Generator import file that lists MCUXpresso generated files and options.
 
