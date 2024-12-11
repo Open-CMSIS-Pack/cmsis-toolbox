@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Implementation Progress - CMSIS-Toolbox Help - 2.6.1</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Implementation Progress";
+        var mkdocs_page_input_path = "progress.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help - 2.6.1
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../">Version Selector</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">Build Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">Configure STM32 Devices with STM32CubeMX</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">Configure NXP Devices with MCUXpresso Config Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Build Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CMSIS-Toolbox Help - 2.6.1</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Implementation Progress</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/KeilChris/cmsis-toolbox/edit/master/docs/progress.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="implementation-progress">Implementation Progress</h1>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Feature</th>
+<th style="text-align: left;">Status</th>
+<th style="text-align: left;">Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>csolution.yml</code>, <code>cproject.yml</code> and <code>clayer.yml</code> handling</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cdefault.yml</code> handling</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.3</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>build-types</code> and <code>target-types</code> at csolution level</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>for-type</code>/<code>not-for-type</code> context handling</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">list <code>packs</code>, <code>devices</code>, <code>components</code>, <code>dependencies</code> at cproject level</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>defines</code>/<code>undefines</code>/<code>add-paths</code>/<code>del-paths</code> at solution/project/target level</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>defines</code>/<code>undefines</code>/<code>add-paths</code>/<code>del-paths</code> at component/group/file level in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.3</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>defines</code>/<code>undefines</code>/<code>includes</code>/<code>excludes</code> at component/group/file level in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 0.10.6</td>
+</tr>
+<tr>
+<td style="text-align: left;">compiler <code>misc</code> options</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>device</code> discovering from <code>board</code> setting</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.1</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>optimize</code>, <code>debug</code>, <code>warnings</code> in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.2.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>optimize</code>, <code>debug</code>, <code>warnings</code> in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 1.3.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">access sequences handling in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.1</td>
+</tr>
+<tr>
+<td style="text-align: left;">access sequences handling in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 0.11.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">list commands at csolution and context level</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.1</td>
+</tr>
+<tr>
+<td style="text-align: left;">csolution <code>context</code> input parameter</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.1</td>
+</tr>
+<tr>
+<td style="text-align: left;">generator commands: <code>list generators</code> and <code>run --generator &lt;id&gt;</code></td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.1</td>
+</tr>
+<tr>
+<td style="text-align: left;">automatic schema checking</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.1</td>
+</tr>
+<tr>
+<td style="text-align: left;">config files PLM</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pack selection: <code>pack</code> keyword in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pack selection: context filtering</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.3</td>
+</tr>
+<tr>
+<td style="text-align: left;">pack selection: <code>path</code> keyword in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.2</td>
+</tr>
+<tr>
+<td style="text-align: left;">pack selection: <code>path</code> attribute in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 0.10.6</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>device</code> variant handling</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.2</td>
+</tr>
+<tr>
+<td style="text-align: left;">schema for flexible vendor specific additions</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.2</td>
+</tr>
+<tr>
+<td style="text-align: left;">user provided linker script selection</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.2</td>
+</tr>
+<tr>
+<td style="text-align: left;">support for IAR compiler</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 0.10.5</td>
+</tr>
+<tr>
+<td style="text-align: left;">minimum/range component version handling</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.1.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">replacement of cbuild bash scripts</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 0.11.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">multi-project solution handling in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 1.5.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">layered solutions in-source conversion</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 0.9.4</td>
+</tr>
+<tr>
+<td style="text-align: left;">support for output directories customization at csolution level</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.0.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">support for board attributes in conditions</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.0.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>for-compiler</code> and <code>setup</code> handling</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.0.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">multiple contexts selection via wildcards</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.0.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">layer <code>interfaces</code> definitions</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.1.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">separation of config files belonging to layers</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.2.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">generation of cbuild-idx.yml and cbuild.yml files</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.2.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">support for linux-arm64 host platform</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.3.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">support for win-arm64 and mac-arm64 host platforms</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.7.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">disable update of RTE folder by default in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 1.4.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--update-rte</code> flag to enable the update of RTE folder contents in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 1.4.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--no-update-rte</code> flag to skip the update of RTE folder contents in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.4.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>connections</code> handling replacing <code>interfaces</code></td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.4.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>variables</code> handling for setting layer paths</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.4.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>list layers</code> command for finding layers with compatible connections</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.4.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>list toolchains</code> command for finding configured toolchains</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.4.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">support csolution.yml and context as input data in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 1.5.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">add <code>output</code> filenames customization handling in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 1.5.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">add <code>output</code> filenames customization handling in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.5.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">rework toolchains registration in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 1.5.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">rework toolchains registration in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.5.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--toolchains</code> command line option for selecting the compiler</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.5.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">linker script file pre-processing in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.7.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">linker script file pre-processing in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 1.7.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">generate regions_*.h file from memory tags</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 1.7.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>context-map</code> handling</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0-dev0</td>
+</tr>
+<tr>
+<td style="text-align: left;">reworked <code>output</code> nodes</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0-dev0</td>
+</tr>
+<tr>
+<td style="text-align: left;">reworked output file types</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 2.0.0-dev0</td>
+</tr>
+<tr>
+<td style="text-align: left;">updated access sequences</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0-dev0</td>
+</tr>
+<tr>
+<td style="text-align: left;">removed deprecated nodes</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0-dev0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>update-rte</code> command for creating/updating and listing config files</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0-dev1</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>rte</code> <code>base-dir</code> at cproject level for RTE folder customization</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0-dev1</td>
+</tr>
+<tr>
+<td style="text-align: left;">reworked <code>cdefault</code> handling</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0-dev1</td>
+</tr>
+<tr>
+<td style="text-align: left;">support multiple <code>--context</code> inputs</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0-dev2</td>
+</tr>
+<tr>
+<td style="text-align: left;">support multiple <code>setup</code> for each context</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0-dev2</td>
+</tr>
+<tr>
+<td style="text-align: left;">support for standard language options in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 2.0.0-dev3</td>
+</tr>
+<tr>
+<td style="text-align: left;">support for standard language options in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0-dev3</td>
+</tr>
+<tr>
+<td style="text-align: left;">support for <code>language</code> and <code>scope</code> component file attributes in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0-dev3</td>
+</tr>
+<tr>
+<td style="text-align: left;">alpha support for LLVM/Clang in cbuild</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 2.0.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">alpha support for LLVM/Clang in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.0.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">add <code>list configs</code> command to list configuration files</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.1.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">add license information to <code>cbuild.yml</code></td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.1.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">support dry-running generators</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.1.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">support for simplified global generators</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.2.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">support for <code>*.cbuild-pack.yml</code> lock file mechanism</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.2.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">support for branch protection (PACBTI)</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.2.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">add option <code>--context-set</code> to handle selected contexts <code>*.cbuild-set.yml</code></td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.2.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">add <code>auto</code> node for automatic linker script generation</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.2.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">processor attributes <code>trustzone</code>, <code>fpu</code>, <code>dsp</code>, <code>mve</code>, <code>endian</code> and <code>branch-protection</code></td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.2.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">alpha support for LLVM/Clang updated to 17.0.1</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 2.2.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">add <code>*.src</code> file extension as linker script source for pre-processing</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 2.2.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">support multiple component instances</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.3.0-dev0</td>
+</tr>
+<tr>
+<td style="text-align: left;">add cbuild <code>setup</code> command</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 2.3.0-dev0</td>
+</tr>
+<tr>
+<td style="text-align: left;">add alpha build manager backend</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild2cmake 0.9.0-dev0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>executes</code> nodes in csolution</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">csolution 2.4.0</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>executes</code> nodes in cbuild2cmake</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild2cmake 0.9.1</td>
+</tr>
+<tr>
+<td style="text-align: left;">extended cbuild <code>setup</code> with layers discovery</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 2.4.0</td>
+</tr>
+<tr>
+<td style="text-align: left;">set <code>cbuild2cmake</code> as default backend</td>
+<td style="text-align: left;">:heavy_check_mark:</td>
+<td style="text-align: left;">cbuild 2.5.0</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/KeilChris/cmsis-toolbox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
