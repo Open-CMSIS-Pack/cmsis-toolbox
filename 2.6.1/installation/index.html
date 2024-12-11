@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Installation - CMSIS-Toolbox Help - 2.6.1</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Installation";
+        var mkdocs_page_input_path = "installation.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help - 2.6.1
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../">Version Selector</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Installation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#manual-setup">Manual Setup</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#compiler-toolchains">Compiler Toolchains</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#environment-variables">Environment Variables</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#default-values">Default Values</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#compiler-registration">Compiler Registration</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#setup-win64">Setup Win64</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#setup-linux-or-bash">Setup Linux or Bash</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#setup-macos">Setup macOS</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#registering-cmsis_pack_root-with-cpackget">Registering CMSIS_PACK_ROOT with cpackget</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#vcpkg-setup-using-cli">vcpkg - Setup using CLI</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#vcpkg-setup-in-ci">vcpkg - Setup in CI</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#github-actions">GitHub Actions</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#other-ci-systems">Other CI Systems</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#vcpkg-setup-in-vs-code">vcpkg - Setup in VS Code</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cmsis_pack_root">CMSIS_PACK_ROOT</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">Build Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">Configure STM32 Devices with STM32CubeMX</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">Configure NXP Devices with MCUXpresso Config Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Build Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CMSIS-Toolbox Help - 2.6.1</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Installation</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/KeilChris/cmsis-toolbox/edit/master/docs/installation.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="installation">Installation</h1>
+<!-- markdownlint-disable MD036 -->
+
+<p>This chapter explains the setup of the CMSIS-Toolbox along with a build environment.</p>
+<p>There are three different ways to setup the CMSIS-Toolbox:</p>
+<ul>
+<li><a href="#manual-setup">Manual setup</a> with operating system commands and environment variables.</li>
+<li><a href="#vcpkg-setup-using-cli">vcpkg - CLI</a> using the vcpkg tool in command-line mode</li>
+<li><a href="#vcpkg-setup-in-vs-code">vcpkg - VS Code</a> using the vcpkg tool with VS Code integration</li>
+</ul>
+<h2 id="manual-setup">Manual Setup</h2>
+<p>Download the CMSIS-Toolbox from the <a href="https://artifacts.keil.arm.com/cmsis-toolbox/"><strong>Arm tools artifactory</strong></a>. Signed binaries are provided for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (amd64, arm64) in an archive file.</p>
+<p>To setup the <strong>CMSIS-Toolbox</strong> on a local computer, copy the content of the archive file to an <code>&lt;cmsis-toolbox-installation-dir&gt;</code>, for example to <code>~/cmsis-toolbox</code>.</p>
+<h3 id="requirements">Requirements</h3>
+<p>The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The installation of these tools is required.</p>
+<ul>
+<li><a href="https://cmake.org/download"><strong>CMake</strong></a> version 3.25.2 or higher.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For Win64, enable the install option <em>Add CMake to the system PATH</em>.</p>
+</div>
+<ul>
+<li><a href="https://github.com/ninja-build/ninja/releases"><strong>Ninja</strong></a> version 1.10.2 or higher.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a href="https://github.com/ninja-build/ninja/releases"><strong>Ninja</strong></a> may be copied to the <code>&lt;cmsis-toolbox-installation-dir&gt;/bin</code> directory.</p>
+</div>
+<h3 id="compiler-toolchains">Compiler Toolchains</h3>
+<p>The CMSIS-Toolbox works with the following compiler toolchains. Install one or more compilers depending on your requirements.</p>
+<ul>
+<li>
+<p><a href="https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads"><strong>GNU Arm Embedded Compiler</strong></a> version 10.3.1 or higher.</p>
+</li>
+<li>
+<p><a href="https://www.keil.com/mdk5/install"><strong>Keil MDK</strong></a> version 5.36 or higher.</p>
+</li>
+<li>
+<p><a href="https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6"><strong>Arm Compiler for Embedded</strong></a> version 6.18.0 or higher</p>
+</li>
+<li>
+<p>Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported</p>
+</li>
+<li>
+<p><a href="https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/"><strong>IAR EW-Arm</strong></a> version 9.32.1 or higher.</p>
+</li>
+<li>
+<p><a href="https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest"><strong>CLANG Embedded Compiler</strong></a> version 17.0.1 or higher.</p>
+</li>
+</ul>
+<h3 id="environment-variables">Environment Variables</h3>
+<p>It maybe required to customize the installation for the actual setup of your development environment as described in the following.</p>
+<p>The various tools use the following environment variables.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Environment Variable</th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>&lt;name&gt;</code><strong>_TOOLCHAIN_</strong><code>&lt;major&gt;</code>_<code>&lt;minor&gt;</code>_<code>&lt;patch&gt;</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Path to the <a href="#compiler-registration">compiler binaries</a> where <code>&lt;name&gt;</code> is one of AC6, GCC, IAR, CLANG.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>CMSIS_PACK_ROOT</strong></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Path to the <a href="#cmsis_pack_root">CMSIS-Pack Root</a> directory that stores <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html">software packs</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>CMSIS_COMPILER_ROOT</strong></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Path to the CMSIS-Toolbox <code>etc</code> directory (i.e. <code>/c/cmsis-toolbox/etc</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Path</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Add to the system path the CMSIS-Toolbox <code>bin</code> directory (i.e. <code>/c/cmsis-toolbox/bin</code>) as well as CMake and Ninja.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="default-values">Default Values</h4>
+<p>The environment variable <strong>CMSIS_PACK_ROOT</strong> and <strong>CMSIS_COMPILER_ROOT</strong> are optional. If missing, default settings are used.</p>
+<ul>
+<li><strong>CMSIS_PACK_ROOT</strong> default values:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Platform</th>
+<th style="text-align: left;">Default path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Linux</td>
+<td style="text-align: left;"><code>${HOME}/.cache/arm/packs</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Windows</td>
+<td style="text-align: left;"><code>%LOCALAPPDATA%\Arm\Packs</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">MacOS</td>
+<td style="text-align: left;"><code>${HOME}/.cache/arm/packs</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">WSL_Windows</td>
+<td style="text-align: left;"><code>${LOCALAPPDATA}/Arm/Packs</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p><strong>CMSIS_COMPILER_ROOT</strong> default is <code>&lt;toolbox&gt;/bin/../etc</code>, i.e., <code>etc</code> folder relative to the toolbox executables. It is used to locate:</p>
+</li>
+<li>
+<p>Toolchain cmake files <code>&lt;compiler-name&gt;.&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;.cmake</code> for the selected <a href="../YML-Input-Format/#compiler">compiler</a>.</p>
+</li>
+<li>Default <a href="../build-overview/#linker-script-management">linker script files</a> (to be preprocessed): <code>&lt;compiler-name&gt;_linker_script.&lt;ext&gt;.src</code></li>
+<li>The <code>cdefault.yml</code> that is used when no other <a href="../YML-Input-Format/#cdefault"><code>cdefault.yml</code></a> file is found.</li>
+</ul>
+<h4 id="compiler-registration">Compiler Registration</h4>
+<p>The compiler toolchain is registered with an environment variable that includes compiler name (AC6, GCC, IAR, LLVM) and version number (major, minor and patch). This information is used by the <a href="../YML-Input-Format/#compiler"><code>compiler:</code></a> node or the <code>--toolchain</code> option to choose the compiler.</p>
+<p><strong>Format:</strong></p>
+<pre><code class="language-txt">&lt;name&gt;_TOOLCHAIN_&lt;major&gt;_&lt;minor&gt;_&lt;patch&gt;=&lt;path/to/toolchain/binaries&gt;
+</code></pre>
+<p><strong>Example for Windows:</strong></p>
+<pre><code class="language-txt">set AC6_TOOLCHAIN_6_19_0=C:\Keil_v5\ARM\ARMCLANG\bin
+</code></pre>
+<p><strong>Example for Unix:</strong></p>
+<pre><code class="language-txt">export GCC_TOOLCHAIN_10_3_1=/opt/gcc-arm-none-eabi-10.3-2021.10/bin
+</code></pre>
+<h4 id="setup-win64">Setup Win64</h4>
+<p>For Windows, use the dialog <strong>System Properties - Advanced</strong> and add the <strong>Environment Variables</strong> listed above.</p>
+<p><strong>Keil MDK version 5</strong></p>
+<p>When using Keil MDK version 5, the CMSIS-Toolbox is shipped as part of the installer. The tools are located in the directory <code>.\ARM\cmsis-toolbox</code> of the MDK installation.</p>
+<p>Adding the binary directory of the cmsis-toolbox directory to your <strong>PATH</strong> environment variable allows you to invoke the tools at the
+command line without the need to specify the full path (default: <code>C:\Keil_v5\ARM\cmsis-toolbox\bin</code>)</p>
+<p>For sharing the pack directory between MDK and the CMSIS-Toolbox it is required that both <strong>CMSIS_PACK_ROOT</strong> environment variable
+and the <strong>RTEPATH</strong> setting in the MDK's TOOLS.INI (default: C:\Keil_v5\TOOLS.INI) point to the same directory.
+Note that in case the default location <code>%LOCALAPPDATA%\Arm\Packs</code> was selected during installation, the setting of <strong>CMSIS_PACK_ROOT</strong>
+environment variable is not required.</p>
+<p>The <strong>CMSIS_COMPILER_ROOT</strong> environment variable is not required if the compiler configuration files provided in cmsis-toolbox/etc are used.</p>
+<p><strong>Notes:</strong></p>
+<p>At the Windows command prompt, use <code>set</code> to list all environment variables.</p>
+<p>Keil µVision may be used to:</p>
+<ul>
+<li><a href="https://developer.arm.com/documentation/101407/latest/User-Interface/Project-Menu-and-Commands"><em>open</em></a> projects in <code>*.csolution.yml</code> format (since v5.40).</li>
+<li><a href="https://www.keil.com/support/man/docs/uv4/uv4_ui_export.htm"><em>export</em></a> project files in <code>*.csolution.yml</code> format.</li>
+<li><a href="https://www.keil.com/support/man/docs/uv4/uv4_ui_import.htm"><em>import</em></a> project files in <code>*.CPRJ</code> format.</li>
+</ul>
+<h4 id="setup-linux-or-bash">Setup Linux or Bash</h4>
+<p>In Linux,  there are multiple ways to configure the <strong>Environment Variables</strong>. In a Bash environment, add the following content to the file <code>.bashrc</code> for example:</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-txt">export CMSIS_PACK_ROOT=/home/ubuntu/packs
+export CMSIS_COMPILER_ROOT=/opt/cmsis-toolbox/etc
+export PATH=/opt/cmsis-toolbox/bin:$PATH
+</code></pre>
+<p>Note: The command <code>printenv</code> should list these environment variables.</p>
+<h4 id="setup-macos">Setup macOS</h4>
+<p>Add execution permissions for all executables in <code>./bin</code></p>
+<pre><code class="language-Shell">chmod +x &lt;cmsis-toolbox-installation-dir&gt;/bin/cbridge
+chmod +x &lt;cmsis-toolbox-installation-dir&gt;/bin/cbuild
+...
+</code></pre>
+<h3 id="registering-cmsis_pack_root-with-cpackget">Registering CMSIS_PACK_ROOT with cpackget</h3>
+<p>Once you are done with setting up the environment variables, run the following on the command line:</p>
+<pre><code class="language-Shell">cpackget init https://www.keil.com/pack/index.pidx
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Arm is running a public indexing server at the URL provided. You can specify any indexing server URL if you do not wish to use this service.</p>
+</div>
+<h2 id="vcpkg-setup-using-cli">vcpkg - Setup using CLI</h2>
+<p>The <a href="https://vcpkg.io/en/">vcpkg</a> is a management tool for packages and includes features to manage tool artifacts. Arm provides an artifactory system for tools. Refer to <a href="https://www.keil.arm.com/packages/">Arm Tools Available in vcpkg</a> for more information.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Microsoft changed the name of the shell version from <code>vcpkg</code> to <code>vcpkg-shell</code>. Depending on the version that you are using, you may need to call <code>vcpkg-shell</code> from the command line instead of <code>vcpkg</code>.</p>
+</div>
+<p>The following describes how to setup the CMSIS-Toolbox with <code>vcpkg</code> in a command line (CLI) environment. In many examples there is already the file <code>vcpkg-configuration.json</code> which describes the tool environment required for the example. Refer to the last step to create an new <code>vcpkg-configuration.json</code> file.</p>
+<ol>
+<li>
+<p>Install and enable vcpkg; the command depends on the shell.</p>
+</li>
+<li>
+<p>Windows Command Prompt (cmd)</p>
+</li>
+</ol>
+<pre><code class="language-bat">curl -LO https://aka.ms/vcpkg-init.cmd &amp;&amp; .\vcpkg-init.cmd
+%USERPROFILE%\.vcpkg\vcpkg-init.cmd
+</code></pre>
+<ul>
+<li>Windows PowerShell</li>
+</ul>
+<pre><code class="language-ps1">iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
+. ~/.vcpkg/vcpkg-init.ps1
+</code></pre>
+<ul>
+<li>Linux (x64)/macOS</li>
+</ul>
+<pre><code class="language-sh">. &lt;(curl https://aka.ms/vcpkg-init.sh -L)
+. ~/.vcpkg/vcpkg-init
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>vcpkg is currently not working on<br />
+- MSYS Bash (such as Git Bash) on Windows.<br />
+- Linux (aarch64)</p>
+</div>
+<ol>
+<li>Activate required tools using one of the following methods:</li>
+</ol>
+<p>Prerequisite: a <code>vcpkg-configuration.json</code> file is present in the current directory or any parent directory.</p>
+<pre><code class="language-txt">vcpkg activate
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case that activate fails, update registries to access latest versions of the tools artifacts:<br />
+<code>vcpkg x-update-registry --all</code></p>
+</div>
+<ol>
+<li>Deactivate previous configuration</li>
+</ol>
+<pre><code class="language-txt">vcpkg deactivate
+</code></pre>
+<ol>
+<li>Create a new <code>vcpkg-configuration.json</code> file with these commands:</li>
+</ol>
+<pre><code class="language-txt">vcpkg new --application
+vcpkg add artifact arm:cmsis-toolbox [--version major.minor.patch]
+vcpkg add artifact arm:cmake
+vcpkg add artifact arm:ninja
+vcpkg add artifact arm:arm-none-eabi-gcc
+vcpkg activate
+</code></pre>
+<p>Alternatively, you may use an existing repository, for example <a href="https://github.com/Open-CMSIS-Pack/vscode-get-started">github.com/Open-CMSIS-Pack/vscode-get-started</a> with a <code>vcpkg-configuration.json</code> file.</p>
+<h2 id="vcpkg-setup-in-ci">vcpkg - Setup in CI</h2>
+<p>Using vcpkg in Continuous Integration (CI) environments is basically like <a href="#vcpkg-setup-using-cli">using it in a CLI environment</a>.</p>
+<p>The way how <code>vcpkg artifacts</code> updates the current shell environment needs to be taken into account when creating CI
+pipelines. The command <code>vcpkg activate</code> updates the current environment variables by extending <code>PATH</code> and adding
+additional variables required by installed artifacts. These modifications are only visible in the current running
+shell and spawned subprocesses.</p>
+<p>This enables also manual usage on a local prompt, given a typical user runs subsequent commands from the same
+parent shell process. In contrast, typical CI systems such as GitHub Actions or Jenkins spawn a new sub-shell for each
+step of a pipeline. Hence, modifications made to the environment in one sub-shell by running the <code>vcpkg activate</code>
+command are not persisted into the subsequent steps.</p>
+<p>Another aspect to consider is about handling the local vcpkg cache (e.g., <code>~/.vcpkg</code>). Common practice on CI systems is
+to recreate a clean environment for each run. Hence, vcpkg and all required artifacts are re-downloaded on every run.
+This may cause massive bandwidth requirements for downloading the same (huge) archives all the time. Instead, consider preserving the local vcpkg cache between runs.</p>
+<h3 id="github-actions">GitHub Actions</h3>
+<p>GitHub Actions allow you to preserve environment settings via the files
+exposed in <code>$GITHUB_PATH</code> and <code>$GITHUB_ENV</code>. Refer to the custom action provided in <a href="https://github.com/ARM-software/cmsis-actions">github.com/ARM-software/cmsis-actions - Action: vcpkg</a> for more information.</p>
+<p>Preserving the runners, between runs <code>vcpkg cache</code> is achieved with an <code>actions/cache</code> step preceding the
+first <code>vcpkg activate</code> command. The above custom action uses this <code>actions/cache</code> step.</p>
+<h3 id="other-ci-systems">Other CI Systems</h3>
+<p>In CI Systems without a vcpkg integration:</p>
+<ul>
+<li>Keep all tool installations depending on an activated environment within the same shell block, or</li>
+<li>Repeat activation for each new shell block before running any dependent command.</li>
+</ul>
+<pre><code class="language-sh">. ~/.vcpkg/vcpkg-init
+vcpkg activate
+</code></pre>
+<h2 id="vcpkg-setup-in-vs-code">vcpkg - Setup in VS Code</h2>
+<ol>
+<li>Download &amp; Install <a href="https://code.visualstudio.com/download">Microsoft Visual Studio Code</a> for your operating system.</li>
+<li>Launch Visual Studio Code. Using the menu <code>View</code> and open <code>Extensions</code> and install the <code>Keil Studio Pack</code> extensions.</li>
+<li>Use the menu <code>View</code> and open <code>Source Control</code>. Select 'Clone Repository' and enter as url <a href="https://github.com/Open-CMSIS-Pack/vscode-get-started"><code>https://github.com/Open-CMSIS-Pack/vscode-get-started</code></a>.</li>
+<li>Specify the destination folder to clone to and select 'Open' when asked 'Would you like to open the cloned directory?'</li>
+<li>
+<p>Use <code>View</code> menu 'Explorer' and select the file <code>vcpkg-configuration.json</code>. This file instructs <a href="https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts">Microsoft vcpkg</a> to install the prerequisite artifacts required for building the solution and installs therefore:</p>
+<ul>
+<li>CMSIS-Toolbox 2.6.1</li>
+<li>cmake 3.28.4</li>
+<li>ninja 1.12.0</li>
+<li>arm-none-eabi-gcc 13.3.1-mpacbti (GNU Arm Embedded Toolchain 13.3.1)</li>
+</ul>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case vcpkg shows an error in the VSCode status bar, you can see further information in the <code>vcpkg</code> output.</p>
+</div>
+<p>Once the tools are installed, you may use the <a href="../build-tools/">CMSIS-Toolbox commands</a> in a <strong>Terminal</strong> window of VS Code. If the terminal icon shows a yellow triangle with exclamation mark, you have to start a new terminal. This ensures that the environment settings updates triggered by the vcpkg activation are reflected in the terminal.</p>
+<p>Alternatively use <code>View</code> and open the <code>CMSIS</code> Extension. Then use the <code>Build</code> buttons to translate the project, flash your connected board and/or launch a debug connection.</p>
+<h2 id="cmsis_pack_root">CMSIS_PACK_ROOT</h2>
+<p>The <a href="#environment-variables">environment variable <code>CMSIS_PACK_ROOT</code></a> defines location of the directory that stores the software packs. This directory has the following structure.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Content of <code>CMSIS_PACK_ROOT</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>pack.idx</code></td>
+<td style="text-align: left;">Empty file that is touched (timestamp is updated) when packs are added or removed.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/.Web</code></td>
+<td style="text-align: left;">Contains <code>*.pdsc</code> files available on public web pages.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/.Web/index.pidx</code></td>
+<td style="text-align: left;">An index file that lists public available software packs.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/.Download</code></td>
+<td style="text-align: left;">A local cache of packs that are downloaded.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/.Local</code></td>
+<td style="text-align: left;">Stores the file <code>local_repository.pidx</code> that refers local <code>*.pdsc</code> files during pack development. Refer to  <a href="../build-tools/#install-a-repository">install a repository</a> for more information.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/&lt;vendor&gt;/&lt;name&gt;/&lt;version&gt;</code></td>
+<td style="text-align: left;">Extracted software packs that are available for development using the CMSIS-Toolbox.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For more details refer to the <a href="https://github.com/Open-CMSIS-Pack/devtools/wiki/The-CMSIS-PACK-Root-Directory">CMSIS_PACK_ROOT Directory Wiki page</a>.</p>
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../overview/" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../build-overview/" class="btn btn-neutral float-right" title="Build Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/KeilChris/cmsis-toolbox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../overview/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../build-overview/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

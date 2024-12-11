@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Proposal - Run and Debug Management - CMSIS-Toolbox Help - 2.6.1</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Proposal - Run and Debug Management";
+        var mkdocs_page_input_path = "Proposal - Run+Debug Management.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help - 2.6.1
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../">Version Selector</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">Build Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">Configure STM32 Devices with STM32CubeMX</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">Configure NXP Devices with MCUXpresso Config Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Build Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CMSIS-Toolbox Help - 2.6.1</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Proposal - Run and Debug Management</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/KeilChris/cmsis-toolbox/edit/master/docs/Proposal - Run+Debug Management.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="proposal-run-and-debug-management">Proposal - Run and Debug Management</h1>
+<!-- markdownlint-disable MD009 -->
+<!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD032 -->
+
+<p>This proposal discusses how the CMSIS-Toolbox may simplify workflows with programming and debug tools.</p>
+<h2 id="overview">Overview</h2>
+<p>The CMSIS-Pack PDSC files contain information about device/board parameters and software components:</p>
+<ul>
+<li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html">Flash algorithms</a> of device memory (in DFP) and board memory (in BSP).</li>
+<li>On-board debug adapter (a default programming/debug channel) including features.</li>
+<li>Available memory of device and board.</li>
+<li>Device parameters such as processor core(s) and clock speed.</li>
+<li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html">Debug Access Sequences</a> and <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/sdf_pg.html">System Description Files</a> that support more complex Cortex-A/R/M configurations.</li>
+<li><a href="https://open-cmsis-pack.github.io/svd-spec/main/index.html">CMSIS-SVD System View Description (SVD)</a> files for viewing device peripherals.</li>
+<li><a href="https://arm-software.github.io/CMSIS-View/latest/SCVD_Format.html">CMSIS-View Software Component Viewer Description (SCVD)</a> files for analysis of software components (RTOS, Middleware).</li>
+</ul>
+<p>The CMSIS-Toolbox build system manages device/board/software components and controls the build output (typically ELF/DWARF files) and has provisions for HEX, BIN and post-processing. It allows to manage different <a href="../build-overview/#project-setup-for-multiple-targets-and-builds">target-types</a> and the <a href="../build-overview/#working-with-context-set">context set</a>  manages the images that belong to a target.</p>
+<p>In addition the user may need the following information which should be added to the YML-Input files for the CMSIS-Toolbox.</p>
+<ul>
+<li>Flash algorithms for external memory in custom hardware.</li>
+<li>Additional images that should be loaded.</li>
+<li>Device configuration information.</li>
+<li>Access information for protected debug ports (i.e. encryption keys).</li>
+</ul>
+<h2 id="run-and-debug-information-management">Run and Debug Information Management</h2>
+<h3 id="the-problems-to-solve">The problems to solve</h3>
+<ul>
+<li>Provide information for command line and IDE workflows in a consistent way.</li>
+<li>Simplify the implementation in run and debug tools, reduce dependency to other tools.</li>
+<li>Ensure that information is portable, i.e from a cloud-hosted CI system to a desktop test system.</li>
+<li>Provide flexibility and ease-of-use.</li>
+</ul>
+<p>Today, some programmers access DFP and BSP information via the packs. This results in additional complexity of the tool and more dependencies. </p>
+<p>In VS Code, <a href="https://code.visualstudio.com/docs/editor/tasks">task configurations</a> control the <strong>Run</strong> action (<code>tasks.json</code>) and <a href="https://code.visualstudio.com/docs/editor/debugging#_launch-configurations">launch configurations</a> control the <strong>Debug</strong> action (<code>launch.json</code>). The <code>tasks.json</code> and <code>launch.json</code> files store multiple configurations and are located in the <code>.vscode</code> folder of your workspace (the csolution project root folder). The current implementation uses extension commands to obtain project information. This limits the portability of these files.</p>
+<p><strong>Example `launch.json:</strong></p>
+<pre><code class="language-json">{
+    &quot;configurations&quot;: [
+        {
+            &quot;name&quot;: &quot;Arm Debugger&quot;,
+            &quot;type&quot;: &quot;arm-debugger&quot;,
+            &quot;request&quot;: &quot;launch&quot;,
+            &quot;serialNumber&quot;: &quot;${command:device-manager.getSerialNumber}&quot;,
+            &quot;programs&quot;: &quot;${command:cmsis-csolution.getBinaryFiles}&quot;,
+            &quot;cmsisPack&quot;: &quot;${command:cmsis-csolution.getTargetPack}&quot;,
+            &quot;deviceName&quot;: &quot;${command:cmsis-csolution.getDeviceName}&quot;,
+            &quot;processorName&quot;: &quot;${command:cmsis-csolution.getProcessorName}&quot;
+        }
+    ]
+}
+</code></pre>
+<h3 id="proposed-solution">Proposed solution</h3>
+<ul>
+<li>Introduce a new target-type specific file <code>*.cbuild-run.yml</code> generated by CMSIS-Toolbox. This file provides access to PDSC information and build output of one target. </li>
+<li>Potentially export the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html">Debug Access Sequences</a> into an additional parameter file as PDSC file processing is complexity due to device dependencies.</li>
+<li>Introduce a new folder <code>.cmsis</code> that contains these additional files.  This folder might be also used for other build information files.</li>
+</ul>
+<p><img alt="Run and Debug Information Management" src="../images/cbuild-run.png" title="Run and Debug Information Management" /></p>
+<p>The <code>cbuild-run.yml</code> file represents a context-set.</p>
+<p><strong>Content of <code>*.cbuild-run.yml</code>:</strong></p>
+<pre><code class="language-yml">run:                                         # Start of file, contains run and debug information for a target
+  generated-by: csolution version 2.7.0
+  solution: ../USB_Device.csolution.yml
+  target-type: +STM32U585AIIx
+  compiler: AC6
+  board: STMicroelectronics::B-U585I-IOT02A:Rev.C
+  board-pack: Keil::B-U585I-IOT02A_BSP@2.0.0
+  device: STMicroelectronics::STM32U585AIIx
+  device-pack: Keil::STM32U5xx_DFP@3.0.0
+
+  programming:                               # Flash programming algorithms
+    - algorithm: ${CMSIS_PACK_ROOT}/DFP-path/&lt;programming-algorithm&gt;
+    - algorithm: ${CMSIS_PACK_ROOT}/BSP-path/&lt;programming-algorithm&gt;
+      config: &lt;potential config options&gt;     # is this required
+    - algorithm: custom-hw-path/&lt;programming-algorithm&gt;
+
+  output:                                    # application image files 
+    - type: elf
+      file: HID.axf
+      load: &lt;scope&gt;                          # all (default), symbols only, binary only
+
+  system-description:
+    - file:  ${CMSIS_PACK_ROOT}/DFP-path/&lt;svd&gt;
+      type:  svd
+    - file:  ${CMSIS_PACK_ROOT}/pack-path/&lt;scvd&gt;
+      type:  scvd
+      from-pack: &lt;pack&gt;
+
+# information from DFP, BSP specific to the target
+# https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packFormat.html
+  board:                                     # Board element
+    debugProbe:
+      ...     
+    debugInterface:
+      ...
+  debug-port:                                # Information from DFP
+    access-port-v1:    
+      ...
+    access-port-v2:    
+      ...
+    jtag:
+    cjtag:
+    swd:
+
+    default-settings:                        # Default debug configuration
+      default:                               # debug protocol (SWD or JTAG) to use for target connections.
+      clock:                                 # clock setting in Hz for a target connection.
+      swj:                                   # allows Serial Wire Debug (SWD) and JTAG protocols
+      dormant:                               # device access via CoreSight DP requires the dormant state
+      sdf: ${CMSIS_PACK_ROOT}/DFP-path/&lt;sdf&gt; # path of the system description file (SDF).
+
+  sequences:
+    ...
+
+  trace:
+    ...
+</code></pre>
+<h3 id="usage">Usage</h3>
+<p>The <code>*.cbuild-run.yml</code> file can be directly passed to programmers and debug tools, for example using a command line option. It contains all information that needs to be passed.</p>
+<pre><code class="language-bash">&gt;programmer -csolution MySolution+MyHardware.cbuild-run.yml
+</code></pre>
+<h2 id="questions">Questions</h2>
+<ul>
+<li>What should be done now to simplify above information while making it more future proof?</li>
+</ul>
+<p>For CMSIS-Toolbox 3.0:</p>
+<ul>
+<li>Should the location of cbuild information files change to folder <code>.\.cmsis</code>?</li>
+<li>Should the structure of build information file change and include <code>cbuild-run.yml</code>? The cbuild information file will then represent a context-set, and not just one context.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/KeilChris/cmsis-toolbox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
