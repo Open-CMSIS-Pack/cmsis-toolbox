@@ -1,0 +1,3466 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>CMSIS Solution Project File Format - CMSIS-Toolbox Help - 2.6.0</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "CMSIS Solution Project File Format";
+        var mkdocs_page_input_path = "YML-Input-Format - Preinclude.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help - 2.6.0
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">Build Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">Configure STM32 Devices with STM32CubeMX</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">Configure NXP Devices with MCUXpresso Config Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Build Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="../../">Version Selector</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CMSIS-Toolbox Help - 2.6.0</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">CMSIS Solution Project File Format</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/KeilChris/cmsis-toolbox/edit/master/docs/YML-Input-Format - Preinclude.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="cmsis-solution-project-file-format">CMSIS Solution Project File Format</h1>
+<!-- markdownlint-disable MD009 -->
+<!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD036 -->
+
+<p>The following chapter explains the CMSIS Solution Project File Format (short form <em>csolution project files</em>), the YAML files that that describes the software of an embedded application.</p>
+<h2 id="name-conventions">Name Conventions</h2>
+<h3 id="filename-extensions">Filename Extensions</h3>
+<p>The <strong><code>csolution</code> Project Manager</strong> recognizes the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum">categories</a> of <a href="#files">files</a> based on the filename extension in the YAML input files as shown in the table below.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">File Extension</th>
+<th style="text-align: left;"><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum">Category</a></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>.c</code>, <code>.C</code></td>
+<td style="text-align: left;">sourceC</td>
+<td style="text-align: left;">C source file</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.cpp</code>, <code>.c++</code>, <code>.C++</code>, <code>.cxx</code>, <code>.cc</code>, <code>.CC</code></td>
+<td style="text-align: left;">sourceCpp</td>
+<td style="text-align: left;">C++ source file</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.h</code>,<code>.hpp</code></td>
+<td style="text-align: left;">header</td>
+<td style="text-align: left;">Header file</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.asm</code>, <code>.s</code>, <code>.S</code></td>
+<td style="text-align: left;">sourceAsm</td>
+<td style="text-align: left;">Assembly source file</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.ld</code>, <code>.scf</code>, <code>.sct</code>, <code>.icf</code></td>
+<td style="text-align: left;">linkerScript</td>
+<td style="text-align: left;">Linker Script file</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.a</code>, <code>.lib</code></td>
+<td style="text-align: left;">library</td>
+<td style="text-align: left;">Library file</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.o</code></td>
+<td style="text-align: left;">object</td>
+<td style="text-align: left;">Object file</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.txt</code>, <code>.md</code>, <code>.pdf</code>, <code>.htm</code>, <code>.html</code></td>
+<td style="text-align: left;">doc</td>
+<td style="text-align: left;">Documentation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.scvd</code></td>
+<td style="text-align: left;">other</td>
+<td style="text-align: left;"><a href="https://arm-software.github.io/CMSIS-View/latest/SCVD_Format.html">Software Component View Description</a> for CMSIS-View</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pack-name-conventions"><code>pack:</code> Name Conventions</h3>
+<p>The <strong><code>csolution</code> Project Manager</strong> uses the following syntax to specify the <code>pack:</code> names in the <code>*.yml</code> files.</p>
+<pre><code class="language-yml">vendor [:: pack-name [@[~ | &gt;=] version] ]
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Element</th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>vendor</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Vendor name of the software pack.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>pack-name</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Name of the software pack; wildcards (*, ?) can be used.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>version</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Version number of the software pack, with <code>@1.2.3</code> that must exactly match, <code>@~1.2</code>/<code>@~1</code> that matches with semantic versioning, or <code>@&gt;=1.2.3</code> that allows any version higher or equal.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>When no version is specified, the <strong><code>csolution</code> Project Manager</strong> only loads the latests version of a software pack. This also applies when wildcards are used in the <code>pack-name</code>.</p>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">- pack:   ARM::CMSIS@5.5.0                  # 'CMSIS' Pack (with version 5.5.0)
+- pack:   Keil::MDK-Middleware@&gt;=7.13.0     # 'MDK-Middleware' Software Pack from vendor Keil (with version 7.13.0 or higher, latest available to the tool)
+- pack:   Keil::TFM                         # 'TFM' Software Pack from vendor Keil (with latest version available to the tool)
+- pack:   AWS                               # All latest versions of Software Packs from vendor 'AWS'
+- pack:   Keil::STM*                        # All latest versions of Software Packs that start with 'STM' from vendor 'Keil'
+</code></pre>
+<h3 id="component-name-conventions"><code>component:</code> Name Conventions</h3>
+<p>The <strong><code>csolution</code> Project Manager</strong> uses the following syntax to specify the <code>component:</code> names in the <code>*.yml</code> files.</p>
+<pre><code class="language-yml">[Cvendor::] Cclass [&amp;Cbundle] :Cgroup [:Csub] [&amp;Cvariant] [@[~ | &gt;=]Cversion]
+</code></pre>
+<p>Components are defined using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#element_component">Open-CMSIS-Pack - <code>&lt;component&gt;</code> element</a>. Several parts of a <code>component</code> are optional.  For example it is possible to just define a component using <code>Cclass</code> and <code>Cgroup</code> name. All elements of a component name are summarized in the following table.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Element</th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>Cvendor</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Name of the component vendor as defined in <code>&lt;components&gt;</code> element or by the package vendor of the software pack.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Cclass</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Component class name as defined in <code>&lt;components&gt;</code> element of the software pack.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Cbundle</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Bundle name of the component class as defined in <code>&lt;bundle&gt;</code> element of the software pack.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Cgroup</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Component group name as defined in <code>&lt;components&gt;</code> element of the software pack.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Csub</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Component sub-group name as defined in <code>&lt;components&gt;</code> element of the software pack.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Cvariant</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Component sub-group name as defined in <code>&lt;components&gt;</code> element of the software pack.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Cversion</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Version number of the component, with <code>@1.2.3</code> that must exactly match, <code>@~1.2</code>/<code>@~1</code> that matches with semantic versioning, or <code>@&gt;=1.2.3</code> that allows any version higher or equal.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Partly defined components</strong></p>
+<p>A component can be partly defined in <em>csolution project files</em> (<code>*.cproject.yml</code>, <code>*.clayer.yml</code>, <code>*.genlayer.yml</code>) by omitting <code>Cvendor</code>, <code>Cvariant</code>, and <code>Cversion</code>, even when this are part of the <code>components</code> element of the software pack. The component select algorithm resolves this to a fully defined component by:</p>
+<ul>
+<li>when a partly specified component resolves to several possible choices, the tool selects:</li>
+<li>(a) the default <code>Cvariant</code> of the component as defined in the PDSC file. </li>
+<li>(b) the component with the higher <code>Cversion</code> value.</li>
+<li>(c) and error message is issued when two identical components are defined by multiple vendors and <code>Cvendor</code> is not specified.</li>
+<li>the partly specified component is extended by:</li>
+<li>version information from the software pack.</li>
+<li>default variant definition from the software pack.</li>
+</ul>
+<p>The fully resolved component name is shown in the <a href="../YML-CBuild-Format/"><code>*.cbuild.yml</code></a> output file.</p>
+<p><strong>Multiple component definitions are rejected</strong></p>
+<ul>
+<li>If a component is added more then once in the <em>csolution project files</em> and an <em>error</em> is issued.</li>
+<li>An attempt to select multiple variants (using <code>Cvariant</code>) of a component results in an <em>error</em>.</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">- component: CMSIS:CORE                               # CMSIS Core component (vendor selected by `csolution` ARM)
+- component: ARM::CMSIS:CORE                          # CMSIS Core component from vendor ARM (any version)
+- component: ARM::CMSIS:CORE@5.5.0                    # CMSIS Core component from vendor ARM (with version 5.5.0)
+- component: ARM::CMSIS:CORE@&gt;=5.5.0                  # CMSIS Core component from vendor ARM (with version 5.5.0 or higher)
+
+- component: Device:Startup                           # Device Startup component from any vendor
+
+- component: CMSIS:RTOS2:Keil RTX5                    # CMSIS RTOS2 Keil RTX5 component with default variant (any version)
+- component: ARM::CMSIS:RTOS2:Keil RTX5&amp;Source@5.5.3  # CMSIS RTOS2 Keil RTX5 component with variant 'Source' and version 5.5.3
+
+- component: Keil::USB&amp;MDK-Pro:CORE&amp;Release@6.15.1    # USB CORE component from bundle MDK-Pro in variant 'Release' and version 6.15.1
+</code></pre>
+<h3 id="device-name-conventions"><code>device:</code> Name Conventions</h3>
+<p>The device specifies multiple attributes about the target that ranges from the processor architecture to Flash
+algorithms used for device programming. The following syntax is used to specify a <code>device:</code> value in the <code>*.yml</code> files.</p>
+<pre><code class="language-yml">[ [ Dvendor:: ] Dname] [:Pname]
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Element</th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>Dvendor</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Name (without enum field) of the device vendor defined in <code>&lt;devices&gt;&lt;family&gt;</code> element of the software pack.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Dname</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Device name (Dname attribute) or when used the variant name (Dvariant attribute) as defined in the \&lt;devices&gt; element.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Pname</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Processor identifier (Pname attribute) as defined in the <code>&lt;devices&gt;</code> element.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<ul>
+<li>All elements of a device name are optional which allows to supply additional information, such as the <code>:Pname</code> at
+  different stages of the project. However the <code>Dname</code> itself is a mandatory element and must be specified in
+  context of the various project files.</li>
+<li><code>Dvendor::</code> must be used in combination with the <code>Dname</code>.</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">device: NXP::LPC1768                       # The LPC1788 device from NXP
+device: LPC1788                            # The LPC1788 device (vendor is evaluated from DFP)
+device: LPC55S69JEV98                      # Device name (exact name as defined in the DFP)
+device: LPC55S69JEV98:cm33_core0           # Device name (exact name as defined in the DFP) with Pname specified
+device: :cm33_core0                        # Pname added to a previously defined device name (or a device derived from a board)
+</code></pre>
+<h3 id="board-name-conventions"><code>board:</code> Name Conventions</h3>
+<p>Evaluation Boards define indirectly a device via the related BSP. The following syntax is used to specify a <code>board:</code>
+value in the <code>*.yml</code> files.</p>
+<pre><code class="language-yml">[vendor::] board_name [:revision] 
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Element</th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>vendor</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Name of the board vendor defined in <code>&lt;boards&gt;&lt;board&gt;</code> element of the board support pack (BSP).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Bname</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Board name (name attribute) as defined in the \&lt;board&gt; element of the BSP.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>revision</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Board revision (revision attribute) as defined in the \&lt;board&gt; element of the BSP.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>When a <code>board:</code> is specified, the <code>device:</code> specification can be omitted, however it is possible to overwrite the device setting in the BSP with an explicit <code>device:</code> setting.</p>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">board: Keil::MCB54110                             # The Keil MCB54110 board (with device NXP::LPC54114J256BD64) 
+board: LPCXpresso55S28                            # The LPCXpresso55S28 board
+board: STMicroelectronics::NUCLEO-L476RG:Rev.C    # A board with revision specification
+</code></pre>
+<h3 id="context-name-conventions"><code>context:</code> Name Conventions</h3>
+<p>A <code>context:</code> name combines <code>project-name</code>, <code>built-type</code>, and <code>target-type</code> and is used on various places in the CMSIS-Toolbox.  The following syntax is used to specify a <code>context:</code> name.</p>
+<pre><code class="language-yml">[project-name][.build-type][+target-type]
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Element</th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>project-name</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Project name of a project (base name of the *.cproject.yml file).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.build-type</code></td>
+<td>Optional</td>
+<td style="text-align: left;">The <a href="#build-types"><code>build-type</code></a> name that is currently processed (specified with <code>- type: name</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>+target-type</code></td>
+<td>Optional</td>
+<td style="text-align: left;">The <a href="#target-types"><code>target-type</code></a> name that is currently processed (specified with <code>- type: name</code>).</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>The <code>.build-type</code> and <code>+target-type</code> name allows letters (A-Z, a-z), digits (0-9), dash ('-'), and underscore ('_'); the maximum length is 32 characters.</p>
+<ul>
+<li>When <code>project-name</code> is omitted, the <code>project-name</code> is the base name of the <code>*.cproject.yml</code> file.</li>
+<li>When <code>.build-type</code> is omitted, it matches with any possible <code>.build-type</code>.</li>
+<li>When <code>+target-type</code> is omitted, it matches with any possible <code>+target-type</code>.</li>
+</ul>
+<p>By default, the specified <code>- type: name</code> of <a href="#build-types"><code>build-types:</code></a> and <a href="#target-types"><code>target-types:</code></a> nodes in the <code>*.csolution.yml</code> file are directly mapped to the <code>context</code> name.
+Using the <a href="#context-map"><code>context-map:</code></a> node it is possible to assign a different <code>.build-type</code> and/or <code>+target-type</code> mapping for a specific <code>project-name</code>.</p>
+<p><strong>Example:</strong></p>
+<p>Show the different possible context settings of a <code>*.csolution.yml</code> file.</p>
+<pre><code class="language-txt">AWS_MQTT_MutualAuth_SW_Framework&gt;csolution list contexts -s Demo.csolution.yml
+Demo.Debug+AVH
+Demo.Debug+IP-Stack
+Demo.Debug+WiFi
+Demo.Release+AVH
+Demo.Release+IP-Stack
+Demo.Release+WiFi
+</code></pre>
+<p>The <code>context</code> name is also used in <a href="#for-context"><code>for-context:</code></a> and <a href="#not-for-context"><code>not-for-context:</code></a> nodes that allow to include or exclude items depending on the <code>context</code>. In many cases the <code>project-name</code> can be omitted as the <code>context</code> name is within a specific <code>*.cproject.yml</code> file or applied to a specific <code>*.cproject.yml</code> file.</p>
+<h2 id="access-sequences">Access Sequences</h2>
+<p>The following <strong>access sequences</strong> allow to use arguments from the CMSIS Project Manager as arguments of the various
+<code>*.yml</code> files in the key values for <code>define:</code>, <code>add-path:</code>, <code>misc:</code>, <code>files:</code>, and <code>executes:</code>. The <strong>access sequences</strong>
+can refer in a different project and provide therefore a method to describe project dependencies.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Access Sequence</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Target</strong></td>
+<td style="text-align: left;"><strong>Access to target and build related settings</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$Bname$</code></td>
+<td style="text-align: left;"><a href="#board-name-conventions">Bname</a> of the selected board as specified in the <a href="#board"><code>board:</code></a> node.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$Dname$</code></td>
+<td style="text-align: left;"><a href="#device-name-conventions">Dname</a> of the selected device as specified in the <a href="#device"><code>device:</code></a> node.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$Pname$</code></td>
+<td style="text-align: left;"><a href="#device-name-conventions">Pname</a> of the selected device as specified in the <a href="#device"><code>device:</code></a> node.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$BuildType$</code></td>
+<td style="text-align: left;"><a href="#build-types">Build-type</a> name of the currently processed project.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$TargetType$</code></td>
+<td style="text-align: left;"><a href="#target-types">Target-type</a> name of the currently processed project.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$Compiler$</code></td>
+<td style="text-align: left;"><a href="#compiler">Compiler</a> name of the compiler used in this project context as specified in the <a href="#compiler"><code>compiler:</code></a> node.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>YML Input</strong></td>
+<td style="text-align: left;"><strong>Access to YML Input Directories and Files</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$Solution$</code></td>
+<td style="text-align: left;">Solution name (base name of the *.csolution.yml file).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$SolutionDir()$</code></td>
+<td style="text-align: left;">Path to the directory of the current processed <code>csolution.yml</code> file.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$Project$</code></td>
+<td style="text-align: left;">Project name of the current processed <code>cproject.yml</code> file.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$ProjectDir(context)$</code></td>
+<td style="text-align: left;">Path to the directory of a related <code>cproject.yml</code> file.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Output</strong></td>
+<td style="text-align: left;"><strong>Access to Output Directories and Files</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$OutDir(context)$</code></td>
+<td style="text-align: left;">Path to the output directory of a related project that is defined in the <code>*.csolution.yml</code> file.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$bin(context)$</code></td>
+<td style="text-align: left;">Path and filename of the binary output file generated by the related context.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$cmse-lib(context)$</code></td>
+<td style="text-align: left;">Path and filename of the object file with secure gateways of a TrustZone application generated by the related context.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$elf(context)$</code></td>
+<td style="text-align: left;">Path and filename of the ELF/DWARF output file generated by the related context.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$hex(context)$</code></td>
+<td style="text-align: left;">Path and filename of the HEX output file generated by the related context.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$lib(context)$</code></td>
+<td style="text-align: left;">Path and filename of the library file of the related context.</td>
+</tr>
+</tbody>
+</table>
+<p>For a <a href="#context-name-conventions"><code>context</code></a> the <code>project-name</code>, <code>.build-type</code>, and <code>+target-type</code> are optional; when omitted the current processed context is used. Example: <code>$ProjectDir()$</code> is the directory of the current processed <code>cproject.yml</code> file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>The access sequences below are not completed yet, as they require a change to CMSIS-Build.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Access Sequence</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>$Bpack$</code></td>
+<td style="text-align: left;">Path to the pack that defines the selected board (BSP).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$Dpack$</code></td>
+<td style="text-align: left;">Path to the pack that defines the selected device (DFP).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$Pack(vendor.name)$</code></td>
+<td style="text-align: left;">Path to a specific pack. Example: <code>$Pack(NXP.K32L3A60_DFP)$</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<p>For the example below we assume the following <code>build-type</code>, <code>target-type</code>, and <code>projects</code> definitions.</p>
+<pre><code class="language-yml">solution:
+  target-types:
+    - type: Board               # target-type: Board
+      board: NUCLEO-L552ZE-Q    # specifies board
+
+    - type: Production-HW       # target-type: Production-HW
+      device: STM32U5X          # specifies device
+
+  build-types:
+    - type: Debug               # build-type: Debug
+      optimize: none
+      debug: on
+
+    - type: Release             # build-type: Release
+      optimize: size
+
+  projects:
+    - project: ./bootloader/Bootloader.cproject.yml           # relative path
+    - project: /MyDevelopmentTree/security/TFM.cproject.yml   # absolute path
+    - project: ./application/MQTT_AWS.cproject.yml            # relative path
+</code></pre>
+<p>The <code>project: /application/MQTT_AWS.cproject.yml</code> can now use <strong>Access Sequences</strong> to reference files or directories in
+other projects that belong to a solution. For example, these references are possible in the file <code>MQTT_AWS.cproject.yml</code>.</p>
+<p>The example below uses the <code>build-type</code> and <code>target-type</code> of the current processed context. In practice this means that
+the same <code>build-type</code> and <code>target-type</code> is used as for the <code>MQTT_AWS.cproject.yml</code> project.</p>
+<pre><code class="language-yml">    files:
+    - file: $cmse-lib(TFM)$                              # use the symbol output file of the TFM Project
+</code></pre>
+<p>The example below uses from the TFM project always <code>build-type: Debug</code> and the <code>target-type: Production-HW</code>.</p>
+<pre><code class="language-yml">    files:
+    - file: `$cmse-lib(TFM.Release+Production-HW)$`      # use the symbol output file of the TFM Project
+</code></pre>
+<p>The example below uses the <code>build-type: Debug</code>. The <code>target-type</code> of the current processed context is used.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>Implementation of <code>executes:</code> is scheduled for implementation in CMSIS-Toolbox 2.4 (Q2'24)</p>
+<pre><code class="language-yml">  executes:
+    - execute: Generate Image
+      run: gen_image %input% -o %output%           # DFP the get_image tool
+      input:
+        - $elf(TFM.Debug)$
+        - $elf(Bootloader.Release)$
+      output:
+        - $OutDir(TFM.Debug)$
+</code></pre>
+<p>The example below creates a <code>define</code> that uses the device name.</p>
+<pre><code class="language-yml">groups:
+  - group:  &quot;Main File Group&quot;
+    define:
+      - $Dname$                           # Generate a #define 'device-name' for this file group
+</code></pre>
+<h2 id="variables">Variables</h2>
+<p>The <code>variables:</code> node defines are <em>key/value</em> pairs that can be used to refer to <code>*.clayer.yml</code> files.  The <em>key</em> is the name of the <em>variable</em> and can be used  in the following nodes: <a href="#layers"><code>layers:</code></a>, <a href="#define"><code>define:</code></a>, <a href="#add-path"><code>add-path:</code></a>, <a href="#misc"><code>misc:</code></a>, <a href="#files"><code>files:</code></a>, and <a href="#executes"><code>executes:</code></a></p>
+<p>Using variables that are defined in the <code>*.csolution.yml</code> file, a <code>*.cproject.yml</code> file requires no modifications when new <code>target-types:</code> are introduced.  The required <code>layers:</code> could be instead specified in the <code>*.csolution.yml</code> file using a new node <code>variables:</code>.</p>
+<p><strong>Example:</strong></p>
+<p><em>Example.csolution.yml</em></p>
+<pre><code class="language-yml">solution:
+  target-types:
+    - type: NXP Board
+      board: IMXRT1050-EVKB
+      variables:
+        - Socket-Layer: ./Socket/FreeRTOS+TCP/Socket.clayer.yml
+        - Board-Layer:  ./Board/IMXRT1050-EVKB/Board.clayer.yml
+
+    - type: ST Board
+      board: B-U585I-IOT02A
+      variables:
+        - Socket-Layer: ./Socket/WiFi/Socket.clayer.yml
+        - Board-Layer:  ./Board/B-U585I-IOT02A/Board.clayer.yml
+</code></pre>
+<p><em>Example.cproject.yml</em></p>
+<pre><code class="language-yml">  layers:
+    - layer: $Socket-Layer$
+      type: Socket
+
+    - layer: $Board-Layer$      # no `*.clayer.yml` specified. Compatible layers are listed
+      type: Board               # layer of type `Board` is expected
+</code></pre>
+<h2 id="order-of-list-nodes">Order of List Nodes</h2>
+<p>The <em>key</em>/<em>value</em> pairs in a list node can be in any order.  The two following list nodes are logically identical. This
+might be confusing for <code>yml</code> files that are generated by an IDE.</p>
+<pre><code class="language-yml">  build-types:
+    - type: Release         # build-type name
+      optimize: size        # optimize for size
+      debug: off            # generate no debug information for the release build
+</code></pre>
+<pre><code class="language-yml">  build-types:
+    - debug: off            # generate no debug information for the release build
+      optimize: size        # optimize for size
+      type: Release         # build-type name
+</code></pre>
+<h2 id="project-file-structure">Project File Structure</h2>
+<p>The table below explains the top-level elements in each of the different <code>*.yml</code> input files that define the overall application.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Keyword</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#cdefault"><code>default:</code></a></td>
+<td style="text-align: left;">Start of <code>cdefault.yml</code> file that is used to setup the compiler along with some compiler-specific controls.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#solution"><code>solution:</code></a></td>
+<td style="text-align: left;">Start of <code>*.csolution.yml</code> file that <a href="../build-overview/#project-examples">collects related projects</a> along with <code>build-types:</code> and <code>target-types:</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#project"><code>project:</code></a></td>
+<td style="text-align: left;">Start of <code>*.cproject.yml</code> file that defines files, components, and layers which can be independently translated to a binary image or library.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#layer"><code>layer:</code></a></td>
+<td style="text-align: left;">Start of <code>*.clayer.yml</code> file that contains pre-configured software components along with source files.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cdefault"><code>cdefault:</code></h3>
+<p>When <a href="#solution"><code>cdefault:</code></a> is specified in the <code>*.csolution.yml</code> file, the <strong><code>csolution</code> Project Manager</strong> uses a file with the name <code>cdefault.yml</code> or <code>cdefault.yaml</code> to setup 
+the compiler along with some specific default controls. The search order for this file is:</p>
+<ul>
+<li>A <code>cdefault.yml</code> or <code>cdefault.yaml</code> file in the same directory as the <code>&lt;solution-name&gt;.csolution.yml</code> file. </li>
+<li>A <code>cdefault.yml</code> or <code>cdefault.yaml</code> file in the directory specified by the environment variable <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables"><code>CMSIS_COMPILER_ROOT</code></a>.</li>
+<li>A <code>cdefault.yml</code> or <code>cdefault.yaml</code> file in the directory <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md##etccmake"><code>&lt;cmsis-toolbox-installation-dir&gt;/etc</code></a>.</li>
+</ul>
+<p>The <code>default:</code> node is the start of a <code>cdefault.yml</code> or <code>cdefault.yaml</code> file and contains the following.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>default:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp; <a href="#compiler"><code>compiler:</code></a></td>
+<td style="text-align: left;">Toolchain selection.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp; <a href="#misc"><code>misc:</code></a></td>
+<td style="text-align: left;">Literal tool-specific controls.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">default:
+  compiler: AC6
+  misc:
+    - ASM:
+      - -masm=auto
+
+    - Link:
+      - --info sizes --info totals --info unused --info veneers --info summarysizes
+      - --map
+</code></pre>
+<h3 id="solution"><code>solution:</code></h3>
+<p>The <code>solution:</code> node is the start of a <code>*.csolution.yml</code> file that collects related projects as described in the section
+<a href="../build-overview/#project-setup-for-related-projects">"Project setup for related projects"</a>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>solution:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>created-by:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Identifies the tool that created this solution.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>created-for:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Specifies the tool for building this solution, i.e. <strong>CMSIS-Toolbox@2.2.0</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>description:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Brief description text of this solution.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>cdefault:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">When specified, the <a href="#cdefault"><code>cdefault.yml</code></a> file is used to setup compiler specific controls.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#compiler"><code>compiler:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Overall toolchain selection for this solution.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-c"><code>language-C:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set the language standard for C source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-cpp"><code>language-CPP:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set the language standard for C++ source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pre-include"><code>pre-include:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Add pre-include files for C and C++ source files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#output-dirs"><code>output-dirs:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Control the output directories for the build output.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#generators"><code>generators:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Control the directory structure for generator output.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#packs"><code>packs:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Defines local packs and/or scope of packs that are used.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#target-types"><code>target-types:</code></a></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">List of target-types that define the target system (device or board).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#build-types"><code>build-types:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of build-types (i.e. Release, Debug, Test).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#projects"><code>projects:</code></a></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">List of projects that belong to the solution.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#executes"><code>executes:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Additional pre or post build steps using external tools.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">solution:
+  created-for: cmsis-toolbox@2.0  # minimum CMSIS-Toolbox version required for project build
+  cdefault:                       # use default setup of toolchain specific controls.
+  compiler: GCC                   # overwrite compiler definition in 'cdefaults.yml'
+
+  packs: 
+    - pack: ST                    # add ST packs in 'cdefaults.yml'
+
+  build-types:                    # additional build types
+    - type: Test                  # build-type: Test
+      optimize: none
+      debug: on
+      packs:                      # with explicit pack specification
+        - pack: ST::TestSW
+          path: ./MyDev/TestSW    
+
+  target-types:
+    - type: Board                 # target-type: Board
+      board: NUCLEO-L552ZE-Q
+
+    - type: Production-HW         # target-type: Production-HW
+      device: STM32U5X            # specifies device
+
+  projects:
+    - project: ./blinky/Bootloader.cproject.yml
+    - project: /security/TFM.cproject.yml
+    - project: /application/MQTT_AWS.cproject.yml
+</code></pre>
+<h3 id="project"><code>project:</code></h3>
+<p>The <code>project:</code> node is the start of a <code>*.cproject.yml</code> file and can contain the following:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>project:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>description:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Brief description text of this project.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#output"><code>output:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Configure the generated output files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#generators"><code>generators:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Control the directory structure for generator output.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#rte"><code>rte:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Control the directory structure for <a href="../build-overview/#rte-directory-structure">RTE (run-time environment)</a> files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#packs"><code>packs:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Defines packs that are required for this project.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-c"><code>language-C:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set the language standard for C source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-cpp"><code>language-CPP:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set the language standard for C++ source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pre-include"><code>pre-include:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Add pre-include files for C and C++ source files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#linker"><code>linker:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Instructions for the linker.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Generation of debug information.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#define"><code>define:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Preprocessor (#define) symbols for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#undefine"><code>undefine:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Remove preprocessor (#define) symbols.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#add-path"><code>add-path:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Additional include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#del-path"><code>del-path:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Remove specific include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#misc"><code>misc:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Literal tool-specific controls.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#device"><code>device:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Device setting (specify processor core).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#processor"><code>processor:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Processor specific settings.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#groups"><code>groups:</code></a></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">List of source file groups along with source files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#components"><code>components:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of software components used.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#layers"><code>layers:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of software layers that belong to the project.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#connections"><code>connections:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of consumed and provided resources.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#executes"><code>executes:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Additional pre or post build steps using external tools.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">project:
+  misc:
+    - compiler: AC6                          # specify misc controls for Arm Compiler 6
+      C: [-fshort-enums, -fshort-wchar]      # set options for C files
+  add-path:
+    - $OutDir(Secure)$                       # add the path to the secure project's output directory
+  components:
+    - component: Startup                     # Add startup component
+    - component: CMSIS CORE
+    - component: Keil RTX5 Library_NS
+  groups:
+    - group: Non-secure Code                 # Create group
+      files: 
+        - file: main_ns.c                    # Add files to group
+        - file: $Source(Secure)$interface.h
+        - file: $Output(Secure)$_CMSE_Lib.o
+</code></pre>
+<h3 id="layer"><code>layer:</code></h3>
+<p>The <code>layer:</code> node is the start of a <code>*.clayer.yml</code> file and defines a <a href="../build-overview/#software-layers">Software Layer</a>. It can contain the following nodes:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>layer:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#layer-type"><code>type:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Layer type for combining layers; used to identify <a href="../ReferenceApplications/#usage">compatible layers</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>description:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Brief description text of the layer.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-c"><code>language-C:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set the language standard for C source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-cpp"><code>language-CPP:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set the language standard for C++ source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pre-include"><code>pre-include:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Add pre-include files for C and C++ source files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Generation of debug information.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#warnings"><code>warnings:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Control generation of compiler diagnostics.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#define"><code>define:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Define symbol settings for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#undefine"><code>undefine:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Remove define symbol settings for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#add-path"><code>add-path:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Additional include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#del-path"><code>del-path:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Remove specific include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#misc"><code>misc:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Literal tool-specific controls.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#generators"><code>generators:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Control the directory structure for generator output.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#packs"><code>packs:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Defines packs that are required for this layer.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#device-name-conventions"><code>for-device:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Device information, used for consistency check (device selection is in <code>*.csolution.yml</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#board-name-conventions"><code>for-board:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Board information, used for consistency check (board selection is in <code>*.csolution.yml</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#connections"><code>connections:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of consumed and provided resources.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#processor"><code>processor:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Processor specific settings.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#linker"><code>linker:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Instructions for the linker.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#groups"><code>groups:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of source file groups along with source files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#components"><code>components:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of software components used.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">layer:
+  type: Board
+  description: Setup with Ethernet and WiFi interface
+  processor:
+    trustzone: secure        # set processor to secure
+  components:
+    - component: Startup
+    - component: CMSIS CORE
+  groups:
+    - group: Secure Code
+      files: 
+        - file: main_s.c
+    - group: CMSE
+      files: 
+        - file: interface.c
+        - file: interface.h
+        - file: tz_context.c
+</code></pre>
+<h2 id="directory-control">Directory Control</h2>
+<p>The following nodes control the directory structure for the application.</p>
+<h3 id="output-dirs"><code>output-dirs:</code></h3>
+<p>Allows to control the directory structure for build output files.  </p>
+<blockquote>
+<p><strong>Note:</strong></p>
+</blockquote>
+<p>This control is only possible at <code>csolution.yml</code> level.  </p>
+<p>Only relative paths to the base directory of the <code>csolution.yml</code> file are permitted. Use command line options of the <code>cbuild</code> tool to redirect the absolute path for this working directory.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>output-dirs:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>intdir:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies the directory for the interim files (temporary or object files) when using <code>cbuild</code> with option</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>outdir:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies the directory for the build output files (ELF, binary, MAP files).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>tmpdir:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies the directory for the interim temporary files.</td>
+</tr>
+</tbody>
+</table>
+<p>The default setting for the <code>output-dirs:</code> are:</p>
+<pre><code class="language-yml">  tmpdir:  tmp
+  outdir:  $SolutionDir()$/out/$TargetType$
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">output-dirs:
+  intdir: ./tmp2                         # relative path to csolution.yml file
+  outdir: ./out/$Project$/$TargetType$   # $BuildType$ no longer part of the outdir    
+</code></pre>
+<h3 id="generators"><code>generators:</code></h3>
+<p>Allows to control the directory structure for generator output files.  </p>
+<p>When no explicit <code>generators:</code> is specified, the <strong><code>csolution</code> Project Manager</strong> uses as path:</p>
+<ul>
+<li>The <code>workingDir</code> defined in the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_generators_pg.html#element_generator">generators element</a> of the PDSC file.</li>
+<li>When no <code>workingDir</code> is defined the default directory <code>$ProjectDir()$/generated/&lt;generator-id&gt;</code> is used; <code>&lt;generator-id&gt;</code> is defined by the <code>id</code> in the generators element of the PDSC file.</li>
+</ul>
+<p>The <code>generators:</code> node can be added at various levels of the <code>*.yml</code> input files. The following order is used:</p>
+<ol>
+<li>Use <code>generators:</code> specification of the <code>*.clayer.yml</code> input file, if not exist:</li>
+<li>Use <code>generators:</code> specification of the <code>*.cproject.yml</code> input file, if not exist:</li>
+<li>Use <code>generators:</code> specification of the <code>*.csolution.yml</code> input file.</li>
+</ol>
+<blockquote>
+<p><strong>Notes:</strong></p>
+</blockquote>
+<ul>
+<li>Only relative paths are permitted to support portablity of projects.</li>
+<li>The location of the <code>*.yml</code> file that contains the <code>generators:</code> node is the reference for relative paths.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>generators:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>base-dir:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Base directory for unspecified generators; default: <code>$ProjectDir()$/generated</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>options:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specific generator options; allows explicit directory configuration for a generator.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>The base directory is extended for each generator with <code>/&lt;generator-id&gt;</code>; <code>&lt;generator-id&gt;</code> is defined by the <code>id</code> in the generators element of the PDSC file.</p>
+<h4 id="generators-options"><code>generators: - options:</code></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>options:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- generator:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Identifier of the generator tool, specified with <code>id</code> in the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_generators_pg.html#element_generator">generators element</a> of the PDSC file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>path:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies the directory for generated files. Relative paths used location of <code>*.cproject.yml</code> or <code>*.clayer.yml</code> file as base directory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>name:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies the base name of the <a href="../YML-CBuild-Format/#generator-import-file">generator import file</a> (added in CMSIS-Toolbox 2.4.0); typically used for a board layer.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>map:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Mapping of the <em>csolution project</em> to a generator specific run-time context name (added in CMSIS-Toolbox 2.4.0).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">generators:
+  base-dir: $SolutionDir()$/MyGenerators      # Path for all generators extended by '/&lt;generator-id&gt;'
+
+  options:
+  - generator: CubeMX                         # for the generator id `CubeMX` use this path
+    path:  ./CubeFiles                        # relative path to generated files and the generator import file
+    name: MyConf                              # results in generator import file ./CubeFiles/MyConf.cgen.yml
+    map: Boot                                 # Map this project part to the CubeMX run-time context Boot
+</code></pre>
+<h3 id="rte"><code>rte:</code></h3>
+<p>Allows to control the directory structure for <a href="../build-overview/#rte-directory-structure">RTE (run-time environment)</a> files.  </p>
+<blockquote>
+<p><strong>Notes:</strong></p>
+</blockquote>
+<ul>
+<li>This control is only possible at <code>*.cproject.yml</code> level.  </li>
+<li>Only relative paths are permitted to support portablity of projects.</li>
+<li>The location of the <code>*.cproject.yml</code> file is the reference for relative paths.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>rte:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>base-dir:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Base directory for unspecified generators; default: <code>$ProjectDir()$/RTE</code>.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-yml">rte:
+  base-dir: $TargetType$/RTE      # Path extended with target-type, results in `$ProjectDir()$/$TargetType$/RTE`
+</code></pre>
+<h2 id="toolchain-options">Toolchain Options</h2>
+<p>The following code translation options may be used at various places such as:</p>
+<ul>
+<li><a href="#solution"><code>solution:</code></a> level to specify options for a collection of related projects</li>
+<li><a href="#projects"><code>project:</code></a> level to specify options for a project</li>
+</ul>
+<h3 id="compiler"><code>compiler:</code></h3>
+<p>Selects the compiler toolchain used for code generation.
+Optionally the compiler can have a version number specification.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Compiler Name</th>
+<th style="text-align: left;">Supported Compiler</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>AC6</code></td>
+<td style="text-align: left;">Arm Compiler version 6</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>GCC</code></td>
+<td style="text-align: left;">GCC Compiler</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>IAR</code></td>
+<td style="text-align: left;">IAR Compiler</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>CLANG</code></td>
+<td style="text-align: left;">CLANG Compiler based on LLVM technlogy</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">compiler: GCC              # Select GCC Compiler
+</code></pre>
+<pre><code class="language-yml">compiler: AC6@6.18.0       # Select Arm Compiler version 6
+</code></pre>
+<h3 id="linker"><code>linker:</code></h3>
+<p>The <code>linker:</code> node specifies an explicit Linker Script and/or memory regions header file.  It can be applied in <code>*.cproject.yml</code> and <code>*.clayer.yml</code> files.
+Refer to <a href="../build-overview/#linker-script-management">Linker Script Management</a> for detailed information.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>linker:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- regions:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Path and file name of <code>&lt;regions_file&gt;.h</code>, used to generate a Linker Script.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;<code>script:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Explicit file name of the Linker Script, overrules files provided with <a href="#files"><code>file:</code></a> or components.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;<code>auto:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Request <a href="../build-overview/#automatic-linker-script-generation">automatic Linker Script generation</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;<a href="#define"><code>define:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Define symbol settings for the linker script file preprocessor.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;<a href="#for-compiler"><code>for-compiler:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Include Linker Script for the specified toolchain.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;<a href="#for-context"><code>for-context:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Include Linker Script for a list of <em>build</em> and <em>target</em> type names.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;<a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Exclude Linker Script for a list of <em>build</em> and <em>target</em> type names.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Notes:</strong> </p>
+<ul>
+<li>The <code>linker:</code> node must have at least <code>regions:</code>, <code>script:</code>, <code>auto:</code>, or <code>define:</code>.</li>
+<li>If no <code>script:</code> file is specified, compiler specific <a href="../build-overview/#linker-script-templates">Linker Script template files</a> are used.</li>
+<li>A Linker Script file is preprocessed when <code>regions:</code> or a <code>define:</code> is or the file extension is <code>*.src</code>.</li>
+<li>If both <code>auto:</code> and <code>script:</code> is specified a warning is issued and <a href="../build-overview/#automatic-linker-script-generation">automatic Linker Script generation</a> is performed and the specified <code>script:</code> is ignored.</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">linker:
+  - script:   MyLinker.scf.src   # linker script file
+    regions:  MyRegions.h        # pre-processed using header file
+</code></pre>
+<pre><code class="language-yml">linker:
+  - regions:  MyRegions.h        # Default linker script is used and pre-processed using header file
+</code></pre>
+<pre><code class="language-yml">linker:
+  - script:   MyLinker.scf.src   # linker script file, not pre-processed
+    for-compiler: AC6            # for Arm Compiler 6 
+
+  - script:   MyLinker.ld        # linker script file, not pre-processed
+    for-compiler: CLANG          # for CLANG LLVM based compiler
+</code></pre>
+<pre><code class="language-yml">linker:
+  - script:   MyLinker.scf.src   # linker script file
+    for-compiler: AC6            # for Arm Compiler 6
+    regions:  MyRegions.h        # pre-processed using header file
+
+  - script:   MyLinker.ld.src    # linker script file
+    for-compiler: CLANG          # for CLANG LLVM based compiler
+    regions:  MyRegions.h        # pre-processed using header file
+    define:                      # with define setting 
+      - Setup: 1                 # define with value
+</code></pre>
+<h3 id="output"><code>output:</code></h3>
+<p>Configure the generated output files.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>output:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>base-name:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Specify a common base name for all output files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">A list of output types for code generation (see list below).</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>type:</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- lib</code></td>
+<td style="text-align: left;">Library or archive. Note: GCC uses the prefix <code>lib</code> in the base name for archive files.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>- elf</code></td>
+<td style="text-align: left;">Executable in ELF format. The file extension is toolchain specific.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>- hex</code></td>
+<td style="text-align: left;">Intel HEX file in HEX-386 format.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>- bin</code></td>
+<td style="text-align: left;">Binary image.</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>default</strong> setting for <code>output:</code> is:</p>
+<pre><code class="language-yml">output:
+  base-name: $Project$   # used the base name of the `cproject.yml` file.
+  type: elf              # Generate executeable file.
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">output:                  # configure output files
+  base-name: MyProject   # used for all output files, including linker map file.
+  type:
+  - elf                  # Generate executeable file.
+  - hex                  # generate a HEX file 
+  - bin                  # generate a BIN file 
+</code></pre>
+<p>Generate a <strong>library</strong>:</p>
+<pre><code class="language-yml">output:                  # configure output files
+  type: lib              # Generate library file.
+</code></pre>
+<h2 id="translation-control">Translation Control</h2>
+<p>The following translation control options may be used at various places such as:</p>
+<ul>
+<li><a href="#solution"><code>solution:</code></a> level to specify options for a collection of related projects</li>
+<li><a href="#projects"><code>project:</code></a> level to specify options for a project</li>
+<li><a href="#groups"><code>groups:</code></a> level to specify options for a specify source file group</li>
+<li><a href="#files"><code>files:</code></a> level to specify options for a specify source file</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<ul>
+<li>The keys <code>define:</code>, <code>add-path:</code>, <code>del-path:</code>, and <code>misc:</code> are additive. </li>
+<li>All other keys can only be defined once at the level of <code>solution:</code>, <code>project:</code>, <code>setup:</code>, <code>layer:</code>, <code>build-types:</code>. or <code>target-types:</code>. However, it is possible to overwrite these keys at the level of <code>group:</code>, <code>file:</code>, or <code>component:</code>, for example it is possible to translate a file group with a different optimize level.</li>
+</ul>
+<h3 id="language-c"><code>language-C:</code></h3>
+<p>Set the language standard for C source file compilation.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Select C Language Standard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>c90</code></td>
+<td style="text-align: left;">compile C source files as defined in C90 standard (ISO/IEC 9899:1990).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gnu90</code></td>
+<td style="text-align: left;">same as <code>c90</code> but with additional GNU extensions.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c99</code> (default)</td>
+<td style="text-align: left;">compile C source files as defined in C99 standard (ISO/IEC 9899:1999).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gnu99</code></td>
+<td style="text-align: left;">same as <code>c99</code> but with additional GNU extensions.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c11</code></td>
+<td style="text-align: left;">compile C source files as defined in C11 standard (ISO/IEC 9899:2011).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gnu11</code></td>
+<td style="text-align: left;">same as <code>c11</code> but with additional GNU extensions.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="language-cpp"><code>language-CPP:</code></h3>
+<p>Set the language standard for C++ source file compilation.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Select C++ Language Standard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>c++98</code></td>
+<td style="text-align: left;">compile C++ source files as defined in C++98 standard (ISO/IEC 14882:1998).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gnu++98</code></td>
+<td style="text-align: left;">same as <code>c++98</code> but with additional GNU extensions.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c++03</code></td>
+<td style="text-align: left;">compile C++ source files as defined in C++03 standard (ISO/IEC 14882:2003).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gnu++03</code></td>
+<td style="text-align: left;">same as <code>c++03</code> but with additional GNU extensions.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c++11</code></td>
+<td style="text-align: left;">compile C++ source files as defined in C++11 standard (ISO/IEC 14882:2011).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gnu++11</code></td>
+<td style="text-align: left;">same as <code>c++11</code> but with additional GNU extensions.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c++14</code> (default)</td>
+<td style="text-align: left;">compile C++ source files as defined in C++14 standard (ISO/IEC 14882:2014).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gnu++14</code></td>
+<td style="text-align: left;">same as <code>c++14</code> but with additional GNU extensions.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c++17</code></td>
+<td style="text-align: left;">compile C++ source files as defined in C++17 standard (ISO/IEC 14882:2014).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gnu++17</code></td>
+<td style="text-align: left;">same as <code>c++17</code> but with additional GNU extensions.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c++20</code></td>
+<td style="text-align: left;">compile C++ source files as defined in C++20 standard (ISO/IEC 14882:2020).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gnu++20</code></td>
+<td style="text-align: left;">same as <code>c++20</code> but with additional GNU extensions.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="optimize"><code>optimize:</code></h3>
+<p>Generic optimize levels for code generation.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Code Generation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>balanced</code></td>
+<td style="text-align: left;">Balanced optimization</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>size</code></td>
+<td style="text-align: left;">Optimized for code size</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>speed</code></td>
+<td style="text-align: left;">Optimized for execution speed</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>debug</code></td>
+<td style="text-align: left;">Optimize for debug experience</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>none</code></td>
+<td style="text-align: left;">No optimization</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<ul>
+<li>When <code>optimize:</code> is not specified, the default optimize setting of the compiler is used.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">groups:
+  - group:  &quot;Main File Group&quot;
+    optimize: none          # optimize this file group for debug illusion
+    files:
+      - file: file1a.c
+      - file: file1b.c
+</code></pre>
+<h3 id="debug"><code>debug:</code></h3>
+<p>Control the generation of debug information.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Code Generation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>on</code></td>
+<td style="text-align: left;">Generate debug information (default)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>off</code></td>
+<td style="text-align: left;">Generate no debug information</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml"> build-types:
+    - type: Release
+      optimize: size        # optimize for size
+      debug: off            # generate no debug information for the release build
+</code></pre>
+<h3 id="warnings"><code>warnings:</code></h3>
+<p>Control warning level for compiler diagnostics.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">Control diagnostic messages (warnings)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>on</code></td>
+<td style="text-align: left;">Generate warning messages</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>all</code></td>
+<td style="text-align: left;">Enable all compiler warning messages (compiler option -Wall)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>off</code></td>
+<td style="text-align: left;">No warning messages generated</td>
+</tr>
+</tbody>
+</table>
+<h3 id="define"><code>define:</code></h3>
+<p>Contains a list of symbol #define statements that are passed via the command line to the development tools for C, C++ source files, or the <a href="#linker">linker</a> script file preprocessor.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>define:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>- &lt;symbol-name&gt;</code></td>
+<td style="text-align: left;">#define symbol passed via command line</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>- &lt;symbol-name&gt;: &lt;value&gt;</code></td>
+<td style="text-align: left;">#define symbol with value passed via command line</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>- &lt;symbol-name&gt;: \"&lt;string&gt;\"</code></td>
+<td style="text-align: left;">#define symbol with string value passed via command line</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong></p>
+</blockquote>
+<p>This control only applies to C and C++ source files (or to the <a href="#linker">linker</a> script preprocessor).  For assembler source files use the <code>misc:</code> node.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">define:                    # Start a list of define statements
+  - TestValue: 12          # add symbol 'TestValue' with value 12
+  - TestMode               # add symbol 'TestMode'
+</code></pre>
+<h3 id="undefine"><code>undefine:</code></h3>
+<p>Remove symbol #define statements from the command line of the development tools.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>undefine:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp; <code>- &lt;symbol-name&gt;</code></td>
+<td style="text-align: left;">Remove #define symbol</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">groups:
+  - group:  &quot;Main File Group&quot;
+    undefine:
+      - TestValue           # remove define symbol `TestValue` for this file group
+    files: 
+      - file: file1a.c
+        undefine:
+         - TestMode         # remove define symbol `TestMode` for this file
+      - file: file1b.c
+</code></pre>
+<h3 id="add-path"><code>add-path:</code></h3>
+<p>Add include paths to the command line of the development tools for C and C++ source files.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>add-path:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>- &lt;path-name&gt;</code></td>
+<td style="text-align: left;">Named path to be added</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong></p>
+</blockquote>
+<p>This control only applies to C and C++ source files.  For assembler source files use the <code>misc:</code> node.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">project:
+  misc:
+    - for-compiler: AC6
+      C: [-fshort-enums, -fshort-wchar]
+    - for-compiler: GCC
+      C: [-fshort-enums, -fshort-wchar]
+
+  add-path:
+    - $OutDir(Secure)$                   # add path to secure project's output directory
+</code></pre>
+<h3 id="del-path"><code>del-path:</code></h3>
+<p>Remove include paths (that are defined at the cproject level) from the command line of the development tools.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>del-paths:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>- &lt;path-name&gt;</code></td>
+<td style="text-align: left;">Named path to be removed; <code>*</code> for all</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examle:</strong></p>
+<pre><code class="language-yml">  target-types:
+    - type: CM3
+      device: ARMCM3
+      del-paths:
+        - /path/solution/to-be-removed
+</code></pre>
+<h3 id="pre-include"><code>pre-include:</code></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>**New in CMSIS-Toolbox 2.5.0; requires cbuild2cmake backend (todo)</p>
+<p>Add pre-include files to the command line of the development tools for C and C++ source files.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>pre-include:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>- file:</code></td>
+<td style="text-align: left;">Name of the pre-include file.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examle:</strong></p>
+<pre><code class="language-yml">  groups:
+    - group: MyGroup
+      pre-include:
+        - file: my_include.h
+</code></pre>
+<h3 id="misc"><code>misc:</code></h3>
+<p>Add miscellaneous literal tool-specific controls that are directly passed to the individual tools depending on the file type.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>misc:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#for-compiler"><code>- for-compiler:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Name of the toolchain that the literal control string applies to.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>C-CPP:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Applies to <code>*.c</code> and <code>*.cpp</code> files (added before <code>C</code> and <code>CPP:</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>C:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Applies to <code>*.c</code> files only.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>CPP:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Applies to <code>*.cpp</code> files only.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ASM:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Applies to assembler source files only.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>Link:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Applies to the linker (added before <code>Link-C:</code> or <code>Link-CPP:</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>Link-C:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Applies to the linker; added when no C++ files are part of the project.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>Link-CPP:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Applies to the linker; added when C++ files are part of the project.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>Library:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Applies to the library manager or archiver.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  build-types:
+    - type: Debug
+      misc:
+        - for-compiler: AC6
+          C-CPP:
+            - -O1
+            - -g
+        - for-compiler: GCC
+          C-CPP:
+            - -Og
+
+    - type: Release
+      compiler: AC6
+      misc:
+        - C:
+          - -O3
+
+    - type: GCC-LibDebug
+      compiler: GCC
+      misc:
+        - Library:
+          - -lm
+          - -lc
+          - -lgcc
+          - -lnosys
+</code></pre>
+<h2 id="project-setups">Project Setups</h2>
+<p>The <code>setups:</code> node can be used to create setups that are specific to a compiler, target-type, and/or built-type.</p>
+<h3 id="setups"><code>setups:</code></h3>
+<p>The <code>setups:</code> node collects a list of <code>setup:</code> notes.  For each context, only one setup will be selected.</p>
+<p>The result is a <code>setup:</code> that collects various toolchain options and that is valid for all files and components in the
+project. It is however possible to change that <code>setup:</code> settings on a <a href="#groups"><code>group:</code></a> or <a href="#files"><code>file:</code></a> level.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>setups:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- setup:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Description of the setup</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Include group for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Exclude group for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-compiler"><code>for-compiler:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Include group for a list of compilers.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#output"><code>output:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Configure the generated output files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-c"><code>language-C:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set the language standard for C source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-cpp"><code>language-CPP:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set the language standard for C++ source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pre-include"><code>pre-include:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Add pre-include files for C and C++ source files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Generation of debug information.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#warnings"><code>warnings:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Control generation of compiler diagnostics.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#define"><code>define:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Define symbol settings for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#undefine"><code>undefine:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Remove define symbol settings for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#add-path"><code>add-path:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Additional include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#del-path"><code>del-path:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Remove specific include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#linker"><code>linker:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Remove specific include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#misc"><code>misc:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Literal tool-specific controls.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#processor"><code>processor:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Processor configuration.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-yml">project:
+  setups:
+    - setup: Arm Compiler 6 project setup
+      for-compiler: AC6
+      linker:
+        - script: my-project.sct
+      define:
+        - test: 12
+
+   - setup: GCC project setup
+     for-compiler: GCC
+     linker:
+       - script: my-project.inc
+     define:
+       - test: 11
+</code></pre>
+<h2 id="pack-selection">Pack Selection</h2>
+<p>The <code>packs:</code> node can be specified in the <code>*.csolution.yml</code> file allows you to:</p>
+<ul>
+<li>Reduce the scope of software packs that are available for projects.</li>
+<li>Add specific software packs optional with a version specification.</li>
+<li>Provide a path to a local installation of a software pack that is for example project specific or under development.</li>
+</ul>
+<p>The  <a href="#pack-name-conventions">Pack Name Conventions</a> are used to specify the name of the software packs.
+The <code>pack:</code> definition may be specific to a <a href="#context"><code>context</code></a> that specifies <code>target-types:</code> and/or <code>build-types:</code> or provide a local path to a development repository of a software pack.</p>
+<blockquote>
+<p><strong>Notes:</strong> </p>
+</blockquote>
+<ul>
+<li>
+<p>By default, the <strong><code>csolution</code> Project Manager</strong> only loads the latest version of the installed software packs. It is however possible to request specific versions using the <code>- pack:</code> node.</p>
+</li>
+<li>
+<p>An attempt to add two different versions of the same software pack results in an error.</p>
+</li>
+</ul>
+<h3 id="packs"><code>packs:</code></h3>
+<p>The <code>packs:</code> node is the start of a pack selection.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>packs:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pack"><code>- pack:</code></a></td>
+<td style="text-align: left;">Explicit pack specification (additive)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pack"><code>pack:</code></h3>
+<p>The <code>pack:</code> list allows to add specific software packs, optional with a version specification. The version number can
+have also the format <code>@~1.2</code>/<code>@~1</code> that matches with semantic versioning.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>pack:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>path:</code></td>
+<td style="text-align: left;">Explicit path name that stores the software pack. This can be a relative path to your project workspace.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
+<td style="text-align: left;">Include pack for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td style="text-align: left;">Exclude pack for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<ul>
+<li>When an explicit <code>path:</code> to the pack is specified, an explicit pack version cannot be specified as the path directly specifies the pack to include.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">packs:                                  # start section that specifics software packs
+  - pack: AWS                           # use packs from AWS
+  - pack: NXP::*K32L*                   # use packs from NXP relating to K32L series (would match K32L3A60_DFP + FRDM-K32L3A6_BSP)
+  - pack: ARM                           # use packs from Arm
+
+  - pack: Keil::Arm_Compiler            # add latest version of Keil::Arm_Compiler pack
+  - pack: Keil::MDK-Middleware@7.13.0   # add Keil::MDK-Middleware pack at version 7.13.0
+  - pack: ARM::CMSIS-FreeRTOS@~10.4     # add CMSIS-FreeRTOS with version 10.4.x
+
+  - pack: NXP::K32L3A60_DFP             # add pack for NXP device 
+    path: ./local/NXP/K32L3A60_DFP      # with path to the pack (local copy, repo, etc.)
+
+  - pack: AWS::coreHTTP                 # add pack
+    path: ./development/AWS/coreHTTP    # with path to development source directory
+    for-context: +DevTest               # pack is only used for target-type &quot;DevTest&quot;
+</code></pre>
+<h2 id="target-selection">Target Selection</h2>
+<h3 id="board"><code>board:</code></h3>
+<p>Specifies a <a href="#board-name-conventions">unique board name</a>, optionally with vendor that must be defined in software packs.
+This information is used to define the <code>device:</code> along with basic toolchain settings.</p>
+<h3 id="device"><code>device:</code></h3>
+<p>Specifies a <a href="#device-name-conventions">unique device name</a>, optionally with vendor that must be defined in software
+packs. This information is used to define the <code>device:</code> along with basic toolchain settings.</p>
+<p>A <code>device:</code> is derived from the <code>board:</code> setting, but an explicit <code>device:</code> setting overrules the <code>board:</code> device.</p>
+<p>If <code>device:</code> specifies a device with a multi-core processor, and no explicit <code>pname</code> for the processor core selection is specified, the default <code>pname</code> of the device is used.</p>
+<p>At the level of a <code>cproject.yml</code> file, only the <code>pname</code> can be specified as the device itself is selected at the level of a <code>csolution.yml</code> file.</p>
+<h2 id="processor-attributes">Processor Attributes</h2>
+<h3 id="processor"><code>processor:</code></h3>
+<p>The <code>processor:</code> keyword specifies the usage of processor features for this project.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>processor:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>fpu:</code></td>
+<td style="text-align: left;">Select usage of FPU instructions: <code>dp</code> (double precision) | <code>sp</code> (single precision) | <code>off</code> (disabled).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>dsp:</code></td>
+<td style="text-align: left;">Select usage of SIMD instructions: <code>on</code> (enabled) | <code>off</code> (disabled).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mve:</code></td>
+<td style="text-align: left;">Select usage of M-Profile vector extension: <code>fp</code> (floating point and integer instructions) | <code>int</code> (integer instructions) | <code>off</code> (disabled).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>trustzone:</code></td>
+<td style="text-align: left;">Select TrustZone mode: <code>secure</code> | <code>non-secure</code> | <code>off</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>branch-protection:</code></td>
+<td style="text-align: left;">Select Branch Protection mode: <code>bti</code> (branch target identification) | <code>bti-signret</code> (branch target identification and pointer authentication) | <code>off</code> (disabled).</td>
+</tr>
+</tbody>
+</table>
+<p>The default setting enables the available features of the device. For example <code>fpu: dp</code> is selected for devices that offer double precision floating point hardware.  </p>
+<p>For <code>trustzone:</code> the default setting is:</p>
+<ul>
+<li><code>off</code> for devices that support this option, but TrustZone is configurable.</li>
+<li><code>non-secure</code> for devices that have TrustZone enabled.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">project:
+  processor:
+    trustzone: secure
+    fpu: off             # do not use FPU instructions
+    mve: off             # do not use vector instructions.  
+</code></pre>
+<h2 id="context">Context</h2>
+<p>A <a href="#context-name-conventions"><code>context</code></a> is an enviroment setup for a project that is composed of: </p>
+<ul>
+<li><code>project-name</code> that is the base name of the <code>*.cproject.yml</code> file.</li>
+<li><code>.build-type</code> that defines typically build specific settings such as for debug, release, or test.</li>
+<li><code>+target-type</code> that defines typically target specific settings such as device, board, or usage of processor features.</li>
+</ul>
+<p>The section
+<a href="../build-overview/#project-setup-for-multiple-targets-and-builds">Project setup for multiple targets and test builds</a>
+explains the overall concept of  <code>target-types</code> and <code>build-types</code>. These <code>target-types</code> and <code>build-types</code> are defined in the <code>*.csolution.yml</code> that defines the overall application for a system.</p>
+<p>The settings of the <code>target-types:</code> are processed first; then the settings of the <code>build-types:</code> that potentially overwrite the <code>target-types:</code> settings.</p>
+<h3 id="target-types"><code>target-types:</code></h3>
+<p>The <code>target-types:</code> node may include <a href="#toolchain-options">toolchain options</a>, <a href="#target-selection">target selection</a>, and <a href="#processor-attributes">processor attributes</a>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>target-types:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- type:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">The target-type name that is used to create the <a href="#context-name-conventions">context</a> name.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#compiler"><code>compiler:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Toolchain selection.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-c"><code>language-C:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Set the language standard for C source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-cpp"><code>language-CPP:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Set the language standard for C++ source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pre-include"><code>pre-include:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Add pre-include files for C and C++ source files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Generation of debug information.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#warnings"><code>warnings:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Control Generation of debug information.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#define"><code>define:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Preprocessor (#define) symbols for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#undefine"><code>undefine:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Remove preprocessor (#define) symbols.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#add-path"><code>add-path:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Additional include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#del-path"><code>del-path:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Remove specific include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#misc"><code>misc:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Literal tool-specific controls.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#board"><code>board:</code></a></td>
+<td><strong>see Note</strong></td>
+<td style="text-align: left;">Board specification.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#device"><code>device:</code></a></td>
+<td><strong>see Note</strong></td>
+<td style="text-align: left;">Device specification.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#processor"><code>processor:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Processor specific settings.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#context-map"><code>context-map:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Use different <code>target-types:</code> for specific projects.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#variables"><code>variables:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Variables that can be used to define project components.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note::</strong></p>
+<p>Either <code>device:</code> or <code>board:</code> is required.</p>
+<h3 id="build-types"><code>build-types:</code></h3>
+<p>The <code>build-types:</code> node may include <a href="#toolchain-options">toolchain options</a>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>build-types:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- type:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">The build-type name that is used to create the <a href="#context-name-conventions">context</a> name.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#compiler"><code>compiler:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Toolchain selection.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-c"><code>language-C:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Set the language standard for C source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-cpp"><code>language-CPP:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Set the language standard for C++ source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pre-include"><code>pre-include:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Add pre-include files for C and C++ source files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Generation of debug information.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#define"><code>define:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Preprocessor (#define) symbols for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#undefine"><code>undefine:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Remove preprocessor (#define) symbols.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#add-path"><code>add-path:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Additional include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#del-path"><code>del-path:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Remove specific include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#misc"><code>misc:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Literal tool-specific controls.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#context-map"><code>context-map:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Use different <code>build-types:</code> for specific projects.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#variables"><code>variables:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Variables that can be used to define project components.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">target-types:
+  - type: Board                  # target-type name, used in context with: +Board
+    board: NUCLEO-L552ZE-Q       # board specifies indirectly also the device
+
+  - type: Production-HW          # target-type name, used in context with: +Production-HW
+    device: STM32L552RC          # specifies device
+
+build-types:
+  - type: Debug                  # build-type name, used in context with: .Debug
+    optimize: none               # specifies code optimization level
+    debug: debug                 # generates debug information
+
+  - type: Test                   # build-type name, used in context with: .Test
+    optimize: size
+    debug: on
+</code></pre>
+<p>The <code>board:</code>, <code>device:</code>, and <code>processor:</code> settings are used to configure the code translation for the toolchain. These
+settings are processed in the following order:</p>
+<ol>
+<li><code>board:</code> relates to a BSP software pack that defines board parameters, including the
+   <a href="https://arm-software.github.io/CMSIS_5/Pack/html/pdsc_boards_pg.html#element_board_mountedDevice">mounted device</a>.
+   If <code>board:</code> is not specified, a <code>device:</code> must be specified.</li>
+<li><code>device:</code> defines the target device. If <code>board:</code> is specified, the <code>device:</code> setting can be used to overwrite the
+   device or specify the processor core used.</li>
+<li><code>processor:</code> overwrites default settings for code generation, such as endianess, TrustZone mode, or disable Floating
+   Point code generation.</li>
+</ol>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">target-types:
+  - type: Production-HW
+    board: NUCLEO-L552ZE-Q    # hardware is similar to a board (to use related software layers)
+    device: STM32L552RC       # but uses a slightly different device
+    processor: 
+      trustzone: off          # TrustZone disabled for this project
+</code></pre>
+<pre><code class="language-yml">target-types:
+  - type: Production-HW
+    board: FRDM-K32L3A6       # NXP board with K32L3A6 device
+    device: :cm0plus          # use the Cortex-M0+ processor
+</code></pre>
+<h3 id="context-map"><code>context-map:</code></h3>
+<p>The <code>context-map:</code> node allows for a specific <code>project-name</code> the remapping of <code>target-types:</code> and/or <code>build-types:</code> to a different <code>context:</code> which enables: </p>
+<ul>
+<li>Integrating an existing <code>*.cproject.yml</code> file in a different <code>*.csolution.yml</code> file that uses different <code>build-types:</code> and/or <code>target-types:</code> for the overall application.</li>
+<li>Defines how different <code>*.cproject.yml</code> files of a <code>*.csolution.yml</code> are to the binary image of the final target (needs reflection in cbuild-idx.yml).</li>
+</ul>
+<p>The <code>context-map:</code> node lists a remapping of the <a href="#context-name-conventions"><code>context-name</code></a> for a <code>project-name</code> and specific <code>target-types:</code> and <code>build-types:</code>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>context-map:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>- &lt;context-name&gt;</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Specify an alternative <a href="#context-name-conventions"><code>context-name</code></a> for a project.</td>
+</tr>
+</tbody>
+</table>
+<p>For the <code>context-map:</code> it is required to specify the <code>&lt;project-name&gt;</code> as part of the <a href="#context-name-conventions"><code>context-name</code></a>. This project will use a different <code>.build-type</code> and/or <code>+target-type</code> as applied in the <a href="#context-name-conventions"><code>context-name</code></a>. This remapping of the context applies for the specific type in the <code>build-types:</code> or <code>target-types:</code> list.</p>
+<p><strong>Example 1:</strong></p>
+<p>This application combines two projects for a multi-processor device, but the project <code>HelloCM7</code> requires a different setting for the build-type name <code>Release</code> as this enables different settings within the <code>*.cproject.yml</code> file.</p>
+<pre><code class="language-yml">  target-types:
+    - type: DualCore
+      device: MyDualCoreDevice
+
+  build-types:
+    - type: Release                        # When applying build-type name 'release':
+      context-map:
+        - HelloCM7.flex_release            # project HelloCM7 uses build-type name &quot;flex_release&quot; instead of &quot;release&quot;
+
+  projects:
+    - project: ./CM7/HelloCM7.cproject.yml
+    - project: ./CM4/HelloCM4.cproject.yml
+</code></pre>
+<p><strong>Example 2:</strong></p>
+<p>The following example uses three projects <code>Demo</code>, <code>TFM</code> and <code>Boot</code>. The project <code>TFM</code> should be always build using the context <code>TFM.Release+LibMode</code>.  For the target-type name <code>Board</code>, the Boot project requires the <code>+Flash</code> target, but any build-type could be used.</p>
+<pre><code class="language-yml">  target-types:
+    - type: Board                          # When applying target-type: 'Board':
+      context-map:
+        - TFM.Release+LibMode              # for project TFM use build-type: Release, target-type: LibMode
+        - Boot+Flash                       # for project Boot use target-type: Flash
+      board: B-U585I-IOT02A
+    - type: AVH                            # When applying target-type: 'AVH':
+      context-map:
+        - context: TFM.Release+LibMode     # for project TFM use build-type: Release, target-type: LibMode
+      device: ARM::SSE-300-MPS3
+
+  projects:
+    - project: ./App/Demo.cproject.yml
+    - project: ./Security/TFM.cproject.yml
+    - project: ./Loader/Boot.cproject.yml
+</code></pre>
+<h2 id="conditional-build">Conditional Build</h2>
+<p>It is possible to include or exclude <em>items</em> of a <a href="#order-of-list-nodes"><em>list node</em></a> in the build process.</p>
+<ul>
+<li><a href="#for-compiler"><code>for-compiler:</code></a> includes <em>items</em> only for a compiler toolchain.</li>
+<li><a href="#for-context"><code>for-context:</code></a> includes <em>items</em> only for a <a href="#context-name-conventions"><em>context</em></a> list.</li>
+<li><a href="#not-for-context"><code>not-for-context:</code></a> excludes <em>items</em> for a <a href="#context-name-conventions"><em>context</em></a> list.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p><code>for-context</code> and <code>not-for-context</code> are mutually exclusive, only one occurrence can be specified for a
+  <em>list node</em>.</p>
+<h3 id="for-compiler"><code>for-compiler:</code></h3>
+<p>Depending on a <a href="#compiler">compiler</a> toolchain it is possible to include <em>list nodes</em> in the build process.</p>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">for-compiler: AC6@6.16               # add item for Arm Compiler version 6.16 only      
+
+for-compiler: GCC                    # for GCC Compiler (any version)
+</code></pre>
+<h3 id="for-context"><code>for-context:</code></h3>
+<p>A <a href="#context-name-conventions"><em>context</em></a> list that adds a list-node for specific <code>target-type</code> and/or <code>build-type</code> names.</p>
+<h3 id="not-for-context"><code>not-for-context:</code></h3>
+<p>A <a href="#context-name-conventions"><em>context</em></a> list that removes a list-node for specific <code>target-types:</code> and/or <code>build-types:</code>.</p>
+<h3 id="context-list">Context List</h3>
+<p>It is also possible to provide a <a href="#context-name-conventions"><code>context</code></a> list with:</p>
+<pre><code class="language-yml">  - [.build-type][+target-type]
+  - [.build-type][+target-type]
+</code></pre>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">for-context:      
+  - .Test                            # add item for build-type: Test (any target-type)
+
+for-context:                         # add item
+  - .Debug                           # for build-type: Debug and 
+  - .Release+Production-HW           # build-type: Release / target-type: Production-HW
+
+not-for-context:  +Virtual           # remove item for target-type: Virtual (any build-type)
+not-for-context:  .Release+Virtual   # remove item for build-type: Release with target-type: Virtual
+</code></pre>
+<h3 id="usage">Usage</h3>
+<p>The keyword <code>for-context:</code> and <code>not-for-context:</code> can be applied to the following <em>list nodes</em>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">List Node</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#projects"><code>- project:</code></a></td>
+<td style="text-align: left;">At <code>projects:</code> level it is possible to control inclusion of project.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#layers"><code>- layer:</code></a></td>
+<td style="text-align: left;">At <code>layers:</code> level it is possible to control inclusion of a software layer.</td>
+</tr>
+</tbody>
+</table>
+<p>The keyword <code>for-context:</code>, <code>not-for-context:</code>, and <code>for-compiler:</code> can be applied to the following <em>list nodes</em>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">List Node</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#components"><code>- component:</code></a></td>
+<td style="text-align: left;">At <code>components:</code> level it is possible to control inclusion of a software component.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#groups"><code>- group:</code></a></td>
+<td style="text-align: left;">At <code>groups:</code> level it is possible to control inclusion of a file group.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#setups"><code>- setup:</code></a></td>
+<td style="text-align: left;">At <code>setups:</code> level it is define toolchain specific options that apply to the whole project.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#files"><code>- file:</code></a></td>
+<td style="text-align: left;">At <code>files:</code> level it is possible to control inclusion of a file.</td>
+</tr>
+</tbody>
+</table>
+<p>The inclusion of a <em>list node</em> is processed for a given project <a href="#context-name-conventions"><em>context</em></a> respecting its hierarchy from top to bottom:</p>
+<p><code>project</code> --&gt; <code>layer</code> --&gt; <code>component</code>/<code>group</code> --&gt; <code>file</code></p>
+<p>In other words, the restrictions specified by <code>for-context:</code> or <code>not-for-context</code> for a <em>list node</em> are automatically applied to its children nodes. Children <em>list nodes</em> inherit the restrictions from their parent.</p>
+<h2 id="multiple-projects">Multiple Projects</h2>
+<p>The section <a href="../build-overview/#project-setup-for-related-projects">Project setup for related projects</a> describes the
+organization of multiple projects. The file <code>*.csolution.yml</code> describes the relationship of this projects and may also re-map
+<code>target-types:</code> and <code>build-types:</code> for this projects using <a href="#context-map"><code>context-map:</code></a>.</p>
+<h3 id="projects"><code>projects:</code></h3>
+<p>The YAML structure of the section <code>projects:</code> is:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>projects:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#project"><code>- project:</code></a></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Path to the project file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Include project for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Exclude project for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<p>This example uses two projects that are build in parallel using the same <code>build-type:</code> and <code>target-type:</code>.  Such a setup is typical for multi-processor systems.</p>
+<pre><code class="language-yml">  projects:
+    - project: ./CM0/CM0.cproject.yml      # include project for Cortex-M0 processor
+    - project: ./CM4/CM4.cproject.yml      # include project for Cortex-M4 processor
+</code></pre>
+<p>This example uses multiple projects, but with additional controls.</p>
+<pre><code class="language-yml">  projects:
+    - project: ./CM0/CM0.cproject.yml      # specify cproject.yml file
+      for-context: +CM0-Addon                 # build only when 'target-type: CM0-Addon' is selected
+      for-compiler: GCC                    # build only when 'compiler: GCC'  is selected
+      define:                              # add additional defines during build process
+        - test: 12
+
+    - project: ./CM0/CM0.cproject.yml      # specify cproject.yml file
+      for-context: +CM0-Addon                 # specify use case
+      for-compiler: AC6                    # build only when 'compiler: AC6'  is selected
+      define:                              # add additional defines during build process
+        - test: 9
+
+    - project: ./Debug/Debug.cproject.yml  # specify cproject.yml file
+      not-for-context: .Release               # generated for any 'build-type:' except 'Release'
+</code></pre>
+<h2 id="source-file-management">Source File Management</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Keyword</th>
+<th style="text-align: left;">Used in files</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>groups:</code></td>
+<td style="text-align: left;"><code>*.cproject.yml</code>, <code>*.clayer.yml</code></td>
+<td style="text-align: left;">Start of a list that adds <a href="#source-file-management">source groups and files</a> to a project or layer.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>layers:</code></td>
+<td style="text-align: left;"><code>*.cproject.yml</code></td>
+<td style="text-align: left;">Start of a list that adds software layers to a project.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>components:</code></td>
+<td style="text-align: left;"><code>*.cproject.yml</code>, <code>*.clayer.yml</code></td>
+<td style="text-align: left;">Start of a list that adds software components to a project or layer.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="groups"><code>groups:</code></h3>
+<p>The <code>groups:</code> keyword specifies a list that adds <a href="#source-file-management">source groups and files</a> to a project or layer:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>groups:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- group:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Name of the group.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Include group for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Exclude group for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-compiler"><code>for-compiler:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Include group for a list of compilers.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-c"><code>language-C:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Set the language standard for C source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-cpp"><code>language-CPP:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Set the language standard for C++ source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pre-include"><code>pre-include:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Add pre-include files for C and C++ source files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Generation of debug information.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#warnings"><code>warnings:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Control generation of compiler diagnostics.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#define"><code>define:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Define symbol settings for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#undefine"><code>undefine:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Remove define symbol settings for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#add-path"><code>add-path:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Additional include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#del-path"><code>del-path:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Remove specific include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#misc"><code>misc:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Literal tool-specific controls.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#groups"><code>groups:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Start a nested list of groups.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#files"><code>files:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Start a list of files.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<p>See <a href="#files"><code>files:</code></a> section.</p>
+<h3 id="files"><code>files:</code></h3>
+<p>Add source files to a project.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>files:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- file:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Name of the file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Include file for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Exclude file for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-compiler"><code>for-compiler:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Include file for a list of compilers.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#filename-extensions"><code>category:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Explicit file category to overwrite <a href="#filename-extensions">filename extension</a> assignment.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-c"><code>language-C:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Set the language standard for C source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-cpp"><code>language-CPP:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Set the language standard for C++ source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pre-include"><code>pre-include:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Add pre-include files for C and C++ source files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Generation of debug information.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#warnings"><code>warnings:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Control generation of compiler diagnostics.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#define"><code>define:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Define symbol settings for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#undefine"><code>undefine:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Remove define symbol settings for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#add-path"><code>add-path:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Additional include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#del-path"><code>del-path:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Remove specific include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#misc"><code>misc:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Literal tool-specific controls.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>It is also possible to specify a <a href="../build-overview/#linker-script-management">Linker Script</a>. Files with the extension <code>.sct</code>, <code>.scf</code>, <code>.ld</code>, and <code>.icf</code> are recognized as Linker Script files.</p>
+<p><strong>Example:</strong></p>
+<p>Add source files to a project or a software layer. Used in <code>*.cproject.yml</code> and <code>*.clayer.yml</code> files.</p>
+<pre><code class="language-yml">groups:
+  - group:  &quot;Main File Group&quot;
+    not-for-context:                     # includes this group not for the following: 
+      - .Release+Virtual                 # build-type 'Release' and target-type 'Virtual'
+      - .Test-DSP+Virtual                # build-type 'Test-DSP' and target-type 'Virtual'
+      - +Board                           # target-type 'Board'
+    files: 
+      - file: file1a.c
+      - file: file1b.c
+        define:
+          - a: 1
+        undefine:
+          - b
+        optimize: size
+
+  - group: &quot;Other File Group&quot;
+    files:
+      - file: file2a.c
+        for-context: +Virtual               # include this file only for target-type 'Virtual'
+        define: 
+          - test: 2
+      - file: file2a.c
+        not-for-context: +Virtual           # include this file not for target-type 'Virtual'
+      - file: file2b.c
+
+  - group: &quot;Nested Group&quot;
+    groups:
+      - group: Subgroup1
+        files:
+          - file: file-sub1-1.c
+          - file: file-sub1-2.c
+      - group: Subgroup2
+        files:
+          - file: file-sub2-1.c
+          - file: file-sub2-2.c
+</code></pre>
+<p>It is also possible to include a file group for a specific compiler using <a href="#for-compiler"><code>for-compiler:</code></a> or a specific
+target-type and/or build-type using <a href="#for-context"><code>for-context:</code></a> or <a href="#not-for-context"><code>not-for-context:</code></a>.</p>
+<pre><code class="language-yml">groups:
+  - group:  &quot;Main File Group&quot;
+    for-compiler: AC6                    # includes this group only for Arm Compiler 6
+    files: 
+      - file: file1a.c
+      - file: file2a.c
+
+  - group:  &quot;Main File Group&quot;
+    for-compiler: GCC                    # includes this group only for GCC Compiler
+    files: 
+      - file: file1b.c
+      - file: file2b.c
+</code></pre>
+<h3 id="layers"><code>layers:</code></h3>
+<p>Add a software layer to a project. Used in <code>*.cproject.yml</code> files.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>layers:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#layer"><code>- layer:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Path to the <code>*.clayer.yml</code> file that defines the layer.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#layer-type"><code>type:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Refers to an expected layer type.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Include layer for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Exclude layer for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  layers:
+    # Socket
+    - layer: ./Socket/FreeRTOS+TCP/Socket.clayer.yml
+      for-context:
+        - +IP-Stack
+    - layer: ./Socket/WiFi/Socket.clayer.yml
+      for-context:
+        - +WiFi
+    - layer: ./Socket/VSocket/Socket.clayer.yml
+      for-context:
+        - +AVH
+
+    # Board
+    - layer: ./Board/IMXRT1050-EVKB/Board.clayer.yml
+      for-context: 
+        - +IP-Stack
+        # - +WiFi
+    - layer: ./Board/B-U585I-IOT02A/Board.clayer.yml
+      for-context: 
+        - +WiFi
+    - layer: ./Board/AVH_MPS3_Corstone-300/Board.clayer.yml
+      for-context: 
+        - +AVH
+</code></pre>
+<h4 id="layer-type"><code>layer:</code> - <code>type:</code></h4>
+<p>The <code>layer:</code> - <code>type:</code> is used in combination with the meta-data of the <a href="#connections"><code>connections:</code></a> to check the list of available <code>*.clayer.yml</code> files for matching layers. Instead of an explicit <code>layer:</code> node that specifies a <code>*.clayer.yml</code> file, the <code>type:</code> is used to search for matching layers with the <code>csolution</code> command <code>list layers</code>.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  layers:
+    - type: Socket              # search for matching layers of type `Socket`
+
+    - type: Board               # search for matching layers of type `Board`
+</code></pre>
+<p>When combined with <a href="#variables"><code>variables:</code></a> it is possible to define the required <code>*.clayer.yml</code> files at the level of the <code>*.csolution.yml</code> file.  Refer to <a href="#variables"><code>variables:</code></a> for an example.</p>
+<h3 id="components"><code>components:</code></h3>
+<p>Add software components to a project or a software layer. Used in <code>*.cproject.yml</code> and <code>*.clayer.yml</code> files.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>components:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- component:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Name of the software component.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Include component for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Exclude component for a list of <em>build</em> and <em>target</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-c"><code>language-C:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Set the language standard for C source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-cpp"><code>language-CPP:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Set the language standard for C++ source file compilation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pre-include"><code>pre-include:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Add pre-include files for C and C++ source files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Generation of debug information.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#warnings"><code>warnings:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Control generation of compiler diagnostics.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#define"><code>define:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Define symbol settings for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#undefine"><code>undefine:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Remove define symbol settings for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#add-path"><code>add-path:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Additional include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#del-path"><code>del-path:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Remove specific include file paths.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#misc"><code>misc:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Literal tool-specific controls.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#instances"><code>instances:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Add multiple instances of component configuration files (default: 1)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  components:
+    - component: ARM::CMSIS:RTOS2:FreeRTOS&amp;Cortex-M
+
+    - component: ARM::RTOS&amp;FreeRTOS:Config&amp;CMSIS RTOS2
+    - component: ARM::RTOS&amp;FreeRTOS:Core&amp;Cortex-M
+    - component: ARM::RTOS&amp;FreeRTOS:Event Groups
+    - component: ARM::RTOS&amp;FreeRTOS:Heap&amp;Heap_5
+    - component: ARM::RTOS&amp;FreeRTOS:Stream Buffer
+    - component: ARM::RTOS&amp;FreeRTOS:Timers
+
+    - component: ARM::Security:mbed TLS
+      define:
+        - MBEDTLS_CONFIG_FILE: &quot;aws_mbedtls_config.h&quot;
+    - component: AWS::FreeRTOS:backoffAlgorithm
+    - component: AWS::FreeRTOS:coreMQTT
+    - component: AWS::FreeRTOS:coreMQTT Agent
+    - component: AWS::FreeRTOS:corePKCS11&amp;Custom
+      define:
+        - MBEDTLS_CONFIG_FILE: &quot;aws_mbedtls_config.h&quot;
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>The name format for a software component is described under  <a href="#component-name-conventions">Name Conventions - Component Name Conventions</a>.</p>
+<h3 id="instances"><code>instances:</code></h3>
+<p>Allows to add multiple instances of a component and actually applies to configuration files.
+For detailed description refer to <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances">Open-CMSIS-Pack specification - Component Instances</a></p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  components:
+    - component: USB:Device
+      instances: 2
+</code></pre>
+<p>If the user selects multiple instances of the same component, all files with  attribute <code>config</code> in the <code>*.PDSC</code> file
+will be copied multiple times to the project. The name of the component (for example config_mylib.h) will get a postfix
+<code>_n</code> whereby <code>n</code> is the instance number starting with 0.</p>
+<ul>
+<li>Instance 0: <code>config_usb_device_0.h</code></li>
+<li>Instance 1: <code>config_usb_device_1.h</code></li>
+</ul>
+<p>The availability of instances in a project can be made public in the <code>RTE_Components.h</code> file. The existing way to extend 
+the <code>%Instance%</code> with the instance number <code>n</code>.</p>
+<h2 id="prepost-build-steps">Pre/Post build steps</h2>
+<p>The CMSIS-Toolbox supports pre-build and post-build steps that utilize external tools or scripts. Such external commands can be used for various tasks such as:</p>
+<ul>
+<li>pre-process source files.</li>
+<li>add checksums to a binary file.</li>
+<li>combine multiple ELF files into a single image.</li>
+<li>add a timestamp to an image (<code>always:</code> ensures execution in every build).</li>
+<li>sign images for a boot laoder.</li>
+</ul>
+<h3 id="executes"><code>executes:</code></h3>
+<p>Execute and external command for pre or post build steps used in <code>*.csolution.yml</code> and <code>*.cproject.yml</code> files. The <code>input:</code> and <code>output:</code> files are used for dependency checking and schedule the execution (as pre-build or post-build step) during the build process.</p>
+<p>The structure of the <code>executes:</code> node is:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>executes:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- execute:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Description of the build step.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>run:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Command string with name of the program or script (optionally with path) along with argument string.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>always:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">When present, the build step always runs and bypasses check for outdated <code>output:</code> files.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>input:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">A list of input files (may contain <a href="#access-sequences">Access Sequences</a>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>output:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">A list of output files (may contain <a href="#access-sequences">Access Sequences</a>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Run command for a list of <em>build</em> and <em>target</em> types (only supported in <code>*.cproject.yml</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Exclude run command for a list of <em>build</em> and <em>target</em> types  (only supported in <code>*.cproject.yml</code>).</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>run:</code> command string uses these sequences to access input files and output files:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>run:</code> command file access</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>$input$</code></td>
+<td style="text-align: left;">Comma separated list of all input files.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$input(&lt;n&gt;)$</code></td>
+<td style="text-align: left;">Input file in the list with index <code>&lt;n&gt;</code>; first item is <code>&lt;n&gt;=0</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$output$</code></td>
+<td style="text-align: left;">Comma separated list of all output files.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$output(&lt;n&gt;)$</code></td>
+<td style="text-align: left;">Output file in the list with index <code>&lt;n&gt;</code>; first item is <code>&lt;n&gt;=0</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">solution:                       # executed as part of a project build
+  executes:
+    - execute: Generate Download Image
+      run: gen_image $input$ -o $output$ --sign    # Command line string
+      input:
+        - $elf(Application)$                       # combine these project parts
+        - $elf(TFM)$
+        - $elf(Bootloader)$
+      output:
+        - $SolutionDir$/$Solution$.out             # output file name
+</code></pre>
+<pre><code class="language-yml">project:                       # executed as part of a project build
+  executes:
+    - execute: Generate Encryption Keys
+      run: KeyGen $input$ -o $output$
+      always:                  # always generate the keyfile.c as it contains a timestamp
+      input:  keyfile.txt      # contains the key in text format
+      output: keyfile.c        # output as C source file that is part of this project
+</code></pre>
+<pre><code class="language-yml">solution:                      # executed as part of a solution build
+  executes:                    # uses a CMake script
+    - execute: Archive Artifacts
+      run: ${CMAKE_COMMAND} -DINPUT=$input$ -DOUTPUT=$output$ -P $input(0)$
+      always:
+      input:
+        - script/archive.cmake
+        - $elf(project.Release+ARMCM0)$
+        - $elf(project.Release+ARMCM0)$.signed
+        - $elf(bootloader.Release+ARMCM0)$
+      output:
+        - $SolutionDir()$/artifacts.zip
+</code></pre>
+<pre><code class="language-yml">project:                       # executed as part of a project build
+  executes:                    # uses a CMake script
+    - execute: Sign ELF Image
+      run: ${CMAKE_COMMAND} -DINPUT=$input(1)$ -DOUTPUT=$output$ -P $input(0)$
+      input:
+        - $SolutionDir()$/script/sign.cmake   #CMake script
+        - $elf()$             # ELF file generated by project
+      output:
+        - $elf()$.signed
+      for-context:            # only for build-type: Release
+        - .Release
+</code></pre>
+<h2 id="connections"><code>connections:</code></h2>
+<p>The <code>connections:</code> node contains meta-data that describes the compatiblity of <code>*.cproject.yml</code> and <code>*.clayer.yml</code> project parts.  The <code>connections:</code> node lists functionality (drivers, pins, and other software or hardware resources). The node <code>consumes:</code> lists required functionality; the node <code>provides:</code> is the implemented functionality of that project part.</p>
+<p>This enables <a href="../ReferenceApplications/">reference applications</a> that work across a range of different hardware targets where:</p>
+<ul>
+<li>
+<p>The <code>*.cproject.yml</code> file of the reference application lists with the <code>connections:</code> node the required functionality with <code>consumes:</code>.</p>
+</li>
+<li>
+<p>The <code>*.clayer.yml</code> project part lists with the <code>connections:</code> node the implemented functionality with <code>provides:</code>.</p>
+</li>
+</ul>
+<p>This works across multiple levels, which means that a <code>*.clayer.yml</code> file could also require other functionality using <code>consumes:</code>.</p>
+<p>The <code>connections:</code> node is used to identify compatible software layers. These software layers could be stored in CMSIS software packs using the following structure:</p>
+<ul>
+<li>
+<p>A reference application described in a <code>*.cproject.yml</code> file could be provided in a git repository. This reference application uses software layers that are provided in CMSIS software packs.</p>
+</li>
+<li>
+<p>A CMSIS Board Support Pack (BSP) contains a configured board layer desribed in a <code>*.clayer.yml</code> file. This software layer is pre-configured for a range of use-cases and provides drivers for I2C and SPI interfaces along with pin definitions and provisions for an Ardunio shield.</p>
+</li>
+<li>
+<p>For a sensor, a CMSIS software pack contains the sensor middleware and software layer (<code>*.clayer.yml</code>) that describes the hardware of the Ardunio sensor shield. This shield can be applied to many different hardware boards that provide an Ardunio shield connector.</p>
+</li>
+</ul>
+<p>This <code>connections:</code> node enables therefore software reuse in multiple ways:</p>
+<ul>
+<li>
+<p>The board layer can be used by many different reference applications, as the <code>provided:</code> functionlity enables a wide range of use cases.</p>
+</li>
+<li>
+<p>The sensor hardware shield along with the middleware can be used across many different boards that provide an Ardunio shield connector along with board layer support.</p>
+</li>
+</ul>
+<p>The structure of the <code>connections:</code> node is:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>connections:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#connect">- <code>connect:</code></a></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Lists specific functionality with a brief verbal description</td>
+</tr>
+</tbody>
+</table>
+<h3 id="connect"><code>connect:</code></h3>
+<p>The <code>connect:</code> node describes one or more functionalities that belong together.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>connect:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#set"><code>set:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies a <em>config-id</em>.<em>select</em> value that identifies a configuration option</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Verbal desription displayed when this connect is selected</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#provides"><code>provides:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">List of functionality (<em>key</em>/<em>value</em> pairs) that are provided</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#consumes"><code>consumes:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">List of functionality (<em>key</em>/<em>value</em> pairs) that are required</td>
+</tr>
+</tbody>
+</table>
+<h3 id="set"><code>set:</code></h3>
+<p>Some hardware boards have configuration settings (DIP switch or jumper) that configure interfaces. These settings have impact to the functionality (for example hardware interfaces). With <code>set:</code> <em>config-id</em>.<em>select</em> the possible configration options are considered when evaluating compatible <code>*.cproject.yml</code> and <code>*.clayer.yml</code> project parts. The <strong><code>csolution</code> Project Manager</strong> iterates the <code>connect:</code> node with a <code>set:</code> <em>config-id</em>.<em>select</em> as described below:</p>
+<ul>
+<li>
+<p>For each <em>config-id</em> only one <code>connect:</code> node with a <em>select</em> value is active at a time. Each possible <em>select</em> value is checked for a matching configuration.</p>
+</li>
+<li>
+<p>When project parts have a matching configuration, the <code>set:</code> value along with the <code>info:</code> is shown to the user. This allows the user to enable the correct hardware options.</p>
+</li>
+</ul>
+<p>Refer to <a href="#example-sensor-shield">Example: Sensor Shield</a> for a usage example.</p>
+<h3 id="provides"><code>provides:</code></h3>
+<p>A user-defined <em>key</em>/<em>value</em> pair list of functionality that is implemented or provided by a <code>project:</code> or <code>layer:</code>. </p>
+<p>The <strong><code>csolution</code> Project Manager</strong> combines all the <em>key</em>/<em>value</em> pairs that listed under <code>provides:</code> and matches it with the <em>key</em>/<em>value</em> pairs that are listed under <code>consumes:</code>. For <em>key</em>/<em>value</em> pairs listed under <code>provides:</code> the following rules exist for a match with <code>consumes:</code> <em>key</em>/<em>value</em> pair:</p>
+<ul>
+<li>It is possible to omit the <em>value</em>. It matches with an identical <em>key</em> listed in <code>consumes:</code></li>
+<li>A <em>value</em> is interpreted as number. Depending on the value prefix, this number must be:</li>
+<li>when <code>consumes:</code> <em>value</em> is a plain number, identical with this value.</li>
+<li>when <code>consumes:</code> <em>value</em> is prefixed with <code>+</code>, higher or equal then this <em>value</em> or the sum of all <em>values</em> in multiple <code>consumes:</code> nodes.</li>
+</ul>
+<h3 id="consumes"><code>consumes:</code></h3>
+<p>A user-defined <em>key</em>/<em>value</em> pair list of functionality that is requried or consumed by a <code>project:</code> or <code>layer:</code>. </p>
+<p>For <em>key</em>/<em>value</em> pairs listed under <code>consumed:</code> the following rules exist:</p>
+<ul>
+<li>When no <em>value</em> is specified, it matches with any <em>value</em> of an identical <em>key</em> listed under <code>provides:</code>.</li>
+<li>A <em>value</em> is interpreted as number. This number must be identical in the <code>provides:</code> value pair.</li>
+<li>A <em>value</em> that is prefixed with <code>+</code> is interpreted as a number that is added together in case that the same <em>key</em> is listed multiple times under <code>consumes:</code>. The sum of this value must be lower or equal to the <em>value</em> upper limit of the <code>provides:</code> <em>key</em>.</li>
+</ul>
+<h3 id="example-board">Example: Board</h3>
+<p>This <code>connections:</code> node of a board layer describes the available interfaces.  The WiFi interface requires a CMSIS-RTOS2 function.</p>
+<pre><code class="language-yml">  connections:                          # describes functionality of a board layer
+    - connect: WiFi interface
+      provides:
+        - CMSIS-Driver WiFi:
+      requires:
+        - CMSIS-RTOS2:
+
+    - connect: SPI and UART interface
+      provides:
+        - CMSIS-Driver SPI:
+        - CMSIS-Driver UART:
+</code></pre>
+<h3 id="example-simple-project">Example: Simple Project</h3>
+<p>This shows a the <code>connections:</code> node of a complete application project that is composed of two software layers.</p>
+<p><em>MyProject.cproject.yml</em></p>
+<pre><code class="language-yml">  connections:
+    - connect: all resources
+      provides:
+        - RTOS2:          # implements RTOS2 API interface
+      consumes:
+        - IoT_Socket:     # requires IoT_Socket interface
+        - STDOUT:         # requires STDOUT interface
+        - Heap:  +30000   # requires additional 30000 bytes memory heap
+  :
+  layers:
+    - layer: MySocket.clayer.yml
+    - layer: MyBoard.clayer.yml
+</code></pre>
+<p><em>MySocket.clayer.yml</em></p>
+<pre><code class="language-yml">  connections:
+    - connect:
+      consumes:
+        - RTOS2:          # requires RTOS2 API interface
+        - VSocket:        # requires VSocket interface
+        - Heap: +20000    # requires additional 20000 bytes memory heap
+      provides:
+        - IoT_Socket:     # provides IoT_Socket interface
+</code></pre>
+<p><em>MyBoard.clayer.yml</em></p>
+<pre><code class="language-yml">  connections:
+    - connect:
+      consumes:
+        - RTOS2:
+      provides:
+        - VSocket:
+        - STDOUT:
+        - Heap:  65536
+</code></pre>
+<h3 id="example-sensor-shield">Example: Sensor Shield</h3>
+<p>This sensor shield layer provides a set of interfaces that are configurable.</p>
+<pre><code class="language-yml">  connections:
+    - connect: I2C Interface 'Std'
+      set:  comm.I2C-Std
+      info: JP1=Off  JP2=Off
+      provides:
+        - Sensor_I2C:
+      consumes:
+        - Ardunio_Uno_I2C:
+
+    - connect: I2C Interface 'Alt'
+      set:  comm.I2C-Alt
+      info: JP1=On  JP2=Off
+      provides:
+        - Sensor_I2C:
+      consumes:
+        - Ardunio_Uno_I2C-Alt:
+
+    - connect: SPI Interface 'Alt'
+      set:  comm.SPI
+      info: JP2=On
+      provides:
+        - Sensor_SPI:
+      consumes:
+        - Ardunio_Uno_SPI:
+
+    - connect: Sensor Interrupt INT0
+      set:  SensorIRQ.0
+      info: JP3=Off
+      provides:
+        - Sensor_IRQ:
+      consumes:
+        - Ardunio_Uno_D2:
+
+    - connect: Sensor Interrupt INT1
+      set:  SensorIRQ.1
+      info: JP3=On
+      provides:
+        - Sensor_IRQ:
+      consumes:
+        - Ardunio_Uno_D3:
+</code></pre>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/KeilChris/cmsis-toolbox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
