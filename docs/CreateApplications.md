@@ -5,20 +5,7 @@
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD032 -->
 
-[**CMSIS-Toolbox**](README.md) **&raquo; Create Applications**
-
 The following chapter explains the structure of a software pack and how it can be used in an application.
-
-- [Create Applications](#create-applications)
-  - [Start a Project](#start-a-project)
-  - [Configure Linker Scripts](#configure-linker-scripts)
-    - [Regions Header File](#regions-header-file)
-    - [Linker Script Template](#linker-script-template)
-  - [Software Components](#software-components)
-    - [Required Interfaces](#required-interfaces)
-    - [Using Components](#using-components)
-    - [Example: Network Stack](#example-network-stack)
-  - [Update Software Packs](#update-software-packs)
 
 ## Start a Project
 
@@ -32,41 +19,40 @@ An application is based on a *device* and/or *board* supported by a Device Famil
    - Select a suitable generic [Template Project](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) or refer to the DFP documentation as some devices have specific template projects.
    - Copy the template project and open the `*.csolution.yml` file.  Add under [`packs:`](YML-Input-Format.md#packs) the packs identified in step (1). You may omit the version number during initial project development.
 
-    ```yml
-      :
-      compiler: AC6
-
-      # List the packs that define the device and/or board.
-      packs:
-        - pack: AnalogDevices::ADuCM320_DFP
-      :
-    ```
+```yml
+  :
+  compiler: AC6
+  # List the packs that define the device and/or board.
+  packs:
+    - pack: AnalogDevices::ADuCM320_DFP
+  :
+```
    
 3. Step: **Use `csolution list` to identify the device or board**
    - Use `csolution list devices <name>.csolution.yml` or `csolution list boards <name>.csolution.yml` to get the device or board name.
    - Enter the device or board name under [`target-types:`](YML-Input-Format.md#target-types). A device is typically used for custom hardware.
 
-    ```yml
-      :
-      target-types:
-        - type: ADuCM320-Board    # choose a brief name for your target hardware
-        # device: MyDeviceName    # replace with your device or comment out to use a board
-          board: Analog Devices::EVAL-ADuCM320EBZ     # you may omit version information
-      :
-    ```
+```yml
+  :
+  target-types:
+    - type: ADuCM320-Board    # choose a brief name for your target hardware
+    # device: MyDeviceName    # replace with your device or comment out to use a board
+      board: Analog Devices::EVAL-ADuCM320EBZ     # you may omit version information
+  :
+```
 
 4. Step: **Add required software components**
    - Most projects at least require the `CMSIS:CORE` and `Device:Startup` (or a variant) [software components](#software-components) to be present. Use `csolution list components <name>.csolution.yml` to identify the name of the startup component and add it to the file `*.cproject.yml` of your project.
    - Use `csolution list components  <name>.csolution.yml` to identify additional software components from the selected packs. Use the [`components:`](YML-Input-Format.md#components) in the `<name>.cproject.yml` file to add new components and refer to related documentation for usage instructions. Note that you may omit vendor and version information for components as this is defined already by the packs that are selected.
    
-   ```yml
-     :
-     components:                  # List components to use for your application
-       - component: CMSIS:CORE    # The CMSIS-Core component used in most projects
-       - component: Device:Startup&Baremetal
-       - component: Device:Peripheral Libraries:ADC
-     :
-   ```
+```yml
+  :
+  components:                  # List components to use for your application
+    - component: CMSIS:CORE    # The CMSIS-Core component used in most projects
+    - component: Device:Startup&Baremetal
+    - component: Device:Peripheral Libraries:ADC
+  :
+```
 
    - Refer to [Using Components](#using-components) for more information.
    - Now, the project should already compile with the command `cbuild <name>.csolution.yml --update-rte --packs --context .Debug`. Note that this step downloads missing packs and copies configuration files to the [RTE directory](build-overview.md#rte-directory-structure). 
@@ -80,21 +66,20 @@ An application is based on a *device* and/or *board* supported by a Device Famil
 6. Step: **Add application functionality**
    - Implement the application code in C/C++ source files. Use the [`groups:`](YML-Input-Format.md#groups) section in `<name>.cproject.yml` to add new source files.
 
-    ```yml
-      :
-      groups:
-        - group: Source Files
-          files: 
-            - file: main.c
-            - file: MyFile1.c
-      :
-    ```
+```yml
+  :
+  groups:
+    - group: Source Files
+      files: 
+        - file: main.c
+        - file: MyFile1.c
+  :
+```
 
    - Again, the project should compile with the command `cbuild <name>.csolution.yml --update-rte --packs --context .Debug`. Repeat step (4) when you added new components that require configuration.
 
-> **Note:**
->
-> The [Arm CMSIS Solution extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) guides you through these steps with the [`Create New Solution` workflow](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution#create-new-solution-view).
+!!! Note
+    The [Arm CMSIS Solution extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) guides you through these steps with the [`Create New Solution` workflow](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution#create-new-solution-view).
 
 ## Configure Linker Scripts
 
@@ -257,9 +242,8 @@ A [template *linker script file*](build-overview.md#linker-script-templates) is 
 #endif
 ```
 
-> **Note:** 
->
-> It is recommended to add a note to the *regions header file* about such user modifications as shown below:
+!!! Note 
+    It is recommended to add a note to the *regions header file* about such user modifications as shown below:
 
 ```c
 // <h> __RAM1 (is rwx memory: SRAM3 from DFP)
@@ -299,7 +283,7 @@ There are two ways to describe required interfaces as shown in the diagram below
 
 The API definition has the benefit that components which implement the interface can be added over time. The exact component names need not to be known by the component that requires an interface.
 
-> ToDo: A potential improvement is to use the command `csolution list components` to show available implementations for a required interface.
+ToDo: A potential improvement is to use the command `csolution list components` to show available implementations for a required interface.
 
 ### Using Components
 
@@ -360,21 +344,18 @@ An update of a software pack can be performed with these steps:
 - Download new software packs as needed using `cpackget`.
 - Use the command `csolution convert` with the option `--load latest` to update the software packs.
 
-  ```bash
-  > csolution convert Hello.csolution.yml --load latest
-  ```
+```bash
+csolution convert Hello.csolution.yml --load latest
+```
 
 - List potentially outdated configuration files using the command `csolution list configs`.
 
-  ```bash
-  > csolution list configs Hello.csolution.yml --context-set
-  ../RTE/CMSIS/RTX_Config.c@5.1.1 (update@5.2.0) from ARM::CMSIS:RTOS2:Keil RTX5&Source@5.8.0
-  ../RTE/Device/SSE-300-MPS3/startup_SSE300MPS3.c@1.1.1 (up to date) from ARM::Device:Startup&C Startup@2.0.0
-  ../RTE/Device/SSE-300-MPS3/system_SSE300MPS3.c@1.1.1 (up to date) from ARM::Device:Startup&C Startup@2.0.0
-  ```
+```bash
+csolution list configs Hello.csolution.yml --context-set
+../RTE/CMSIS/RTX_Config.c@5.1.1 (update@5.2.0) from ARM::CMSIS:RTOS2:Keil RTX5&Source@5.8.0
+../RTE/Device/SSE-300-MPS3/startup_SSE300MPS3.c@1.1.1 (up to date) from ARM::Device:Startup&C Startup@2.0.0
+../RTE/Device/SSE-300-MPS3/system_SSE300MPS3.c@1.1.1 (up to date) from ARM::Device:Startup&C Startup@2.0.0
+```
 
-> **Note:** 
->
-> The text `update@version` indicates that there is a new configuration file available. Use a merge utility to identify and merge configuration settings from a previous version. Refer to [PLM of configuration files](build-overview.md#plm-of-configuration-files) for more information.
-
-[**CMSIS Solution Project File Format**](YML-input-format.md) **&laquo; Chapters &raquo;** [**Reference Applications**](ReferenceApplications.md)
+!!! Note 
+    The text `update@version` indicates that there is a new configuration file available. Use a merge utility to identify and merge configuration settings from a previous version. Refer to [PLM of configuration files](build-overview.md#plm-of-configuration-files) for more information.

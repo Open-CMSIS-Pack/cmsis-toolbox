@@ -1,25 +1,6 @@
 # Pack Creation
 
-[**CMSIS-Toolbox**](README.md) **&raquo; Pack Creation**
-
 This chapter describes how to create software packs and explains the tools `packchk` (software pack verification) and `svdconv` (SVD file converter).
-
-**Chapter Contents:**
-
-- [Pack Creation](#pack-creation)
-  - [Pack Creation Tools](#pack-creation-tools)
-  - [Scripts](#scripts)
-  - [Hands-on Tutorials](#hands-on-tutorials)
-  - [Hints for Pack Creation](#hints-for-pack-creation)
-  - [Project Examples](#project-examples)
-    - [Support Multiple Compilers](#support-multiple-compilers)
-    - [Related Examples](#related-examples)
-    - [Template Projects](#template-projects)
-    - [Examples](#examples)
-    - [Reference Applications](#reference-applications)
-  - [Layers](#layers)
-  - [Code Templates](#code-templates)
-  - [Pack Examples](#pack-examples)
 
 ## Pack Creation Tools
 
@@ -116,9 +97,9 @@ solution:
 
 A *template project* does not define a [`device:`](YML-Input-Format.md#device) or [`board:`](YML-Input-Format.md#board) in the `*.csolution.yml` file. When a IDE starts such an *template* the `device:` and/or `board:` information along with `pack:` information is added depending on user selection. The [`target-types:`](YML-Input-Format.md#target-types) contains a  `Name` that may be replaced by a descriptive target name.
 
-> **Note:**
->
-> A *template project* should not specify the DFP or BSP with a `pack:` node as this gets added by the IDE during project start.
+!!! Note
+
+A *template project* should not specify the DFP or BSP with a `pack:` node as this gets added by the IDE during project start.
 
 **Simple Template:**
 
@@ -165,9 +146,9 @@ project:
     - regions:  $regions_header$
 ```
 
-> **Note:**
->
-> *Templates* should compile when the above information is added to the `*.csolution.yml` file. The exception is when *templates* require parts of the code provided by a generator.
+!!! Note
+
+*Templates* should compile when the above information is added to the `*.csolution.yml` file. The exception is when *templates* require parts of the code provided by a generator.
 
 **Register Template in PDSC File:**
 
@@ -284,9 +265,9 @@ solution:
 #       - Board-Layer: <board_layer>.clayer.yml
 ```
 
-> **Note:**
->
-> The [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware/tree/main/Examples) contains several *reference applications* that exemplify the overall structure.
+!!! Note
+
+The [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware/tree/main/Examples) contains several *reference applications* that exemplify the overall structure.
 
 **Register *Reference Applications* in PDSC File:**
 
@@ -317,9 +298,9 @@ solution:
   </csolution>
 ```
 
-> **Note:**
->
-> Several [STM32 Board Support Packs (BSP)](https://github.com/Open-CMSIS-Pack#stm32-packs-with-generator-support)  contain *layers* that are pre-configured for certain applications. For example, the *layer* in the [ST_NUCLEO-F756ZG_BSP](https://github.com/Open-CMSIS-Pack/ST_NUCLEO-F756ZG_BSP/tree/main/Layers/Default) supports applications that require Ethernet, USB Device, UART, or I2C interfaces.
+!!! Note
+
+Several [STM32 Board Support Packs (BSP)](https://github.com/Open-CMSIS-Pack#stm32-packs-with-generator-support)  contain *layers* that are pre-configured for certain applications. For example, the *layer* in the [ST_NUCLEO-F756ZG_BSP](https://github.com/Open-CMSIS-Pack/ST_NUCLEO-F756ZG_BSP/tree/main/Layers/Default) supports applications that require Ethernet, USB Device, UART, or I2C interfaces.
 
 ## Code Templates
 
@@ -341,9 +322,9 @@ solution:
     </files>
 ```
 
-> **Note:**
->
-> The [CMSIS-RTX](https://github.com/ARM-software/CMSIS-RTX) and [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware) pack contains several *code templates* that exemplify the overall structure.
+!!! Note
+
+The [CMSIS-RTX](https://github.com/ARM-software/CMSIS-RTX) and [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware) pack contains several *code templates* that exemplify the overall structure.
 
 ## Pack Examples
 

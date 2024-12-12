@@ -4,7 +4,7 @@ This contains the executable tools of the CMSIS-Toolbox that provides a set of c
 
 ## Users Guide
 
-The [**Users Guide**](./docs/README.md) provides detailed information.
+The [**Users Guide**](https://open-cmsis-pack.github.io/cmsis-toolbox) provides detailed information.
 
 ## Project Creation
 
@@ -40,6 +40,12 @@ Hands-on Tutorial         | Description
 [**SW-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/SW-Pack-HandsOn)    | Explains the steps to create a simple software pack using the Open-CMSIS-Pack technology.
 [**DFP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/DFP-Pack-HandsOn)  | Explains the structure and creation of a Device Family Pack (DFP).
 [**BSP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/DFP-Pack-HandsOn)  | Explains the structure and creation of a Board Support Pack (BSP).  
+
+## Documentation
+
+The documentation can be built using [mkdocs](https://www.mkdocs.org/). It requires Python 3 to be installed on your local machine.
+Check out [Getting Started with MkDocs](https://www.mkdocs.org/getting-started/) to learn how to use it. A CI workflow is
+in place that builds the documentation automatically.
 
 ## Report a Bug
 

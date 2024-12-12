@@ -3,50 +3,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **&raquo; Build Tools**
-
 This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects), [`csolution`](#csolution-invocation) (transform *csolution project files*), and [`cpackget`](#cpackget-invocation) (manage software packs). It includes command line syntax details and examples.
-
-**Chapter Contents:**
-
-- [Build Tools](#build-tools)
-  - [Requirements](#requirements)
-  - [`cbuild` Invocation](#cbuild-invocation)
-  - [`csolution` Invocation](#csolution-invocation)
-  - [`cpackget` Invocation](#cpackget-invocation)
-  - [Command Examples](#command-examples)
-    - [List Environment](#list-environment)
-    - [List Available Toolchains](#list-available-toolchains)
-    - [Build a Project](#build-a-project)
-    - [Update RTE Configuration Files](#update-rte-configuration-files)
-    - [Add Software Packs](#add-software-packs)
-    - [List Installed Packs](#list-installed-packs)
-    - [Install Missing Packs](#install-missing-packs)
-    - [List Devices or Boards](#list-devices-or-boards)
-    - [List Unresolved Dependencies](#list-unresolved-dependencies)
-    - [Create Build Information](#create-build-information)
-    - [List Compatible Layers](#list-compatible-layers)
-    - [Use Generators](#use-generators)
-    - [Use context set](#use-context-set)
-    - [List configuration files](#list-configuration-files)
-    - [Setup Project (for IDE)](#setup-project-for-ide)
-    - [Specify CMSIS-Pack root directory](#specify-cmsis-pack-root-directory)
-    - [Initialize CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory)
-    - [Update Pack Index](#update-pack-index)
-    - [Add packs](#add-packs)
-      - [Install public packs](#install-public-packs)
-      - [Install a list of software packs](#install-a-list-of-software-packs)
-      - [Accept End User License Agreement (EULA) from command line](#accept-end-user-license-agreement-eula-from-command-line)
-      - [Work behind a proxy](#work-behind-a-proxy)
-      - [Install a private software pack](#install-a-private-software-pack)
-      - [Install a repository](#install-a-repository)
-    - [List all software packs](#list-all-software-packs)
-    - [Remove packs](#remove-packs)
-  - [DevOps Usage](#devops-usage)
-    - [Examples](#examples)
-  - [IDE Usage](#ide-usage)
-    - [Project Outline View](#project-outline-view)
-    - [Build Process](#build-process)
 
 ## Requirements
 
@@ -101,9 +58,8 @@ Options:
 Use "cbuild [command] --help" for more information about a command.
 ```
 
-> **Note:**
->
-> By default, the `cbuild` invocation does not update the [**RTE Directory**](build-overview.md#rte-directory-structure). If required, use the option `--update-rte`.
+!!! Note
+    By default, the `cbuild` invocation does not update the [**RTE Directory**](build-overview.md#rte-directory-structure). If required, use the option `--update-rte`.
 
 ## `csolution` Invocation
 
@@ -195,7 +151,7 @@ Use "cpackget [command] --help" for more information about a command.
 
 Print the settings of the host development environment to verify the correctness of the tool installation.
 
-```bash
+```shell
 cbuild list environment
 ```
 
@@ -203,7 +159,7 @@ cbuild list environment
 
 Print the installed toolchains in the  host development environment to identify the available compilers. The option `--verbose` provides additional path information.
 
-```bash
+```shell
 cbuild list toolchains -v
 ```
 
@@ -211,51 +167,49 @@ cbuild list toolchains -v
 
 This command builds a project that is defined in the file `example.csolution.yml`:
 
-```bash
+```shell
 cbuild example.csolution.yml
 ```
 
 Options allow to rebuild and download missing software packs or to select specific context settings:
 
-```bash
+```shell
 cbuild example.csolution.yml --rebuild --packs --context .Release
 ```
 
 For reproducible builds in CI environments, fixed software pack versions are provided by the file `*.cbuild-pack.yml`. An error is reported if the file `*.cbuild-pack.yml` does not exist or packs are added/removed. Refer to [reproducible builds](build-overview.md#reproducible-builds) for more information.
 
-```bash
+```shell
 cbuild example.csolution.yml --frozen-packs --packs --rebuild
 ```
 
 It is also possible to overwrite the toolchain selection and use a different toolchain for translation:
 
-```bash
+```shell
 cbuild example.csolution.yml --toolchain GCC
 ```
 
-> **Note:**
->
-> The `--toolchain` option is useful for:
->
-> - Testing a new compiler or a different compiler version on the overall project.
-> - For unit test applications to allow the usage of different compilers.
+!!! Note
+    The `--toolchain` option is useful for:
+    
+    - Testing a new compiler or a different compiler version on the overall project.
+    - For unit test applications to allow the usage of different compilers.
 
 In [DevOps systems](#devops-usage) that run CI test with a matrix build, it is sometimes required to separate the output of various builds. The option `--output` adds a prefix to the [output directory](YML-Input-Format.md#output-dirs) for `outdir:`, `tmpdir:` and build information files. The following commands build the project with the AC6 and GCC compiler and separate the directories for output and temporary files.
 
-```bash
+```shell
 cbuild example.csolution.yml --toolchain AC6 --output outAC6
 cbuild example.csolution.yml --toolchain GCC --output outGCC
 ```
 
-> **Note:**
->
-> The `--output` option is not recommended in an IDE environment as it changes the location of mandatory build information files that are [used by the IDE](#ide-usage).
+!!! Note
+    The `--output` option is not recommended in an IDE environment as it changes the location of mandatory build information files that are [used by the IDE](#ide-usage).
 
 ### Update RTE Configuration Files
 
 The [Component Configuration​](build-overview.md#project-structure) is stored in the [RTE directory](build-overview.md#rte-directory-structure). When files are missing or new software pack versions are installed, it might be required to update the RTE configuration files:
 
-```bash
+```shell
 csolution example.csolution.yml --update-rte
 ```
 
@@ -263,7 +217,7 @@ csolution example.csolution.yml --update-rte
 
 To install software packs from a public web service, run:
 
-```bash
+```shell
 cpackget add Arm::CMSIS
 cpackget add Arm::CMSIS@5.9.0     # optional with version specification
 ```
@@ -272,13 +226,13 @@ cpackget add Arm::CMSIS@5.9.0     # optional with version specification
 
 Print a list of installed packs. The list can be filtered by words provided with the option `--filter`:
 
-```bash
+```shell
 csolution list packs [-f "<filter words>"]
 ```
 
 Print a list of packs that are required by the `example.csolution.yml`.
 
-```bash
+```shell
 csolution list packs example.csolution.yml
 ```
 
@@ -287,7 +241,7 @@ csolution list packs example.csolution.yml
 Print a list of missing packs required by the `example.csolution.yml` but not available
 in the pack repository to the file `packs.txt`. These missing packs can then be installed using the [`cpackget`](#cpackget-invocation) tool.
 
-```bash
+```shell
 csolution list packs example.csolution.yml -m >packs.txt
 cpackget update-index               # optional to ensure that pack index is up-to-date
 cpackget add -f packs.txt
@@ -297,7 +251,7 @@ cpackget add -f packs.txt
 
 Print a list of available device or board names. The list can be filtered by words provided with the option `--filter`:
 
-```bash
+```shell
 csolution list devices
 csolution list boards --filter NXP
 ```
@@ -306,7 +260,7 @@ csolution list boards --filter NXP
 
 Device, board, and software components are specified as part of the `*.csolution.yml` and `*.cproject.yml` files. Print a list of unresolved project dependencies. The list may be filtered by words provided with the option `--filter`:
 
-```bash
+```shell
 csolution list dependencies mysolution.csolution.yml [-f "<filter words>"]
 ```
 
@@ -314,13 +268,13 @@ csolution list dependencies mysolution.csolution.yml [-f "<filter words>"]
 
 Convert `example.csolution.yml` into build information files.
 
-```bash
+```shell
 csolution convert example.csolution.yml
 ```
 
 Convert specific contexts of a `*.csolution.yml` file into build information files.
 
-```bash
+```shell
 csolution convert SimpleTZ.csolution.yml -c CM33_s.Debug -c CM33_ns.Release+AVH
 ```
 
@@ -328,7 +282,7 @@ csolution convert SimpleTZ.csolution.yml -c CM33_s.Debug -c CM33_ns.Release+AVH
 
 List compatible layers for `./fxls8962_normal_spi.csolution.yml` and the context `*+frdmk22f_agmp03`. This contains also setup information.
 
-```bash
+```shell
 csolution list layers ./fxls8962_normal_spi.csolution.yml -c *+frdmk22f_agmp03
 ```
 
@@ -338,13 +292,13 @@ Refer to [Software Layers](build-overview.md#software-layers) for more informati
 
 List external code generators that are used to create software components. It outputs the generator ID that is required for the `run` command. When using the option `--verbose` the generator out directory is listed.
 
-```bash
+```shell
 csolution list generators mysolution.csolution.yml -v
 ```
 
 Run a generator (in this case STM32CubeMX) for a specific project context.  Note that the context can be omitted when the same generator output directory is used.
 
-```bash
+```shell
 csolution run -g CubeMX mysolution.csolution.yml -c Blinky.Debug+STM32L4
 ```
 
@@ -354,13 +308,13 @@ When working with [multiple related projects](build-overview.md#project-setup-fo
 
 Write the selected `--context` options to the file `SimpleTZ.cbuild-set.yml`. Refer to [file structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-setyml) for details.
 
-```bash
+```shell
 cbuild SimpleTZ.csolution.yml -S -c CM33_s.Release -c CM33_ns.Debug
 ```
 
 Read the previously stored `--context` setup from the file `SimpleTZ.cbuild-set.yml`.
 
-```bash
+```shell
 cbuild SimpleTZ.csolution.yml -S
 ```
 
@@ -368,7 +322,7 @@ cbuild SimpleTZ.csolution.yml -S
 
 List all configuration files that belong to software components and are stored in the [RTE directory](build-overview.md#rte-directory-structure). When [updating software packs](CreateApplications.md#update-software-packs), it shows also the update status of each file.
 
-```bash
+```shell
 csolution list configs SimpleTZ.csolution.yml -S
 ```
 
@@ -376,13 +330,12 @@ csolution list configs SimpleTZ.csolution.yml -S
 
 In an IDE environment, this command downloads missing packs, creates [build information files](YML-CBuild-Format.md), and generates the file `compile_commands.json` for IntelliSense. Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
 
-```bash
+```shell
 cbuild setup example.csolution.yml --context-set --packs
 ```
 
-> **Note:**
->
-> - `cbuild setup` always enables the option `--schema` to validate the correct YML syntax in the *csolution project* files.
+!!! Note
+    `cbuild setup` always enables the option `--schema` to validate the correct YML syntax in the *csolution project* files.
 
 ### Specify CMSIS-Pack root directory
 
@@ -394,13 +347,13 @@ variants. There are two ways to specify the CMSIS-PACK root directory:
 
 2. With the option `--pack-root <path>`, for example:
 
-   ```bash
-   cpackget add Vendor.PackName --pack-root ./MyLocal/Packs
-   ```
+```shell
+cpackget add Vendor.PackName --pack-root ./MyLocal/Packs
+```
 
 >**Note:**
->
-> As the various tools of the CMSIS-Toolbox all rely on the CMSIS-Pack root directory, it is recommended to use the `CMSIS_PACK_ROOT` environment variable.
+
+As the various tools of the CMSIS-Toolbox all rely on the CMSIS-Pack root directory, it is recommended to use the `CMSIS_PACK_ROOT` environment variable.
 
 ### Initialize CMSIS-Pack root directory
 
@@ -408,7 +361,7 @@ CMSIS-Packs are typically distributed via a public web service, that offers a
 [**Pack Index File**](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packIndexFile.html)
 of available software packs. To initialize the CMSIS-Pack root directory run the command:
 
-```bash
+```shell
 cpackget init https://www.keil.com/pack/index.pidx
 ```
 
@@ -422,7 +375,7 @@ Sub-Directory   | Content
 
 The `cpackget init` command [initializes the CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory) but does not download PDSC files. Combined with the option `--all-pdsc-files` it also downloads all PDSC files that are available in the public index.
 
-```bash
+```shell
 cpackget init https://www.keil.com/pack/indexpidx --all-pdsc-files
 ```
 
@@ -430,19 +383,19 @@ cpackget init https://www.keil.com/pack/indexpidx --all-pdsc-files
 
 When new software packs are available in on a public web service, the local copy of the **Pack Index File** requires an update. To update the **Pack Index File**, run:
 
-```bash
+```shell
 cpackget update-index
 ```
 
 The option `--sparse` avoids the update of the PDSC files and improves therefore the speed.
 
-```bash
+```shell
 cpackget update-index --sparse
 ```
 
 To download all PDSC files that are available in the public index, use the option `--all-pdsc-files`.
 
-```bash
+```shell
 cpackget update-index --all-pdsc-files
 ```
 
@@ -456,21 +409,21 @@ The commands below install software packs from a public web service. The availab
 
 Check if a pack is installed. If not, install the latest version of a public software pack:
 
-```bash
+```shell
 cpackget add Vendor.PackName                   # or 
 cpackget add Vendor::PackName
 ```
 
 Update an installed pack to the latest version of a public software pack:
 
-```bash
+```shell
 cpackget add Vendor.PackName@latest           # or 
 cpackget add Vendor::PackName@latest
 ```
 
 Install a specific version of a public software pack:
 
-```bash
+```shell
 cpackget add Vendor.PackName.x.y.z            # or 
 cpackget add Vendor::PackName@x.y.z
 cpackget add Vendor::PackName@>=x.y.z         # check if there is any version greater  or equal to x.y.z, install latest
@@ -478,7 +431,7 @@ cpackget add Vendor::PackName@>=x.y.z         # check if there is any version gr
 
 Install latest version of a public software pack with the same major version or same major/minor version. Within the rules of semantic versioning only compatible packs are used.
 
-```bash
+```shell
 cpackget add Vendor::PackName@^x.y.z         # check if there is any version greater or equal to x.y.z, but with same major version x
 cpackget add Vendor::PackName@~x.y.z         # check if there is any version greater or equal to x.y.z, but with same major/minor version x.y
 ```
@@ -487,7 +440,7 @@ cpackget add Vendor::PackName@~x.y.z         # check if there is any version gre
 
 Frequently, a list of software packs should be installed that are used by a project. A text file can specify a list of packs, whereby each line specifies a single pack, optionally with version information as shown above:
 
-```bash
+```shell
 cpackget add -f list-of-packs.txt
 ```
 
@@ -507,14 +460,14 @@ AWS::backoffAlgorithm@1.0.0-Beta
 Some packs come with licenses. By default, `cpackget` will prompt the user acceptance of this license agreement. For
 automated installation of software packs, this user prompting can be suppressed with the command line flag `--agree-embedded-license`:
 
-```bash
+```shell
 cpackget add -f list-of-packs.txt --agree-embedded-license
 ```
 
 In some cases, the user might want to only extract the license agreement of the software pack. This is supported with the
 command line flag `--extract-embedded-license`:
 
-```bash
+```shell
 cpackget add --extract-embedded-license Vendor.PackName
 ```
 
@@ -536,7 +489,7 @@ E: failed to download file
 
 In such cases, it might be required to access the Internet via a proxy. This can be done via environment variables that are used by `cpackget`:
 
-```bash
+```shell
 # Windows
 set HTTP_PROXY=http://my-proxy         # proxy used for HTTP requests
 set HTTPS_PROXY=https://my-https-proxy # proxy used for HTTPS requests
@@ -555,13 +508,13 @@ A software pack can be distributed via different methods, for example via file e
 Once the software pack is available on the local computer, it can be installed by referring to the `*.pack` file
 itself:
 
-```bash
+```shell
 cpackget add <path>/Vendor.PackName.x.y.z.pack
 ```
 
 A software pack that is available for download via a URL can be downloaded and installed with:
 
-```bash
+```shell
 cpackget add https://vendor.com/example/Vendor.PackName.x.y.z.pack
 ```
 
@@ -569,13 +522,13 @@ cpackget add https://vendor.com/example/Vendor.PackName.x.y.z.pack
 
 During the development of a software pack, it is possible to mark the content of a local directory (that typically reflects the repository of the software pack) as a software pack.  In this case, the `*.pdsc` file is specified as shown below:
 
-```bash
+```shell
 cpackget add <local_path>/Vendor.PackName.pdsc
 ```
 
 Example:
 
-```bash
+```shell
 cpackget add /work/IoT_Socket/MDK-Packs.IoT_Socket.pdsc
 ```
 
@@ -583,7 +536,7 @@ cpackget add /work/IoT_Socket/MDK-Packs.IoT_Socket.pdsc
 
 List of all installed packs that are available in the CMSIS-Pack root directory.
 
-```bash
+```shell
 cpackget list
 ```
 
@@ -592,19 +545,19 @@ pack. There are also a couple of flags that allow listing extra information.
 
 List all cached packs, that are present in the `.Download/` folder:
 
-```bash
+```shell
 cpackget list --cached
 ```
 
 List all packs present in the local copy of the **Pack Index File** (`index.pidx`):
 
-```bash
+```shell
 cpackget list --public
 ```
 
 >**Note:**
->
-> [Update Pack Index File](#update-pack-index) before using the `list` command to list all public software packs.
+
+[Update Pack Index File](#update-pack-index) before using the `list` command to list all public software packs.
 
 ### Remove packs
 
@@ -612,27 +565,27 @@ The commands below demonstrate how to remove packs. This is independent from how
 
 Remove a software pack with a specific version:
 
-```bash
+```shell
 cpackget rm Vendor.PackName.x.y.z      # or
 cpackget rm Vendor::PackName@x.y.z
 ```
 
 Remove all versions of a software pack:
 
-```bash
+```shell
 cpackget rm Vendor.PackName            # or
 cpackget rm Vendor::PackName
 ```
 
 Same as above, but also remove the cached files that relate to this pack in the `.Download/` directory.
 
-```bash
+```shell
 cpackget rm --purge Vendor.PackName`
 ```
 
 Remove a pack that was [installed via a repository](#install-a-repository).
 
-```bash
+```shell
 cpackget rm Vendor.PackName.pdsc
 ```
 
@@ -642,7 +595,7 @@ The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. 
 
 The commands below show typical builds in a CI system. Using `--packs` installs all public packs with implicit acceptance of licenses. This command builds all projects, target-types, and build-types. Using [`--context`](build-overview.md#context) reduces the scope of the build. Using [`--frozen-packs`](build-overview.md#reproducible-builds) uses exactly the packs that are specified in the file `*.cbuild-pack.yml`.
 
-```bash
+```shell
 cbuild Hello.csolution.yml --packs                          # install packs and build all
 cbuild Hello.csolution.yml --packs --context +AVH-SSE-300   # only build target +AVH-SSE-300
 cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack versions
@@ -682,7 +635,7 @@ Example            | Description
 
 An IDE may use the following `cbuild setup` command to setup the project outline view and get information about components and software layers.
 
-```bash
+```shell
 cbuild setup example.csolution.yml --context-set [--packs] [--update-rte]
 ```
 
@@ -711,7 +664,7 @@ The `cbuild-idx.yml` file provides the exact location of all `*.cbuild.<context>
 
 An IDE may use the following `cbuild` command to build the overall application.
 
-```bash
+```shell
 cbuild example.csolution.yml --context-set [--packs] [--quite] [--rebuild] 
 ```
 
@@ -719,5 +672,3 @@ cbuild example.csolution.yml --context-set [--packs] [--quite] [--rebuild]
 - The option `--packs` can be enabled to download missing software packs that are public.
 - The option `--quite` suppresses details about the build process.
 - The option `--rebuild` may be used to force a complete rebuild of the output files.
-
-[**Build Overview**](build-overview.md) **&laquo; Chapters &raquo;** [**CMSIS Solution Project File Format**](YML-Input-Format.md)
