@@ -2,6 +2,8 @@
 /build*/
 **/run
 **/__pycache__
+**/site
 
 # Files
 **/stdout.txt
+**.DS_Store

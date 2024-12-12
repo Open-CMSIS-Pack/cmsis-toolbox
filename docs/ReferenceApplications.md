@@ -4,41 +4,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **&raquo; Reference Applications**
-
 This chapter explains how to work with *Reference Applications* that can run on several evaluation boards.
-
-**Chapter Contents:**
-
-- [Reference Applications](#reference-applications)
-  - [Introduction](#introduction)
-  - [Types of Reference Applications](#types-of-reference-applications)
-    - [MDK-Middleware Reference Applications](#mdk-middleware-reference-applications)
-    - [Sensor Reference Applications](#sensor-reference-applications)
-    - [Targeting Custom Hardware](#targeting-custom-hardware)
-  - [Usage](#usage)
-    - [Refer layers in ${CMSIS\_PACK\_ROOT}](#refer-layers-in-cmsis_pack_root)
-    - [Copy layers to csolution project](#copy-layers-to-csolution-project)
-  - [Structure](#structure)
-    - [Project Files](#project-files)
-    - [Typical Directory Structure](#typical-directory-structure)
-    - [Header File Structure](#header-file-structure)
-    - [Application Program Start](#application-program-start)
-    - [Board Layer](#board-layer)
-    - [Shield Layer](#shield-layer)
-  - [Connections](#connections)
-    - [ARDUINO\_UNO\_UART](#arduino_uno_uart)
-    - [ARDUINO\_UNO\_I2C / ARDUINO\_UNO\_I2C-Alt](#arduino_uno_i2c--arduino_uno_i2c-alt)
-    - [ARDUINO\_UNO\_SPI](#arduino_uno_spi)
-    - [ARDUINO\_UNO\_D0 .. D21](#arduino_uno_d0--d21)
-    - [CMSIS\_ETH](#cmsis_eth)
-    - [CMSIS\_MCI](#cmsis_mci)
-    - [CMSIS\_USB\_Device](#cmsis_usb_device)
-    - [CMSIS\_USB\_Host](#cmsis_usb_host)
-    - [CMSIS\_VIO](#cmsis_vio)
-    - [STDIN / STDOUT / STDERR](#stdin--stdout--stderr)
-  - [Arduino Shield](#arduino-shield)
-  - [Header File Example](#header-file-example)
 
 ## Introduction
 
@@ -106,9 +72,8 @@ The overall structure of a sensor example project is shown in the picture below.
 
 ![Sensor Reference Application](./images/Sensor-SDK-Example.png "Sensor Reference Application")
 
-> **Note:**
->
-> As the `connections:` for the MEMS sensor are specific to the sensor itself, the same *Reference Application* also works with an evaluation board that integrates the MEMS sensor (and requires therefore no Shield layer). The board specific software layer adds in this case the sensor specific `connections:`.
+!!! Note
+    As the `connections:` for the MEMS sensor are specific to the sensor itself, the same *Reference Application* also works with an evaluation board that integrates the MEMS sensor (and requires therefore no Shield layer). The board specific software layer adds in this case the sensor specific `connections:`.
 
 ### Targeting Custom Hardware
 
@@ -117,8 +82,9 @@ A *Reference Application* may serve as starting point for user applications that
 It is required to provide:
 
 - A software layer with a compatible set of APIs (`connections:`) consumed by the *Reference Application*. This software layer can be added along with the target type (in the `*.csolution.yml` file) that defines the custom hardware.
-  
-   > **Note:** It is not required to define `connections:` as this information is only used to identify compatible layers.
+
+!!! Note
+    It is not required to define `connections:` as this information is only used to identify compatible layers.
 
 - A header file that replaces the `CMSIS_target_header`. Refer to [Header File Structure](#header-file-structure) for more information.
 
@@ -155,47 +121,45 @@ The following steps explain how to to compile the project:
 
 1. In the `*.csolution.yml` file under the `packs:` node, add the DFP (for the device) and the BSP (for the board). Under `target-types:`, add your board.
 
-   ```yml
-   solution:
-     cdefault:
-     :
-     packs:
-       - pack: Keil::STM32U5xx_DFP
-       - pack: Keil::B-U585I-IOT02A_BSP
-
-     target-types:
-       - type: MyBoard
-         board: B-U585I-IOT02A         # name of a target board
-   ```
+```yml
+solution:
+  cdefault:
+  :
+  packs:
+    - pack: Keil::STM32U5xx_DFP
+    - pack: Keil::B-U585I-IOT02A_BSP
+  target-types:
+    - type: MyBoard
+      board: B-U585I-IOT02A         # name of a target board
+```
    
 2. Run `cbuild setup` with the `*.csolution.yml` file. This identifies compatible layers with an output similar to:
 
-   ```txt
-   >cbuild setup xxx.csolution.yml
-   error csolution: undefined variables in xxx.csolution.yml:
-     - $Board-Layer$
-
-   To resolve undefined variables, copy the settings from cbuild-idx.yml to csolution.yml
-   ```
+```txt
+>cbuild setup xxx.csolution.yml
+error csolution: undefined variables in xxx.csolution.yml:
+  - $Board-Layer$
+To resolve undefined variables, copy the settings from cbuild-idx.yml to csolution.yml
+```
 
    The related `*.cbuild-idx.yml` should contain information similar to this:
 
-   ```yml
-   build-idx:
-     generated-by: csolution version 2.4.0
-     cdefault: cdefault.yml
-     csolution: xxx.csolution.yml
-     configurations:
-       - target-type: B-U585I-IOT02A
-         target-configurations:
-           - configuration: 
-             variables:
-               - Board-Layer: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/Layers/IoT/Board.clayer.yml
-                 description: B-U585I-IOT02A Board setup for IoT
-                 path: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/Layers/IoT
-                 file: Board.clayer.yml
-                 copy-to: .Board/U585
-   ```
+```yml
+build-idx:
+  generated-by: csolution version 2.4.0
+  cdefault: cdefault.yml
+  csolution: xxx.csolution.yml
+  configurations:
+    - target-type: B-U585I-IOT02A
+      target-configurations:
+        - configuration: 
+          variables:
+            - Board-Layer: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/Layers/IoT/Board.clayer.yml
+              description: B-U585I-IOT02A Board setup for IoT
+              path: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/Layers/IoT
+              file: Board.clayer.yml
+              copy-to: .Board/U585
+```
 
 As a user you have now two choices to work with the identified software layer:
 
@@ -235,9 +199,8 @@ solution:
         - Board-Layer: $SolutionDir()$/Board/B-U585I-IOT02A/Board.clayer.yml
 ```
 
-> **Note:**
->
-> The copy step is executed for you by some IDEs during the *Create New Project* workflow.
+!!! Note
+    The copy step is executed for you by some IDEs during the *Create New Project* workflow.
 
 ## Structure
 
@@ -312,9 +275,8 @@ To access target hardware, these header files are used by the *Reference Applica
 - The configuration of the driver interfaces is defined by the `CMSIS_target_header`. This header therefore specifies the available resources of the target hardware that can be used by the *Reference Application*. The [Header File Example](#header-file-example) shows a typical structure of the `CMSIS_target_header`.
 - When a shield is applied to an evaluation board, the `CMSIS_shield_header` extends the resource configuration of the `CMSIS_target_header`. 
 
-> **Note:**
->
-> The driver implementation of the hardware abstraction might use *shim layer* as shown on the right side of above diagram. For example, the [driver implementation for STM32 devices](https://github.com/Open-CMSIS-Pack/CMSIS-Driver_STM32) uses the STM32 HAL.
+!!! Note
+    The driver implementation of the hardware abstraction might use *shim layer* as shown on the right side of above diagram. For example, the [driver implementation for STM32 devices](https://github.com/Open-CMSIS-Pack/CMSIS-Driver_STM32) uses the STM32 HAL.
 
 ### Application Program Start
 
@@ -395,9 +357,9 @@ Currently, the following **`connect` names** are used.
 .                                                            |.                       | **Arduino Shield Interface**
 [ARDUINO_UNO_UART](#arduino_uno_uart)                        | -                      | CMSIS-Driver USART connecting to UART on Arduino pins D0..D1
 [ARDUINO_UNO_SPI](#arduino_uno_spi)                          | -                      | CMSIS-Driver SPI connecting to SPI on Arduino pins D10..D13
-[ARDUINO_UNO_I2C](#arduino_uno_i2c--arduino_uno_i2c-alt)     | -                      | CMSIS-Driver I2C connecting to I2C on Arduino pins D20..D21
-[ARDUINO_UNO_I2C-Alt](#arduino_uno_i2c--arduino_uno_i2c-alt) | -                      | CMSIS-Driver I2C connecting to I2C on Arduino pins D18..D19
-[ARDUINO_UNO_D0 .. D21](#arduino_uno_d0--d21)                | -                      | CMSIS-Driver GPIO connecting to Arduino pins D0..D21
+[ARDUINO_UNO_I2C](#arduino_uno_i2c-arduino_uno_i2c-alt)     | -                      | CMSIS-Driver I2C connecting to I2C on Arduino pins D20..D21
+[ARDUINO_UNO_I2C-Alt](#arduino_uno_i2c-arduino_uno_i2c-alt) | -                      | CMSIS-Driver I2C connecting to I2C on Arduino pins D18..D19
+[ARDUINO_UNO_D0 .. D21](#arduino_uno_d0-d21)                | -                      | CMSIS-Driver GPIO connecting to Arduino pins D0..D21
 .                                                            |.                       | **CMSIS Driver and RTOS Interfaces**
 [CMSIS_ETH](#cmsis_eth)                                      | -                      | CMSIS-Driver ETH connected to physical board connector
 [CMSIS_MCI](#cmsis_mci)                                      | -                      | CMSIS-Driver MCI connected to physical board connector
@@ -406,9 +368,9 @@ Currently, the following **`connect` names** are used.
 [CMSIS_VIO](#cmsis_vio)                                      | -                      | CMSIS-Driver VIO interface for virtual I/O
 CMSIS-RTOS2                                                  | -                      | CMSIS-RTOS2 compliant RTOS
 .                                                            |.                       | **I/O Retargeting**
-[STDERR](#stdin--stdout--stderr)                             | -                      | Standard Error output
-[STDIN](#stdin--stdout--stderr)                              | -                      | Standard Input
-[STDOUT](#stdin--stdout--stderr)                             | -                      | Standard Output
+[STDERR](#stdin-stdout-stderr)                             | -                      | Standard Error output
+[STDIN](#stdin-stdout-stderr)                              | -                      | Standard Input
+[STDOUT](#stdin-stdout-stderr)                             | -                      | Standard Output
 .                                                            |.                       | **Memory allocation**
 Heap                                                         | Heap Size              | Memory heap configuration
 
@@ -622,5 +584,3 @@ extern int32_t shield_setup (void);
 
 #endif /* _FRDM_STBC_AGM01_SHIELD_H_ */
 ```
-
-[**Create Applications**](CreateApplications.md) **&laquo; Chapters &raquo;** [**Configure STM32 Devices with CubeMX**](CubeMX.md)

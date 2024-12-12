@@ -4,91 +4,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **&raquo; CMSIS Solution Project File Format**
-
 The following chapter explains the CMSIS Solution Project File Format (short form *csolution project files*), the YAML files that describe the software of an embedded application.
-
-**Table of Contents**
-
-- [CMSIS Solution Project File Format](#cmsis-solution-project-file-format)
-  - [Name Conventions](#name-conventions)
-    - [Filename Extensions](#filename-extensions)
-    - [`pack:` Name Conventions](#pack-name-conventions)
-    - [`component:` Name Conventions](#component-name-conventions)
-    - [`device:` Name Conventions](#device-name-conventions)
-    - [`board:` Name Conventions](#board-name-conventions)
-    - [`context:` Name Conventions](#context-name-conventions)
-  - [Access Sequences](#access-sequences)
-  - [Variables](#variables)
-  - [Order of List Nodes](#order-of-list-nodes)
-  - [Project File Structure](#project-file-structure)
-    - [`cdefault:`](#cdefault)
-    - [`solution:`](#solution)
-    - [`project:`](#project)
-    - [`layer:`](#layer)
-  - [Directory Control](#directory-control)
-    - [`output-dirs:`](#output-dirs)
-    - [`generators:`](#generators)
-      - [`generators: - options:`](#generators---options)
-    - [`rte:`](#rte)
-  - [Toolchain Options](#toolchain-options)
-    - [`select-compiler:`](#select-compiler)
-    - [`compiler:`](#compiler)
-    - [`linker:`](#linker)
-    - [`output:`](#output)
-  - [Translation Control](#translation-control)
-    - [`language-C:`](#language-c)
-    - [`language-CPP:`](#language-cpp)
-    - [`optimize:`](#optimize)
-    - [`debug:`](#debug)
-    - [`warnings:`](#warnings)
-    - [`define:`](#define)
-    - [`define-asm:`](#define-asm)
-    - [`undefine:`](#undefine)
-    - [`add-path:`](#add-path)
-    - [`add-path-asm:`](#add-path-asm)
-    - [`del-path:`](#del-path)
-    - [`misc:`](#misc)
-  - [Project Setups](#project-setups)
-    - [`setups:`](#setups)
-  - [Pack Selection](#pack-selection)
-    - [`packs:`](#packs)
-    - [`pack:`](#pack)
-  - [Target Selection](#target-selection)
-    - [`board:`](#board)
-    - [`device:`](#device)
-  - [Processor Attributes](#processor-attributes)
-    - [`processor:`](#processor)
-  - [Context](#context)
-    - [`target-types:`](#target-types)
-    - [`build-types:`](#build-types)
-    - [`context-map:`](#context-map)
-  - [Conditional Build](#conditional-build)
-    - [`for-compiler:`](#for-compiler)
-    - [`for-context:`](#for-context)
-    - [`not-for-context:`](#not-for-context)
-    - [Context List](#context-list)
-    - [Usage](#usage)
-      - [Regular Expressions](#regular-expressions)
-  - [Multiple Projects](#multiple-projects)
-    - [`projects:`](#projects)
-  - [Source File Management](#source-file-management)
-    - [`groups:`](#groups)
-    - [`files:`](#files)
-    - [`layers:`](#layers)
-      - [`layer:` - `type:`](#layer---type)
-    - [`components:`](#components)
-    - [`instances:`](#instances)
-  - [Pre/Post build steps](#prepost-build-steps)
-    - [`executes:`](#executes)
-  - [`connections:`](#connections)
-    - [`connect:`](#connect)
-    - [`set:`](#set)
-    - [`provides:`](#provides)
-    - [`consumes:`](#consumes)
-    - [Example: Board](#example-board)
-    - [Example: Simple Project](#example-simple-project)
-    - [Example: Sensor Shield](#example-sensor-shield)
 
 ## Name Conventions
 
@@ -128,10 +44,10 @@ Element      |              | Description
 `@^version`  | Optional     | Automatically update minor/patch version, i.e. `@^1.2.3` uses releases from `1.2.3` to `< 2.0.0`. 
 `@~version`  | Optional     | Automatically update patch version, i.e. `@^1.2.3` uses releases from `1.2.3` to `< 1.3.0`. 
 
-> **Notes:**
->
-> - When no version is specified, the **`csolution` Project Manager** only loads the latests installed version of a software pack. This also applies when wildcards are used in the `pack-name`. 
-> - Use [**`cpackget`**](build-tools.md#cpackget-invocation) to download and install new pack versions.
+**Notes:**
+
+- When no version is specified, the **`csolution` Project Manager** only loads the latests installed version of a software pack. This also applies when wildcards are used in the `pack-name`. 
+- Use [**`cpackget`**](build-tools.md#cpackget-invocation) to download and install new pack versions.
 
 **Examples:**
 
@@ -215,12 +131,11 @@ Element       |          | Description
 `Dname`       | Optional | Device name (Dname attribute) or when used the variant name (Dvariant attribute) as defined in the \<devices\> element.
 `Pname`       | Optional | Processor identifier (Pname attribute) as defined in the `<devices>` element.
 
-> **Note:**
->
-> - All elements of a device name are optional which allows to supply additional information, such as the `:Pname` at
->   different stages of the project. However the `Dname` itself is a mandatory element and must be specified in
->   context of the various project files.
-> - `Dvendor::` must be used in combination with the `Dname`.
+!!! Note
+    - All elements of a device name are optional which allows to supply additional information, such as the `:Pname` at
+      different stages of the project. However the `Dname` itself is a mandatory element and must be specified in
+      context of the various project files.
+    - `Dvendor::` must be used in combination with the `Dname`.
 
 **Examples:**
 
@@ -247,9 +162,8 @@ Element      |              | Description
 `Bname`      | **Required** | Board name (name attribute) as defined in the \<board\> element of the BSP.
 `revision`   | Optional     | Board revision (revision attribute) as defined in the \<board\> element of the BSP.
 
-> **Note:**
->
-> When a `board:` is specified, the `device:` specification can be omitted, however it is possible to overwrite the device setting in the BSP with an explicit `device:` setting.
+!!! Note
+    When a `board:` is specified, the `device:` specification can be omitted, however it is possible to overwrite the device setting in the BSP with an explicit `device:` setting.
 
 **Examples:**
 
@@ -273,9 +187,8 @@ Element             |              | Description
 `.build-type`       |   Optional   | The [`build-type`](#build-types) name that is currently processed (specified with `- type: name`).
 `+target-type`      |   Optional   | The [`target-type`](#target-types) name that is currently processed (specified with `- type: name`).
 
-> **Note:**
->
-> The `.build-type` and `+target-type` name allows letters (A-Z, a-z), digits (0-9), dash ('-'), and underscore ('_'); the maximum length is 32 characters.
+!!! Note
+    The `.build-type` and `+target-type` name allows letters (A-Z, a-z), digits (0-9), dash ('-'), and underscore ('_'); the maximum length is 32 characters.
 
 - When `project-name` is omitted, the `project-name` is the base name of the `*.cproject.yml` file.
 - When `.build-type` is omitted, it matches with any possible `.build-type`.
@@ -487,9 +400,8 @@ The `default:` node is the start of a [`cdefault.yml`](build-overview.md#cdefaul
 :---------------------------------------------------------|:-----------|:------------------------------------
 &nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls. Refer to [Build Overview - `cdefault.yml`](build-overview.md#cdefaultyml) for an example.
 
-> **Note:**
->
-> The [`compiler:`](#compiler) selection in `cdefault.yml` has been deprecated in CMSIS-Toolbox 2.6.0.
+!!! Note
+    The [`compiler:`](#compiler) selection in `cdefault.yml` has been deprecated in CMSIS-Toolbox 2.6.0.
 
 ### `solution:`
 
@@ -604,7 +516,7 @@ The `layer:` node is the start of a `*.clayer.yml` file and defines a [Software 
 
 `layer:`                                                     |            | Content
 :------------------------------------------------------------|:-----------|:------------------------------------
-&nbsp;&nbsp;&nbsp; [`type:`](#layer---type)                  |  Optional  | Layer type for combining layers; used to identify [compatible layers](ReferenceApplications.md#usage).
+&nbsp;&nbsp;&nbsp; [`type:`](#layer-type)                  |  Optional  | Layer type for combining layers; used to identify [compatible layers](ReferenceApplications.md#usage).
 &nbsp;&nbsp;&nbsp; `description:`                            |  Optional  | Brief description text of the layer.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)              |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)          |  Optional  | Set the language standard for C++ source file compilation.
@@ -658,9 +570,9 @@ The following nodes control the directory structure for the application.
 Allows to control the directory structure for build output files and temporary files.  
 
 >**Note:**
-> 
-> - This control is only possible at `csolution.yml` level.
-> - CMake manages the temporary directory of all projects therefore `tmpdir:` does not support access sequences.
+
+- This control is only possible at `csolution.yml` level.
+- CMake manages the temporary directory of all projects therefore `tmpdir:` does not support access sequences.
 
 `output-dirs:`                     |              | Content
 :----------------------------------|--------------|:------------------------------------
@@ -705,18 +617,17 @@ The `generators:` node can be added at various levels of the `*.yml` input files
 3. Use `generators:` specification of the `*.csolution.yml` input file.
 
 >**Notes:**
-> 
-> - Only relative paths are permitted to support portablity of projects.
-> - The location of the `*.yml` file that contains the `generators:` node is the reference for relative paths.
+
+- Only relative paths are permitted to support portablity of projects.
+- The location of the `*.yml` file that contains the `generators:` node is the reference for relative paths.
 
 `generators:`                  |            | Content
 :------------------------------|------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `base-dir:` |  Optional  | Base directory for unspecified generators; default: `$ProjectDir()$/generated`.
 &nbsp;&nbsp;&nbsp; `options:`  |  Optional  | Specific generator options; allows explicit directory configuration for a generator.
 
-> **Note:**
->
-> The base directory is extended for each generator with `/<generator-id>`; `<generator-id>` is defined by the `id` in the generators element of the PDSC file.
+!!! Note
+    The base directory is extended for each generator with `/<generator-id>`; `<generator-id>` is defined by the `id` in the generators element of the PDSC file.
 
 #### `generators: - options:`
 
@@ -745,10 +656,10 @@ generators:
 Allows to control the directory structure for [RTE (run-time environment)](build-overview.md#rte-directory-structure) files.  
 
 >**Notes:**
-> 
-> - This control is only possible at `*.cproject.yml` level.  
-> - Only relative paths are permitted to support portablity of projects.
-> - The location of the `*.cproject.yml` file is the reference for relative paths.
+
+- This control is only possible at `*.cproject.yml` level.  
+- Only relative paths are permitted to support portablity of projects.
+- The location of the `*.cproject.yml` file is the reference for relative paths.
 
 `rte:`                         |            | Content
 :------------------------------|------------|:------------------------------------
@@ -770,10 +681,10 @@ Toolchain options may be used at various places such as:
 
 Lists the compilers that this *csolution project* is tested with. This information is used by the [`cbuild setup` command](build-operation.md#details-of-the-setup-mode) to determine possible compiler choices. The actual compiler to be used is selected with the [`compiler:`](#compiler) node. 
 
-> **Notes:**
-> 
-> - [`select-compiler:`](#select-compiler) is only supported in the [`*.csolution.yml`](#solution) project file.
-> - This control is new in CMSIS-Toolbox 2.5.0
+**Notes:**
+
+- [`select-compiler:`](#select-compiler) is only supported in the [`*.csolution.yml`](#solution) project file.
+- This control is new in CMSIS-Toolbox 2.5.0
 
 `select-compiler:`                                          |            | Content
 :-----------------------------------------------------------|:-----------|:-------------------------------------------
@@ -826,12 +737,12 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 &nbsp;&nbsp;&nbsp;[`for-context:`](#for-context)            |  Optional  | Include Linker Script for a list of *build* and *target* type names.
 &nbsp;&nbsp;&nbsp;[`not-for-context:`](#not-for-context)    |  Optional  | Exclude Linker Script for a list of *build* and *target* type names.
 
-> **Notes:** 
-> 
-> - The `linker:` node must have at least `regions:`, `script:`, `auto:`, or `define:`.
-> - If no `script:` file is specified, compiler specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
-> - A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`.
-> - If both `auto:` and `script:` is specified a warning is issued and [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation) is performed and the specified `script:` is ignored.
+**Notes:** 
+
+- The `linker:` node must have at least `regions:`, `script:`, `auto:`, or `define:`.
+- If no `script:` file is specified, compiler specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
+- A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`.
+- If both `auto:` and `script:` is specified a warning is issued and [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation) is performed and the specified `script:` is ignored.
 
 **Examples:**
 
@@ -919,10 +830,9 @@ The following translation control options may be used at various places such as:
 - [`groups:`](#groups) level to specify options for a specify source file group
 - [`files:`](#files) level to specify options for a specify source file
 
-> **Note:**
-> 
-> - The keys `define:`, `define-asm:`, `add-path:`, `add-path-asm:`, `del-path:`, and `misc:` are additive. 
-> - All other keys can only be defined once at the level of `solution:`, `project:`, `setup:`, `layer:`, `build-types:`. or `target-types:`. However, it is possible to overwrite these keys at the level of `group:`, `file:`, or `component:`, for example it is possible to translate a file group with a different optimize level.
+!!! Note
+    - The keys `define:`, `define-asm:`, `add-path:`, `add-path-asm:`, `del-path:`, and `misc:` are additive. 
+    - All other keys can only be defined once at the level of `solution:`, `project:`, `setup:`, `layer:`, `build-types:`. or `target-types:`. However, it is possible to overwrite these keys at the level of `group:`, `file:`, or `component:`, for example it is possible to translate a file group with a different optimize level.
 
 ### `language-C:`
 
@@ -970,9 +880,8 @@ Value                                                 | Code Generation
 `debug`                                               | Optimize for debug experience 
 `none`                                                | No optimization
 
-> **Note:**
->
-> - When `optimize:` is not specified, the default optimize setting of the compiler is used.
+!!! Note
+    When `optimize:` is not specified, the default optimize setting of the compiler is used.
 
 **Example:**
 
@@ -1024,8 +933,8 @@ Contains a list of symbol #define statements that are passed via the command lin
 &nbsp;&nbsp;&nbsp; `- <symbol-name>: \"<string>\"`          | #define symbol with string value passed via command line
 
 >**Note:**
->
-> This control only applies to C and C++ source files (or to the [linker](#linker) script preprocessor).  For assembler source files use the `define-asm:` node.
+
+This control only applies to C and C++ source files (or to the [linker](#linker) script preprocessor).  For assembler source files use the `define-asm:` node.
 
 **Example:**
 
@@ -1083,8 +992,8 @@ Add include paths to the command line of the development tools for C and C++ sou
 &nbsp;&nbsp;&nbsp; `- <path-name>`                         | Named path to be added
 
 >**Note:**
->
-> This control only applies to C and C++ source files.  For assembler source files use the `add-path-asm:` node.
+
+This control only applies to C and C++ source files.  For assembler source files use the `add-path-asm:` node.
 
 **Example:**
 
@@ -1109,8 +1018,8 @@ Add include paths to the command line of the development tools for assembly sour
 &nbsp;&nbsp;&nbsp; `- <path-name>`                         | Named path to be added
 
 >**Note:**
->
-> This control only applies to assembler source files.  For C and C++ source files use the `add-path:` node.
+
+This control only applies to assembler source files.  For C and C++ source files use the `add-path:` node.
 
 **Example:**
 
@@ -1247,10 +1156,10 @@ The  [Pack Name Conventions](#pack-name-conventions) are used to specify the nam
 The `pack:` definition may be specific to a [`context`](#context) that specifies `target-types:` and/or `build-types:` or provide a local path to a development repository of a software pack.
 
 >**Notes:** 
->
-> - By default, the **`csolution` Project Manager** only loads the latest version of the installed software packs. It is however possible to request specific versions using the `- pack:` node.
->
-> - An attempt to add two different versions of the same software pack results in an error.
+
+- By default, the **`csolution` Project Manager** only loads the latest version of the installed software packs. It is however possible to request specific versions using the `- pack:` node.
+
+- An attempt to add two different versions of the same software pack results in an error.
 
 ### `packs:`
 
@@ -1270,9 +1179,8 @@ The `pack:` list allows to add [specific software packs](#pack-name-conventions)
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)           | Include pack for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context)   | Exclude pack for a list of *build* and *target* types.
 
-> **Note:**
->
-> - When an explicit `path:` to the pack is specified, an explicit pack version cannot be specified as the path directly specifies the pack to include.
+!!! Note
+    When an explicit `path:` to the pack is specified, an explicit pack version cannot be specified as the path directly specifies the pack to include.
 
 **Example:**
 
@@ -1356,10 +1264,9 @@ A [`context`](#context-name-conventions) is an enviroment setup for a project th
 - `.build-type` that defines typically build specific settings such as for debug, release, or test.
 - `+target-type` that defines typically target specific settings such as device, board, or usage of processor features.
 
-> **Note:**
->
-> - The [`context`](#context-name-conventions) name is used througout the build process and is reflected in directory names. Even when there is not a fixed limit, keep identifiers short. Recommended is less than 32 characters for the [`context`](#context-name-conventions) name.
-> - Blank characters (' ') in the context name are not permitted by CMake.  
+!!! Note
+    - The [`context`](#context-name-conventions) name is used througout the build process and is reflected in directory names. Even when there is not a fixed limit, keep identifiers short. Recommended is less than 32 characters for the [`context`](#context-name-conventions) name.
+    - Blank characters (' ') in the context name are not permitted by CMake.  
 
 The section [Project setup for multiple targets and test builds](build-overview.md#project-setup-for-multiple-targets-and-builds)
 explains the overall concept of  `target-types` and `build-types`. These `target-types` and `build-types` are defined in the `*.csolution.yml` that defines the overall application for a system.
@@ -1392,9 +1299,9 @@ The `target-types:` node may include [toolchain options](#toolchain-options), [t
 &nbsp;&nbsp;&nbsp; [`context-map:`](#context-map)  |   Optional   | Use different `target-types:` for specific projects.
 &nbsp;&nbsp;&nbsp; [`variables:`](#variables)      |   Optional   | Variables that can be used to define project components.
 
-> **Note::**
->
-> Either `device:` or `board:` is required.
+**Note::**
+
+Either `device:` or `board:` is required.
 
 ### `build-types:`
 
@@ -1531,10 +1438,8 @@ It is possible to include or exclude *items* of a [*list node*](#order-of-list-n
 - [`for-context:`](#for-context) includes *items* only for a [*context*](#context-name-conventions) list.
 - [`not-for-context:`](#not-for-context) excludes *items* for a [*context*](#context-name-conventions) list.
 
-> **Note:**
-> 
-> `for-context` and `not-for-context` are mutually exclusive, only one occurrence can be specified for a
-  *list node*.
+!!! Note
+    `for-context` and `not-for-context` are mutually exclusive, only one occurrence can be specified for a *list node*.
 
 ### `for-compiler:`
 
@@ -1603,9 +1508,8 @@ The inclusion of a *list node* is processed with this hierarchy from top to bott
 
 In other words, the restrictions specified by `for-context:` or `not-for-context` for a *list node* are applied to it child nodes. Child *list nodes* inherit the restrictions from their parent.
 
-> **Note:**
->
-> With `for-context:` and `not-for-context:` the `project-name` of a [context](#context-name-conventions) cannot be applied. The `context` name must therefore start with `.` to refer the `build-type:` or `+` to refer the `target-type:`.
+!!! Note
+    With `for-context:` and `not-for-context:` the `project-name` of a [context](#context-name-conventions) cannot be applied. The `context` name must therefore start with `.` to refer the `build-type:` or `+` to refer the `target-type:`.
 
 #### Regular Expressions
 
@@ -1737,9 +1641,8 @@ Add source files to a project.
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)               |   Optional   | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                       |   Optional   | Literal tool-specific controls.
 
-> **Note:** 
-> 
-> It is also possible to specify a [Linker Script](build-overview.md#linker-script-management). Files with the extension `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
+!!! Note 
+    It is also possible to specify a [Linker Script](build-overview.md#linker-script-management). Files with the extension `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
 
 **Example:**
 
@@ -1805,21 +1708,21 @@ Using `category:` allows to specify pre-include files that are project-wide or r
 
 - A global pre-include file is added to the compiler command line for all modules of the whole project (globally).
 
-  ```yml
-   - group:  "Main File Group"
-     files:
-       - file: SystemDefinitions.h
-         category: preIncludeGlobal
-  ``` 
+```yml
+ - group:  "Main File Group"
+   files:
+     - file: SystemDefinitions.h
+       category: preIncludeGlobal
+``` 
 
 - A local pre-include file is added to the compiler command line for all modules of a group (locally).
  
-  ```yml
-   - group:  "Group 2"
-     files:
-       - file: MyDefinitions.h
-         category: preIncludeLocal
-  ``` 
+```yml
+ - group:  "Group 2"
+   files:
+     - file: MyDefinitions.h
+       category: preIncludeLocal
+``` 
 
 ### `layers:`
 
@@ -1828,7 +1731,7 @@ Add a software layer to a project. Used in `*.cproject.yml` files.
 `layers:`                                                 |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
 [`- layer:`](#layer)                                      |   Optional   | Path to the `*.clayer.yml` file that defines the layer.
-&nbsp;&nbsp;&nbsp; [`type:`](#layer---type)               |   Optional   | Refers to an expected layer type.
+&nbsp;&nbsp;&nbsp; [`type:`](#layer-type)               |   Optional   | Refers to an expected layer type.
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |   Optional   | Include layer for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude layer for a list of *build* and *target* types.
 
@@ -1922,9 +1825,8 @@ Add software components to a project or a software layer. Used in `*.cproject.ym
         - MBEDTLS_CONFIG_FILE: "aws_mbedtls_config.h"
 ```
 
-> **Note:** 
->
-> The name format for a software component is described under  [Name Conventions - Component Name Conventions](#component-name-conventions).
+!!! Note 
+    The name format for a software component is described under  [Name Conventions - Component Name Conventions](#component-name-conventions).
 
 ### `instances:`
 
@@ -1988,19 +1890,19 @@ The `run:` command string uses these sequences to access input files and output 
 
 The `run:` command string also accepts these [access sequences](#access-sequences): $Bname$, $Dname$, $Pname$, $BuildType$, $TargetType$, $Compiler$, $Solution$, $Project$. It does not accept [access sequences](#access-sequences) that reference directories or files as this bypasses the [project dependency check](build-overview.md#project-dependency). Instead use the `input:` list to pass files or directories.
 
-> **Notes:**
-> 
-> - The `execute:` node is processed by the CMake build system. The order of execution depends on `$input$` and `$output` files and is evaluated by CMake.
->
-> - The `execute:` node is processed only for an application build when no `--context` option is specified. The option `--context-set` can be used.
-> 
-> - CMake uses Linux-style path names with `/` characters, it does not accept the Windows-style `\` characters in the `run:` node to specify the location of an executeable tool.
->
-> - [CMake provides several builtin command-line tools](https://cmake.org/cmake/help/latest/manual/cmake.1.html#run-a-command-line-tool) (copy, checksum, etc.) that run on every Host OS. Consider using these command-line tools instead of Windows or Linux specific commands. Use `CMake -E help` to list the available commands. 
-> 
-> - The base directory for execution is not controlled by the CMSIS-Toolbox and typically the `tmp` directory. The commands specified by `run:` should be in the path of the Host OS or the path/tool should be passed using an `$input(<n>)$` argument.
-> 
-> - At the `*.csolution.yml` level `for-context:` and `not-for-context:` is not evaluated.
+**Notes:**
+
+- The `execute:` node is processed by the CMake build system. The order of execution depends on `$input$` and `$output` files and is evaluated by CMake.
+
+- The `execute:` node is processed only for an application build when no `--context` option is specified. The option `--context-set` can be used.
+
+- CMake uses Linux-style path names with `/` characters, it does not accept the Windows-style `\` characters in the `run:` node to specify the location of an executeable tool.
+
+- [CMake provides several builtin command-line tools](https://cmake.org/cmake/help/latest/manual/cmake.1.html#run-a-command-line-tool) (copy, checksum, etc.) that run on every Host OS. Consider using these command-line tools instead of Windows or Linux specific commands. Use `CMake -E help` to list the available commands. 
+
+- The base directory for execution is not controlled by the CMSIS-Toolbox and typically the `tmp` directory. The commands specified by `run:` should be in the path of the Host OS or the path/tool should be passed using an `$input(<n>)$` argument.
+
+- At the `*.csolution.yml` level `for-context:` and `not-for-context:` is not evaluated.
 
 **Examples:**
 
@@ -2269,5 +2171,3 @@ This sensor shield layer provides a set of interfaces that are configurable.
       consumes:
         - Ardunio_Uno_D3:
 ```
-
-[**Build Tools**](build-tools.md) **&laquo; Chapter &raquo;** [**Create Applications**](CreateApplications.md)

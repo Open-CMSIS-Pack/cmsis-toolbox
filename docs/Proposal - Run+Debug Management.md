@@ -7,14 +7,6 @@
 
 This proposal discusses how the CMSIS-Toolbox may simplify workflows with programming and debug tools.
 
-- [Proposal - Run and Debug Management](#proposal---run-and-debug-management)
-  - [Overview](#overview)
-  - [Run and Debug Information Management](#run-and-debug-information-management)
-    - [The problems to solve](#the-problems-to-solve)
-    - [Proposed solution](#proposed-solution)
-    - [Usage](#usage)
-  - [Questions](#questions)
-
 ## Overview
 
 The CMSIS-Pack PDSC files contain information about device/board parameters and software components:

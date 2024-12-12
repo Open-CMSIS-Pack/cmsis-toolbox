@@ -4,26 +4,10 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **&raquo; Configure STM32 Devices with CubeMX**
-
 This chapter explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) with the CMSIS-Toolbox to manage device and board configuration.
 
-> **Note:**
-> 
-> - For the CMSIS-Toolbox CubeMX integration [STM32 packs with generator support](https://github.com/Open-CMSIS-Pack#stm32-packs-with-generator-support) are required. These software packs contain in the release information: **Updated for new CMSIS-Toolbox CubeMX integration**.
-
-**Chapter Contents:**
-
-- [Configure STM32 Devices with CubeMX](#configure-stm32-devices-with-cubemx)
-  - [Introduction](#introduction)
-  - [Simple Project](#simple-project)
-  - [Adding an RTOS](#adding-an-rtos)
-  - [Linker Script](#linker-script)
-  - [Use CubeMX with Board Layer](#use-cubemx-with-board-layer)
-  - [TrustZone or Multi-Core Project](#trustzone-or-multi-core-project)
-  - [CubeMX Runtime Context Mapping](#cubemx-runtime-context-mapping)
-  - [Migration to CMSIS-Toolbox CubeMX Integration](#migration-to-cmsis-toolbox-cubemx-integration)
-    - [uVision - Update STM32 DFP Packs](#uvision---update-stm32-dfp-packs)
+!!! Note
+    For the CMSIS-Toolbox CubeMX integration [STM32 packs with generator support](https://github.com/Open-CMSIS-Pack#stm32-packs-with-generator-support) are required. These software packs contain in the release information: **Updated for new CMSIS-Toolbox CubeMX integration**.
 
 ## Introduction
 
@@ -33,18 +17,16 @@ The `component: Device:CubeMX` connects a *csolution project* to CubeMX. This co
 
 An example project created with CubeMX can be found in [**csolution-examples/CubeMX**](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/CubeMX).
 
->**Notes:**
->
-> - If a board is specified in the *csolution project*, CubeMX pre-configures the device peripherals with sensible settings for the evaluation board. The user may change these settings using the CubeMX dialogs.
-> - If a device is specified, the user need to configure the peripherals manually using CubeMX dialogs.
+!!! Note
+    - If a board is specified in the *csolution project*, CubeMX pre-configures the device peripherals with sensible settings for the evaluation board. The user may change these settings using the CubeMX dialogs.
+    - If a device is specified, the user need to configure the peripherals manually using CubeMX dialogs.
 
 ## Simple Project
 
 Below is a simple project that just adds the CubeMX generated components.
 
->**Note:**  
->
-> The packs required for boards and devices are listed on [www.keil.arm.com/boards](https://www.keil.arm.com/boards/) and [www.keil.arm.com/devices](https://www.keil.arm.com/devices/).
+!!! Tip  
+    The packs required for boards and devices are listed on [www.keil.arm.com/boards](https://www.keil.arm.com/boards/) and [www.keil.arm.com/devices](https://www.keil.arm.com/devices/).
 
 **File: `CubeMX.csolution.yml`**
 
@@ -91,31 +73,30 @@ Such a project cannot be directly built, as initially the `*.cgen.yml` file is m
 
 1. Identify the required generator and the directory where the generated files are stored with:
    
-   ```bash
-   > csolution CubeMX.csolution.yml list generators --verbose
-   CubeMX (Global Registered Generator)    # generator name
-     base-dir: STM32CubeMX/MyBoard         # directory for generated files
-       context: CubeMX.Debug+MyBoard       # list of context that uses this directory
-       context: CubeMX.Release+MyBoard 
-   ```
+```bash
+csolution CubeMX.csolution.yml list generators --verbose
+CubeMX (Global Registered Generator)    # generator name
+  base-dir: STM32CubeMX/MyBoard         # directory for generated files
+    context: CubeMX.Debug+MyBoard       # list of context that uses this directory
+    context: CubeMX.Release+MyBoard 
+```
 
 2. Use the information above to run the generator:
 
-   ```bash
-   > csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
-   ```
+```bash
+csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
+```
 
    This starts CubeMX and passes the information about the selected board, device, and select toolchain. For a project that selects a board, CubeMX imports the default configuration for it. In CubeMX, review and adjust configuration options as required for your application, then just click the button `GENERATE CODE`. The generated files will be stored in the directory `STM32CubeMX/MyBoard`.
 
 3. Build the project using this command:
  
-   ```bash
-   > cbuild CubeMX.csolution.yml --update-rte
-   ```
+```bash
+cbuild CubeMX.csolution.yml --update-rte
+```
 
->**Note:**
->
-> You may run the CubeMX generator any time to change the configuration setting of your device or board.
+!!! Note
+    You may run the CubeMX generator any time to change the configuration setting of your device or board.
 
 **Directory with generated files**
 
@@ -132,9 +113,8 @@ Directory `STM32CubeMX/MyBoard`     | Content
 `STM32CubeMX/GCC`                   | Project files for GCC; only startup code and linker scripts are used for *csolution projects*.
 `STM32CubeMX/MDK-ARM`               | Project files for MDK version 5; only startup code and linker scripts are used for *csolution projects*.
 
-> **Note:**
->
-> CubeMX generates only the directory for the selected toolchain which is either `STM32CubeMX/EWARM`, `STM32CubeMX/GCC`, or `STM32CubeMX/MDK-ARM`.
+[!NOTE]
+    CubeMX generates only the directory for the selected toolchain which is either `STM32CubeMX/EWARM`, `STM32CubeMX/GCC`, or `STM32CubeMX/MDK-ARM`.
 
 **Content of Generator Import File: `CubeMX.cgen.yml`**
 
@@ -181,44 +161,41 @@ Adding an RTOS kernel requires these steps:
 
    **File: `CubeMX.cproject.yml`**    
 
-   ```yml
-   project:
-     packs:
-       - pack: ARM::CMSIS-RTX                    # RTOS Software Pack    
+```yml
+project:
+  packs:
+    - pack: ARM::CMSIS-RTX                    # RTOS Software Pack    
+  groups:
+    - group: MyApp
+      files:
+        - file: MyMain.c    
+  components:
+    - component: CMSIS:CORE                   # CMSIS-Core component is required
+    - component: Device:CubeMX                # Component that connects to CubeMX    
+    - component: CMSIS:RTOS2:Keil RTX5&Source # RTOS component
+    - component: CMSIS:OS Tick:SysTick        # OS Tick implementation for RTOS
+```    
 
-     groups:
-       - group: MyApp
-         files:
-           - file: MyMain.c    
-
-     components:
-       - component: CMSIS:CORE                   # CMSIS-Core component is required
-       - component: Device:CubeMX                # Component that connects to CubeMX    
-       - component: CMSIS:RTOS2:Keil RTX5&Source # RTOS component
-       - component: CMSIS:OS Tick:SysTick        # OS Tick implementation for RTOS
-   ```    
-
-   > **Note:**
-   >
-   > The example above uses CMSIS-RTX as the RTOS kernel, other kernels require different components and packs, but the concept is similar.
+!!! Note
+    The example above uses CMSIS-RTX as the RTOS kernel, other kernels require different components and packs, but the concept is similar.
 
 2. **Configure interrupt handlers in CubeMX**
 
-   Run CubeMX with:
+Run CubeMX with:
 
-   ```bash
-   > csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
-   ```
+```bash
+csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
+```
 
-   Open the dialog *Pinout & Configuration - System Core NVIC - Code generation* and disable *Generate IRQ handler* for:
+Open the dialog *Pinout & Configuration - System Core NVIC - Code generation* and disable *Generate IRQ handler* for:
 
-    - System service call via SWI instruction
-    - Pendable request for system service
-    - System tick timer
+- System service call via SWI instruction
+- Pendable request for system service
+- System tick timer
 
-   ![STM32CubeMX - configure interrupt handlers](./images/CubeMX_NVIC_RTOS.png "configure interrupt handlers")
+![STM32CubeMX - configure interrupt handlers](./images/CubeMX_NVIC_RTOS.png "configure interrupt handlers")
 
-   Then click the button `GENERATE CODE` to update the generated files in the directory `STM32CubeMX/MyBoard`
+Then click the button `GENERATE CODE` to update the generated files in the directory `STM32CubeMX/MyBoard`
 
 ## Linker Script
 
@@ -232,9 +209,8 @@ For `compiler: AC6`:
   
 For `compiler: GCC` or `compiler: IAR`, a linker script is always provided.
 
-> **Note:** 
->
-> The linker script that is provided by CubeMX is defined in the `*.cgen.yml` and imported into the *csolution project*.
+!!! Note 
+    The linker script that is provided by CubeMX is defined in the `*.cgen.yml` and imported into the *csolution project*.
 
 ## Use CubeMX with Board Layer
 
@@ -342,5 +318,3 @@ New `STM32*_DFP` software packs that contain in the release information **Update
    - In the tab `Project Manager - Project` set *Project Settings - Toolchain/IDE* to `MDK-ARM`.
    - In the tab `Project Manager - Code Generator` under *STM32Cube MCU packages and embedded software packs* select `Copy only necessary library files`.
    - Click `GENERATE CODE` to complete the migration.
-
-[**Reference Applications**](ReferenceApplications.md) **&laquo; Chapters &raquo;** [**Build Information Files**](YML-CBuild-Format.md)

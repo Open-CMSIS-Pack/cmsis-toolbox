@@ -3,56 +3,12 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **&raquo; Build Overview**
-
 This chapter describes the overall concept of the CMSIS-Toolbox build process. It outlines the content of *csolution project files* that describes the software application, and contains references to examples and project templates.
 
 - [Project Examples](#project-examples) helps to get started with the tools.
 - [Project Structure](#project-structure) describes the overall structure of projects.
 - [Linker Script Management](#linker-script-management) defines the  available memory and controls the linker operation.
 - [Generator Support](#generator-support) explains how to use configuration tools such as STM32CubeMX or MCUXpresso Config.
-
-**Chapter Contents:**
-
-- [Build Overview](#build-overview)
-  - [Overview of Operation](#overview-of-operation)
-    - [Source Code of Software Packs](#source-code-of-software-packs)
-  - [Project Examples](#project-examples)
-    - [GitHub repositories](#github-repositories)
-    - [Template Projects](#template-projects)
-    - [Minimal Project Setup](#minimal-project-setup)
-    - [Context](#context)
-    - [Toolchain Agnostic Project](#toolchain-agnostic-project)
-      - [cdefault.yml](#cdefaultyml)
-      - [Compiler Selection](#compiler-selection)
-    - [Reproducible builds](#reproducible-builds)
-      - [Repository Contents](#repository-contents)
-    - [Software Layers](#software-layers)
-      - [Configuration Settings](#configuration-settings)
-      - [Software Layers in Packs](#software-layers-in-packs)
-    - [Project Setup for Multiple Targets and Builds](#project-setup-for-multiple-targets-and-builds)
-    - [Project Setup for Related Projects](#project-setup-for-related-projects)
-    - [Working with context-set](#working-with-context-set)
-    - [External Tools and Build Order](#external-tools-and-build-order)
-      - [Project Dependency](#project-dependency)
-  - [Project Structure](#project-structure)
-    - [Working Areas](#working-areas)
-    - [Project Area](#project-area)
-    - [RTE Directory Structure](#rte-directory-structure)
-    - [Output Directory Structure](#output-directory-structure)
-    - [Software Components](#software-components)
-    - [PLM of Configuration Files](#plm-of-configuration-files)
-    - [RTE\_Components.h](#rte_componentsh)
-    - [CMSIS\_device\_header](#cmsis_device_header)
-    - [\_RTE\_ Preprocessor Symbol](#_rte_-preprocessor-symbol)
-  - [Linker Script Management](#linker-script-management)
-    - [Linker Script Preprocessing](#linker-script-preprocessing)
-    - [Automatic Linker Script generation](#automatic-linker-script-generation)
-      - [Linker Script Templates](#linker-script-templates)
-  - [Generator Support](#generator-support)
-    - [Use a Generator](#use-a-generator)
-    - [Configure Generator Output](#configure-generator-output)
-    - [Detailed Usage Instructions](#detailed-usage-instructions)
 
 ## Overview of Operation
 
@@ -67,11 +23,10 @@ Tool                     | Description
 The tools process *csolution project files* (in YAML format) and *software packs*
 (in [Open-CMSIS-Pack](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html) format) to generate independent projects which may be a part of a more complex application.
 
-> **Notes:**
->
-> - This documentation uses the filename extension `*.yml`, but the extension `*.yaml` is also supported.
-> - The term *CMSIS solution* refers to an application project that is specified with *csolution project files*.
-> - *Software packs* describe software components in Open-CMSIS-Pack format that can contain middleware, drivers, board support, or device support. *Software packs* also provide documentation, examples, and reusable software layers.
+!!! Notes
+    - This documentation uses the filename extension `*.yml`, but the extension `*.yaml` is also supported.
+    - The term *CMSIS solution* refers to an application project that is specified with *csolution project files*.
+    - *Software packs* describe software components in Open-CMSIS-Pack format that can contain middleware, drivers, board support, or device support. *Software packs* also provide documentation, examples, and reusable software layers.
 
 The overall features are:
 
@@ -137,10 +92,9 @@ Software packs and the related [components:](#software-components) allow you to 
 
 The **benefit** is a clean project directory that only contains the user code as well as [configuration files](#configuration-settings) for [components:](#software-components). This keeps a [repository](#repository-contents) small and makes it easy to upgrade to a [new pack version](#plm-of-configuration-files).
 
-> **Notes:**
->
-> - During development of a software pack you may [install a repository](build-tools.md#install-a-repository) that contains the source of the software pack.
-> - You may copy the content of a software pack to your project workspace and provide a [path to the pack](YML-Input-Format.md#pack).
+!!! Note
+    - During development of a software pack you may [install a repository](build-tools.md#install-a-repository) that contains the source of the software pack.
+    - You may copy the content of a software pack to your project workspace and provide a [path to the pack](YML-Input-Format.md#pack).
 
 ## Project Examples
 
@@ -179,9 +133,8 @@ A minimal application requires two files:
   
 - `Sample.cproject.yml` that defines the files and software components that are translated into an image or library archive.
 
->**Note:**
->
-> When no [`packs:`](YML-Input-Format.md#packs) are specified in *csolution project files*, the tools use the latest version of the installed packs.
+!!! Note
+    When no [`packs:`](YML-Input-Format.md#packs) are specified in *csolution project files*, the tools use the latest version of the installed packs.
 
 **Simple Project: `Sample.csolution.yml`**
 
@@ -250,9 +203,8 @@ Generic [**Translation Control**](YML-Input-Format.md#translation-control) setti
 
 The `cdefault.yml` file contains a common set of compiler specific settings that select reasonable defaults with [`misc:`](YML-Input-Format.md#misc) controls for each compiler. The [`cdefault:`](YML-Input-Format.md#cdefault) node in the `*.csolution.yml` file enables the usage of this file. The directory [`<cmsis-toolbox-installation-dir>/etc`](installation.md) contains a `cdefault.yml` file that is used when no local copy of the `cdefault.yml` file is provided.
 
-> **Note:**
->
-> It is recommended to provide a local copy of the `cdefault.yml` file in the same directory that stores the `*.csolution.yml` file.
+!!! Note
+    It is recommended to provide a local copy of the `cdefault.yml` file in the same directory that stores the `*.csolution.yml` file.
 
 **Example:**
 
@@ -319,19 +271,18 @@ There are two ways to select a toolchain:
 
 - An explicit [`compiler:`](YML-Input-Format.md#compiler) selection in the `*.csolution.yml` project file:
 
-   ```yml
-   solution:
-     cdefault:           # use the cdefault.yml file with toolchain specific controls
-     compiler: AC6       # select Arm Compiler
-
-     :
-   ```
+```yml
+solution:
+  cdefault:           # use the cdefault.yml file with toolchain specific controls
+  compiler: AC6       # select Arm Compiler
+  :
+```
 
 - The command line option `--toolchain` of the `cbuild` or `csolution` tool overwrites any `compiler:` definition in the csolution project files.
 
-   ```bash
-   > cbuild Hello.csolution.yml --toolchain GCC
-   ```
+```shell
+cbuild Hello.csolution.yml --toolchain GCC
+```
 
 ### Reproducible builds
 
@@ -340,11 +291,10 @@ Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.m
 - Records the exact list of the pack versions used during creation of an application.
 - Ensures that pack versions do not change during development even when new packs are installed on the host computer, for example to develop other applications.
 
-> **Notes:**
->
-> - The [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file should be committed to a repository to ensure reproducible builds.
-> - The `cbuild` option `--frozen-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file exists and reports an error if any pack is changed or not available.
-> - To update a pack to a new version, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) or remove the information about a specific pack in this file.
+!!! Note
+    - The [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file should be committed to a repository to ensure reproducible builds.
+    - The `cbuild` option `--frozen-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file exists and reports an error if any pack is changed or not available.
+    - To update a pack to a new version, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) or remove the information about a specific pack in this file.
 
 #### Repository Contents
 
@@ -357,9 +307,8 @@ To support reproducible builds the following files should be committed to a repo
 - The file `*.cbuild-pack.yml` to allow [reproducible builds](#reproducible-builds).
 - Optionally, the file `*.cbuild-set.yml` which defines the context set of the application that should be generated.
 
-> **Note:**
->
-> If the file `*.cbuild-set.yml` file is missing, the `setup` command creates a `*.cbuild-set` file with selection of the first `target-type` and the first `build-type`.
+!!! Note
+    If the file `*.cbuild-set.yml` file is missing, the `setup` command creates a `*.cbuild-set` file with selection of the first `target-type` and the first `build-type`.
 
 ### Software Layers
 
@@ -420,9 +369,8 @@ The project [AWS_MQTT_MutualAuth_SW_Framework](https://github.com/Open-CMSIS-Pac
 A software layer is a set of source files and pre-configured software components or source code that can be shared across multiple projects. To achieve this, the configuration files of a [`layer`](YML-Input-Format.md#layer) are stored within the directory structure of the software layer. This separate [RTE Directory Structure](#rte-directory-structure) allows that projects
 can share a `layer` with common configuration settings.
 
-> **Note:**
->
-> When using a generator, such as CubeMX or MCUxpresso, the output should be redirected as described under [Configure Generator Output](#configure-generator-output).
+!!! Note
+    When using a generator, such as CubeMX or MCUxpresso, the output should be redirected as described under [Configure Generator Output](#configure-generator-output).
 
 #### Software Layers in Packs
 
@@ -618,9 +566,8 @@ The [`executes:`](YML-Input-Format.md#executes) node integrates [CMake](build-op
 
 The `KeyGenerator` tool builds the file `keys.c` which is added as source [file:](YML-Input-Format.md#files) in other projects. Using `cbuild My.csolution.yml [--context-set]` starts the build process of the application and runs the `KeyGenerator` before building projects that use the source file `keys.c` as input.
 
-> **Note:**
->
-> - Using `cbuild` with the option `--context` does not run `execute:` nodes as it triggers project builds only. The option `--context-set` must be used.
+!!! Note
+    Using `cbuild` with the option `--context` does not run `execute:` nodes as it triggers project builds only. The option `--context-set` must be used.
 
 ```yml
 solution:
@@ -671,9 +618,8 @@ Component source code                                             | RO     | Con
 Generator artifacts​                                               | RO (see note) | Managed by domain specific configuration tools such as STM32CubeMX or MCUXpresso.
 [Build artifacts](./YML-Input-Format.md#directory-control)        | RW     | Created during the build process for example by a compiler.
 
-> **Note:**
->
-> Some generators allow user modification to the generated files. For example, STM32CubeMX allows to modify source code between `/* USER CODE BEGIN */` and `/* USER CODE END */` and preserves this modification even when the STM32CubeMX regenerates the files.
+!!! Note
+    Some generators allow user modification to the generated files. For example, STM32CubeMX allows to modify source code between `/* USER CODE BEGIN */` and `/* USER CODE END */` and preserves this modification even when the STM32CubeMX regenerates the files.
 
 ### Project Area
 
@@ -692,9 +638,8 @@ The table below summarizes the overall directory structure and further details t
 - Configuration files of the software components. These files have `attr="config"` in the PDSC-file of the software packs.  Refer to [PLM of Configuration Files](#plm-of-configuration-files) for more information.
 - The file [`RTE_components.h`](#rte_componentsh) and pre-include files that are generated based on the PDSC-file information of the software packs.
 
-> **Note:**
->
-> The `./RTE` directory structure is maintained by tools. You should not modify the structure of this directory. However, the complete directory should be committed to a repository of a version control system.
+!!! Note
+    The `./RTE` directory structure is maintained by tools. You should not modify the structure of this directory. However, the complete directory should be committed to a repository of a version control system.
 
 Directory Structure                 | Content
 :-----------------------------------|:---------------
@@ -709,9 +654,8 @@ Directory Structure                 | Content
 
 The `<context-dir>` has the following format: `_<build-type>_<target-type>`.
 
-> **Note:**
->
-> `cbuild` does no longer generate the `<context-dir>` by default. It is therefore required to align the naming of `<context-dir>` with other tools (MDK, CMSIS-Pack-Eclipse, etc.) that support the CMSIS-Pack system.
+!!! Note
+    `cbuild` does no longer generate the `<context-dir>` by default. It is therefore required to align the naming of `<context-dir>` with other tools (MDK, CMSIS-Pack-Eclipse, etc.) that support the CMSIS-Pack system.
 
 ### Output Directory Structure
 
@@ -732,11 +676,11 @@ Optionally, configurable source and header files are provided that allow to set 
   project.
 - An include path to the header files of the software component is added to the C/C++ Compiler control string.
 
-> **Note:**
->
-> The `csolution` command `convert` provides the option `--no-update-rte` that disables generation of files in the `./RTE` directory and therefore the management of configuration files and the `RTE_Components.h` file.
->
-> The `csolution` command `update-rte` only updates the configuration files in the `RTE` directory and provides with the option `--verbose` additional version details.
+!!! Note
+
+The `csolution` command `convert` provides the option `--no-update-rte` that disables generation of files in the `./RTE` directory and therefore the management of configuration files and the `RTE_Components.h` file.
+
+The `csolution` command `update-rte` only updates the configuration files in the `RTE` directory and provides with the option `--verbose` additional version details.
 
 ### PLM of Configuration Files
 
@@ -752,21 +696,20 @@ Depending on the PLM status of the application, `csolution` performs the followi
 
     **Example:** A configuration file `ConfigFile.h` at version `1.2.0` is copied:
 
-    ```c
-    ./RTE/component_class/ConfigFile.h                  // user editable configuration file
-    ./RTE/component_class/ConfigFile.h.base@1.2.0       // current unmodified configuration file with version
-                                                        // information; used as a base for version comparison
-    ```
+```c
+./RTE/component_class/ConfigFile.h                  // user editable configuration file
+./RTE/component_class/ConfigFile.h.base@1.2.0       // current unmodified configuration file with version
+                                                    // information; used as a base for version comparison
+```
 
     `csolution` shows a user notification to indicate that files are added:
 
-    ```text
-    ./RTE/component_class/ConfigFile.h -  info: component 'name' added configuration file version '1.2.0'
-    ```
+```text
+./RTE/component_class/ConfigFile.h -  info: component 'name' added configuration file version '1.2.0'
+```
 
-    >**Note:**
-    >
-    > The unmodified files with `@version` information should be committed to the repository of the version control system as these files are used to upgrade configuration information using merge utilities.
+!!! Note
+    The unmodified files with `@version` information should be committed to the repository of the version control system as these files are used to upgrade configuration information using merge utilities.
 
 2. **Upgrade** (or downgrade) a software component: if the version of the unmodified backup file is identical, no
    operation is performed. If the version differs, the new configuration file is copied with the format
@@ -774,43 +717,41 @@ Depending on the PLM status of the application, `csolution` performs the followi
 
     **Example:** after updating the configuration file `ConfigFile.h` to version `1.3.0`, the directory contains these files:
 
-    ```c
-    ./RTE/component_class/ConfigFile.h                  // user editable configuration file (based on current version)
-    ./RTE/component_class/ConfigFile.h.update@1.3.0     // new configuration file; used to start a 3-way merge
-    ./RTE/component_class/ConfigFile.h.base@1.2.0       // current unmodified configuration file with version 
-                                                        // information; used as a base for version comparison
-    ```
+```c
+./RTE/component_class/ConfigFile.h                  // user editable configuration file (based on current version)
+./RTE/component_class/ConfigFile.h.update@1.3.0     // new configuration file; used to start a 3-way merge
+./RTE/component_class/ConfigFile.h.base@1.2.0       // current unmodified configuration file with version 
+                                                    // information; used as a base for version comparison
+```
 
     `csolution` displays a user notification to indicate that configuration files have changed:
 
-    ```text
-    ./RTE/component_class/ConfigFile.h - warning: component 'name' upgrade for configuration file version '1.3.0'
-                                                  added, but file inactive
-    ```
+```text
+./RTE/component_class/ConfigFile.h - warning: component 'name' upgrade for configuration file version '1.3.0'
+                                              added, but file inactive
+```
 
 3. **User action to complete upgrade**: The user has now several options (outside of `csolution`) to merge the
    configuration file information. A potential way could be to use a 3-way merge utility. After merging the
    configuration file, the original `base@version` file should be deleted and the unmodified new version should become the new `base@version`. The previous configuration file may be stored as backup as shown below.
 
-    ```c
-    ./RTE/component_class/ConfigFile.h                  // new configuration file with merge configuration
-    ./RTE/component_class/ConfigFile.h.bak              // previous configuration file stored as backup
-    ./RTE/component_class/ConfigFile.h.base@1.3.0       // current unmodified configuration file with version 
-                                                        // information; used as a base for version comparison
-    ```
+```c
+./RTE/component_class/ConfigFile.h                  // new configuration file with merge configuration
+./RTE/component_class/ConfigFile.h.bak              // previous configuration file stored as backup
+./RTE/component_class/ConfigFile.h.base@1.3.0       // current unmodified configuration file with version 
+                                                    // information; used as a base for version comparison
+```
 
-> **Note:** Multiple Instances of Configuration files
->
->The system is also capable of handling multiple instances of configuration files as explained in the CMSIS-Pack specification under
->[Component Instances](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances).
->In this case, the instance %placeholder% is expanded as shown below:
->
-> ```c
-> ./RTE/component_class/ConfigFile_0.h
-> ./RTE/component_class/ConfigFile_0.h.base@1.2.0
-> ./RTE/component_class/ConfigFile_1.h
-> ./RTE/component_class/ConfigFile_1.h.base@1.2.0
-> ```
+#### Multiple Instances of Configuration files
+
+The system is also capable of handling multiple instances of configuration files as explained in the CMSIS-Pack specification under [Component Instances](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances). In this case, the instance %placeholder% is expanded as shown below.
+
+```c
+./RTE/component_class/ConfigFile_0.h
+./RTE/component_class/ConfigFile_0.h.base@1.2.0
+./RTE/component_class/ConfigFile_1.h
+./RTE/component_class/ConfigFile_1.h.base@1.2.0
+```
 
 ### RTE_Components.h
 
@@ -899,9 +840,8 @@ Both files, the Linker Script template and the `<regions>.h` are located in the 
   
 Both files, the Linker Script template and the `<regions>.h` can be modified by the user as it might be required to adjust the memory regions or give additional attributes (such as `noinit`).
 
-> **Note:**
->
-> - Refer to [Create Applications - Configure Linker Scripts](CreateApplications.md#configure-linker-scripts) for more information.
+!!! Note
+    Refer to [Create Applications - Configure Linker Scripts](CreateApplications.md#configure-linker-scripts) for more information.
 
 #### Linker Script Templates
 
@@ -938,7 +878,7 @@ An example that uses STM32CubeMX is provided in [github.com/Open-CMSIS-Pack/csol
 To list the *Generator* configuration of a `*.csolution.yml` use:
 
 ```bash
-> csolution CubeMX.csolution.yml list generators --verbose
+csolution CubeMX.csolution.yml list generators --verbose
 CubeMX (Global Registered Generator)                 # Name of the Generator
   base-dir: STM32CubeMX/MyBoard                      # Generator output directory for contexts listed below
     cgen-file: STM32CubeMX/MyBoard/CubeMX.cgen.yml   # Generator import file for contexts listed below
@@ -949,7 +889,7 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
 To run the generator (in this case CubeMX) use:
 
 ```bash
-> csolution CubeMX.csolution.yml run --generator CubeMX
+csolution CubeMX.csolution.yml run --generator CubeMX
 ```
 
 ### Configure Generator Output
@@ -972,5 +912,3 @@ A Generator output configuration is useful for:
 ### Detailed Usage Instructions
 
 [**Configure STM32 Devices with CubeMX**](CubeMX.md) explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) to manage device and board configuration.
-
-[**Installation**](installation.md) **&laquo; Chapters &raquo;** [**Build Tools**](build-tools.md)

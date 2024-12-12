@@ -2,41 +2,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **&raquo; Build Information Files**
-
 The following chapter explains the YAML cbuild format that describes how to build a complete application.
-
-**Table of Contents**
-
-- [Build Information Files](#build-information-files)
-  - [cbuild Output Files](#cbuild-output-files)
-    - [Directory Structure](#directory-structure)
-    - [Pack locking](#pack-locking)
-    - [File Structure of `*.cbuild-idx.yml`](#file-structure-of-cbuild-idxyml)
-    - [File Structure of `*.cbuild.yml`](#file-structure-of-cbuildyml)
-    - [File Structure of `*.cbuild-pack.yml`](#file-structure-of-cbuild-packyml)
-    - [File Structure of `*.cbuild-set.yml`](#file-structure-of-cbuild-setyml)
-  - [cbuild-specific Nodes](#cbuild-specific-nodes)
-    - [`configurations:`](#configurations)
-    - [`cprojects:`](#cprojects)
-    - [`cbuilds:`](#cbuilds)
-    - [`select-compiler:`](#select-compiler)
-    - [`packs:`](#packs)
-    - [`generators:`](#generators)
-  - [Source File Management](#source-file-management)
-    - [`linker:`](#linker)
-    - [`groups:`](#groups)
-    - [`files:` of a group](#files-of-a-group)
-    - [`components:`](#components)
-    - [`apis:`](#apis)
-    - [`generator:`](#generator)
-    - [`files:` of a component](#files-of-a-component)
-    - [`constructed-files:`](#constructed-files)
-  - [`licenses:`](#licenses)
-  - [Generator Information Files](#generator-information-files)
-    - [File Structure of `*.cbuild-gen-idx.yml`](#file-structure-of-cbuild-gen-idxyml)
-  - [Generator Import File](#generator-import-file)
-    - [File Structure of `*.cgen.yml`](#file-structure-of-cgenyml)
 
 ## cbuild Output Files
 
@@ -57,9 +23,8 @@ As `csolution` based projects should be portable across different host computers
 
 - Files that are located in the [CMSIS-Pack root directory](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables) are prefixed with `${CMSIS_PACK_ROOT}`.
 
-  > **Note:**
-  >
-  > All file references to user source code should be relative paths. The prefixes `${CMSIS_PACK_ROOT}` and `${CMSIS_COMPILER_ROOT}` are used to refer to base directories of files that relate to software packs and compiler specific files. These base directories can also be on different filesystem drives.
+!!! Note
+    All file references to user source code should be relative paths. The prefixes `${CMSIS_PACK_ROOT}` and `${CMSIS_COMPILER_ROOT}` are used to refer to base directories of files that relate to software packs and compiler specific files. These base directories can also be on different filesystem drives.
 
 - Files outside of the directory structure of `csolution` based application use absolute paths. If absolute paths are used, a `warning` is issued in the `*.cbuild-idx.yml` file.
 
@@ -472,11 +437,9 @@ The `cbuilds:` node lists all project context configurations that are generated 
 
 If no compiler is specified in the *csolution project*, the [`cbuild setup` command](build-operation.md#details-of-the-setup-mode) lists the available compilers based on the [compiler registration](installation.md#compiler-registration) and `select-compiler:` node in the file [`*.csolution.yml`](YML-Input-Format.md#solution) or [`cdefault.yml`](YML-Input-Format.md#cdefault).
 
-> **Note:** New in CMSIS-Toolbox 2.5.0
-
-`select-compiler:`                                 | Content
-:--------------------------------------------------|:------------------------------------
-`- compiler:`                                      | Name (optionally with version) of the compiler toolchain; copied from the `select-compiler:` node in the *csolution project*.
+`select-compiler:`     | Content
+:----------------------|:------------------------------------
+`- compiler:`          | Name (optionally with version) of the compiler toolchain; copied from the `select-compiler:` node in the *csolution project*.
 
 ### `packs:`
 
@@ -487,9 +450,8 @@ The `packs:` node is the start of a pack list that is used for the project conte
 `- pack:`                                             | Explicit pack specification with exact version information used.
 &nbsp;&nbsp;&nbsp;`path:`                             | Path name that stores the software pack (see note).
 
-> **Note:**
->
->Packs that are located in the [CMSIS-Pack root directory](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables) are prefixed with %CMSIS_PACK_ROOT%.
+!!! Note
+    Packs that are located in the [CMSIS-Pack root directory](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables) are prefixed with `%CMSIS_PACK_ROOT%`.
 
 **Example:**
 
@@ -703,8 +665,8 @@ File                    | Description
 `- cbuild-gen:`                                    | Build information file with name `<context>.cbuild-gen.yml`; structure identical with [*.cbuild.yml](#file-structure-of-cbuildyml).
 &nbsp;&nbsp;&nbsp; `project:`                      | Project name (used as name for `*.cgen.yml` when `name:` is not specified)
 &nbsp;&nbsp;&nbsp; `configuration:`                | Specifies `.build-type+target-type` of this context.
-&nbsp;&nbsp;&nbsp; `name:`                         | Explicit name for the `*.cgen.yml` [generator import file](#generator-import-file) specified by [`generator options`](YML-Input-Format.md#generators---options).
-&nbsp;&nbsp;&nbsp; `map:`                          | Mapping to a generator specific run-time context name specified by [`generator options`](YML-Input-Format.md#generators---options).
+&nbsp;&nbsp;&nbsp; `name:`                         | Explicit name for the `*.cgen.yml` [generator import file](#generator-import-file) specified by [`generator options`](YML-Input-Format.md#generators-options).
+&nbsp;&nbsp;&nbsp; `map:`                          | Mapping to a generator specific run-time context name specified by [`generator options`](YML-Input-Format.md#generators-options).
 
 **Example:**
 
@@ -743,5 +705,3 @@ The `*.cgen.yml` file is lists the generated *csolution project* part and starts
 &nbsp;&nbsp;&nbsp; [`del-path:`](YML-Input-Format.md#del-path)                  | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`groups:`](YML-Input-Format.md#groups)                      | List of source file groups along with source files.
 &nbsp;&nbsp;&nbsp; [`components:`](YML-Input-Format.md#components)              | List of software components used.
-
-[**Configure STM32 Devices with CubeMX**](CubeMX.md) **&laquo; Chapters &raquo;** [**Build Operation**](build-operation.md)
