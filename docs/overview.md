@@ -3,16 +3,6 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **&raquo; Overview**
-
-**Chapter Contents:**
-
-- [Overview](#overview)
-  - [Target Audience](#target-audience)
-  - [Overall Workflow](#overall-workflow)
-  - [Command Line and IDE Usage](#command-line-and-ide-usage)
-  - [Benefits](#benefits)
-
 ## Target Audience
 
 This user's guide assumes basic knowledge about Cortex-M software development. It is written for embedded software developers that work with C/C++ compiler toolchains and utilize microcontroller devices with Cortex-M processors and Ethos-U NPUs. The CMSIS-Toolbox supports currently:
@@ -38,10 +28,9 @@ The build steps are:
 3. **cbuild2cmake** converts this Build Information into CMake format.
 4. **CMake/Ninja** call the C/C++ compiler toolchain to translate the source files into the application image.
 
-> **Note:**
->
-> The CMSIS-Toolbox build system does not use the CMake compiler and linker flags specified by environment variables [CFLAGS, LDFLAGS](https://cmake.org/cmake/help/latest/envvar/CFLAGS.html).
-> Refer to the chapter [Build Operation](build-operation.md) for further details of the build process.
+!!! Note
+    The CMSIS-Toolbox build system does not use the CMake compiler and linker flags specified by environment variables [CFLAGS, LDFLAGS](https://cmake.org/cmake/help/latest/envvar/CFLAGS.html).  
+    Refer to the chapter [Build Operation](build-operation.md) for further details of the build process.
 
 ## Command Line and IDE Usage
 
@@ -68,5 +57,3 @@ The overall benefits of the CMSIS-Toolbox are:
 - [Linker Script Management](build-overview.md#linker-script-management) utilizes device and board information of *software packs* to define available memory and allows flexible control of linker operation.
 - Uses a CMake backend for the build process that integrates with other tools such as VS Code intellisense.
 - Provides a [list of software licenses](YML-CBuild-Format.md#licenses) used by the various software packs and software components.
-
-[**CMSIS-Toolbox**](README.md) **&laquo; Chapters &raquo;** [**Installation**](installation.md)

@@ -4,21 +4,10 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-[**CMSIS-Toolbox**](README.md) **&raquo; Configure NXP Devices with MCUXpresso Config Tools**
-
 This chapter explains how to use the [MCUXpresso Config Tool](https://www.nxp.com/configtools) with the CMSIS-Toolbox to manage device and board configuration.
 
-> **Note:**
-> 
-> MCUXpresso Config Tools integration with CMSIS-Toolbox is available with **CMSIS packs based on MCUXpresso SDK 2.16.0** (or higher).
-
-**Chapter Contents:**
-
-- [Configure NXP Devices with MCUXpresso Config Tools](#configure-nxp-devices-with-mcuxpresso-config-tools)
-  - [Overview](#overview)
-  - [Simple Project](#simple-project)
-  - [Linker Script](#linker-script)
-  - [Create a Board Layer](#create-a-board-layer)
+!!! Note
+    MCUXpresso Config Tools integration with CMSIS-Toolbox is available with CMSIS packs based on MCUXpresso SDK 2.16.0 (or higher).
 
 ## Overview
 
@@ -28,18 +17,16 @@ The `component: Device:Config Tools` connects a *csolution project* to MCUXpress
 
 An example project created with MCUXpresso can be found in [**csolution-examples/DualCore**](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/DualCore).
 
->**Notes:**
->
-> - When a board is specified in the *csolution project*, MCUXpresso pre-configures the device peripherals with sensible settings for the evaluation board. The user may change these settings using the MCUXpresso dialogs.
-> - When only a device is specified, the user need to configure the peripherals manually using MCUXpresso dialogs.
+!!! Note
+    - When a board is specified in the *csolution project*, MCUXpresso pre-configures the device peripherals with sensible settings for the evaluation board. The user may change these settings using the MCUXpresso dialogs.
+    - When only a device is specified, the user need to configure the peripherals manually using MCUXpresso dialogs.
 
 ## Simple Project
 
 Below is a simple project that just adds the MCUXpresso generated components.
 
->**Note:**  
->
-> The packs required for boards and devices are listed on [www.keil.arm.com/boards](https://www.keil.arm.com/boards/) and [www.keil.arm.com/devices](https://www.keil.arm.com/devices/).
+!!! Tip
+    The packs required for boards and devices are listed on [www.keil.arm.com/boards](https://www.keil.arm.com/boards/) and [www.keil.arm.com/devices](https://www.keil.arm.com/devices/).
 
 **File: `Simple.csolution.yml`**
 
@@ -117,32 +104,31 @@ Such a project cannot be built directly as initially the `*.cgen.yml` file is mi
 
 1. Identify the required generator and the directory where the generated files are stored with:
    
-   ```bash
-   ❯ csolution Simple.csolution.yml list generators --verbose
-   MCUXpressoConfig (Global Registered Generator MCUXpresso Config tools)
-     base-dir: MCUXpressoConfig
-       cgen-file: MCUXpressoConfig/ConfigTools.cgen.yml
-         context: Simple.Debug+MCXN947VDF
-         context: Simple.Release+MCXN947VDF
-   ```
+```bash
+csolution Simple.csolution.yml list generators --verbose
+MCUXpressoConfig (Global Registered Generator MCUXpresso Config tools)
+  base-dir: MCUXpressoConfig
+    cgen-file: MCUXpressoConfig/ConfigTools.cgen.yml
+      context: Simple.Debug+MCXN947VDF
+      context: Simple.Release+MCXN947VDF
+```
 
 2. Using the above information to run the generator using this command:
 
-   ```bash
-   ❯ csolution Simple.csolution.yml run --generator MCUXpressoConfig --context Simple.Debug+MCXN947VDF
-   ```
+```bash
+csolution Simple.csolution.yml run --generator MCUXpressoConfig --context Simple.Debug+MCXN947VDF
+```
 
    It starts MCUXpresso and passes the information about the selected board, device, and selected toolchain. For a project that selects a board, MCUXpresso imports the default configuration for the evaluation kit. In MCUXpresso, review and adjust configuration options as required for your application, then just click the button `Update Code`. The generated files will be stored in the directory `./MCUXpressoConfig`.
 
 3. Build the project using this command:
  
-   ```bash
-   ❯ cbuild Simple.csolution.yml --update-rte
-   ```
+```bash
+cbuild Simple.csolution.yml --update-rte
+```
 
->**Note:**
->
-> You may run the MCUXpresso Config Tools any time to change the configuration setting of your device or board.
+!!! Note
+    You may run the MCUXpresso Config Tools any time to change the configuration setting of your device or board.
 
 **Directory with generated files**
 
@@ -189,7 +175,7 @@ end with `*.icf` extension.
 
 A [software layer](build-overview.md#software-layers) is a set of pre-configured software components and source files for re-use in multiple projects. A board layer contains typically basic I/O drivers and related device and board configuration. MCUXpresso does generate a significant part of a board layer.
 
-The board layer is stored in an separate directory that is independent of a specific *csolution project*. To create a board layer, copy the related source files, the MCUXpresso generated files, and the configuration files of the [RTE directory](.) that relate to software components in the board layer.
+The board layer is stored in an separate directory that is independent of a specific *csolution project*. To create a board layer, copy the related source files, the MCUXpresso generated files, and the configuration files of the `RTE directory` that relate to software components in the board layer.
 
 **Example directory content of a NXP board layer**
 

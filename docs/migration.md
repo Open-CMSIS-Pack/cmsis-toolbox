@@ -74,4 +74,4 @@ The [`cdefault:`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/doc
 
 - `CMSIS_BUILD_ROOT`
 
-> Note: This is needed because `cbuild` calls binaries pointed by `CMSIS_BUILD_ROOT` which are potentially outdated.
+Note: This is needed because `cbuild` calls binaries pointed by `CMSIS_BUILD_ROOT` which are potentially outdated.
