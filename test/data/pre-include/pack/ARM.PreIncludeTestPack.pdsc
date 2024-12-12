@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<package schemaVersion="1.4" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="PACK.xsd">
+  <vendor>ARM</vendor>
+  <url>https://www.arm.com/</url>
+  <name>PreIncludeTestPack</name>
+  <description>PreIncludeTestPack</description>
+
+  <releases>
+    <release version="0.0.1" date="2024-02-24">
+      Initial release of PreIncludeTestPack.
+    </release>
+  </releases>
+
+  <keywords>
+    <keyword>PreIncludeTestPack</keyword>
+  </keywords>
+
+  <conditions>
+    <!-- Device Conditions -->
+    <condition id="Test_Condition">
+      <description>Test Device</description>
+      <require Dvendor="ARM:82"/>
+    </condition>
+  </conditions>
+
+  <components>
+    <component Cclass="TestClass" Cgroup="TestGlobal" Cversion="1.0.0" condition="Test_Condition">
+      <description>TestGlobal</description>
+      <Pre_Include_Global_h>
+        // enabling global pre include
+        #define GLOBAL_TEST 0x1
+      </Pre_Include_Global_h>
+      <files>
+        <file category="source"           name="Files/test1.c"/>
+        <file category="preIncludeGlobal" name="Files/header1.h"/>
+        <file category="preIncludeGlobal" name="Files/config-header1.h" attr="config" version="1.0.0"/>
+      </files>
+    </component>
+    <component Cclass="TestClass" Cgroup="TestLocal" Cversion="1.0.0" condition="Test_Condition">
+      <description>TestLocal</description>
+      <Pre_Include_Local_Component_h>
+        // enabling local pre include
+        #define LOCAL_TEST 0x2
+      </Pre_Include_Local_Component_h>
+      <files>
+        <file category="source"           name="Files/test2.c"/>
+        <file category="preIncludeLocal"  name="Files/header2.h"/>
+        <file category="preIncludeLocal"  name="Files/config-header2.h" attr="config" version="1.0.0"/>
+      </files>
+    </component>
+  </components>
+
+</package>
+
+

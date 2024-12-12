@@ -1,0 +1,56 @@
+[
+    {
+        "runs_on":"macos-13",
+        "target":"darwin",
+        "arch": "amd64",
+        "binary_extension": "",
+        "temp_extension": ".mac",
+        "archive_extension": ".tar.gz",
+        "runOnBranch":"always"
+    },
+    {
+        "runs_on":"ubuntu-22.04",
+        "target":"linux",
+        "arch": "amd64",
+        "binary_extension":"",
+        "temp_extension": ".lin",
+        "archive_extension": ".tar.gz",
+        "runOnBranch":"always"
+    },
+    {
+        "runs_on":"windows-2022",
+        "target":"windows",
+        "arch": "amd64",
+        "binary_extension":".exe",
+        "temp_extension": ".exe",
+        "archive_extension": ".zip",
+        "runOnBranch":"always"
+    },
+    {
+        "runs_on":"macos-14",
+        "target":"darwin",
+        "arch": "arm64",
+        "binary_extension": "",
+        "temp_extension": ".mac",
+        "archive_extension": ".tar.gz",
+        "runOnBranch":"always"
+    },
+    {
+        "runs_on":"ubuntu-22.04",
+        "target":"linux",
+        "arch": "arm64",
+        "binary_extension":"",
+        "temp_extension": ".lin",
+        "archive_extension": ".tar.gz",
+        "runOnBranch":"always"
+    },
+    {
+        "runs_on":"windows-2022",
+        "target":"windows",
+        "arch": "arm64",
+        "binary_extension":".exe",
+        "temp_extension": ".exe",
+        "archive_extension": ".zip",
+        "runOnBranch":"always"
+    }
+]

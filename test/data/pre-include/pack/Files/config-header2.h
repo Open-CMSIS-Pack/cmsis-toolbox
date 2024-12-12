@@ -1,0 +1,1 @@
+#define PRE_INCLUDE_LOCAL_CONFIG 1

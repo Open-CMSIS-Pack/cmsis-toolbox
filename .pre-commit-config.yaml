@@ -1,0 +1,11 @@
+repos:
+- repo: local
+  hooks:
+    - id: check-copyright-notice
+      name: check-copyright-notice
+      description: Check copyright notice
+      entry: python3 scripts/check_copyright_notice.py
+      language: system
+      files: ^(libs\/|tools\/)
+      types_or: [python, shell]
+

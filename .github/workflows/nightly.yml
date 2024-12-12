@@ -1,0 +1,460 @@
+name: nightly
+
+# This workflow picks up the latest changes of toolbox binaries
+# and runs end-to-end tests to detect regressions. It is triggered by:
+#   1. A schedule set for every midnight
+#   2. Manual triggering of the workflow
+#   3. Changes to the workflow file
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *'
+  pull_request:
+    paths:
+      - '.github/workflows/nightly.yml'
+      - '.github/matrix_includes.json'
+      - 'debian/**'
+      - 'test/**'
+      - '!test/tests.py'
+      - '!**/*.md'
+env:
+  retention-days: 7
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+        
+jobs:
+  matrix_prep:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: JoshuaTheMiller/conditional-build-matrix@81b51eb8d89e07b86404934b5fecde1cea1163a5 # v2.0.1        
+        id: set-matrix
+        with:
+          inputFile: '.github/matrix_includes.json'
+          filter: '[?runOnBranch==`always`]'
+
+  create-toolbox:
+    needs: [ matrix_prep ]
+    runs-on: ${{ matrix.runs_on }}
+    continue-on-error: true
+    strategy:
+      matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          egress-policy: audit
+
+      - name: Checkout cmsis-toolbox repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Authenticate with GitHub CLI
+        shell: bash
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
+
+      - name: Get latest nightly Run ID
+        id: get_run_id
+        shell: bash
+        run: |
+          RUN_ID=$(gh run list --limit 1 --workflow nightly --repo Open-CMSIS-Pack/devtools --json databaseId --jq '.[0].databaseId')
+          echo "NIGHTLY_RUN_ID=$RUN_ID" >> $GITHUB_OUTPUT
+
+      # Download and build cbuild executable
+      - name: Checkout cbuild repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: Open-CMSIS-PACK/cbuild
+          path: cbuild
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
+        with:
+          go-version-file: cbuild/go.mod
+          cache-dependency-path: |
+            **/go.mod
+            **/go.sum
+
+      - name: Build cbuild executable
+        working-directory: cbuild
+        shell: bash
+        run: |
+          GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/cbuild${{ matrix.binary_extension }} ./cmd/cbuild
+
+      # Download and build cpackget executable
+      - name: Checkout cpackget repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: Open-CMSIS-PACK/cpackget
+          path: cpackget
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
+        with:
+          go-version-file: cpackget/go.mod
+          cache-dependency-path: |
+            **/go.mod
+            **/go.sum
+
+      - name: Build cpackget executable
+        working-directory: cpackget
+        shell: bash
+        run: |
+          GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/cpackget${{ matrix.binary_extension }} ./cmd
+
+      # Download and build cbuild2cmake executable
+      - name: Checkout cbuild2cmake repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: Open-CMSIS-PACK/cbuild2cmake
+          path: cbuild2cmake
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
+        with:
+          go-version-file: cbuild2cmake/go.mod
+          cache-dependency-path: |
+            **/go.mod
+            **/go.sum
+
+      - name: Build cbuild2cmake executable
+        working-directory: cbuild2cmake
+        shell: bash
+        run: |
+          GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/cbuild2cmake${{ matrix.binary_extension }} ./cmd/cbuild2cmake
+
+      # Download and build vidx2pidx executable
+      - name: Checkout vidx2pidx repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: Open-CMSIS-PACK/vidx2pidx
+          path: vidx2pidx
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
+        with:
+          go-version-file: vidx2pidx/go.mod
+          cache-dependency-path: |
+            **/go.mod
+            **/go.sum
+
+      - name: Build vidx2pidx executable
+        working-directory: vidx2pidx
+        shell: bash
+        run: |
+          GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/vidx2pidx${{ matrix.binary_extension }} ./cmd
+
+      # Download and build cbridge executable
+      - name: Checkout cbridge repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: Open-CMSIS-PACK/generator-bridge
+          path: cbridge
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@41dfa10bad2bb2ae585af6ee5bb4d7d973ad74ed # v5.1.0
+        with:
+          go-version-file: cbridge/go.mod
+          cache-dependency-path: |
+            **/go.mod
+            **/go.sum
+
+      - name: Build cbridge executable
+        working-directory: cbridge
+        shell: bash
+        run: |
+          GOOS=${{ matrix.target }} GOARCH=${{ matrix.arch }} go build -ldflags "-X main.version=$(git describe --tags)" -o build/cbridge${{ matrix.binary_extension }} ./cmd
+
+      # Download projmgr and cbuildgen from nightly
+      - name: Download Open-CMSIS-Pack/devtools nightly artifacts
+        shell: bash
+        run : |
+          gh run download -D projmgr-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n projmgr-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
+          gh run download -D cbuildgen-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n cbuildgen-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
+          gh run download -D packchk-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n packchk-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
+          gh run download -D svdconv-${{ matrix.target }}-${{ matrix.arch }} ${{ steps.get_run_id.outputs.NIGHTLY_RUN_ID }} -n svdconv-${{ matrix.target }}-${{ matrix.arch }} -R Open-CMSIS-Pack/devtools
+
+      - name: Unzip files
+        shell: bash
+        run: |
+          mkdir -p packchk
+          mkdir -p svdconv
+          packchk_dir="packchk-${{ matrix.target }}-${{ matrix.arch }}"
+          svdconv_dir="svdconv-${{ matrix.target }}-${{ matrix.arch }}"         
+          if [[ "$RUNNER_OS" == "Linux" || "$RUNNER_OS" == "macOS" ]]; then
+            tar -xvf ${packchk_dir}/packchk-*-${{ matrix.target }}-${{ matrix.arch }}.tbz2 -C packchk
+            tar -xvf ${svdconv_dir}/svdconv-*-${{ matrix.target }}-${{ matrix.arch }}.tbz2 -C svdconv
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            unzip ${packchk_dir}/packchk-\*-${{ matrix.target }}-${{ matrix.arch }}.zip -d packchk
+            unzip ${svdconv_dir}/svdconv-\*-${{ matrix.target }}-${{ matrix.arch }}.zip -d svdconv
+          fi
+
+      - name: Checkout Open-CMSIS-PACK/devtools repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: Open-CMSIS-PACK/devtools
+          path: devtools
+
+      - name: Copy Files
+        shell: bash
+        run: |
+          mkdir -p ./cmsis-toolbox/bin
+          mkdir -p ./cmsis-toolbox/etc
+          mkdir -p ./cmsis-toolbox/doc
+          cp ./projmgr-${{ matrix.target }}-${{ matrix.arch }}/csolution${{ matrix.binary_extension }}      ./cmsis-toolbox/bin/csolution${{ matrix.binary_extension }}
+          cp ./cbuildgen-${{ matrix.target }}-${{ matrix.arch }}/cbuildgen${{ matrix.binary_extension }}*   ./cmsis-toolbox/bin/cbuildgen${{ matrix.binary_extension }}
+          cp ./packchk/packchk${{ matrix.binary_extension }}                                                ./cmsis-toolbox/bin/packchk${{ matrix.binary_extension }}
+          cp ./svdconv/svdconv${{ matrix.binary_extension }}                                                ./cmsis-toolbox/bin/svdconv${{ matrix.binary_extension }}
+          cp ./cbuild/build/cbuild${{ matrix.binary_extension }}                                            ./cmsis-toolbox/bin/cbuild${{ matrix.binary_extension }}
+          cp ./cpackget/build/cpackget${{ matrix.binary_extension }}                                        ./cmsis-toolbox/bin/cpackget${{ matrix.binary_extension }}
+          cp ./cbuild2cmake/build/cbuild2cmake${{ matrix.binary_extension }}                                ./cmsis-toolbox/bin/cbuild2cmake${{ matrix.binary_extension }}
+          cp ./cbridge/build/cbridge${{ matrix.binary_extension }}                                          ./cmsis-toolbox/bin/cbridge${{ matrix.binary_extension }}
+          cp ./cbridge/scripts/MCUXpresso_Config_Tools/${{ matrix.target }}-${{ matrix.arch }}/launch-MCUXpressoConfigTools*  ./cmsis-toolbox/bin/
+          cp ./vidx2pidx/build/vidx2pidx${{ matrix.binary_extension }}                                      ./cmsis-toolbox/bin/vidx2pidx${{ matrix.binary_extension }}
+          cp -r devtools/tools/projmgr/templates/*                ./cmsis-toolbox/etc
+          cp -r devtools/tools/projmgr/schemas/*                  ./cmsis-toolbox/etc
+          cp -r devtools/tools/buildmgr/cbuildgen/scripts/*       ./cmsis-toolbox/etc
+          cp -r devtools/tools/buildmgr/cbuildgen/config/*        ./cmsis-toolbox/etc
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/main/schema/PACK.xsd --output ./cmsis-toolbox/etc/PACK.xsd
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/main/schema/PackIndex.xsd --output ./cmsis-toolbox/etc/PackIndex.xsd
+          cp ./docs/LICENSE.txt ./cmsis-toolbox
+          cp ./docs/index.html ./cmsis-toolbox/doc
+
+      - name: Update toolchain config files
+        if: ${{ matrix.target == 'windows' }}
+        shell: bash
+        run: |
+            sed -i '/set(EXT/c\  set(EXT .exe)' ./cmsis-toolbox/etc/AC6.6.16.2.cmake
+            sed -i '/set(EXT/c\  set(EXT .exe)' ./cmsis-toolbox/etc/GCC.10.3.1.cmake
+            sed -i '/set(EXT/c\  set(EXT .exe)' ./cmsis-toolbox/etc/IAR.9.32.1.cmake
+            sed -i '/set(EXT/c\  set(EXT .exe)' ./cmsis-toolbox/etc/CLANG.17.0.1.cmake
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install pip dependencies
+        run: |
+            pip install --upgrade pip
+            pip install pyyaml
+
+      - name: Generate manifest file
+        shell: bash
+        run: |
+          # Get the toolbox version
+          TOOLBOX_VERSION=$(git describe --tags || echo "untagged")
+
+          # Set binary extension (default to empty string if not set)
+          BINARY_EXTENSION=${{ matrix.binary_extension }}
+          [ -z "$BINARY_EXTENSION" ] && BINARY_EXTENSION=""
+
+          # Get absolute path to the toolbox directory
+          TOOLBOX_ABS_PATH=$(pwd)/cmsis-toolbox
+
+          # Get host machine configuration
+          HOST=${{ matrix.target }}-${{ matrix.arch }}
+          
+          # Run the Python script to generate the manifest file
+          python ./scripts/generate_manifest.py \
+            -d "$TOOLBOX_ABS_PATH" \
+            -v "$TOOLBOX_VERSION" \
+            -e "$BINARY_EXTENSION" \
+            --host "$HOST"
+
+      - name: Archive cmsis-toolbox
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+          path: cmsis-toolbox
+          retention-days: ${{ env.retention-days }}
+
+      # Debian Package
+      - name: Update dependencies
+        if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
+        run: |
+            sudo apt-get update
+            sudo apt-get install ninja-build
+
+      - name: Create Debian Package
+        if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
+        run: |
+            git fetch
+            mkdir -p ./debian/build
+            cmake -G Ninja -S ./debian -B ./debian/build -DTOOLBOX_ROOT=$(realpath ./cmsis-toolbox) -DTOOLBOX_VERSION=$(git describe --tags --abbrev=0)+nightly-$(date +%Y%m%d%H%M)
+            cd ./debian/build
+            cpack -G DEB
+
+      - name: Archive Debian Package
+        if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: cmsis-toolbox-debian-package
+          path: ./debian/build/cmsis-toolbox_*_amd64.deb
+          retention-days: ${{ env.retention-days }}
+
+  run-tests:
+    needs: [ matrix_prep, create-toolbox ]
+    runs-on: ${{ matrix.runs_on }}
+    continue-on-error: true
+    strategy:
+      matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
+
+    steps:     
+      - name: Harden Runner
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          egress-policy: audit
+
+      - name: Checkout toolbox repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+    
+      - name: Install pip dependencies
+        run: |
+            pip install --upgrade pip
+            pip install -r test/requirements.txt
+
+      - name: Setup vcpkg environment
+        uses: ARM-software/cmsis-actions/vcpkg@f608f32a6d83e90d79e1f2bbb7812fdb94bf1679 # v1
+        with:
+          config: "./test/vcpkg-configuration.json"
+          vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
+          cache: "-"
+    
+      - name: Activate Arm tool license
+        run: |
+          armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
+        working-directory: ./test
+
+      - name: Download cmsis toolbox ${{ matrix.target }} ${{ matrix.arch }}
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+          path: cmsis-toolbox
+
+      - name: Set execution permissions
+        run: |
+          chmod -R +x ./cmsis-toolbox/bin/*
+
+      - name: Get toolbox path
+        if: always()
+        id: toolbox_path
+        shell: bash
+        run: |
+          echo "path=$(echo "$(pwd)/cmsis-toolbox/bin")" >> $GITHUB_OUTPUT
+
+      - name: Binary version info
+        if: always()
+        shell: bash
+        run: |
+          export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
+          csolution -V
+          cpackget -V
+          cbuild -V
+          cbuild2cmake -V
+          cbuildgen -V
+
+      - name: Run Test
+        shell: bash
+        continue-on-error: true
+        run: |
+          export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
+          robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} \
+            --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}.md \
+            --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }} \
+            --name ${{ matrix.target }}-${{ matrix.arch }} \
+            ./test
+
+      - name: Archieve test results
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: reports-${{ matrix.target }}-${{ matrix.arch }}
+          path: reports-${{ matrix.target }}-${{ matrix.arch }}
+          retention-days: ${{ env.retention-days }}
+
+  consolidate-report:
+    if: always()
+    needs: [run-tests]
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+      with:
+        egress-policy: audit
+
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+    - name: Set up Python
+      uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install pip dependencies
+      run: |
+          pip install --upgrade pip
+          pip install -r test/requirements.txt
+
+    - name: Download reports
+      uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+      with:
+        path: artifacts
+        pattern: reports-*
+
+    - name: Consolidate robot test results
+      working-directory: artifacts
+      continue-on-error: true
+      run: |
+        python -m robot.rebot --name Collective_Robot_Results --outputdir collective_robot_results --output output.xml \
+          ./reports-windows-amd64/output.xml \
+          ./reports-linux-amd64/output.xml \
+          ./reports-darwin-amd64/output.xml
+
+    - name: Generate Summary report
+      if: always()
+      run: |
+        python ./test/lib/execution_summary.py artifacts \
+          -r ./test/reference.md \
+          -o artifacts/collective_robot_results/output.xml \
+          -m summary_report.md
+
+    - name: Print E2E Report
+      if: always()
+      run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
+
+    - name: Archieve consolidated test results
+      if: always()
+      uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      with:
+        name: consolidated-reports
+        path: artifacts/collective_robot_results
+        retention-days: ${{ env.retention-days }}

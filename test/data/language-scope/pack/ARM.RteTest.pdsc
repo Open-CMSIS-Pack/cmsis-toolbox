@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<package schemaVersion="1.4" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="PACK.xsd">
+  <vendor>ARM</vendor>
+  <name>RteTest</name>
+  <url>www.keil.com/pack/</url>
+  <description>
+    Language and Scope Testing
+  </description>
+
+  <releases>
+    <release version="0.1.0" date="2024-04-04">
+      initial version
+    </release>
+  </releases>
+
+  <requirements>
+    <packages>
+      <package vendor="ARM" name="RteTest_DFP" version="0.1.1:0.2.0"/>
+    </packages>
+  </requirements>
+
+  <components>
+    <component Cclass="RteTest" Cgroup="LanguageAndScope" Cversion="0.9.9">
+      <description>Component for testing language and scope attributes</description>
+      <files>
+        <file category="source" language="c" name="LanguageAndScope/Dummy1.c"/>
+        <file category="source" language="cpp" name="LanguageAndScope/Dummy2.cpp"/>
+        <file category="header" language="c-cpp" scope="visible" name="LanguageAndScope/Visible/Visible.h"/>
+        <file category="header" language="c-cpp" scope="hidden" name="LanguageAndScope/Hidden/Hidden.h"/>
+        <file category="include" language="c" scope="public" name="LanguageAndScope/Public/"/>
+        <file category="include" language="c-cpp" scope="private" name="LanguageAndScope/Private/"/>
+      </files>
+    </component>
+  </components>
+
+</package>

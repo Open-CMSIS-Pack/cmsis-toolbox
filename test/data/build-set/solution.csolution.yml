@@ -1,0 +1,19 @@
+solution:
+  cdefault:
+
+  compiler: GCC
+
+  packs:
+    - pack: ARM::Cortex_DFP
+    - pack: ARM::CMSIS
+      
+  target-types:
+    - type: ARMCM0
+      device: ARMCM0
+
+  build-types:
+    - type: Debug
+    - type: Release
+
+  projects:
+    - project: ./project/project.cproject.yml
