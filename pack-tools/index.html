@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Pack Creation - CMSIS-Toolbox Help</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Pack Creation";
+        var mkdocs_page_input_path = "pack-tools.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">Build Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">Configure STM32 Devices with STM32CubeMX</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">Configure NXP Devices with MCUXpresso Config Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Build Operation</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Pack Creation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#pack-creation-tools">Pack Creation Tools</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#scripts">Scripts</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hands-on-tutorials">Hands-on Tutorials</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hints-for-pack-creation">Hints for Pack Creation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#project-examples">Project Examples</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#support-multiple-compilers">Support Multiple Compilers</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#related-examples">Related Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#template-projects">Template Projects</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#reference-applications">Reference Applications</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#layers">Layers</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#code-templates">Code Templates</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pack-examples">Pack Examples</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CMSIS-Toolbox Help</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Pack Creation</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/master/docs/pack-tools.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="pack-creation">Pack Creation</h1>
+<p>This chapter describes how to create software packs and explains the tools <code>packchk</code> (software pack verification) and <code>svdconv</code> (SVD file converter).</p>
+<h2 id="pack-creation-tools">Pack Creation Tools</h2>
+<p>The following tools support the creation of Software Packs in <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html">CMSIS-Pack format</a>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Tool</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>packchk</strong></td>
+<td style="text-align: left;"><strong>Pack Validation:</strong> installs and manages software packs in the local development environment.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>svdconv</strong></td>
+<td style="text-align: left;"><strong>SVD Check / Convert:</strong> validate and/or convert System View Description (SVD) files.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="scripts">Scripts</h2>
+<p>Several <a href="https://github.com/Open-CMSIS-Pack#ready-to-use-tools">tools and scripts</a> help to automate the pack creation.</p>
+<h2 id="hands-on-tutorials">Hands-on Tutorials</h2>
+<p>These scripts are in several hands-on tutorials.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Hands-on Tutorial</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/Open-CMSIS-Pack/DFP-Pack-HandsOn"><strong>DFP-Pack-HandsOn</strong></a></td>
+<td style="text-align: left;">Explains the structure and creation of a Device Family Pack (DFP).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/Open-CMSIS-Pack/BSP-Pack-HandsOn"><strong>BSP-Pack-HandsOn</strong></a></td>
+<td style="text-align: left;">Explains the structure and creation of a Board Support Pack (BSP).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/Open-CMSIS-Pack/SW-Pack-HandsOn"><strong>SW-Pack-HandsOn</strong></a></td>
+<td style="text-align: left;">Explains the steps to create a simple software pack using the Open-CMSIS-Pack technology.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/Open-CMSIS-Pack/Create-Scalable-SW"><strong>Create-Scaleable-SW</strong></a></td>
+<td style="text-align: left;">Explains how to structure complex middleware stacks.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="hints-for-pack-creation">Hints for Pack Creation</h2>
+<ul>
+<li>Use <a href="https://arm-software.github.io/CMSIS_6/latest/Core/cmsis_core_files.html">C startup files</a> that allows to use a DFP with any toolchain.</li>
+<li>For elements use a brief description text with less than 128 characters to explain the purpose. When possible link to documentation with detailed information.</li>
+<li>Example: A component <code>Device:HAL:ENET</code> should not have description <code>ENET HAL Driver</code>, use <code>Ethernet HAL driver</code> instead.</li>
+<li>Consider adding <a href="https://github.com/Open-CMSIS-Pack/STM32U5xx_DFP/tree/main/Templates">project templates</a> to help get started with more complex projects.</li>
+<li>This is useful when devices are are configured using generators or provide multiple linker scripts (i.e. RAM/ROM execution).</li>
+<li>To distribute <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/build-overview.md#toolchain-agnostic-project">toolchain agnostic examples</a> as part of packs:</li>
+<li>Consider to use <a href="../YML-Input-Format/#select-compiler"><code>select-compiler</code></a> to make projects toolchain independent.</li>
+<li>To avoid that examples need updates with every pack release, specify the <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/blob/main/DualCore/HelloWorld.csolution.yml#L9">minium pack version required</a>.</li>
+<li>Use <a href="https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP/tree/main/.github/workflows">CI workflows</a> to validate that projects compile correctly.</li>
+<li>Add an <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/element_package_description.html">overview.md file</a> that describes the overall usage of the software pack. These files are displayed on <a href="https://www.keil.arm.com/packs">www.keil.arm.com/packs</a> and index by Web search engines.</li>
+</ul>
+<h2 id="project-examples">Project Examples</h2>
+<p>Project examples help to get started with new devices, boards, and middleware software components. The CMSIS-Pack format supports therefore different types of project examples:</p>
+<ul>
+<li><a href="#template-projects"><em>Template Projects</em></a> are <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates">stub projects</a> that help to get started. Some software packs may contain device specific templates.</li>
+<li><a href="#examples"><em>Examples</em></a> are created for a specific hardware or evaluation board. These are typically complete projects that directly interface with board and device peripherals.</li>
+<li><a href="#reference-applications"><em>Reference Applications</em></a> are hardware agnostic project examples that required <a href="#layers">layers</a> to add the hardware abstraction of a target (typically a board).</li>
+</ul>
+<p>In addition packs may contain:</p>
+<ul>
+<li><a href="#layers"><em>Layers</em></a> are  pre-configured software components or source code that can be shared across multiple projects.</li>
+<li><a href="#code-templates"><em>Code Templates</em></a> are stub source files for middleware components that can be incorporated into user code.</li>
+</ul>
+<p>The picture below shows the different packs that are used to publish project examples. These examples are available for software developers on web pages and can be directly accessed from IDEs that are for example enabled with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">VS Code Arm CMSIS Solution</a> extension.</p>
+<p><img alt="Project Examples in Packs" src="../images/ExamplesInPacks.png" title="Project Examples in Packs" /></p>
+<p>The following section explains how the different types of project examples are structured and registered within a CMSIS-Pack.</p>
+<h3 id="support-multiple-compilers">Support Multiple Compilers</h3>
+<p>To make project examples independent of a specific compiler toolchain, the <code>*.csolution.yml</code> file should include the <code>select-compiler:</code> node with a list of tested compilers. When a user or IDE starts such an example, the <code>compiler:</code> node that selects the compiler gets added.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">solution:
+  description: &lt;brief description of the project example&gt;
+  created-for: CMSIS-Toolbox@2.6.0
+  cdefault:
+
+  select-compiler:  # list of tested compilers that can be selected
+    - compiler: AC6
+    - compiler: GCC
+    - compiler: IAR
+    - compiler: CLANG
+      :
+</code></pre>
+<h3 id="related-examples">Related Examples</h3>
+<p>The <code>*.csolution.yml</code> file may contain several related projects that share the same <a href="../YML-Input-Format/#target-types"><code>target-types:</code></a> and <a href="../YML-Input-Format/#build-types"><code>build-types:</code></a>.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">solution:
+      :
+  projects:
+    - project: BSD_Server/BSD_Server.cproject.yml
+    - project: FTP_Server/FTP_Server.cproject.yml
+    - project: HTTP_Server/HTTP_Server.cproject.yml
+</code></pre>
+<h3 id="template-projects">Template Projects</h3>
+<p>A <em>template project</em> does not define a <a href="../YML-Input-Format/#device"><code>device:</code></a> or <a href="../YML-Input-Format/#board"><code>board:</code></a> in the <code>*.csolution.yml</code> file. When a IDE starts such an <em>template</em> the <code>device:</code> and/or <code>board:</code> information along with <code>pack:</code> information is added depending on user selection. The <a href="../YML-Input-Format/#target-types"><code>target-types:</code></a> contains a  <code>Name</code> that may be replaced by a descriptive target name.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>A <em>template project</em> should not specify the DFP or BSP with a <code>pack:</code> node as this gets added by the IDE during project start.</p>
+<p><strong>Simple Template:</strong></p>
+<p>A simple <em>template</em> only defines one target.</p>
+<pre><code class="language-yml">solution:
+      :
+  target-types:
+    - type: Name
+#     board:            # added during creation of solution
+#     device:           # added during creation of solution
+      :
+</code></pre>
+<p><strong>Multi-Target Template:</strong></p>
+<p>A multi-target <em>template</em> may contain different configurations for the same target, for example a configuration that executes from ROM and another that executes from RAM. The example below shows how this could be achieved using <a href="../YML-Input-Format/#variables"><code>variables:</code></a>.</p>
+<pre><code class="language-yml">solution:
+      :
+  target-types:
+    - type: Name-ROM
+#     board:           # added during creation of solution
+#     device:          # added during creation of solution
+      variables:
+        - regions_header: path/region_ROM.h 
+
+    - type: Name-RAM
+#     board:           # added during creation of solution
+#     device:          # added during creation of solution
+      variables:
+        - regions_header: path/region_RAM.h 
+      :
+</code></pre>
+<p>In the example above, projects can use the <a href="../YML-Input-Format/#linker"><code>linker:</code></a> node in the <code>*.cproject.yml</code> file to reference the regions header file of the selected target.</p>
+<pre><code class="language-yml">project:
+
+  linker:
+    - regions:  $regions_header$
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p><em>Templates</em> should compile when the above information is added to the <code>*.csolution.yml</code> file. The exception is when <em>templates</em> require parts of the code provided by a generator.</p>
+<p><strong>Register Template in PDSC File:</strong></p>
+<p><em>Templates</em> are published using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_csolution_pg.html"><code>&lt;csolution&gt;</code> element</a> in the PDSC file. Device-specific <em>Templates</em> should be part of the DFP. Board-specific <em>templates</em> should be part of the BSP.</p>
+<pre><code class="language-xml">  &lt;csolution&gt; 
+    &lt;template name=&quot;Simple Device project&quot; path=&quot;/device/Simple&quot; file=&quot;Simple.csolution.yml&quot; condition=&quot;Device_Spec&quot;&gt;
+      &lt;description&gt;Single-core project with empty main function configured for device&lt;/description&gt;
+    &lt;/template&gt;
+    &lt;template name=&quot;Simple Board project&quot; path=&quot;/board/Simple&quot; file=&quot;Simple.csolution.yml&quot; condition=&quot;Board_Spec&quot;&gt;
+      &lt;description&gt;Single-core project with empty main function configured for board&lt;/description&gt;
+    &lt;/template&gt;
+  &lt;/csolution&gt;
+</code></pre>
+<h3 id="examples">Examples</h3>
+<p><em>Examples</em> are complete projects that typically run on a board. They should therefore specify a <code>target-type</code> with <a href="../YML-Input-Format/#board"><code>board:</code></a> and list the <a href="../YML-Input-Format/#packs"><code>packs:</code></a> that are used, specifically the DFP and BSP.</p>
+<p>To minimize maintenance of <em>Examples</em> that are part of a pack, consider these rules:</p>
+<ul>
+<li><strong>IMPORTANT:</strong> Store all files that are part of the <a href="../build-overview/#rte-directory-structure"><code>./RTE</code> directory</a>. These files store configuration and are important for <a href="../build-overview/#plm-of-configuration-files">PLM</a>.</li>
+<li>Use <a href="../YML-Input-Format/#select-compiler"><code>select-compiler:</code></a> when the <em>Example</em> works with several toolchains.  Do not specify <code>compiler:</code>.</li>
+<li>Specify <a href="../YML-Input-Format/#pack-name-conventions">minimum pack version</a>. Do not store <code>*.cbuild-pack.yml</code>.</li>
+<li>The tool selects first <code>target-type</code> and first <code>build-type</code> when <code>cbuild-set.yml</code> is missing. For simple projects do not store <code>*.cbuild-set.yml</code>.</li>
+<li>For simple projects, rely on the <code>cdefault.yml</code> file that is provided with CMSIS-Toolbox.</li>
+</ul>
+<p><em>Examples</em> that work with several compiler toolchains should use <a href="../YML-Input-Format/#select-compiler"><code>select-compiler:</code></a> and not define <code>compiler:</code> explicit. The <code>compiler:</code> node of the available toolchain is added when the <em>Example</em> is loaded into the IDE.</p>
+<p>When <a href="../YML-Input-Format/#pack-name-conventions">minimum pack versions</a> are specified, the semantic versioning of packs should ensure that newer pack versions work also. As the <code>*.cbuild-pack.yml</code> file fixes pack versions, this file should be not stored in the pack.</p>
+<p><em>Examples</em> may contain in the <code>*.csolution.yml</code> file multiple related projects that for example cover different aspects of a peripheral or middleware. For such <em>Examples</em> it is not required to store the <code>*.cbuild-set.yml</code> file as the tools select the first <code>target-type</code> and <code>build-type</code> of the <code>*.csolution.yml</code> file.</p>
+<p><em>Examples</em> that do not require special compiler controls may rely on the <a href="../build-overview/#cdefaultyml"><code>cdefault.yml</code> file</a> that is provided with CMSIS-Toolbox as this file contains reasonable default settings. For more complex <em>Examples</em>, provide a local copy of the <code>cdefault.yml</code> file in the same directory as the <code>*.csolution.yml</code> file.</p>
+<p>Refer to <a href="../build-overview/#toolchain-agnostic-project">Toolchain Agnostic Project</a> for further information.</p>
+<p><strong><code>csolution.yml</code> file of an <em>Example</em>:</strong></p>
+<pre><code class="language-yml">solution:
+# Optional: Add a brief description line (recommendation less than 128 characters)
+  description: Example that shows the usage of Fault component on an Cortex-M33 with TrustZone
+
+  created-for: CMSIS-Toolbox@2.6.0          # minimum CMSIS-Toolbox version, newer versions will work also
+  cdefault:
+
+  select-compiler:
+    - compiler: GCC               # GCC is supported
+    - compiler: AC6               # AC6 is supported
+    - compiler: IAR               # IAR is supported
+
+  packs:
+    - pack: Keil::STM32U5xx_DFP@^2.1.0      # minimum compatible pack version
+    - pack: Keil::B-U585I-IOT02A_BSP@^1.0.0
+
+  target-types:
+    - type: B-U585I-IOT02A
+      board: STMicroelectronics::B-U585I-IOT02A
+      device: STMicroelectronics::STM32U585AIIx
+
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: debug
+
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  projects:
+    - project: ./Secure/Fault_S.cproject.yml
+    - project: ./NonSecure/Fault_NS.cproject.yml
+</code></pre>
+<p><strong>Register <em>Examples</em> in PDSC File:</strong></p>
+<p><em>Examples</em> can be part of any pack and are published using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_examples_pg.html"><code>&lt;examples&gt;</code> element</a> in the PDSC file. Note that it is possible to register multiple project formats to support different tool environments.</p>
+<pre><code class="language-xml">  &lt;examples&gt;
+    &lt;example name=&quot;Fault example&quot; folder=&quot;Examples/Fault/B-U585I-IOT02A&quot; doc=&quot;README.md&quot;&gt;
+      &lt;description&gt;Example that shows the usage of Fault component on an Cortex-M33 with TrustZone&lt;/description&gt;
+      &lt;board name=&quot;B-U585I-IOT02A&quot; vendor=&quot;STMicroelectronics&quot;/&gt;
+      &lt;project&gt;
+        &lt;environment name=&quot;csolution&quot; load=&quot;Fault.csolution.yml&quot;/&gt;
+        &lt;environment name=&quot;uv&quot; load=&quot;Fault.uvmpw&quot;/&gt;
+      &lt;/project&gt;
+    &lt;/example&gt;
+  &lt;/examples&gt;
+</code></pre>
+<h3 id="reference-applications">Reference Applications</h3>
+<p><a href="../ReferenceApplications/"><em>Reference applications</em></a> can run on many different target hardware boards. Similar to <a href="#template-projects"><em>template projects</em></a> the <code>device:</code> and <code>board:</code> along with the required DFP and BSP <code>pack:</code> is not specified in the <code>*.csolution.yml</code> file.</p>
+<pre><code class="language-yml">solution:
+  description: IPv4/IPv6 Network examples
+  created-for: CMSIS-Toolbox@2.6.0
+  cdefault:
+
+  select-compiler:  # list of tested compilers that can be selected
+    - compiler: AC6
+    - compiler: GCC
+    - compiler: IAR
+    - compiler: CLANG
+
+  target-types:
+    - type: Name
+#     board:           # added during creation of solution
+#     variables:
+#       - Board-Layer: &lt;board_layer&gt;.clayer.yml
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>The <a href="https://github.com/ARM-software/MDK-Middleware/tree/main/Examples">MDK-Middleware</a> contains several <em>reference applications</em> that exemplify the overall structure.</p>
+<p><strong>Register <em>Reference Applications</em> in PDSC File:</strong></p>
+<p><em>Reference Applications</em> are typically part of a middleware software pack and publish using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_examples_pg.html"><code>&lt;examples&gt;</code> element</a> in the PDSC file. The difference to <a href="#examples"><em>examples</em></a> is that no <code>&lt;board&gt; element</code> is used as the <em>reference application</em> is hardware agnostic.</p>
+<pre><code class="language-xml">  &lt;examples&gt;
+    &lt;/example&gt;
+    &lt;example name=&quot;Network&quot; doc=&quot;README.md&quot; folder=&quot;Examples/Network&quot;&gt;
+      &lt;description&gt;MDK-Middleware: IPv4/IPv6 Client and Server applications via Ethernet&lt;/description&gt;
+      &lt;project&gt;
+        &lt;environment name=&quot;csolution&quot; load=&quot;Network.csolution.yml&quot;/&gt;
+      &lt;/project&gt;
+    &lt;/example&gt;
+</code></pre>
+<h2 id="layers">Layers</h2>
+<p><a href="../build-overview/#software-layers"><em>Layers</em></a> with <a href="../ReferenceApplications/#connections"><em>connections</em></a> are used to by <a href="#reference-applications"><em>Reference Applications</em></a> to target hardware. These layers are added when a <em>reference application</em> is configured for a <code>board:</code>, typically in the IDE.</p>
+<p><strong>Register <em>Layers</em> in PDSC File:</strong></p>
+<p><a href="../build-overview/#software-layers"><em>Layers</em></a> are part of a BSP and published using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_csolution_pg.html"><code>&lt;csolution&gt;</code> element</a> in the PDSC file.</p>
+<pre><code class="language-xml">  &lt;csolution&gt;
+    &lt;clayer type=&quot;Board&quot; path=&quot;Layers/Default&quot; file=&quot;Board.clayer.yml&quot; copy-to=&quot;Board/MyBoard&quot; condition=&quot;Board-Spec&quot;/&gt;
+  &lt;/csolution&gt;
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>Several <a href="https://github.com/Open-CMSIS-Pack#stm32-packs-with-generator-support">STM32 Board Support Packs (BSP)</a>  contain <em>layers</em> that are pre-configured for certain applications. For example, the <em>layer</em> in the <a href="https://github.com/Open-CMSIS-Pack/ST_NUCLEO-F756ZG_BSP/tree/main/Layers/Default">ST_NUCLEO-F756ZG_BSP</a> supports applications that require Ethernet, USB Device, UART, or I2C interfaces.</p>
+<h2 id="code-templates">Code Templates</h2>
+<p><em>Code templates</em> are part of the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Files">components files</a> in the PDSC file and can be manually added by the user to a software project. <em>Code templates</em> show how a software component is used and the source code can be directly adapted to the requirements of the application program.</p>
+<p><strong>Register <em>Code Templates</em> in PDSC File:</strong></p>
+<p><a href="../build-overview/#software-layers"><em>Code Templates</em></a> are part of a software component and published using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html"><code>&lt;components&gt;</code> element</a> using <code>attr="template"</code> in the PDSC file.</p>
+<pre><code class="language-xml">  &lt;component Cgroup=&quot;Socket&quot; Csub=&quot;UDP&quot; condition=&quot;Network Interface&quot;&gt;
+    :
+    &lt;files&gt;
+      &lt;file category=&quot;doc&quot;    name=&quot;Documentation/html/Network/group__netUDP__Func.html&quot;/&gt;
+      &lt;file category=&quot;header&quot; name=&quot;Components/Network/Config/Net_Config_UDP.h&quot; attr=&quot;config&quot; version=&quot;5.1.1&quot;/&gt;
+      &lt;file category=&quot;source&quot; name=&quot;Components/Network/Template/UDP_Socket.c&quot; attr=&quot;template&quot; select=&quot;UDP Socket&quot;/&gt;
+      &lt;!-- Library source files --&gt;
+      &lt;file category=&quot;source&quot; name=&quot;Components/Network/Source/net_udp.c&quot;/&gt;
+    &lt;/files&gt;
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>The <a href="https://github.com/ARM-software/CMSIS-RTX">CMSIS-RTX</a> and <a href="https://github.com/ARM-software/MDK-Middleware">MDK-Middleware</a> pack contains several <em>code templates</em> that exemplify the overall structure.</p>
+<h2 id="pack-examples">Pack Examples</h2>
+<p>Several <a href="https://github.com/Open-CMSIS-Pack#cmsis-software-pack-examples">pack examples</a> available on <a href="https://github.com/Open-CMSIS-Pack">github.com/Open-CMSIS-Pack</a> exemplify how to create software packs. Other packs that are a good reference are the various <a href="https://www.keil.arm.com/packs/cmsis-arm">Arm CMSIS packs</a> or the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK Middleware pack</a>.  The source of these packs is available on <a href="https://github.com/ARM-software">Github/Arm-software</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../build-operation/" class="btn btn-neutral float-left" title="Build Operation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../build-operation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

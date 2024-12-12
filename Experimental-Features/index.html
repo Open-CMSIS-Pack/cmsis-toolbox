@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Experimental Features - CMSIS-Toolbox Help</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Experimental Features";
+        var mkdocs_page_input_path = "Experimental-Features.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">Build Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">Configure STM32 Devices with STM32CubeMX</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">Configure NXP Devices with MCUXpresso Config Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Build Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CMSIS-Toolbox Help</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Experimental Features</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/master/docs/Experimental-Features.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="experimental-features">Experimental Features</h1>
+<!-- markdownlint-disable MD009 -->
+<!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD032 -->
+
+<p>Experimental features are implemented to iterate on new functionality. Experimental features have limited test coverage and the functionality may change in future versions of the CMSIS-Toolbox without further notice.</p>
+<p>The CMSIS-Toolbox 2.7 implements the following experimental features:</p>
+<ul>
+<li><a href="#experimental-features">Experimental Features</a></li>
+<li><a href="#resource-management">Resource Management</a><ul>
+<li><a href="#resources"><code>resources:</code></a></li>
+<li><a href="#example-solution-nametarget-nameregionsh-file">Example <code>&lt;solution-name&gt;+&lt;target-name&gt;.regions.h</code> file</a></li>
+<li><a href="#question">Question</a></li>
+</ul>
+</li>
+<li><a href="#adding-memory">Adding Memory</a></li>
+<li><a href="#run-and-debug-management">Run and Debug Management</a><ul>
+<li><a href="#solution-nametarget-namecbuild-runyml"><code>&lt;solution-name&gt;+&lt;target-name&gt;.cbuild-run.yml</code></a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#questions">Questions</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="resource-management">Resource Management</h2>
+<p>In a multi-processor or multi-project application the <code>target type</code> describes the target hardware. A solution is a collection of related projects and the context-set defines the projects that are deployed to the target hardware. A project uses a subset of resources (called regions at linker level).</p>
+<p>The <a href="../build-overview/#linker-script-management">linker script management</a> is extended for multi-processor or multi-project applications with the following features:</p>
+<ul>
+<li>When <a href="#resources"><code>resources:</code></a> node is specified in one of the <code>*.cproject.yml</code> or <code>*.clayer.yml</code> files of a <em>csolution project</em>:</li>
+<li>The file <code>.\cmsis\&lt;solution-name&gt;+&lt;target-name&gt;.regions.h</code> is generated. This file contains the global region settings of a solution for one target-type.</li>
+<li>
+<p>The file <code>.\cmsis\&lt;solution-name&gt;+&lt;target-name&gt;.regions.h</code> replaces the <code>regions_&lt;device_or_board&gt;.h</code> that is  located in the directory <code>./RTE/Device/&lt;device&gt;</code>. The <code>regions_&lt;device_or_board&gt;.h</code> is longer generated.</p>
+</li>
+<li>
+<p>A <code>define: &lt;project-name&gt;_cproject</code> is always added to the linker script pre-processor (also when no <code>resources:</code> node is used).</p>
+</li>
+</ul>
+<p>The following picture explains the extended linker script management for multi-project applications.</p>
+<p><img alt="Linker Script Management for Multi-Project Applications" src="../images/linker-script-file-ext.png" title="Linker Script Management for Multi-Project Applications" /></p>
+<h3 id="resources"><code>resources:</code></h3>
+<p>The <code>resources:</code> node specifies the resources required by a project. It is used at the level of <code>project:</code>, <code>setup:</code>, or <code>layer:</code>. The <code>resources:</code> node is additive; when multiple <code>resources:</code> nodes specify the same region the size is added.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>In a next iteration, the linker script may be generated by the CMSIS-Toolbox and <a href="https://developer.arm.com/documentation/101407/0541/Creating-Applications/Tips-and-Tricks/File-and-Group-Specific-Options">features from uVision to allocate source modules to specific regions</a> may get added.
+Therefore the <code>resources:</code> node is forward looking in the way heap and stack is specified.</p>
+<pre><code class="language-yml">  resources:
+    regions:
+      - region: __ROM0    # region name pre-defined in script template: __ROM0..3
+        size: 0x10000     # specifies region size
+#       name: ITCM_Flash  - maps to physical memory name(s), if missing use PDSC default memory
+#       address:          - absolution address of region; not in scope for 2.7
+#       startup:          - locate startup/vectors to this region; not in scope for 2.7
+#       align:            - alignment restrictions of the regions; not in scope for 2.7
+
+      - region: __RAM0    # region name pre-defined in script template: __RAM0..3
+        size:  0x8000     # specifies region size
+        heap:  0x2000     # heap size (only permitted region __RAM0)
+        stack: 0x4000     # stack size (only permitted in region __RAM0)
+#       name:             - maps to physical memory name(s), if missing use PDSC default memory
+#         - SRAM1
+#         - SRAM2
+#       address:          - absolution address of region; not in scope for 2.7
+#       align:            - alignment restrictions of the regions; not in scope for 2.7
+#       sections:         - potentially locate sections (requires linker script generation); not in scope for 2.7
+#         - .text.function
+</code></pre>
+<h3 id="example-solution-nametarget-nameregionsh-file">Example <code>&lt;solution-name&gt;+&lt;target-name&gt;.regions.h</code> file</h3>
+<pre><code class="language-c">#ifndef USBD_STM32F746G_DISCO_REGIONS_H
+#define USBD_STM32F746G_DISCO_REGIONS_H
+
+// *** DO NOT MODIFY THIS FILE! ***
+//
+// Generated by csolution 2.7.0 based on packs and csolution project resources
+// Device Family Pack (DFP):   Keil::STM32F7xx_DFP@3.0.0
+// Board Support Pack (BSP):   Keil::STM32F746G-DISCO_BSP@1.0.0
+
+// Available Physical Memory Resources
+// rx ROM:   Name: ITCM_Flash (from DFP)  BASE: 0x00200000  SIZE: 0x00100000
+// rx ROM:   Name: Flash (from DFP)       BASE: 0x08000000  SIZE: 0x00100000 (default)
+// rwx RAM:  Name: DTCM (from DFP)        BASE: 0x20000000  SIZE: 0x00010000
+// rwx RAM:  Name: SRAM1 (from DFP)       BASE: 0x20010000  SIZE: 0x00020000 (default)
+// rwx RAM:  Name: SRAM2 (from DFP)       BASE: 0x20030000  SIZE: 0x00020000 (default)
+// rwx RAM:  Name: BKP_SRAM (from DFP)    BASE: 0x40024000  SIZE: 0x00001000
+// rwx RAM:  Name: ITCM (from DFP)        BASE: 0x00000000  SIZE: 0x00004000
+
+//--------------------------------------
+#ifdef A_cproject
+// Resources allocated in A.cproject.yml
+
+#define __ROM0_BASE  0x08000000      /* Memory Name: Flash */
+#define __ROM0_SIZE  0x00010000
+
+#define __RAM0_BASE  0x20010000      /* Memory Name: SRAM1 */
+#define __RAM0_SIZE  0x00008000
+
+#define __STACK_SIZE 0x00004000
+#define __HEAP_SIZE  0x00002000
+
+#endif /* A_cproject */
+
+//--------------------------------------
+#ifdef B_cproject
+// Resources allocated in B.cproject.yml
+
+#define __ROM0_BASE  0x08010000      /* Memory Name: Flash */
+#define __ROM0_SIZE  0x00030000
+
+#define __RAM0_BASE  0x20018000      /* Memory Name: SRAM1+SRAM2 */
+#define __RAM0_SIZE  0x00020000
+
+#define __STACK_SIZE 0x00000200
+#define __HEAP_SIZE  0x00000000
+
+#endif  /* B_cproject */
+
+#endif /* USBD_STM32F746G_DISCO_REGIONS_H */
+</code></pre>
+<h3 id="question">Question</h3>
+<ul>
+<li>Should the <code>&lt;solution-name&gt;+&lt;target-name&gt;.regions.h</code> file contain also <code>#define's</code> for the overall avaiable memory, i.e. for a boot loader?</li>
+</ul>
+<h2 id="adding-memory">Adding Memory</h2>
+<p>Hardware targets may have additional off-chip memory. A <code>memory:</code> node that can be added as additional information to a target type as shown below:</p>
+<pre><code class="language-yml">solution:
+  :
+  target-types:
+    - type: MyHardware
+      device: STMicroelectronics::STM32F746NGHx
+      memory:                                  # Additional memory available in MyHardware
+        - name: Ext-Flash                      # Identifier
+        - access: rx                           # access permission 
+        - start: 0x40000000        
+        - size: 0x200000
+        - algorithm: Flash/Ext-Flash.flm       # Programming algorithm
+</code></pre>
+<h2 id="run-and-debug-management">Run and Debug Management</h2>
+<p>The CMSIS-Pack PDSC files contain information about device/board parameters and software components:</p>
+<ul>
+<li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html">Flash algorithms</a> of device memory (in DFP) and board memory (in BSP).</li>
+<li>On-board debug adapter (a default programming/debug channel) including features.</li>
+<li>Available memory of device and board.</li>
+<li>Device parameters such as processor core(s) and clock speed.</li>
+<li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html">Debug Access Sequences</a> and <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/sdf_pg.html">System Description Files</a> that support more complex Cortex-A/R/M configurations.</li>
+<li><a href="https://open-cmsis-pack.github.io/svd-spec/main/index.html">CMSIS-SVD System View Description (SVD)</a> files for viewing device peripherals.</li>
+<li><a href="https://arm-software.github.io/CMSIS-View/latest/SCVD_Format.html">CMSIS-View Software Component Viewer Description (SCVD)</a> files for analysis of software components (RTOS, Middleware).</li>
+</ul>
+<p>The CMSIS-Toolbox build system manages device/board/software components, controls the build output (typically ELF/DWARF files), and has provisions for HEX, BIN and post-processing. It allows to manage different <a href="../build-overview/#project-setup-for-multiple-targets-and-builds">target-types</a> and the <a href="../build-overview/#working-with-context-set">context set</a>  manages the images that belong to a target.</p>
+<p>In addition the user may need the following information which should be added to the YML-Input files for the CMSIS-Toolbox.</p>
+<ul>
+<li>Flash algorithms for external memory in custom hardware (see <a href="#adding-memory">Adding Memory</a>).</li>
+<li>ToDo: Additional images that should be loaded.</li>
+<li>ToDo: Device configuration information.</li>
+<li>ToDo: Access information for protected debug ports (i.e. encryption keys).</li>
+</ul>
+<h3 id="solution-nametarget-namecbuild-runyml"><code>&lt;solution-name&gt;+&lt;target-name&gt;.cbuild-run.yml</code></h3>
+<p>The <code>&lt;solution-name&gt;+&lt;target-name&gt;.cbuild-run.yml</code> is generated in the folder <code>.cmsis</code> and provides the relevant information for executing Run and Debug commands. Overall it:</p>
+<ul>
+<li>simplifies the usage of flash programmers and debuggers.</li>
+<li>provides information for command line and IDE workflows in a consistent way.</li>
+<li>ensures that information is portable, i.e from a cloud-hosted CI system to a desktop test system.</li>
+</ul>
+<p>The <code>&lt;solution-name&gt;+&lt;target-name&gt;.cbuild-run.yml</code> file provides access to PDSC information and the build output of one target. It also exports the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html">Debug Access Sequences</a>.</p>
+<p><img alt="Run and Debug Information Management" src="../images/cbuild-run.png" title="Run and Debug Information Management" /></p>
+<p>The <code>&lt;solution-name&gt;+&lt;target-name&gt;.cbuild-run.yml</code> file represents a context-set of a solution.</p>
+<p><strong>Content of <code>&lt;solution-name&gt;+&lt;target-name&gt;.cbuild-run.yml</code>:</strong></p>
+<pre><code class="language-yml">run:                                         # Start of file, contains run and debug information for a target
+  generated-by: csolution version 2.7.0
+  solution: ../USB_Device.csolution.yml
+  target-type: +STM32U585AIIx
+  compiler: AC6
+  board: STMicroelectronics::B-U585I-IOT02A:Rev.C
+  board-pack: Keil::B-U585I-IOT02A_BSP@2.0.0
+  device: STMicroelectronics::STM32U585AIIx
+  device-pack: Keil::STM32U5xx_DFP@3.0.0
+
+  programming:                               # Flash programming algorithms
+    - algorithm: ${CMSIS_PACK_ROOT}/DFP-path/&lt;programming-algorithm&gt;
+    - algorithm: ${CMSIS_PACK_ROOT}/BSP-path/&lt;programming-algorithm&gt;
+      config: &lt;potential config options&gt;     # is this required
+    - algorithm: custom-hw-path/&lt;programming-algorithm&gt;
+
+  output:                                    # application image files 
+    - type: elf
+      file: HID.axf
+      load: &lt;scope&gt;                          # all (default), symbols only, binary only
+
+  system-description:
+    - file:  ${CMSIS_PACK_ROOT}/DFP-path/&lt;svd&gt;
+      type:  svd
+    - file:  ${CMSIS_PACK_ROOT}/pack-path/&lt;scvd&gt;
+      type:  scvd
+      from-pack: &lt;pack&gt;
+
+# information from DFP, BSP specific to the target
+# https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packFormat.html
+  board:                                     # Board element
+    debugProbe:
+      ...     
+    debugInterface:
+      ...
+  debug-port:                                # Information from DFP
+    access-port-v1:    
+      ...
+    access-port-v2:    
+      ...
+    jtag:
+    cjtag:
+    swd:
+
+    default-settings:                        # Default debug configuration
+      default:                               # debug protocol (SWD or JTAG) to use for target connections.
+      clock:                                 # clock setting in Hz for a target connection.
+      swj:                                   # allows Serial Wire Debug (SWD) and JTAG protocols
+      dormant:                               # device access via CoreSight DP requires the dormant state
+      sdf: ${CMSIS_PACK_ROOT}/DFP-path/&lt;sdf&gt; # path of the system description file (SDF).
+
+  sequences:
+    ...
+
+  trace:
+    ...
+</code></pre>
+<h3 id="usage">Usage</h3>
+<p>The <code>*.cbuild-run.yml</code> file can be directly passed to programmers and debug tools, for example using a command line option. It contains all information that needs to be passed.</p>
+<pre><code class="language-bash">&gt;programmer -csolution MySolution+MyHardware.cbuild-run.yml
+</code></pre>
+<h3 id="questions">Questions</h3>
+<ul>
+<li>What should be done now to simplify above information while making it more future proof?</li>
+</ul>
+<p>For CMSIS-Toolbox 3.0:</p>
+<ul>
+<li>Should the location of cbuild information files change to folder <code>.\.cmsis</code>?</li>
+<li>Should the structure of build information file change and include <code>cbuild-run.yml</code>? The cbuild information file will then represent a context-set, and not just one context.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
