@@ -119,7 +119,9 @@ A *Reference Application* is an incomplete `*.csolution.yml` project file that r
 
 The following steps explain how to to compile the project:
 
-1. In the `*.csolution.yml` file under the `packs:` node, add the DFP (for the device) and the BSP (for the board). Under `target-types:`, add your board.
+### Step 1: Add DFP and BSP
+
+In the `*.csolution.yml` file under the `packs:` node, add the DFP (for the device) and the BSP (for the board). Under `target-types:`, add your board.
 
 ```yml
 solution:
@@ -132,8 +134,10 @@ solution:
     - type: MyBoard
       board: B-U585I-IOT02A         # name of a target board
 ```
-   
-2. Run `cbuild setup` with the `*.csolution.yml` file. This identifies compatible layers with an output similar to:
+
+### Step 2: Run `cbuild setup`
+
+Run `cbuild setup` with the `*.csolution.yml` file. This identifies compatible layers with an output similar to:
 
 ```txt
 >cbuild setup xxx.csolution.yml
@@ -142,7 +146,7 @@ error csolution: undefined variables in xxx.csolution.yml:
 To resolve undefined variables, copy the settings from cbuild-idx.yml to csolution.yml
 ```
 
-   The related `*.cbuild-idx.yml` should contain information similar to this:
+The related `*.cbuild-idx.yml` should contain information similar to this:
 
 ```yml
 build-idx:

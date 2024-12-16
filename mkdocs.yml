@@ -1,4 +1,4 @@
-site_name: CMSIS-Toolbox Help
+site_name: CMSIS-Toolbox
 repo_url: https://github.com/Open-CMSIS-Pack/cmsis-toolbox
 nav:
     - Home: index.md
