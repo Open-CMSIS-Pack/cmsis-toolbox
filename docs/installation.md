@@ -176,6 +176,8 @@ The command to install and enable `vcpkg` depends on the shell.
 
 ```bat
 curl -LO https://aka.ms/vcpkg-init.cmd && .\vcpkg-init.cmd
+```
+```bat
 %USERPROFILE%\.vcpkg\vcpkg-init.cmd
 ```
 
@@ -183,6 +185,8 @@ curl -LO https://aka.ms/vcpkg-init.cmd && .\vcpkg-init.cmd
 
 ```ps1
 iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
+```
+```ps1
 . ~/.vcpkg/vcpkg-init.ps1
 ```
 
@@ -190,6 +194,8 @@ iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
 
 ```sh
 . <(curl https://aka.ms/vcpkg-init.sh -L)
+```
+```sh
 . ~/.vcpkg/vcpkg-init
 ```
   
@@ -203,32 +209,32 @@ iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
 The required tools are specified in the `vcpkg-configuration.json` file that is present in the current directory or any parent directory.
 
 ```txt
-vcpkg activate
+vcpkg-shell activate
 ```
 
 !!! Note
     In case that activate fails, update registries to access latest versions of the tools artifacts:  
-    `vcpkg x-update-registry --all`
+    `vcpkg-shell x-update-registry --all`
 
 ### Deactivate tools
 
 The configuration is deactivated with:
 
 ```txt
-vcpkg deactivate
+vcpkg-shell deactivate
 ```
 
 ### Create `vcpkg-configuration.json`
 
-To create a new `vcpkg-configuration.json` file use these commands:
+To create a new `vcpkg-configuration.json` file including the artifacts cmsis-toolbox, cmake, ninja and arm-none-eabi-gcc use this sequence of commands:
 
 ```txt
-vcpkg new --application
-vcpkg add artifact arm:cmsis-toolbox [--version major.minor.patch]
-vcpkg add artifact arm:cmake
-vcpkg add artifact arm:ninja
-vcpkg add artifact arm:arm-none-eabi-gcc
-vcpkg activate
+vcpkg-shell new --application
+vcpkg-shell add artifact arm:cmsis-toolbox [--version major.minor.patch]
+vcpkg-shell add artifact arm:cmake
+vcpkg-shell add artifact arm:ninja
+vcpkg-shell add artifact arm:arm-none-eabi-gcc
+vcpkg-shell activate
 ```  
 
 Alternatively, you may use an existing repository, for example [github.com/Open-CMSIS-Pack/vscode-get-started](
@@ -239,13 +245,13 @@ https://github.com/Open-CMSIS-Pack/vscode-get-started) with a `vcpkg-configurati
 Using vcpkg in Continuous Integration (CI) environments is basically like [using it in a CLI environment](#vcpkg-setup-using-cli).
 
 The way how `vcpkg artifacts` updates the current shell environment needs to be taken into account when creating CI
-pipelines. The command `vcpkg activate` updates the current environment variables by extending `PATH` and adding
+pipelines. The command `vcpkg-shell activate` updates the current environment variables by extending `PATH` and adding
 additional variables required by installed artifacts. These modifications are only visible in the current running
 shell and spawned subprocesses.
 
 This enables also manual usage on a local prompt, given a typical user runs subsequent commands from the same
 parent shell process. In contrast, typical CI systems such as GitHub Actions or Jenkins spawn a new sub-shell for each
-step of a pipeline. Hence, modifications made to the environment in one sub-shell by running the `vcpkg activate`
+step of a pipeline. Hence, modifications made to the environment in one sub-shell by running the `vcpkg-shell activate`
 command are not persisted into the subsequent steps.
 
 Another aspect to consider is about handling the local vcpkg cache (e.g., `~/.vcpkg`). Common practice on CI systems is
@@ -258,7 +264,7 @@ GitHub Actions allow you to preserve environment settings via the files
 exposed in `$GITHUB_PATH` and `$GITHUB_ENV`. Refer to the custom action provided in [github.com/ARM-software/cmsis-actions - Action: vcpkg](https://github.com/ARM-software/cmsis-actions) for more information.
 
 Preserving the runners, between runs `vcpkg cache` is achieved with an `actions/cache` step preceding the
-first `vcpkg activate` command. The above custom action uses this `actions/cache` step.
+first `vcpkg-shell activate` command. The above custom action uses this `actions/cache` step.
 
 ### Other CI Systems
 
@@ -269,7 +275,7 @@ In CI Systems without a vcpkg integration:
 
 ```sh
 . ~/.vcpkg/vcpkg-init
-vcpkg activate
+vcpkg-shell activate
 ```
 
 ## vcpkg Setup in VS Code
