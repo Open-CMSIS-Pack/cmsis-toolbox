@@ -7,12 +7,12 @@ This chapter explains the setup of the CMSIS-Toolbox along with a build environm
 There are three different ways to setup the CMSIS-Toolbox:
 
 - [Manual setup](#manual-setup) with operating system commands and environment variables.
-- [vcpkg - CLI](#vcpkg-setup-using-cli) using the vcpkg tool in command-line mode
-- [vcpkg - VS Code](#vcpkg-setup-in-vs-code) using the vcpkg tool with VS Code integration
+- [vcpkg in CLI](#vcpkg-command-line-mode) using the vcpkg tool in command-line mode
+- [vcpkg in VS Code](#vcpkg-setup-in-vs-code) using the vcpkg tool with VS Code integration
 
 ## Manual Setup
 
-Download the CMSIS-Toolbox from the [**Arm tools artifactory**](https://artifacts.keil.arm.com/cmsis-toolbox/). Signed binaries are provided for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (amd64, arm64) in an archive file.
+Download the CMSIS-Toolbox from the [**Arm Tools Artifactory**](https://artifacts.keil.arm.com/cmsis-toolbox/). Signed binaries are provided for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (amd64, arm64) in an archive file.
 
 To setup the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example to `~/cmsis-toolbox`.
 
@@ -39,7 +39,7 @@ The CMSIS-Toolbox works with the following compiler toolchains. Install one or m
 - [**Keil MDK**](https://www.keil.com/mdk5/install) version 5.36 or higher.
 
 - [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18.0 or higher
-  - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
+    - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
 
 - [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
 
@@ -73,9 +73,9 @@ The environment variable **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are opt
 
 - **CMSIS_COMPILER_ROOT** default is `<toolbox>/bin/../etc`, i.e., `etc` folder relative to the toolbox executables. It is used to locate:
 
-  - Toolchain cmake files `<compiler-name>.<major>.<minor>.<patch>.cmake` for the selected [compiler](YML-Input-Format.md#compiler).
-  - Default [linker script files](build-overview.md#linker-script-management) (to be preprocessed): `<compiler-name>_linker_script.<ext>.src`
-  - The `cdefault.yml` that is used when no other [`cdefault.yml`](YML-Input-Format.md#cdefault) file is found.
+    - Toolchain cmake files `<compiler-name>.<major>.<minor>.<patch>.cmake` for the selected [compiler](YML-Input-Format.md#compiler).
+    - Default [linker script files](build-overview.md#linker-script-management) (to be preprocessed): `<compiler-name>_linker_script.<ext>.src`
+    - The `cdefault.yml` that is used when no other [`cdefault.yml`](YML-Input-Format.md#cdefault) file is found.
 
 #### Compiler Registration
 
@@ -93,15 +93,13 @@ The compiler toolchain is registered with an environment variable that includes 
 set AC6_TOOLCHAIN_6_19_0=C:\Keil_v5\ARM\ARMCLANG\bin
 ```
 
+For Windows, use the dialog **System Properties - Advanced** and add the **Environment Variables** listed above.
+
 **Example for Unix:**
 
 ```txt
 export GCC_TOOLCHAIN_10_3_1=/opt/gcc-arm-none-eabi-10.3-2021.10/bin
 ```
-
-#### Setup Win64
-
-For Windows, use the dialog **System Properties - Advanced** and add the **Environment Variables** listed above.
 
 **Keil MDK version 5**
 
@@ -117,9 +115,8 @@ environment variable is not required.
 
 The **CMSIS_COMPILER_ROOT** environment variable is not required if the compiler configuration files provided in cmsis-toolbox/etc are used.
 
-**Notes:**
-
-At the Windows command prompt, use `set` to list all environment variables.
+!!! Note
+    At the Windows command prompt, use `set` to list all environment variables.
 
 Keil µVision may be used to:
 
@@ -162,35 +159,43 @@ cpackget init https://www.keil.com/pack/index.pidx
 !!! Note
     Arm is running a public indexing server at the URL provided. You can specify any indexing server URL if you do not wish to use this service.
 
-## vcpkg - Setup using CLI
+## vcpkg Setup using CLI
 
-The [vcpkg](https://vcpkg.io/en/) is a management tool for packages and includes features to manage tool artifacts. Arm provides an artifactory system for tools. Refer to [Arm Tools Available in vcpkg](https://www.keil.arm.com/packages/) for more information.
+The [vcpkg](https://vcpkg.io/en/) is a management tool for packages and includes features to manage tool artifacts. Arm provides an artifactory system for tools. Refer to [Arm Tools Available in vcpkg](https://artifacts.tools.arm.com) for more information.
 
 !!! Note
     Microsoft changed the name of the shell version from `vcpkg` to `vcpkg-shell`. Depending on the version that you are using, you may need to call `vcpkg-shell` from the command line instead of `vcpkg`.
 
 The following describes how to setup the CMSIS-Toolbox with `vcpkg` in a command line (CLI) environment. In many examples there is already the file `vcpkg-configuration.json` which describes the tool environment required for the example. Refer to the last step to create an new `vcpkg-configuration.json` file.
 
-1. Install and enable vcpkg; the command depends on the shell.
+### Install and enable vcpkg
 
-   - Windows Command Prompt (cmd)
+The command to install and enable `vcpkg` depends on the shell.
+
+**Windows Command Prompt (cmd):**
 
 ```bat
 curl -LO https://aka.ms/vcpkg-init.cmd && .\vcpkg-init.cmd
+```
+```bat
 %USERPROFILE%\.vcpkg\vcpkg-init.cmd
 ```
 
-   - Windows PowerShell
+**Windows PowerShell:**
 
 ```ps1
 iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
+```
+```ps1
 . ~/.vcpkg/vcpkg-init.ps1
 ```
 
-   - Linux (x64)/macOS
+**Linux (x64)/macOS:**
 
 ```sh
 . <(curl https://aka.ms/vcpkg-init.sh -L)
+```
+```sh
 . ~/.vcpkg/vcpkg-init
 ```
   
@@ -199,50 +204,54 @@ iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
     - MSYS Bash (such as Git Bash) on Windows.  
     - Linux (aarch64)
 
-2. Activate required tools using one of the following methods:
-  
-   Prerequisite: a `vcpkg-configuration.json` file is present in the current directory or any parent directory.
+### Activate tools
+
+The required tools are specified in the `vcpkg-configuration.json` file that is present in the current directory or any parent directory.
 
 ```txt
-vcpkg activate
+vcpkg-shell activate
 ```
 
 !!! Note
     In case that activate fails, update registries to access latest versions of the tools artifacts:  
-    `vcpkg x-update-registry --all`
+    `vcpkg-shell x-update-registry --all`
 
-3. Deactivate previous configuration
+### Deactivate tools
+
+The configuration is deactivated with:
 
 ```txt
-vcpkg deactivate
+vcpkg-shell deactivate
 ```
 
-4. Create a new `vcpkg-configuration.json` file with these commands:
+### Create `vcpkg-configuration.json`
+
+To create a new `vcpkg-configuration.json` file including the artifacts cmsis-toolbox, cmake, ninja and arm-none-eabi-gcc use this sequence of commands:
 
 ```txt
-vcpkg new --application
-vcpkg add artifact arm:cmsis-toolbox [--version major.minor.patch]
-vcpkg add artifact arm:cmake
-vcpkg add artifact arm:ninja
-vcpkg add artifact arm:arm-none-eabi-gcc
-vcpkg activate
+vcpkg-shell new --application
+vcpkg-shell add artifact arm:cmsis-toolbox [--version major.minor.patch]
+vcpkg-shell add artifact arm:cmake
+vcpkg-shell add artifact arm:ninja
+vcpkg-shell add artifact arm:arm-none-eabi-gcc
+vcpkg-shell activate
 ```  
 
 Alternatively, you may use an existing repository, for example [github.com/Open-CMSIS-Pack/vscode-get-started](
 https://github.com/Open-CMSIS-Pack/vscode-get-started) with a `vcpkg-configuration.json` file.
 
-## vcpkg - Setup in CI
+## vcpkg Command Line Mode
 
 Using vcpkg in Continuous Integration (CI) environments is basically like [using it in a CLI environment](#vcpkg-setup-using-cli).
 
 The way how `vcpkg artifacts` updates the current shell environment needs to be taken into account when creating CI
-pipelines. The command `vcpkg activate` updates the current environment variables by extending `PATH` and adding
+pipelines. The command `vcpkg-shell activate` updates the current environment variables by extending `PATH` and adding
 additional variables required by installed artifacts. These modifications are only visible in the current running
 shell and spawned subprocesses.
 
 This enables also manual usage on a local prompt, given a typical user runs subsequent commands from the same
 parent shell process. In contrast, typical CI systems such as GitHub Actions or Jenkins spawn a new sub-shell for each
-step of a pipeline. Hence, modifications made to the environment in one sub-shell by running the `vcpkg activate`
+step of a pipeline. Hence, modifications made to the environment in one sub-shell by running the `vcpkg-shell activate`
 command are not persisted into the subsequent steps.
 
 Another aspect to consider is about handling the local vcpkg cache (e.g., `~/.vcpkg`). Common practice on CI systems is
@@ -255,7 +264,7 @@ GitHub Actions allow you to preserve environment settings via the files
 exposed in `$GITHUB_PATH` and `$GITHUB_ENV`. Refer to the custom action provided in [github.com/ARM-software/cmsis-actions - Action: vcpkg](https://github.com/ARM-software/cmsis-actions) for more information.
 
 Preserving the runners, between runs `vcpkg cache` is achieved with an `actions/cache` step preceding the
-first `vcpkg activate` command. The above custom action uses this `actions/cache` step.
+first `vcpkg-shell activate` command. The above custom action uses this `actions/cache` step.
 
 ### Other CI Systems
 
@@ -266,12 +275,12 @@ In CI Systems without a vcpkg integration:
 
 ```sh
 . ~/.vcpkg/vcpkg-init
-vcpkg activate
+vcpkg-shell activate
 ```
 
-## vcpkg - Setup in VS Code
+## vcpkg Setup in VS Code
 
-1. Download & Install [Microsoft Visual Studio Code](https://code.visualstudio.com/download) for your operating system.
+1. Download and install [Microsoft Visual Studio Code](https://code.visualstudio.com/download) for your operating system.
 2. Launch Visual Studio Code. Using the menu `View` and open `Extensions` and install the `Keil Studio Pack` extensions.
 3. Use the menu `View` and open `Source Control`. Select 'Clone Repository' and enter as url [`https://github.com/Open-CMSIS-Pack/vscode-get-started`](https://github.com/Open-CMSIS-Pack/vscode-get-started).
 4. Specify the destination folder to clone to and select 'Open' when asked 'Would you like to open the cloned directory?'

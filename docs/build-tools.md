@@ -189,11 +189,10 @@ It is also possible to overwrite the toolchain selection and use a different too
 cbuild example.csolution.yml --toolchain GCC
 ```
 
-!!! Note
-    The `--toolchain` option is useful for:
-    
-    - Testing a new compiler or a different compiler version on the overall project.
-    - For unit test applications to allow the usage of different compilers.
+The `--toolchain` option is useful for:
+
+- Testing a new compiler or a different compiler version on the overall project.
+- For unit test applications to allow the usage of different compilers.
 
 In [DevOps systems](#devops-usage) that run CI test with a matrix build, it is sometimes required to separate the output of various builds. The option `--output` adds a prefix to the [output directory](YML-Input-Format.md#output-dirs) for `outdir:`, `tmpdir:` and build information files. The following commands build the project with the AC6 and GCC compiler and separate the directories for output and temporary files.
 
@@ -203,7 +202,7 @@ cbuild example.csolution.yml --toolchain GCC --output outGCC
 ```
 
 !!! Note
-    The `--output` option is not recommended in an IDE environment as it changes the location of mandatory build information files that are [used by the IDE](#ide-usage).
+    The `--output` option may be used by an IDE environment to location build information files outside of the user space.
 
 ### Update RTE Configuration Files
 

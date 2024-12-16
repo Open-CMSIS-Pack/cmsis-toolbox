@@ -8,7 +8,7 @@
 This user's guide assumes basic knowledge about Cortex-M software development. It is written for embedded software developers that work with C/C++ compiler toolchains and utilize microcontroller devices with Cortex-M processors and Ethos-U NPUs. The CMSIS-Toolbox supports currently:
 
 - [Arm Compiler for Embedded](https://developer.arm.com/Tools%20and%20Software/Arm%20Compiler%20for%20Embedded) version 6.18 or higher
-  - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
+    - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
 - [Arm GNU Toolchain (GCC)](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain) version 10.3.1 or higher
 - [IAR Compiler](https://www.iar.com/products/architectures/arm/) version 9.32.1 or higher
 - [CLANG Compiler version 17.0.1](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases) or higher based on LLVM technology

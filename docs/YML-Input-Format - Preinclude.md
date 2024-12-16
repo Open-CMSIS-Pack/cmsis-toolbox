@@ -77,12 +77,12 @@ Element    |              | Description
 A component can be partly defined in *csolution project files* (`*.cproject.yml`, `*.clayer.yml`, `*.genlayer.yml`) by omitting `Cvendor`, `Cvariant`, and `Cversion`, even when this are part of the `components` element of the software pack. The component select algorithm resolves this to a fully defined component by:
 
 - when a partly specified component resolves to several possible choices, the tool selects:
-  - (a) the default `Cvariant` of the component as defined in the PDSC file. 
-  - (b) the component with the higher `Cversion` value.
-  - (c) and error message is issued when two identical components are defined by multiple vendors and `Cvendor` is not specified.
+    - (a) the default `Cvariant` of the component as defined in the PDSC file. 
+    - (b) the component with the higher `Cversion` value.
+    - (c) and error message is issued when two identical components are defined by multiple vendors and `Cvendor` is not specified.
 - the partly specified component is extended by:
-  - version information from the software pack.
-  - default variant definition from the software pack.
+    - version information from the software pack.
+    - default variant definition from the software pack.
 
 The fully resolved component name is shown in the [`*.cbuild.yml`](YML-CBuild-Format.md) output file.
 
@@ -580,9 +580,8 @@ The following nodes control the directory structure for the application.
 
 Allows to control the directory structure for build output files.  
 
->**Note:**
-
-This control is only possible at `csolution.yml` level.  
+!!! Note
+    This control is only possible at `csolution.yml` level.  
 
 Only relative paths to the base directory of the `csolution.yml` file are permitted. Use command line options of the `cbuild` tool to redirect the absolute path for this working directory.
 
@@ -622,10 +621,9 @@ The `generators:` node can be added at various levels of the `*.yml` input files
 2. Use `generators:` specification of the `*.cproject.yml` input file, if not exist:
 3. Use `generators:` specification of the `*.csolution.yml` input file.
 
->**Notes:**
-
-- Only relative paths are permitted to support portablity of projects.
-- The location of the `*.yml` file that contains the `generators:` node is the reference for relative paths.
+!!! Notes
+    - Only relative paths are permitted to support portablity of projects.
+    - The location of the `*.yml` file that contains the `generators:` node is the reference for relative paths.
 
 `generators:`                  |            | Content
 :------------------------------|------------|:------------------------------------
@@ -662,11 +660,10 @@ generators:
 
 Allows to control the directory structure for [RTE (run-time environment)](build-overview.md#rte-directory-structure) files.  
 
->**Notes:**
-
-- This control is only possible at `*.cproject.yml` level.  
-- Only relative paths are permitted to support portablity of projects.
-- The location of the `*.cproject.yml` file is the reference for relative paths.
+!!! Notes
+    - This control is only possible at `*.cproject.yml` level.  
+    - Only relative paths are permitted to support portablity of projects.
+    - The location of the `*.cproject.yml` file is the reference for relative paths.
 
 `rte:`                         |            | Content
 :------------------------------|------------|:------------------------------------
@@ -721,12 +718,11 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 &nbsp;&nbsp;&nbsp;[`for-context:`](#for-context)            |  Optional  |  Include Linker Script for a list of *build* and *target* type names.
 &nbsp;&nbsp;&nbsp;[`not-for-context:`](#not-for-context)    |  Optional  |  Exclude Linker Script for a list of *build* and *target* type names.
 
-**Notes:** 
-
-- The `linker:` node must have at least `regions:`, `script:`, `auto:`, or `define:`.
-- If no `script:` file is specified, compiler specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
-- A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`.
-- If both `auto:` and `script:` is specified a warning is issued and [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation) is performed and the specified `script:` is ignored.
+!!! Notes 
+    - The `linker:` node must have at least `regions:`, `script:`, `auto:`, or `define:`.
+    - If no `script:` file is specified, compiler specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
+    - A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`.
+    - If both `auto:` and `script:` is specified a warning is issued and [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation) is performed and the specified `script:` is ignored.
 
 **Examples:**
 
@@ -1122,11 +1118,9 @@ The `packs:` node can be specified in the `*.csolution.yml` file allows you to:
 The  [Pack Name Conventions](#pack-name-conventions) are used to specify the name of the software packs.
 The `pack:` definition may be specific to a [`context`](#context) that specifies `target-types:` and/or `build-types:` or provide a local path to a development repository of a software pack.
 
->**Notes:** 
-
-- By default, the **`csolution` Project Manager** only loads the latest version of the installed software packs. It is however possible to request specific versions using the `- pack:` node.
-
-- An attempt to add two different versions of the same software pack results in an error.
+!!! Notes 
+    - By default, the **`csolution` Project Manager** only loads the latest version of the installed software packs. It is however possible to request specific versions using the `- pack:` node.
+    - An attempt to add two different versions of the same software pack results in an error.
 
 ### `packs:`
 
@@ -1677,9 +1671,9 @@ Add a software layer to a project. Used in `*.cproject.yml` files.
         - +AVH
 ```
 
-#### `layer:` - `type:`
+#### `layer:` `type:`
 
-The `layer:` - `type:` is used in combination with the meta-data of the [`connections:`](#connections) to check the list of available `*.clayer.yml` files for matching layers. Instead of an explicit `layer:` node that specifies a `*.clayer.yml` file, the `type:` is used to search for matching layers with the `csolution` command `list layers`.
+The `layer:` `type:` is used in combination with the meta-data of the [`connections:`](#connections) to check the list of available `*.clayer.yml` files for matching layers. Instead of an explicit `layer:` node that specifies a `*.clayer.yml` file, the `type:` is used to search for matching layers with the `csolution` command `list layers`.
 
 **Example:**
 
@@ -1915,8 +1909,8 @@ The **`csolution` Project Manager** combines all the *key*/*value* pairs that li
 
 - It is possible to omit the *value*. It matches with an identical *key* listed in `consumes:`
 - A *value* is interpreted as number. Depending on the value prefix, this number must be:
-  - when `consumes:` *value* is a plain number, identical with this value.
-  - when `consumes:` *value* is prefixed with `+`, higher or equal then this *value* or the sum of all *values* in multiple `consumes:` nodes.
+    - when `consumes:` *value* is a plain number, identical with this value.
+    - when `consumes:` *value* is prefixed with `+`, higher or equal then this *value* or the sum of all *values* in multiple `consumes:` nodes.
 
 ### `consumes:`
 

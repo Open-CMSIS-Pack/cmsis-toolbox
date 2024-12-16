@@ -33,9 +33,9 @@ It generates the application program that is described with the `<name>.csolutio
 
 - When option `--packs` is used, it downloads missing *software packs* using [`cpackget`](build-tools.md#cpackget-invocation).
 - It calls [`csolution`](build-tools.md#csolution-invocation) to process the the `<name>.csolution.yml` project.
-  - With option `--update-rte` new configuration files from *software packs* are updated and the [`RTE_Components.h`](build-overview.md#rte_componentsh) file is recreated.
-  - With option `--context-set` the file `*.cbuild-set.yml` specifies the [context](build-overview.md#context) configuration of the application.
-  - With option `--frozen-packs` the file `*.cbuild-pack.yml` is used as input to issue an error when a pack version changes.
+    - With option `--update-rte` new configuration files from *software packs* are updated and the [`RTE_Components.h`](build-overview.md#rte_componentsh) file is recreated.
+    - With option `--context-set` the file `*.cbuild-set.yml` specifies the [context](build-overview.md#context) configuration of the application.
+    - With option `--frozen-packs` the file `*.cbuild-pack.yml` is used as input to issue an error when a pack version changes.
 - The output are [build information files](YML-CBuild-Format.md) with all relevant project information for the build process.
 - The option `--toolchain` can be used to explicitly select a compiler.
 
@@ -74,13 +74,13 @@ The operation is further controlled by options:
 [`csolution`](build-overview.md) processes the [*csolution project files* (in YAML format)](YML-Input-Format.md) and the `*.pdsc` metadata files of *software packs* and performs the following operations:
 
 - In the [**Project Area**](build-overview.md#project-area):
-  - Generate [build information files](YML-CBuild-Format.md) `*.cbuild-idx.yml` and `*.cbuild.yml` with all relevant project information for the build process.
+    - Generate [build information files](YML-CBuild-Format.md) `*.cbuild-idx.yml` and `*.cbuild.yml` with all relevant project information for the build process.
 - In the [**RTE Directory**](build-overview.md#rte-directory-structure):
-  - Generate for each [context](YML-Input-Format.md#context) the [RTE_components.h](build-overview.md#rte_componentsh) file and pre-include files from the software pack (`*.pdsc`)  metadata.
-  - [Copy the configuration files](build-overview.md#plm-of-configuration-files) from selected software componentsand provide [PLM](build-overview.md#plm-of-configuration-files) information.
+    - Generate for each [context](YML-Input-Format.md#context) the [RTE_components.h](build-overview.md#rte_componentsh) file and pre-include files from the software pack (`*.pdsc`)  metadata.
+    - [Copy the configuration files](build-overview.md#plm-of-configuration-files) from selected software componentsand provide [PLM](build-overview.md#plm-of-configuration-files) information.
 - In the [**base directory of the solution**](build-overview.md#project-area):
-  - Generate the file `*.cbuild-pack.yml` that records all used *software packs*. With the option `--frozen-packs` this file is used as input.
-  - With the option `--context-set` the file `*.cbuild-set.yml` specifies the [context](build-overview.md#context) configuration of the application. When `--context` names are specified this file is updated with this selection.
+    - Generate the file `*.cbuild-pack.yml` that records all used *software packs*. With the option `--frozen-packs` this file is used as input.
+    - With the option `--context-set` the file `*.cbuild-set.yml` specifies the [context](build-overview.md#context) configuration of the application. When `--context` names are specified this file is updated with this selection.
 
 The picture below outlines the operation.
 

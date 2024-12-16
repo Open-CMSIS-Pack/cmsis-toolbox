@@ -31,8 +31,8 @@ The tools process *csolution project files* (in YAML format) and *software packs
 The overall features are:
 
 - Access the content of software packs in Open-CMSIS-Pack format to:
-  - Setup the tool chain based on a *Device* or *Board* that is defined in software packs.
-  - Add software components that are provided in the various software packs to the application.
+    - Setup the tool chain based on a *Device* or *Board* that is defined in software packs.
+    - Add software components that are provided in the various software packs to the application.
 - Organize applications (with a `*.csolution.yml` file) into projects that are independently managed
   (using `*.cproject.yml` files).
 - Organize software layers (with a `*.clayer.yml` file) with pre-configured software components that enable code reuse across similar applications.
@@ -303,7 +303,7 @@ To support reproducible builds the following files should be committed to a repo
 - All user source code files.
 - All csolution project files (`cdefault.yml`, `*.csolution.yml`, `*.cproject.yml`, etc.).
 - All files in the RTE directory
-  - Ensure that there are no files with the extension *.update@* as this indicates that configuration files are not up-to-date due to updated software packs.
+    - Ensure that there are no files with the extension *.update@* as this indicates that configuration files are not up-to-date due to updated software packs.
 - The file `*.cbuild-pack.yml` to allow [reproducible builds](#reproducible-builds).
 - Optionally, the file `*.cbuild-set.yml` which defines the context set of the application that should be generated.
 
@@ -392,13 +392,13 @@ picture below shows a setup during software development that supports:
 As the software may share a large set of common files, provisions are required to manage such projects. The common is to add:
 
 - **target-types** (required) that select a target system. In the example this would be:
-  - `Virtual`: for simulation models.
-  - `Board`: for a physical evaluation board.
-  - `Production-HW`: for system integration test and product delivery on the final hardware.
+    - `Virtual`: for simulation models.
+    - `Board`: for a physical evaluation board.
+    - `Production-HW`: for system integration test and product delivery on the final hardware.
 - **build-types** (optional) add the flexibility to configure each target build towards a specific test. For example:
-  - `Debug`: for a full debug build of the software used in an interactive debug session.
-  - `Test`: for a specific timing test using a test interface with maximum code optimization.
-  - `Release`: for the final code deployment to the system.
+    - `Debug`: for a full debug build of the software used in an interactive debug session.
+    - `Test`: for a specific timing test using a test interface with maximum code optimization.
+    - `Release`: for the final code deployment to the system.
 
 **Flexible Builds for Multi-Target Projects**
 
@@ -690,11 +690,16 @@ configuration file version.
 
 Depending on the PLM status of the application, `csolution` performs the following operation for configuration files:
 
-1. **Add** a software component for the first time: the related config file is copied twice into the related `RTE`
-   project directory. The first copy can be modified by the user with the parameters for the user application. The
-   second copy is an unmodified  backup file with the format `<configfile>.<ext>.base@version`.
+1. **Add** a software component for the first time.
+2. **Upgrade** (or downgrade) a software component.
 
-    **Example:** A configuration file `ConfigFile.h` at version `1.2.0` is copied:
+#### **Add**
+
+When adding a software component for the first time the related config file is copied twice into the related `RTE`
+project directory. The first copy can be modified by the user with the parameters for the user application. The
+second copy is an unmodified  backup file with the format `<configfile>.<ext>.base@version`.
+
+**Example:** A configuration file `ConfigFile.h` at version `1.2.0` is copied:
 
 ```c
 ./RTE/component_class/ConfigFile.h                  // user editable configuration file
@@ -702,7 +707,7 @@ Depending on the PLM status of the application, `csolution` performs the followi
                                                     // information; used as a base for version comparison
 ```
 
-    `csolution` shows a user notification to indicate that files are added:
+`csolution` shows a user notification to indicate that files are added:
 
 ```text
 ./RTE/component_class/ConfigFile.h -  info: component 'name' added configuration file version '1.2.0'
@@ -711,11 +716,14 @@ Depending on the PLM status of the application, `csolution` performs the followi
 !!! Note
     The unmodified files with `@version` information should be committed to the repository of the version control system as these files are used to upgrade configuration information using merge utilities.
 
-2. **Upgrade** (or downgrade) a software component: if the version of the unmodified backup file is identical, no
-   operation is performed. If the version differs, the new configuration file is copied with the format
-   `<configfile>.<ext>.update@version`.
+#### **Upgrade**
 
-    **Example:** after updating the configuration file `ConfigFile.h` to version `1.3.0`, the directory contains these files:
+When upgrade (or downgrade) a software component the version information of the configuration file is considered.
+
+- If the version of the unmodified backup file is identical, no operation is performed.
+- If the version differs, the new configuration file is copied with the format `<configfile>.<ext>.update@version`.
+
+**Example:** after updating the configuration file `ConfigFile.h` to version `1.3.0`, the directory contains these files:
 
 ```c
 ./RTE/component_class/ConfigFile.h                  // user editable configuration file (based on current version)
@@ -724,16 +732,16 @@ Depending on the PLM status of the application, `csolution` performs the followi
                                                     // information; used as a base for version comparison
 ```
 
-    `csolution` displays a user notification to indicate that configuration files have changed:
+`csolution` displays a user notification to indicate that configuration files have changed:
 
 ```text
 ./RTE/component_class/ConfigFile.h - warning: component 'name' upgrade for configuration file version '1.3.0'
                                               added, but file inactive
 ```
 
-3. **User action to complete upgrade**: The user has now several options (outside of `csolution`) to merge the
-   configuration file information. A potential way could be to use a 3-way merge utility. After merging the
-   configuration file, the original `base@version` file should be deleted and the unmodified new version should become the new `base@version`. The previous configuration file may be stored as backup as shown below.
+**User action to complete upgrade**
+
+The user has now several options (outside of `csolution`) to merge the configuration file information. A potential way could be to use a 3-way merge utility. After merging the configuration file, the original `base@version` file should be deleted and the unmodified new version should become the new `base@version`. The previous configuration file may be stored as backup as shown below.
 
 ```c
 ./RTE/component_class/ConfigFile.h                  // new configuration file with merge configuration

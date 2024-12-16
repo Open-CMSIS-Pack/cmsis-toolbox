@@ -102,7 +102,7 @@ project:
 
 Such a project cannot be built directly as initially the `*.cgen.yml` file is missing. It requires to run the MCUXpresso generator. Before you start, you may need to [`install missing packs`](build-tools.md#install-missing-packs).
 
-1. Identify the required generator and the directory where the generated files are stored with:
+- Identify the required generator and the directory where the generated files are stored with:
    
 ```bash
 csolution Simple.csolution.yml list generators --verbose
@@ -113,7 +113,7 @@ MCUXpressoConfig (Global Registered Generator MCUXpresso Config tools)
       context: Simple.Release+MCXN947VDF
 ```
 
-2. Using the above information to run the generator using this command:
+- Using the above information to run the generator using this command:
 
 ```bash
 csolution Simple.csolution.yml run --generator MCUXpressoConfig --context Simple.Debug+MCXN947VDF
@@ -121,7 +121,7 @@ csolution Simple.csolution.yml run --generator MCUXpressoConfig --context Simple
 
    It starts MCUXpresso and passes the information about the selected board, device, and selected toolchain. For a project that selects a board, MCUXpresso imports the default configuration for the evaluation kit. In MCUXpresso, review and adjust configuration options as required for your application, then just click the button `Update Code`. The generated files will be stored in the directory `./MCUXpressoConfig`.
 
-3. Build the project using this command:
+- Build the project using this command:
  
 ```bash
 cbuild Simple.csolution.yml --update-rte

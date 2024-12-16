@@ -71,7 +71,7 @@ project:
 
 Such a project cannot be directly built, as initially the `*.cgen.yml` file is missing. It requires to run the CubeMX generator.  Before you start, you may need to [`install missing packs`](build-tools.md#install-missing-packs).
 
-1. Identify the required generator and the directory where the generated files are stored with:
+- Identify the required generator and the directory where the generated files are stored with:
    
 ```bash
 csolution CubeMX.csolution.yml list generators --verbose
@@ -81,7 +81,7 @@ CubeMX (Global Registered Generator)    # generator name
     context: CubeMX.Release+MyBoard 
 ```
 
-2. Use the information above to run the generator:
+- Use the information above to run the generator:
 
 ```bash
 csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
@@ -89,7 +89,7 @@ csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyB
 
    This starts CubeMX and passes the information about the selected board, device, and select toolchain. For a project that selects a board, CubeMX imports the default configuration for it. In CubeMX, review and adjust configuration options as required for your application, then just click the button `GENERATE CODE`. The generated files will be stored in the directory `STM32CubeMX/MyBoard`.
 
-3. Build the project using this command:
+- Build the project using this command:
  
 ```bash
 cbuild CubeMX.csolution.yml --update-rte
