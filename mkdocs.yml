@@ -1,5 +1,6 @@
 site_name: CMSIS-Toolbox
 repo_url: https://github.com/Open-CMSIS-Pack/cmsis-toolbox
+edit_uri: ./edit/main/docs
 nav:
     - Home: index.md
     - Overview: overview.md
@@ -19,3 +20,5 @@ theme:
   name: readthedocs
 markdown_extensions:
   - admonition
+extra_css:
+  - css/extra.css
