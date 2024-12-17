@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>CMSIS-Toolbox Help</title>
+    <title>CMSIS-Toolbox</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="css/extra.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -30,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="." class="icon icon-home"> CMSIS-Toolbox Help
+          <a href="." class="icon icon-home"> CMSIS-Toolbox
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -97,6 +98,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="pack-tools/">Pack Creation</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -104,7 +109,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href=".">CMSIS-Toolbox Help</a>
+          <a href=".">CMSIS-Toolbox</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -113,7 +118,7 @@
     <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Home</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/master/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -165,6 +170,9 @@
 <li>
 <p><a href="pack-tools/"><strong>Pack Creation</strong></a> describes how to create software packs that optionally include examples and explains the pack creation tools <code>packchk</code> (software pack verification) and <code>svdconv</code> (SVD file verification and header file generator).</p>
 </li>
+<li>
+<p><a href="Experimental-Features/"><strong>Experimental Features</strong></a> for resource management of multi-project linker scripts, run and debug management.</p>
+</li>
 </ul>
 <h2 id="revision-history">Revision History</h2>
 <table>
@@ -176,8 +184,12 @@
 </thead>
 <tbody>
 <tr>
+<td style="text-align: left;">2.7.0</td>
+<td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.7.0">2.7.0</a>. Adds <a href="YML-Input-Format/#language-cpp">C++ language</a>: <code>c++23</code>, <code>gnu++23</code>; <a href="YML-Input-Format/#output">output</a> linker MAP file control; <a href="MCUXpressoConfig/">MCUXpresso Config Tool</a>; <a href="Experimental-Features/">experimental features</a> for multi-project linker scripts, debug, and run. Fixed: <code>components:</code> now require <a href="YML-Input-Format/#component-name-conventions">Csub</a> specifier; LLVM/Clang 19 compatibility; handling of <a href="YML-Input-Format/#groups">group options</a>. See here for <a href="https://github.com/orgs/Open-CMSIS-Pack/projects/13">more details</a>.</td>
+</tr>
+<tr>
 <td style="text-align: left;">2.6.0</td>
-<td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.6.0">2.6.0</a>; extends <a href="YML-Input-Format/#pack-name-conventions">pack:</a> version specifier and <a href="YML-Input-Format/#language-c">C language</a> support to C17 and C23. Improved is <a href="CreateApplications/#regions-header-file">regions header file generation</a> for linker scripts. It adds <a href="YML-Input-Format/#processor">trustzone: secure-only</a> for projects without secure entries, <a href="YML-CBuild-Format/#apis">apis</a>, <a href="YML-CBuild-Format/#cbuilds">messages</a>, and <a href="YML-CBuild-Format/#files-of-a-component">PLM status for config files</a> to cbuild.yml information, and fixes several minor issues. It is no longer possible to specify <a href="YML-Input-Format/#compiler">compiler</a> in the <a href="YML-Input-Format/#cdefault"><code>cdefault.yml</code></a> file.</td>
+<td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.6.0">2.6.0</a>; extends <a href="YML-Input-Format/#pack-name-conventions">pack:</a> version specifier and <a href="YML-Input-Format/#language-c">C language</a> support to C17 and C23. Improved is <a href="CreateApplications/#regions-header-file">regions header file generation</a> for linker scripts. It adds <a href="YML-Input-Format/#processor">trustzone: secure-only</a> for projects without secure entries, <a href="YML-CBuild-Format/#apis">apis</a>, <a href="YML-CBuild-Format/#cbuilds">messages</a>, and <a href="YML-CBuild-Format/#files-of-a-component">PLM status for config files</a> to cbuild.yml information, and fixes several minor issues. It is no longer possible to specify <a href="YML-Input-Format/#compiler">compiler</a> in the <a href="YML-Input-Format/#cdefault"><code>cdefault.yml</code></a> file.  See here for <a href="https://github.com/orgs/Open-CMSIS-Pack/projects/14">more details</a>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">2.5.0</td>
@@ -253,5 +265,5 @@
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2024-12-12 10:22:22.837715+00:00
+Build Date UTC : 2024-12-17 16:01:20.975383+00:00
 -->

@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Pack Creation - CMSIS-Toolbox Help</title>
+    <title>Pack Creation - CMSIS-Toolbox</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -30,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -116,9 +117,15 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#code-templates">Code Templates</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pack-generation">Pack Generation</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#pack-examples">Pack Examples</a>
     </li>
     </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
                 </li>
               </ul>
       </div>
@@ -128,7 +135,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">CMSIS-Toolbox Help</a>
+          <a href="..">CMSIS-Toolbox</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -137,7 +144,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Pack Creation</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/master/docs/pack-tools.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/pack-tools.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -200,14 +207,20 @@
 <h2 id="hints-for-pack-creation">Hints for Pack Creation</h2>
 <ul>
 <li>Use <a href="https://arm-software.github.io/CMSIS_6/latest/Core/cmsis_core_files.html">C startup files</a> that allows to use a DFP with any toolchain.</li>
-<li>For elements use a brief description text with less than 128 characters to explain the purpose. When possible link to documentation with detailed information.</li>
+<li>For elements use a brief description text with less than 128 characters to explain the purpose. When possible link to documentation with detailed information.<ul>
 <li>Example: A component <code>Device:HAL:ENET</code> should not have description <code>ENET HAL Driver</code>, use <code>Ethernet HAL driver</code> instead.</li>
-<li>Consider adding <a href="https://github.com/Open-CMSIS-Pack/STM32U5xx_DFP/tree/main/Templates">project templates</a> to help get started with more complex projects.</li>
+</ul>
+</li>
+<li>Consider adding <a href="https://github.com/Open-CMSIS-Pack/STM32U5xx_DFP/tree/main/Templates">project templates</a> to help get started with more complex projects.<ul>
 <li>This is useful when devices are are configured using generators or provide multiple linker scripts (i.e. RAM/ROM execution).</li>
-<li>To distribute <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/build-overview.md#toolchain-agnostic-project">toolchain agnostic examples</a> as part of packs:</li>
+</ul>
+</li>
+<li>To distribute <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/build-overview.md#toolchain-agnostic-project">toolchain agnostic examples</a> as part of packs:<ul>
 <li>Consider to use <a href="../YML-Input-Format/#select-compiler"><code>select-compiler</code></a> to make projects toolchain independent.</li>
 <li>To avoid that examples need updates with every pack release, specify the <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/blob/main/DualCore/HelloWorld.csolution.yml#L9">minium pack version required</a>.</li>
 <li>Use <a href="https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP/tree/main/.github/workflows">CI workflows</a> to validate that projects compile correctly.</li>
+</ul>
+</li>
 <li>Add an <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/element_package_description.html">overview.md file</a> that describes the overall usage of the software pack. These files are displayed on <a href="https://www.keil.arm.com/packs">www.keil.arm.com/packs</a> and index by Web search engines.</li>
 </ul>
 <h2 id="project-examples">Project Examples</h2>
@@ -254,8 +267,8 @@
 <p>A <em>template project</em> does not define a <a href="../YML-Input-Format/#device"><code>device:</code></a> or <a href="../YML-Input-Format/#board"><code>board:</code></a> in the <code>*.csolution.yml</code> file. When a IDE starts such an <em>template</em> the <code>device:</code> and/or <code>board:</code> information along with <code>pack:</code> information is added depending on user selection. The <a href="../YML-Input-Format/#target-types"><code>target-types:</code></a> contains a  <code>Name</code> that may be replaced by a descriptive target name.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-</div>
 <p>A <em>template project</em> should not specify the DFP or BSP with a <code>pack:</code> node as this gets added by the IDE during project start.</p>
+</div>
 <p><strong>Simple Template:</strong></p>
 <p>A simple <em>template</em> only defines one target.</p>
 <pre><code class="language-yml">solution:
@@ -292,8 +305,8 @@
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-</div>
 <p><em>Templates</em> should compile when the above information is added to the <code>*.csolution.yml</code> file. The exception is when <em>templates</em> require parts of the code provided by a generator.</p>
+</div>
 <p><strong>Register Template in PDSC File:</strong></p>
 <p><em>Templates</em> are published using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_csolution_pg.html"><code>&lt;csolution&gt;</code> element</a> in the PDSC file. Device-specific <em>Templates</em> should be part of the DFP. Board-specific <em>templates</em> should be part of the BSP.</p>
 <pre><code class="language-xml">  &lt;csolution&gt; 
@@ -389,8 +402,8 @@
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-</div>
 <p>The <a href="https://github.com/ARM-software/MDK-Middleware/tree/main/Examples">MDK-Middleware</a> contains several <em>reference applications</em> that exemplify the overall structure.</p>
+</div>
 <p><strong>Register <em>Reference Applications</em> in PDSC File:</strong></p>
 <p><em>Reference Applications</em> are typically part of a middleware software pack and publish using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_examples_pg.html"><code>&lt;examples&gt;</code> element</a> in the PDSC file. The difference to <a href="#examples"><em>examples</em></a> is that no <code>&lt;board&gt; element</code> is used as the <em>reference application</em> is hardware agnostic.</p>
 <pre><code class="language-xml">  &lt;examples&gt;
@@ -412,8 +425,8 @@
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-</div>
 <p>Several <a href="https://github.com/Open-CMSIS-Pack#stm32-packs-with-generator-support">STM32 Board Support Packs (BSP)</a>  contain <em>layers</em> that are pre-configured for certain applications. For example, the <em>layer</em> in the <a href="https://github.com/Open-CMSIS-Pack/ST_NUCLEO-F756ZG_BSP/tree/main/Layers/Default">ST_NUCLEO-F756ZG_BSP</a> supports applications that require Ethernet, USB Device, UART, or I2C interfaces.</p>
+</div>
 <h2 id="code-templates">Code Templates</h2>
 <p><em>Code templates</em> are part of the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Files">components files</a> in the PDSC file and can be manually added by the user to a software project. <em>Code templates</em> show how a software component is used and the source code can be directly adapted to the requirements of the application program.</p>
 <p><strong>Register <em>Code Templates</em> in PDSC File:</strong></p>
@@ -430,8 +443,22 @@
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-</div>
 <p>The <a href="https://github.com/ARM-software/CMSIS-RTX">CMSIS-RTX</a> and <a href="https://github.com/ARM-software/MDK-Middleware">MDK-Middleware</a> pack contains several <em>code templates</em> that exemplify the overall structure.</p>
+</div>
+<h2 id="pack-generation">Pack Generation</h2>
+<p>Packs should be generated using scripts. Several scripts are available on <a href="https://github.com/open-cmsis-pack">github.com/open-cmsis-pack</a>:</p>
+<ul>
+<li><a href="https://github.com/Open-CMSIS-Pack/gen-pack">gen-pack</a> is library for scripts creating software packs.</li>
+<li><a href="https://github.com/Open-CMSIS-Pack/gen-pack-action">gen-pack-action</a> is a GitHub workflow action generating documentation and software packs.</li>
+</ul>
+<p>To start a pack, add a <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packFormat.html"><code>*.PDSC</code> file</a> with meta information and configure the above scripts.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<ul>
+<li>Arm uses GitHub actions to create packs. Review this process under the <code>workflow</code> directory on the projects available on <a href="https://github.com/arm-software">github.com/arm-software</a> or <a href="https://github.com/open-cmsis-pack">github.com/open-cmsis-pack</a>.</li>
+<li>A good simple pack project is the <a href="https://github.com/arm-software/cmsis-driver">CMSIS-Driver pack</a>. Once this pack is published it is available for software developers using pack managers or <a href="https://www.keil.arm.com/packs/cmsis-driver-arm/overview/">web portals</a>.</li>
+</ul>
+</div>
 <h2 id="pack-examples">Pack Examples</h2>
 <p>Several <a href="https://github.com/Open-CMSIS-Pack#cmsis-software-pack-examples">pack examples</a> available on <a href="https://github.com/Open-CMSIS-Pack">github.com/Open-CMSIS-Pack</a> exemplify how to create software packs. Other packs that are a good reference are the various <a href="https://www.keil.arm.com/packs/cmsis-arm">Arm CMSIS packs</a> or the <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK Middleware pack</a>.  The source of these packs is available on <a href="https://github.com/ARM-software">Github/Arm-software</a>.</p>
               
@@ -439,6 +466,7 @@
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../build-operation/" class="btn btn-neutral float-left" title="Build Operation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Experimental-Features/" class="btn btn-neutral float-right" title="Experimental Features">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -467,6 +495,8 @@
     
       <span><a href="../build-operation/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
+    
+      <span><a href="../Experimental-Features/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

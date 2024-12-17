@@ -1,1 +1,0 @@
-   .set TARGET_ASM_DEF,1

@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Configure STM32 Devices with STM32CubeMX - CMSIS-Toolbox Help</title>
+    <title>Configure STM32 Devices with STM32CubeMX - CMSIS-Toolbox</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -30,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -79,6 +80,12 @@
     <li class="toctree-l2"><a class="reference internal" href="#simple-project">Simple Project</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#adding-an-rtos">Adding an RTOS</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-add-rtos">Step 1: Add RTOS</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-2-configure-interrupt-handlers">Step 2: Configure interrupt handlers</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#linker-script">Linker Script</a>
     </li>
@@ -113,6 +120,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -120,7 +131,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">CMSIS-Toolbox Help</a>
+          <a href="..">CMSIS-Toolbox</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -129,7 +140,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Configure STM32 Devices with STM32CubeMX</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/master/docs/CubeMX.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/CubeMX.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -200,24 +211,24 @@
     - component: Device:CubeMX                # Component that connects to CubeMX    
 </code></pre>
 <p>Such a project cannot be directly built, as initially the <code>*.cgen.yml</code> file is missing. It requires to run the CubeMX generator.  Before you start, you may need to <a href="../build-tools/#install-missing-packs"><code>install missing packs</code></a>.</p>
-<ol>
+<ul>
 <li>Identify the required generator and the directory where the generated files are stored with:</li>
-</ol>
+</ul>
 <pre><code class="language-bash">csolution CubeMX.csolution.yml list generators --verbose
 CubeMX (Global Registered Generator)    # generator name
   base-dir: STM32CubeMX/MyBoard         # directory for generated files
     context: CubeMX.Debug+MyBoard       # list of context that uses this directory
     context: CubeMX.Release+MyBoard 
 </code></pre>
-<ol>
+<ul>
 <li>Use the information above to run the generator:</li>
-</ol>
+</ul>
 <pre><code class="language-bash">csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
 </code></pre>
 <p>This starts CubeMX and passes the information about the selected board, device, and select toolchain. For a project that selects a board, CubeMX imports the default configuration for it. In CubeMX, review and adjust configuration options as required for your application, then just click the button <code>GENERATE CODE</code>. The generated files will be stored in the directory <code>STM32CubeMX/MyBoard</code>.</p>
-<ol>
+<ul>
 <li>Build the project using this command:</li>
-</ol>
+</ul>
 <pre><code class="language-bash">cbuild CubeMX.csolution.yml --update-rte
 </code></pre>
 <div class="admonition note">
@@ -268,8 +279,10 @@ CubeMX (Global Registered Generator)    # generator name
 </tr>
 </tbody>
 </table>
-<p>[!NOTE]
-    CubeMX generates only the directory for the selected toolchain which is either <code>STM32CubeMX/EWARM</code>, <code>STM32CubeMX/GCC</code>, or <code>STM32CubeMX/MDK-ARM</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CubeMX generates only the directory for the selected toolchain which is either <code>STM32CubeMX/EWARM</code>, <code>STM32CubeMX/GCC</code>, or <code>STM32CubeMX/MDK-ARM</code>.</p>
+</div>
 <p><strong>Content of Generator Import File: <code>CubeMX.cgen.yml</code></strong></p>
 <p>The file <code>*.cgen.yml</code> lists the files and settings that are generated by CubeMX and imported in the <em>csolution project</em>. The files under <code>group: CubeMX</code> may be modified by the user in sections marked with <code>USER CODE BEGIN</code> and <code>USER CODE END</code> to implement the application specific features. In the file <code>*.cproject.yml</code> additional <a href="../YML-Input-Format/#files">user files</a> can be added.</p>
 <pre><code class="language-yml">generator-import:
@@ -304,9 +317,9 @@ CubeMX (Global Registered Generator)    # generator name
 <h2 id="adding-an-rtos">Adding an RTOS</h2>
 <p>Many applications require an RTOS kernel. By default, CubeMX implements interrupts functions for all Cortex-M exception handlers. However, some exception handlers are typically required for the RTOS kernel execution. </p>
 <p>Adding an RTOS kernel requires these steps:</p>
-<ol>
-<li><strong>Add the RTOS kernel to application</strong> (in this case RTX)</li>
-</ol>
+<h3 id="step-1-add-rtos">Step 1: Add RTOS</h3>
+<p>The example below adds the <a href="https://github.com/ARM-software/CMSIS-RTX">CMSIS-RTX</a> RTOS kernel to a project.
+Other kernels require different components and packs, but the concept is similar.</p>
 <p><strong>File: <code>CubeMX.cproject.yml</code></strong>    </p>
 <pre><code class="language-yml">project:
   packs:
@@ -321,14 +334,8 @@ CubeMX (Global Registered Generator)    # generator name
     - component: CMSIS:RTOS2:Keil RTX5&amp;Source # RTOS component
     - component: CMSIS:OS Tick:SysTick        # OS Tick implementation for RTOS
 </code></pre>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The example above uses CMSIS-RTX as the RTOS kernel, other kernels require different components and packs, but the concept is similar.</p>
-</div>
-<ol>
-<li><strong>Configure interrupt handlers in CubeMX</strong></li>
-</ol>
-<p>Run CubeMX with:</p>
+<h3 id="step-2-configure-interrupt-handlers">Step 2: Configure interrupt handlers</h3>
+<p>Configure the interrupt handlers by running CubeMX with:</p>
 <pre><code class="language-bash">csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
 </code></pre>
 <p>Open the dialog <em>Pinout &amp; Configuration - System Core NVIC - Code generation</em> and disable <em>Generate IRQ handler</em> for:</p>
@@ -462,20 +469,18 @@ CubeMX (Global Registered Generator)    # generator name
 </table>
 <p>To migrate existing projects that where using the previous STM32CubeMX integration (based on <code>*.gpdsc</code> files) use the following steps:</p>
 <ol>
-<li>
-<p>Remove all <code>component: Keil::Device:xxx</code> from the <code>*.cproject.yml</code> file.</p>
-</li>
-<li>
-<p>Add the <code>component: Device:CubeMX</code> to the <code>*.cproject.yml</code> file.</p>
-</li>
+<li>Remove all <code>component: Keil::Device:xxx</code> from the <code>*.cproject.yml</code> file.</li>
+<li>Add the <code>component: Device:CubeMX</code> to the <code>*.cproject.yml</code> file.</li>
 <li>Use <code>csolution run *.csolution.yml -g CubeMX</code> to initialize the directory structure.</li>
 <li>Replace the file <code>STM32CubeMX.ioc</code> with the file <code>STCubeGenerated.ioc</code> from the previous project.</li>
 <li>Copy source and include files from previous location as they may contain user modifications.</li>
 <li>Use <code>csolution run *.csolution.yml -g CubeMX</code> to generated the output from the previous STM32CubeMX project.</li>
-<li>Update the configuration in STM32CubeMX:</li>
+<li>Update the configuration in STM32CubeMX:<ul>
 <li>In the tab <code>Project Manager - Project</code> set <em>Project Settings - Toolchain/IDE</em> to match the compiler selection in the csolution project.</li>
 <li>In the tab <code>Project Manager - Code Generator</code> under <em>STM32Cube MCU packages and embedded software packs</em> select <code>Copy only necessary library files</code>.</li>
 <li>Click <code>GENERATE CODE</code> to complete the migration.</li>
+</ul>
+</li>
 </ol>
 <h3 id="uvision-update-stm32-dfp-packs">uVision - Update STM32 DFP Packs</h3>
 <p>The <a href="../build-operation/#generator-integration">Generator Integration</a> of the CMSIS-Toolbox is also available with uVision version 5.40 or higher. </p>
@@ -490,10 +495,12 @@ CubeMX (Global Registered Generator)    # generator name
 <li>Close <em>Manage - Run-Time Environment</em> with <em>OK</em>.</li>
 <li>Open the dialog <em>Manage - Run-Time Environment</em> again.</li>
 <li>Select the component <code>Device:CubeMX</code> and start STM32CubeMX with the <code>play</code> button.</li>
-<li>Update the configuration in STM32CubeMX:</li>
+<li>Update the configuration in STM32CubeMX:<ul>
 <li>In the tab <code>Project Manager - Project</code> set <em>Project Settings - Toolchain/IDE</em> to <code>MDK-ARM</code>.</li>
 <li>In the tab <code>Project Manager - Code Generator</code> under <em>STM32Cube MCU packages and embedded software packs</em> select <code>Copy only necessary library files</code>.</li>
 <li>Click <code>GENERATE CODE</code> to complete the migration.</li>
+</ul>
+</li>
 </ol>
 <p><strong>Starting a new project</strong> works similar with these steps:</p>
 <ol>
@@ -505,11 +512,13 @@ CubeMX (Global Registered Generator)    # generator name
 <p>Open the dialog <em>Manage - Run-Time Environment</em>.</p>
 </li>
 <li>Select the component <code>Device:CubeMX</code> and start STM32CubeMX with the <code>play</code> button.</li>
-<li>Create a new device configuration in STM32CubeMX:</li>
+<li>Create a new device configuration in STM32CubeMX:<ul>
 <li>Follow the instructions of STM32CubeMX and verify settings.</li>
 <li>In the tab <code>Project Manager - Project</code> set <em>Project Settings - Toolchain/IDE</em> to <code>MDK-ARM</code>.</li>
 <li>In the tab <code>Project Manager - Code Generator</code> under <em>STM32Cube MCU packages and embedded software packs</em> select <code>Copy only necessary library files</code>.</li>
 <li>Click <code>GENERATE CODE</code> to complete the migration.</li>
+</ul>
+</li>
 </ol>
               
             </div>

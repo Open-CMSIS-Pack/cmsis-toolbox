@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Build Tools - CMSIS-Toolbox Help</title>
+    <title>Build Tools - CMSIS-Toolbox</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -30,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -175,6 +176,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -182,7 +187,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">CMSIS-Toolbox Help</a>
+          <a href="..">CMSIS-Toolbox</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -191,7 +196,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Build Tools</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/master/docs/build-tools.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/build-tools.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -218,7 +223,7 @@
 </ul>
 <h2 id="cbuild-invocation"><code>cbuild</code> Invocation</h2>
 <p>Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.</p>
-<pre><code class="language-txt">cbuild: Build Invocation 2.6.0 (C) 2024 Arm Ltd. and Contributors
+<pre><code class="language-txt">cbuild: Build Invocation 2.7.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] &lt;name&gt;.csolution.yml [options]
@@ -240,11 +245,12 @@ Options:
   -j, --jobs int           Number of job slots for parallel execution (default 8)
   -l, --load arg           Set policy for packs loading [latest | all | required] (default &quot;required&quot;)
       --log arg            Save output messages in a log file
+  -n, --no-schema-check    Skip schema check
   -O, --output arg         Add prefix to 'outdir' and 'tmpdir'
   -p, --packs              Download missing software packs with cpackget
   -q, --quiet              Suppress output messages except build invocations
   -r, --rebuild            Remove intermediate and output directories and rebuild
-  -s, --schema             Validate project input file(s) against schema
+  -s, --schema             Validate project input file(s) against schema [deprecated]
   -t, --target arg         Optional CMake target name
       --toolchain arg      Input toolchain to be used
       --update-rte         Update the RTE directory and files
@@ -259,7 +265,7 @@ Use &quot;cbuild [command] --help&quot; for more information about a command.
 </div>
 <h2 id="csolution-invocation"><code>csolution</code> Invocation</h2>
 <p>Create build information for embedded applications that consist of one or more related projects.</p>
-<pre><code class="language-text">csolution: Project Manager 2.6.0 (C) 2024 Arm Ltd. and Contributors
+<pre><code class="language-text">csolution: Project Manager 2.7.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   csolution &lt;command&gt; [&lt;name&gt;.csolution.yml] [options]
@@ -292,7 +298,7 @@ Options:
   -m, --missing                 List only required packs that are missing in the pack repository
   -n, --no-check-schema         Skip schema check
   -N, --no-update-rte           Skip creation of RTE directory and files
-  -o,-O --output arg            Add prefix to 'outdir' and 'tmpdir'
+  -o,-O --output base-dir       Add prefix to 'outdir' and 'tmpdir'
   -q, --quiet                   Run silently, printing only error messages
   -R, --relative-paths          Print paths relative to project or ${CMSIS_PACK_ROOT}
   -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
@@ -355,21 +361,18 @@ Use &quot;cpackget [command] --help&quot; for more information about a command.
 <p>It is also possible to overwrite the toolchain selection and use a different toolchain for translation:</p>
 <pre><code class="language-shell">cbuild example.csolution.yml --toolchain GCC
 </code></pre>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
 <p>The <code>--toolchain</code> option is useful for:</p>
 <ul>
 <li>Testing a new compiler or a different compiler version on the overall project.</li>
 <li>For unit test applications to allow the usage of different compilers.</li>
 </ul>
-</div>
 <p>In <a href="#devops-usage">DevOps systems</a> that run CI test with a matrix build, it is sometimes required to separate the output of various builds. The option <code>--output</code> adds a prefix to the <a href="../YML-Input-Format/#output-dirs">output directory</a> for <code>outdir:</code>, <code>tmpdir:</code> and build information files. The following commands build the project with the AC6 and GCC compiler and separate the directories for output and temporary files.</p>
 <pre><code class="language-shell">cbuild example.csolution.yml --toolchain AC6 --output outAC6
 cbuild example.csolution.yml --toolchain GCC --output outGCC
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code>--output</code> option is not recommended in an IDE environment as it changes the location of mandatory build information files that are <a href="#ide-usage">used by the IDE</a>.</p>
+<p>The <code>--output</code> option may be used by an IDE environment to location build information files outside of the user space.</p>
 </div>
 <h3 id="update-rte-configuration-files">Update RTE Configuration Files</h3>
 <p>The <a href="../build-overview/#project-structure">Component Configuration​</a> is stored in the <a href="../build-overview/#rte-directory-structure">RTE directory</a>. When files are missing or new software pack versions are installed, it might be required to update the RTE configuration files:</p>
@@ -456,10 +459,10 @@ variants. There are two ways to specify the CMSIS-PACK root directory:</p>
 </ol>
 <pre><code class="language-shell">cpackget add Vendor.PackName --pack-root ./MyLocal/Packs
 </code></pre>
-<blockquote>
-<p><strong>Note:</strong></p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>As the various tools of the CMSIS-Toolbox all rely on the CMSIS-Pack root directory, it is recommended to use the <code>CMSIS_PACK_ROOT</code> environment variable.</p>
+</div>
 <h3 id="initialize-cmsis-pack-root-directory">Initialize CMSIS-Pack root directory</h3>
 <p>CMSIS-Packs are typically distributed via a public web service, that offers a
 <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packIndexFile.html"><strong>Pack Index File</strong></a>
@@ -593,10 +596,10 @@ pack. There are also a couple of flags that allow listing extra information.</p>
 <p>List all packs present in the local copy of the <strong>Pack Index File</strong> (<code>index.pidx</code>):</p>
 <pre><code class="language-shell">cpackget list --public
 </code></pre>
-<blockquote>
-<p><strong>Note:</strong></p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p><a href="#update-pack-index">Update Pack Index File</a> before using the <code>list</code> command to list all public software packs.</p>
+</div>
 <h3 id="remove-packs">Remove packs</h3>
 <p>The commands below demonstrate how to remove packs. This is independent from how the software pack was added.</p>
 <p>Remove a software pack with a specific version:</p>
@@ -614,7 +617,7 @@ cpackget rm Vendor::PackName
 <pre><code class="language-shell">cpackget rm Vendor.PackName.pdsc
 </code></pre>
 <h2 id="devops-usage">DevOps Usage</h2>
-<p>The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The <code>./out</code> directory contains all build artifacts of an application for execution on physical hardware or simulation models. <a href="https://github.com/ARM-software/AVH">Arm Virtual Hardware - Fixed Virtual Platforms (AVH FVP)</a> enable unit tests and integration tests with simulation models and various virtual interfaces. Using layers allows a <a href="../build-overview/#project-setup-for-multiple-targets-and-builds">Project Setup for Multiple Targets</a>, for example to test on physical hardware or AVH-FVP simulation models. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.</p>
+<p>The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The <code>./out</code> directory contains all build artifacts of an application for execution on physical hardware or simulation models. <a href="https://github.com/ARM-software/AVH">Arm Virtual Hardware - Fixed Virtual Platforms (AVH FVP)</a> enable unit tests and integration tests with simulation models and various virtual interfaces. Using <a href="../build-overview/#software-layers">software layers</a> allows for example to test on physical hardware or AVH-FVP simulation models. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.</p>
 <p>The commands below show typical builds in a CI system. Using <code>--packs</code> installs all public packs with implicit acceptance of licenses. This command builds all projects, target-types, and build-types. Using <a href="../build-overview/#context"><code>--context</code></a> reduces the scope of the build. Using <a href="../build-overview/#reproducible-builds"><code>--frozen-packs</code></a> uses exactly the packs that are specified in the file <code>*.cbuild-pack.yml</code>.</p>
 <pre><code class="language-shell">cbuild Hello.csolution.yml --packs                          # install packs and build all
 cbuild Hello.csolution.yml --packs --context +AVH-SSE-300   # only build target +AVH-SSE-300

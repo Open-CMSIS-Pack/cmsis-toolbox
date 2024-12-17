@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>CMSIS Solution Project File Format - CMSIS-Toolbox Help</title>
+    <title>CMSIS Solution Project File Format - CMSIS-Toolbox</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -30,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -91,6 +92,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -98,7 +103,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">CMSIS-Toolbox Help</a>
+          <a href="..">CMSIS-Toolbox</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -107,7 +112,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">CMSIS Solution Project File Format</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/master/docs/YML-Input-Format - Preinclude.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/YML-Input-Format - Preinclude.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -275,13 +280,17 @@
 <p><strong>Partly defined components</strong></p>
 <p>A component can be partly defined in <em>csolution project files</em> (<code>*.cproject.yml</code>, <code>*.clayer.yml</code>, <code>*.genlayer.yml</code>) by omitting <code>Cvendor</code>, <code>Cvariant</code>, and <code>Cversion</code>, even when this are part of the <code>components</code> element of the software pack. The component select algorithm resolves this to a fully defined component by:</p>
 <ul>
-<li>when a partly specified component resolves to several possible choices, the tool selects:</li>
+<li>when a partly specified component resolves to several possible choices, the tool selects:<ul>
 <li>(a) the default <code>Cvariant</code> of the component as defined in the PDSC file. </li>
 <li>(b) the component with the higher <code>Cversion</code> value.</li>
 <li>(c) and error message is issued when two identical components are defined by multiple vendors and <code>Cvendor</code> is not specified.</li>
-<li>the partly specified component is extended by:</li>
+</ul>
+</li>
+<li>the partly specified component is extended by:<ul>
 <li>version information from the software pack.</li>
 <li>default variant definition from the software pack.</li>
+</ul>
+</li>
 </ul>
 <p>The fully resolved component name is shown in the <a href="../YML-CBuild-Format/"><code>*.cbuild.yml</code></a> output file.</p>
 <p><strong>Multiple component definitions are rejected</strong></p>
@@ -1128,10 +1137,10 @@ the compiler along with some specific default controls. The search order for thi
 <p>The following nodes control the directory structure for the application.</p>
 <h3 id="output-dirs"><code>output-dirs:</code></h3>
 <p>Allows to control the directory structure for build output files.  </p>
-<blockquote>
-<p><strong>Note:</strong></p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>This control is only possible at <code>csolution.yml</code> level.  </p>
+</div>
 <p>Only relative paths to the base directory of the <code>csolution.yml</code> file are permitted. Use command line options of the <code>cbuild</code> tool to redirect the absolute path for this working directory.</p>
 <table>
 <thead>
@@ -1181,13 +1190,13 @@ the compiler along with some specific default controls. The search order for thi
 <li>Use <code>generators:</code> specification of the <code>*.cproject.yml</code> input file, if not exist:</li>
 <li>Use <code>generators:</code> specification of the <code>*.csolution.yml</code> input file.</li>
 </ol>
-<blockquote>
-<p><strong>Notes:</strong></p>
-</blockquote>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 <ul>
 <li>Only relative paths are permitted to support portablity of projects.</li>
 <li>The location of the <code>*.yml</code> file that contains the <code>generators:</code> node is the reference for relative paths.</li>
 </ul>
+</div>
 <table>
 <thead>
 <tr>
@@ -1257,14 +1266,14 @@ the compiler along with some specific default controls. The search order for thi
 </code></pre>
 <h3 id="rte"><code>rte:</code></h3>
 <p>Allows to control the directory structure for <a href="../build-overview/#rte-directory-structure">RTE (run-time environment)</a> files.  </p>
-<blockquote>
-<p><strong>Notes:</strong></p>
-</blockquote>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 <ul>
 <li>This control is only possible at <code>*.cproject.yml</code> level.  </li>
 <li>Only relative paths are permitted to support portablity of projects.</li>
 <li>The location of the <code>*.cproject.yml</code> file is the reference for relative paths.</li>
 </ul>
+</div>
 <table>
 <thead>
 <tr>
@@ -1373,13 +1382,15 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 </tr>
 </tbody>
 </table>
-<p><strong>Notes:</strong> </p>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 <ul>
 <li>The <code>linker:</code> node must have at least <code>regions:</code>, <code>script:</code>, <code>auto:</code>, or <code>define:</code>.</li>
 <li>If no <code>script:</code> file is specified, compiler specific <a href="../build-overview/#linker-script-templates">Linker Script template files</a> are used.</li>
 <li>A Linker Script file is preprocessed when <code>regions:</code> or a <code>define:</code> is or the file extension is <code>*.src</code>.</li>
 <li>If both <code>auto:</code> and <code>script:</code> is specified a warning is issued and <a href="../build-overview/#automatic-linker-script-generation">automatic Linker Script generation</a> is performed and the specified <code>script:</code> is ignored.</li>
 </ul>
+</div>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">linker:
   - script:   MyLinker.scf.src   # linker script file
@@ -2036,17 +2047,13 @@ project. It is however possible to change that <code>setup:</code> settings on a
 </ul>
 <p>The  <a href="#pack-name-conventions">Pack Name Conventions</a> are used to specify the name of the software packs.
 The <code>pack:</code> definition may be specific to a <a href="#context"><code>context</code></a> that specifies <code>target-types:</code> and/or <code>build-types:</code> or provide a local path to a development repository of a software pack.</p>
-<blockquote>
-<p><strong>Notes:</strong> </p>
-</blockquote>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 <ul>
-<li>
-<p>By default, the <strong><code>csolution</code> Project Manager</strong> only loads the latest version of the installed software packs. It is however possible to request specific versions using the <code>- pack:</code> node.</p>
-</li>
-<li>
-<p>An attempt to add two different versions of the same software pack results in an error.</p>
-</li>
+<li>By default, the <strong><code>csolution</code> Project Manager</strong> only loads the latest version of the installed software packs. It is however possible to request specific versions using the <code>- pack:</code> node.</li>
+<li>An attempt to add two different versions of the same software pack results in an error.</li>
 </ul>
+</div>
 <h3 id="packs"><code>packs:</code></h3>
 <p>The <code>packs:</code> node is the start of a pack selection.</p>
 <table>
@@ -2174,9 +2181,6 @@ packs. This information is used to define the <code>device:</code> along with ba
 <li><code>.build-type</code> that defines typically build specific settings such as for debug, release, or test.</li>
 <li><code>+target-type</code> that defines typically target specific settings such as device, board, or usage of processor features.</li>
 </ul>
-<p>The section
-<a href="../build-overview/#project-setup-for-multiple-targets-and-builds">Project setup for multiple targets and test builds</a>
-explains the overall concept of  <code>target-types</code> and <code>build-types</code>. These <code>target-types</code> and <code>build-types</code> are defined in the <code>*.csolution.yml</code> that defines the overall application for a system.</p>
 <p>The settings of the <code>target-types:</code> are processed first; then the settings of the <code>build-types:</code> that potentially overwrite the <code>target-types:</code> settings.</p>
 <h3 id="target-types"><code>target-types:</code></h3>
 <p>The <code>target-types:</code> node may include <a href="#toolchain-options">toolchain options</a>, <a href="#target-selection">target selection</a>, and <a href="#processor-attributes">processor attributes</a>:</p>
@@ -2943,8 +2947,8 @@ target-type and/or build-type using <a href="#for-context"><code>for-context:</c
       for-context: 
         - +AVH
 </code></pre>
-<h4 id="layer-type"><code>layer:</code> - <code>type:</code></h4>
-<p>The <code>layer:</code> - <code>type:</code> is used in combination with the meta-data of the <a href="#connections"><code>connections:</code></a> to check the list of available <code>*.clayer.yml</code> files for matching layers. Instead of an explicit <code>layer:</code> node that specifies a <code>*.clayer.yml</code> file, the <code>type:</code> is used to search for matching layers with the <code>csolution</code> command <code>list layers</code>.</p>
+<h4 id="layer-type"><code>layer:</code> <code>type:</code></h4>
+<p>The <code>layer:</code> <code>type:</code> is used in combination with the meta-data of the <a href="#connections"><code>connections:</code></a> to check the list of available <code>*.clayer.yml</code> files for matching layers. Instead of an explicit <code>layer:</code> node that specifies a <code>*.clayer.yml</code> file, the <code>type:</code> is used to search for matching layers with the <code>csolution</code> command <code>list layers</code>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  layers:
     - type: Socket              # search for matching layers of type `Socket`
@@ -3311,9 +3315,11 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p>The <strong><code>csolution</code> Project Manager</strong> combines all the <em>key</em>/<em>value</em> pairs that listed under <code>provides:</code> and matches it with the <em>key</em>/<em>value</em> pairs that are listed under <code>consumes:</code>. For <em>key</em>/<em>value</em> pairs listed under <code>provides:</code> the following rules exist for a match with <code>consumes:</code> <em>key</em>/<em>value</em> pair:</p>
 <ul>
 <li>It is possible to omit the <em>value</em>. It matches with an identical <em>key</em> listed in <code>consumes:</code></li>
-<li>A <em>value</em> is interpreted as number. Depending on the value prefix, this number must be:</li>
+<li>A <em>value</em> is interpreted as number. Depending on the value prefix, this number must be:<ul>
 <li>when <code>consumes:</code> <em>value</em> is a plain number, identical with this value.</li>
 <li>when <code>consumes:</code> <em>value</em> is prefixed with <code>+</code>, higher or equal then this <em>value</em> or the sum of all <em>values</em> in multiple <code>consumes:</code> nodes.</li>
+</ul>
+</li>
 </ul>
 <h3 id="consumes"><code>consumes:</code></h3>
 <p>A user-defined <em>key</em>/<em>value</em> pair list of functionality that is requried or consumed by a <code>project:</code> or <code>layer:</code>. </p>

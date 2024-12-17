@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>CMSIS Solution Project File Format - CMSIS-Toolbox Help</title>
+    <title>CMSIS Solution Project File Format - CMSIS-Toolbox</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -30,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -102,7 +103,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#generators">generators:</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#generators-options">generators: - options:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#generators-options">generators: options:</a>
     </li>
         </ul>
     </li>
@@ -220,7 +221,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#layers">layers:</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#layer-type">layer: - type:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#layer-type">layer: type:</a>
     </li>
         </ul>
     </li>
@@ -236,15 +237,19 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#connections">connections:</a>
+    <li class="toctree-l2"><a class="reference internal" href="#auto-select-layers">Auto-select Layers</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#connect">connect:</a>
+    <li class="toctree-l3"><a class="reference internal" href="#connections">connections:</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#connect">connect:</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#set">set:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#set">set:</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#provides">provides:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#provides">provides:</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#consumes">consumes:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#consumes">consumes:</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#example-board">Example: Board</a>
     </li>
@@ -285,6 +290,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -292,7 +301,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">CMSIS-Toolbox Help</a>
+          <a href="..">CMSIS-Toolbox</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -301,7 +310,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">CMSIS Solution Project File Format</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/master/docs/YML-Input-Format.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/YML-Input-Format.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -376,10 +385,11 @@
 </table>
 <h3 id="pack-name-conventions"><code>pack:</code> Name Conventions</h3>
 <p>The <strong><code>csolution</code> Project Manager</strong> uses the following syntax to specify the <code>pack:</code> names in the <code>*.yml</code> files.</p>
-<pre><code class="language-yml">[vendor ::] pack-name [@version]         # If specified, with exact version
-[vendor ::] pack-name [@&gt;=version]       # If specified, with version equal or higher
-[vendor ::] pack-name [@^version]        # If specified, with version equal or higher but same major version
-[vendor ::] pack-name [@~version]        # If specified, with version equal or higher but same major and minor version
+<pre><code class="language-yml">[vendor ::] pack-name                # Use latest version of the pack
+[vendor ::] pack-name@version        # With exact version
+[vendor ::] pack-name@&gt;=version      # With version equal or higher
+[vendor ::] pack-name@^version       # With version equal or higher but same major version
+[vendor ::] pack-name@~version       # With version equal or higher but same major and minor version
 </code></pre>
 <table>
 <thead>
@@ -422,19 +432,21 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Notes:</strong></p>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 <ul>
 <li>When no version is specified, the <strong><code>csolution</code> Project Manager</strong> only loads the latests installed version of a software pack. This also applies when wildcards are used in the <code>pack-name</code>. </li>
 <li>Use <a href="../build-tools/#cpackget-invocation"><strong><code>cpackget</code></strong></a> to download and install new pack versions.</li>
 </ul>
+</div>
 <p><strong>Examples:</strong></p>
-<pre><code class="language-yml">- pack:   ARM::CMSIS@5.9.0                  # 'CMSIS' Pack (with version 5.5.0)
-- pack:   MDK-Middleware@&gt;=7.13.0           # 'MDK-Middleware` latest installed version 7.13.0 or higher 
-- pack:   MDK-Middleware@^7.13.0            # 'MDK-Middleware' latest installed version 7.13.0 or higher but lower then 8.0.0
-- pack:   Keil::TFM                         # 'TFM' Software Pack from vendor Keil, latest installed version
-- pack:   AWS                               # All latest versions of Software Packs from vendor 'AWS'
-- pack:   Keil::STM*                        # All latest versions of Software Packs that start with 'STM' from vendor 'Keil'
-- pack:   MDK-Middleware@&gt;=8.0.0-0          # `MDK-Middleware` version 8.0.0 or higher including development versions
+<pre><code class="language-yml">- pack:   ARM::CMSIS@5.9.0           # 'CMSIS' Pack with version 5.5.0
+- pack:   MDK-Middleware@&gt;=7.13.0    # latest version 7.13.0 or higher 
+- pack:   MDK-Middleware@^7.13.0     # latest version 7.13.0 or higher, but lower than 8.0.0
+- pack:   Keil::TFM                  # 'TFM' Pack from vendor Keil, latest installed version
+- pack:   AWS                        # All Software Packs from vendor 'AWS', latest version
+- pack:   Keil::STM*                 # Software Packs that start with 'STM' from vendor 'Keil'
+- pack:   MDK-Middleware@&gt;=8.0.0-0   # version 8.0.0 or higher including development versions
 </code></pre>
 <h3 id="component-name-conventions"><code>component:</code> Name Conventions</h3>
 <p>The <strong><code>csolution</code> Project Manager</strong> uses the following syntax to specify the <code>component:</code> names in the <code>*.yml</code> files.</p>
@@ -490,15 +502,23 @@
 <p><strong>Partly defined components</strong></p>
 <p>A component can be partly defined in <em>csolution project files</em> (<code>*.cproject.yml</code>, <code>*.clayer.yml</code>, <code>*.genlayer.yml</code>) by omitting <code>Cvendor</code>, <code>Cvariant</code>, and <code>Cversion</code>, even when this are part of the <code>components</code> element of the software pack. The component select algorithm resolves this to a fully defined component by:</p>
 <ul>
-<li>when a partly specified component resolves to several possible choices, the tool selects:</li>
+<li>when a partly specified component resolves to several possible choices, the tool selects:<ul>
 <li>(a) the default <code>Cvariant</code> of the component as defined in the PDSC file. </li>
 <li>(b) the component with the higher <code>Cversion</code> value.</li>
-<li>(c) and error message is issued when two identical components are defined by multiple vendors and <code>Cvendor</code> is not specified.</li>
-<li>the partly specified component is extended by:</li>
+<li>(c) an error message is issued when two identical components are defined by multiple vendors and <code>Cvendor</code> is not specified.</li>
+</ul>
+</li>
+<li>the partly specified component is extended by:<ul>
 <li>version information from the software pack.</li>
 <li>default variant definition from the software pack.</li>
 </ul>
+</li>
+</ul>
 <p>The fully resolved component name is shown in the <a href="../YML-CBuild-Format/"><code>*.cbuild.yml</code></a> output file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Before CMSIS-Toolbox 2.7, a component that omitted <code>Csub</code> resolved to the first matching component. Installing additional software packs could change therefore component selection. When a component is defined with <code>Csub</code> it is now required to specify.</p>
+</div>
 <p><strong>Multiple component definitions are rejected</strong></p>
 <ul>
 <li>If a component is added more then once in the <em>csolution project files</em> and an <em>error</em> is issued.</li>
@@ -1002,7 +1022,7 @@ the compiler with specific default controls. The search order for this file is:<
 </table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">solution:
-  created-for: cmsis-toolbox@2.0  # minimum CMSIS-Toolbox version required for project build
+  created-for: cmsis-toolbox@2.6  # minimum CMSIS-Toolbox version required for project build
   cdefault:                       # use default setup of toolchain specific controls.
   compiler: GCC                   # overwrite compiler definition in 'cdefaults.yml'
 
@@ -1326,13 +1346,13 @@ the compiler with specific default controls. The search order for this file is:<
 <p>The following nodes control the directory structure for the application.</p>
 <h3 id="output-dirs"><code>output-dirs:</code></h3>
 <p>Allows to control the directory structure for build output files and temporary files.  </p>
-<blockquote>
-<p><strong>Note:</strong></p>
-</blockquote>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 <ul>
 <li>This control is only possible at <code>csolution.yml</code> level.</li>
 <li>CMake manages the temporary directory of all projects therefore <code>tmpdir:</code> does not support access sequences.</li>
 </ul>
+</div>
 <table>
 <thead>
 <tr>
@@ -1384,13 +1404,13 @@ the compiler with specific default controls. The search order for this file is:<
 <li>Use <code>generators:</code> specification of the <code>*.cproject.yml</code> input file, if not exist:</li>
 <li>Use <code>generators:</code> specification of the <code>*.csolution.yml</code> input file.</li>
 </ol>
-<blockquote>
-<p><strong>Notes:</strong></p>
-</blockquote>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 <ul>
 <li>Only relative paths are permitted to support portablity of projects.</li>
 <li>The location of the <code>*.yml</code> file that contains the <code>generators:</code> node is the reference for relative paths.</li>
 </ul>
+</div>
 <table>
 <thead>
 <tr>
@@ -1416,7 +1436,7 @@ the compiler with specific default controls. The search order for this file is:<
 <p class="admonition-title">Note</p>
 <p>The base directory is extended for each generator with <code>/&lt;generator-id&gt;</code>; <code>&lt;generator-id&gt;</code> is defined by the <code>id</code> in the generators element of the PDSC file.</p>
 </div>
-<h4 id="generators-options"><code>generators: - options:</code></h4>
+<h4 id="generators-options"><code>generators:</code> <code>options:</code></h4>
 <table>
 <thead>
 <tr>
@@ -1460,14 +1480,14 @@ the compiler with specific default controls. The search order for this file is:<
 </code></pre>
 <h3 id="rte"><code>rte:</code></h3>
 <p>Allows to control the directory structure for <a href="../build-overview/#rte-directory-structure">RTE (run-time environment)</a> files.  </p>
-<blockquote>
-<p><strong>Notes:</strong></p>
-</blockquote>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 <ul>
 <li>This control is only possible at <code>*.cproject.yml</code> level.  </li>
 <li>Only relative paths are permitted to support portablity of projects.</li>
 <li>The location of the <code>*.cproject.yml</code> file is the reference for relative paths.</li>
 </ul>
+</div>
 <table>
 <thead>
 <tr>
@@ -1495,11 +1515,13 @@ the compiler with specific default controls. The search order for this file is:<
 </ul>
 <h3 id="select-compiler"><code>select-compiler:</code></h3>
 <p>Lists the compilers that this <em>csolution project</em> is tested with. This information is used by the <a href="../build-operation/#details-of-the-setup-mode"><code>cbuild setup</code> command</a> to determine possible compiler choices. The actual compiler to be used is selected with the <a href="#compiler"><code>compiler:</code></a> node. </p>
-<p><strong>Notes:</strong></p>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 <ul>
 <li><a href="#select-compiler"><code>select-compiler:</code></a> is only supported in the <a href="#solution"><code>*.csolution.yml</code></a> project file.</li>
 <li>This control is new in CMSIS-Toolbox 2.5.0</li>
 </ul>
+</div>
 <table>
 <thead>
 <tr>
@@ -1606,13 +1628,15 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 </tr>
 </tbody>
 </table>
-<p><strong>Notes:</strong> </p>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 <ul>
 <li>The <code>linker:</code> node must have at least <code>regions:</code>, <code>script:</code>, <code>auto:</code>, or <code>define:</code>.</li>
 <li>If no <code>script:</code> file is specified, compiler specific <a href="../build-overview/#linker-script-templates">Linker Script template files</a> are used.</li>
 <li>A Linker Script file is preprocessed when <code>regions:</code> or a <code>define:</code> is or the file extension is <code>*.src</code>.</li>
 <li>If both <code>auto:</code> and <code>script:</code> is specified a warning is issued and <a href="../build-overview/#automatic-linker-script-generation">automatic Linker Script generation</a> is performed and the specified <code>script:</code> is ignored.</li>
 </ul>
+</div>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">linker:
   - script:   MyLinker.scf.src   # linker script file
@@ -1686,6 +1710,10 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 <td style="text-align: left;"><code>- bin</code></td>
 <td style="text-align: left;">Binary image.</td>
 </tr>
+<tr>
+<td style="text-align: left;"><code>- map</code></td>
+<td style="text-align: left;">Linker MAP file.</td>
+</tr>
 </tbody>
 </table>
 <p>The <strong>default</strong> setting for <code>output:</code> is:</p>
@@ -1694,15 +1722,20 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
   type: elf              # Generate executeable file.
 </code></pre>
 <p><strong>Example:</strong></p>
-<pre><code class="language-yml">output:                  # configure output files
+<pre><code class="language-yml">output:
+  type: 
+  - elf                  # Generate executeable file.
+  - map                  # Generate Linker MAP file.
+</code></pre>
+<pre><code class="language-yml">output:                  # configure output files.
   base-name: MyProject   # used for all output files, including linker map file.
   type:
   - elf                  # Generate executeable file.
-  - hex                  # generate a HEX file 
-  - bin                  # generate a BIN file 
+  - hex                  # generate a HEX file.
+  - bin                  # generate a BIN file.
 </code></pre>
 <p>Generate a <strong>library</strong>:</p>
-<pre><code class="language-yml">output:                  # configure output files
+<pre><code class="language-yml">output:                  # configure output files.
   type: lib              # Generate library file.
 </code></pre>
 <h2 id="translation-control">Translation Control</h2>
@@ -1821,6 +1854,14 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 <tr>
 <td style="text-align: left;"><code>gnu++20</code></td>
 <td style="text-align: left;">same as <code>c++20</code> but with additional GNU extensions.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c++23</code></td>
+<td style="text-align: left;">compile C++ source files as defined in C++23 standard (ISO/IEC 14882:2023).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gnu++23</code></td>
+<td style="text-align: left;">same as <code>c++23</code> but with additional GNU extensions.</td>
 </tr>
 </tbody>
 </table>
@@ -1942,10 +1983,10 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p><strong>Note:</strong></p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>This control only applies to C and C++ source files (or to the <a href="#linker">linker</a> script preprocessor).  For assembler source files use the <code>define-asm:</code> node.</p>
+</div>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">define:                    # Start a list of define statements
   - TestValue: 12          # add symbol 'TestValue' with value 12
@@ -2022,10 +2063,10 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p><strong>Note:</strong></p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>This control only applies to C and C++ source files.  For assembler source files use the <code>add-path-asm:</code> node.</p>
+</div>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">project:
   misc:
@@ -2053,10 +2094,10 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p><strong>Note:</strong></p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>This control only applies to assembler source files.  For C and C++ source files use the <code>add-path:</code> node.</p>
+</div>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">project:
   add-path-asm:
@@ -2307,17 +2348,13 @@ project. It is however possible to change that <code>setup:</code> settings on a
 </ul>
 <p>The  <a href="#pack-name-conventions">Pack Name Conventions</a> are used to specify the name of the software packs.
 The <code>pack:</code> definition may be specific to a <a href="#context"><code>context</code></a> that specifies <code>target-types:</code> and/or <code>build-types:</code> or provide a local path to a development repository of a software pack.</p>
-<blockquote>
-<p><strong>Notes:</strong> </p>
-</blockquote>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
 <ul>
-<li>
-<p>By default, the <strong><code>csolution</code> Project Manager</strong> only loads the latest version of the installed software packs. It is however possible to request specific versions using the <code>- pack:</code> node.</p>
-</li>
-<li>
-<p>An attempt to add two different versions of the same software pack results in an error.</p>
-</li>
+<li>By default, the <strong><code>csolution</code> Project Manager</strong> only loads the latest version of the installed software packs. It is however possible to request specific versions using the <code>- pack:</code> node.</li>
+<li>An attempt to add two different versions of the same software pack results in an error.</li>
 </ul>
+</div>
 <h3 id="packs"><code>packs:</code></h3>
 <p>The <code>packs:</code> node is the start of a pack selection.</p>
 <table>
@@ -2472,7 +2509,7 @@ packs. This information is used to define the <code>device:</code> along with ba
 <li>Blank characters (' ') in the context name are not permitted by CMake.  </li>
 </ul>
 </div>
-<p>The section <a href="../build-overview/#project-setup-for-multiple-targets-and-builds">Project setup for multiple targets and test builds</a>
+<p>The section <a href="../build-overview/#project-setup-for-related-projects">project setup for related projects</a>
 explains the overall concept of  <code>target-types</code> and <code>build-types</code>. These <code>target-types</code> and <code>build-types</code> are defined in the <code>*.csolution.yml</code> that defines the overall application for a system.</p>
 <p>The settings of the <code>target-types:</code> are processed first; then the settings of the <code>build-types:</code> that potentially overwrite the <code>target-types:</code> settings.</p>
 <h3 id="target-types"><code>target-types:</code></h3>
@@ -2583,8 +2620,10 @@ explains the overall concept of  <code>target-types</code> and <code>build-types
 </tr>
 </tbody>
 </table>
-<p><strong>Note::</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>Either <code>device:</code> or <code>board:</code> is required.</p>
+</div>
 <h3 id="build-types"><code>build-types:</code></h3>
 <p>The <code>build-types:</code> node may include <a href="#toolchain-options">toolchain options</a>:</p>
 <table>
@@ -3297,7 +3336,7 @@ target-type and/or build-type using <a href="#for-context"><code>for-context:</c
       for-context: 
         - +AVH
 </code></pre>
-<h4 id="layer-type"><code>layer:</code> - <code>type:</code></h4>
+<h4 id="layer-type"><code>layer:</code> <code>type:</code></h4>
 <p>The <code>layer:</code> - <code>type:</code> is used in combination with the meta-data of the <a href="#connections"><code>connections:</code></a> to check the list of available <code>*.clayer.yml</code> files for matching layers. Instead of an explicit <code>layer:</code> node that specifies a <code>*.clayer.yml</code> file, the <code>type:</code> is used to search for matching layers with the <code>csolution</code> command <code>list layers</code>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  layers:
@@ -3528,7 +3567,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </tbody>
 </table>
 <p>The <code>run:</code> command string also accepts these <a href="#access-sequences">access sequences</a>: $Bname$, $Dname$, $Pname$, $BuildType$, $TargetType$, $Compiler$, $Solution$, $Project$. It does not accept <a href="#access-sequences">access sequences</a> that reference directories or files as this bypasses the <a href="../build-overview/#project-dependency">project dependency check</a>. Instead use the <code>input:</code> list to pass files or directories.</p>
-<p><strong>Notes:</strong></p>
+<p>Consider the following:</p>
 <ul>
 <li>
 <p>The <code>execute:</code> node is processed by the CMake build system. The order of execution depends on <code>$input$</code> and <code>$output</code> files and is evaluated by CMake.</p>
@@ -3587,9 +3626,8 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
       for-context: .Release
 </code></pre>
 <p>Refer to <a href="../build-operation/">Build Operation - CMake Integration</a> for examples that integrate CMake scripts.</p>
-<h2 id="connections"><code>connections:</code></h2>
-<p>The <code>connections:</code> node contains meta-data that describes the compatiblity of <code>*.cproject.yml</code> and <code>*.clayer.yml</code> project parts.  The <code>connections:</code> node lists functionality (drivers, pins, and other software or hardware resources). The node <code>consumes:</code> lists required functionality; the node <code>provides:</code> is the implemented functionality of that project part.</p>
-<p>This enables <a href="../ReferenceApplications/">reference applications</a> that work across a range of different hardware targets where:</p>
+<h2 id="auto-select-layers">Auto-select Layers</h2>
+<p>To find compatible layers in software packs, projects and layers can be annotated. The command <code>csolution list layers</code> lists compatible layers. This enables <a href="../ReferenceApplications/">reference applications</a> that work across a range of different hardware targets where:</p>
 <ul>
 <li>
 <p>The <code>*.cproject.yml</code> file of the reference application lists with the <code>connections:</code> node the required functionality with <code>consumes:</code>.</p>
@@ -3598,6 +3636,20 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p>The <code>*.clayer.yml</code> project part lists with the <code>connections:</code> node the implemented functionality with <code>provides:</code>.</p>
 </li>
 </ul>
+<p>Example projects that use <code>connections:</code> for layer selection:</p>
+<ul>
+<li>
+<p><a href="https://arm-software.github.io/MDK-Middleware/latest/General/working_with_examples.html">MDK-Middleware examples</a> use board layers to run on different hardware boards.</p>
+</li>
+<li>
+<p><a href="https://github.com/Open-CMSIS-Pack/Sensor-SDK-Example">Sensor SDK Example</a> shows how board layers and shield layers may be used to run different sensor shields on many boards.</p>
+</li>
+<li>
+<p>[AWS_MQTT_Demo}(https://github.com/Arm-Examples/AWS_MQTT_Demo) combines board layer and communication socket layer. Optionally a shield layer can be used to connect WiFi drivers.</p>
+</li>
+</ul>
+<h3 id="connections"><code>connections:</code></h3>
+<p>The <code>connections:</code> node contains meta-data that describes the compatiblity of <code>*.cproject.yml</code> and <code>*.clayer.yml</code> project parts.  The <code>connections:</code> node lists functionality (drivers, pins, and other software or hardware resources). The node <code>consumes:</code> lists required functionality; the node <code>provides:</code> is the implemented functionality of that project part.</p>
 <p>This works across multiple levels, which means that a <code>*.clayer.yml</code> file could also require other functionality using <code>consumes:</code>.</p>
 <p>The <code>connections:</code> node is used to identify compatible software layers. These software layers could be stored in CMSIS software packs using the following structure:</p>
 <ul>
@@ -3637,7 +3689,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="connect"><code>connect:</code></h3>
+<h4 id="connect"><code>connect:</code></h4>
 <p>The <code>connect:</code> node describes one or more functionalities that belong together.</p>
 <table>
 <thead>
@@ -3700,7 +3752,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
       consumes:
         - CMSIS-RTOS2
 </code></pre>
-<h3 id="set"><code>set:</code></h3>
+<h4 id="set"><code>set:</code></h4>
 <p>Some hardware boards have configuration settings (DIP switch or jumper) that configure interfaces. These settings have impact to the functionality (for example hardware interfaces). With <code>set:</code> <em>config-id</em>.<em>select</em> the possible configration options are considered when evaluating compatible <code>*.cproject.yml</code> and <code>*.clayer.yml</code> project parts. The <strong><code>csolution</code> Project Manager</strong> iterates the <code>connect:</code> node with a <code>set:</code> <em>config-id</em>.<em>select</em> as described below:</p>
 <ul>
 <li>
@@ -3711,16 +3763,18 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </li>
 </ul>
 <p>Refer to <a href="#example-sensor-shield">Example: Sensor Shield</a> for a usage example.</p>
-<h3 id="provides"><code>provides:</code></h3>
+<h4 id="provides"><code>provides:</code></h4>
 <p>A user-defined <em>key</em>/<em>value</em> pair list of functionality that is implemented or provided by a <code>project:</code> or <code>layer:</code>. </p>
 <p>The <strong><code>csolution</code> Project Manager</strong> combines all the <em>key</em>/<em>value</em> pairs that listed under <code>provides:</code> and matches it with the <em>key</em>/<em>value</em> pairs that are listed under <code>consumes:</code>. For <em>key</em>/<em>value</em> pairs listed under <code>provides:</code> the following rules exist for a match with <code>consumes:</code> <em>key</em>/<em>value</em> pair:</p>
 <ul>
 <li>It is possible to omit the <em>value</em>. It matches with an identical <em>key</em> listed in <code>consumes:</code></li>
-<li>A <em>value</em> is interpreted as number. Depending on the value prefix, this number must be:</li>
+<li>A <em>value</em> is interpreted as number. Depending on the value prefix, this number must be:<ul>
 <li>when <code>consumes:</code> <em>value</em> is a plain number, identical with this value.</li>
 <li>when <code>consumes:</code> <em>value</em> is prefixed with <code>+</code>, higher or equal then this <em>value</em> or the sum of all <em>values</em> in multiple <code>consumes:</code> nodes.</li>
 </ul>
-<h3 id="consumes"><code>consumes:</code></h3>
+</li>
+</ul>
+<h4 id="consumes"><code>consumes:</code></h4>
 <p>A user-defined <em>key</em>/<em>value</em> pair list of functionality that is requried or consumed by a <code>project:</code> or <code>layer:</code>. </p>
 <p>For <em>key</em>/<em>value</em> pairs listed under <code>consumed:</code> the following rules exist:</p>
 <ul>

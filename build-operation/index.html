@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Build Operation - CMSIS-Toolbox Help</title>
+    <title>Build Operation - CMSIS-Toolbox</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -30,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -137,6 +138,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -144,7 +149,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">CMSIS-Toolbox Help</a>
+          <a href="..">CMSIS-Toolbox</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -153,7 +158,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Build Operation</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/master/docs/build-operation.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/build-operation.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -189,10 +194,12 @@
 <p>It generates the application program that is described with the <code>&lt;name&gt;.csolution.yml</code> project.</p>
 <ul>
 <li>When option <code>--packs</code> is used, it downloads missing <em>software packs</em> using <a href="../build-tools/#cpackget-invocation"><code>cpackget</code></a>.</li>
-<li>It calls <a href="../build-tools/#csolution-invocation"><code>csolution</code></a> to process the the <code>&lt;name&gt;.csolution.yml</code> project.</li>
+<li>It calls <a href="../build-tools/#csolution-invocation"><code>csolution</code></a> to process the the <code>&lt;name&gt;.csolution.yml</code> project.<ul>
 <li>With option <code>--update-rte</code> new configuration files from <em>software packs</em> are updated and the <a href="../build-overview/#rte_componentsh"><code>RTE_Components.h</code></a> file is recreated.</li>
 <li>With option <code>--context-set</code> the file <code>*.cbuild-set.yml</code> specifies the <a href="../build-overview/#context">context</a> configuration of the application.</li>
 <li>With option <code>--frozen-packs</code> the file <code>*.cbuild-pack.yml</code> is used as input to issue an error when a pack version changes.</li>
+</ul>
+</li>
 <li>The output are <a href="../YML-CBuild-Format/">build information files</a> with all relevant project information for the build process.</li>
 <li>The option <code>--toolchain</code> can be used to explicitly select a compiler.</li>
 </ul>
@@ -227,14 +234,20 @@
 <h3 id="csolution-project-manager"><code>csolution</code> Project Manager</h3>
 <p><a href="../build-overview/"><code>csolution</code></a> processes the <a href="../YML-Input-Format/"><em>csolution project files</em> (in YAML format)</a> and the <code>*.pdsc</code> metadata files of <em>software packs</em> and performs the following operations:</p>
 <ul>
-<li>In the <a href="../build-overview/#project-area"><strong>Project Area</strong></a>:</li>
+<li>In the <a href="../build-overview/#project-area"><strong>Project Area</strong></a>:<ul>
 <li>Generate <a href="../YML-CBuild-Format/">build information files</a> <code>*.cbuild-idx.yml</code> and <code>*.cbuild.yml</code> with all relevant project information for the build process.</li>
-<li>In the <a href="../build-overview/#rte-directory-structure"><strong>RTE Directory</strong></a>:</li>
+</ul>
+</li>
+<li>In the <a href="../build-overview/#rte-directory-structure"><strong>RTE Directory</strong></a>:<ul>
 <li>Generate for each <a href="../YML-Input-Format/#context">context</a> the <a href="../build-overview/#rte_componentsh">RTE_components.h</a> file and pre-include files from the software pack (<code>*.pdsc</code>)  metadata.</li>
 <li><a href="../build-overview/#plm-of-configuration-files">Copy the configuration files</a> from selected software componentsand provide <a href="../build-overview/#plm-of-configuration-files">PLM</a> information.</li>
-<li>In the <a href="../build-overview/#project-area"><strong>base directory of the solution</strong></a>:</li>
+</ul>
+</li>
+<li>In the <a href="../build-overview/#project-area"><strong>base directory of the solution</strong></a>:<ul>
 <li>Generate the file <code>*.cbuild-pack.yml</code> that records all used <em>software packs</em>. With the option <code>--frozen-packs</code> this file is used as input.</li>
 <li>With the option <code>--context-set</code> the file <code>*.cbuild-set.yml</code> specifies the <a href="../build-overview/#context">context</a> configuration of the application. When <code>--context</code> names are specified this file is updated with this selection.</li>
+</ul>
+</li>
 </ul>
 <p>The picture below outlines the operation.</p>
 <p><img alt="Operation of csolution tool" src="../images/csolution-operation.png" title="Operation of csolution tool" /></p>

@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Migrating examples created for cmsis-toolbox 1.x.y to 2.0.0 - CMSIS-Toolbox Help</title>
+    <title>Migrating examples created for cmsis-toolbox 1.x.y to 2.0.0 - CMSIS-Toolbox</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -30,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -91,6 +92,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -98,7 +103,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">CMSIS-Toolbox Help</a>
+          <a href="..">CMSIS-Toolbox</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -107,7 +112,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Migrating examples created for cmsis-toolbox 1.x.y to 2.0.0</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/master/docs/migration.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/migration.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -156,9 +161,10 @@ Please <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/
 <li><code>gendir</code> (replaced by <code>generators</code> node)</li>
 <li><code>rtedir</code> (replaced by <code>rte</code> node in <code>*.cproject.yml</code>)</li>
 </ul>
-<blockquote>
-<p>Note: RTE files belonging to components specified in <code>*.clayer.yml</code> files remain next to such <code>*.clayer.yml.</code></p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>RTE files belonging to components specified in <code>*.clayer.yml</code> files remain next to such <code>*.clayer.yml.</code></p>
+</div>
 <p>in <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#processor"><code>processor</code></a>:</p>
 <ul>
 <li><code>fpu</code> and <code>endian</code> (but accepted with disabled schema check)</li>
@@ -171,9 +177,10 @@ Please <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/
 </ul>
 <p><strong>The cdefault enablement has changed:</strong></p>
 <p>The <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#default"><code>cdefault:</code></a> empty node must be added to *.csolution.yml to activate its use.</p>
-<blockquote>
-<p>Note: the file must be named <code>cdefault.yml</code> or <code>cdefault.yaml</code> without leading dot.</p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The file must be named <code>cdefault.yml</code> or <code>cdefault.yaml</code> without leading dot.</p>
+</div>
 <p><strong>The following <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#access-sequences">Access Sequences</a> were removed:</strong></p>
 <ul>
 <li><code>$Source(context)</code> (replaced by <code>$ProjectDir(context)$</code>)</li>

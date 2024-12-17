@@ -5,10 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Reference Applications - CMSIS-Toolbox Help</title>
+    <title>Reference Applications - CMSIS-Toolbox</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -30,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> CMSIS-Toolbox Help
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -84,6 +85,10 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a>
         <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#step-1-add-dfp-and-bsp">Step 1: Add DFP and BSP</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-2-run-cbuild-setup">Step 2: Run cbuild setup</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#refer-layers-in-cmsis_pack_root">Refer layers in ${CMSIS_PACK_ROOT}</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#copy-layers-to-csolution-project">Copy layers to csolution project</a>
@@ -110,11 +115,11 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#arduino_uno_uart">ARDUINO_UNO_UART</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#arduino_uno_i2c-arduino_uno_i2c-alt">ARDUINO_UNO_I2C / ARDUINO_UNO_I2C-Alt</a>
+    <li class="toctree-l3"><a class="reference internal" href="#arduino_uno_i2c">ARDUINO_UNO_I2C</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#arduino_uno_spi">ARDUINO_UNO_SPI</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#arduino_uno_d0-d21">ARDUINO_UNO_D0 .. D21</a>
+    <li class="toctree-l3"><a class="reference internal" href="#arduino_uno_dx">ARDUINO_UNO_Dx</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#cmsis_eth">CMSIS_ETH</a>
     </li>
@@ -126,7 +131,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#cmsis_vio">CMSIS_VIO</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#stdin-stdout-stderr">STDIN / STDOUT / STDERR</a>
+    <li class="toctree-l3"><a class="reference internal" href="#stdio">STDIO</a>
     </li>
         </ul>
     </li>
@@ -157,6 +162,10 @@
                 <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -164,7 +173,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">CMSIS-Toolbox Help</a>
+          <a href="..">CMSIS-Toolbox</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -173,7 +182,7 @@
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Reference Applications</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/master/docs/ReferenceApplications.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/ReferenceApplications.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -272,9 +281,8 @@ The <em>Reference Application</em> does not specify a target hardware. For execu
 <h2 id="usage">Usage</h2>
 <p>A <em>Reference Application</em> is an incomplete <code>*.csolution.yml</code> project file that requires additional intervention.</p>
 <p>The following steps explain how to to compile the project:</p>
-<ol>
-<li>In the <code>*.csolution.yml</code> file under the <code>packs:</code> node, add the DFP (for the device) and the BSP (for the board). Under <code>target-types:</code>, add your board.</li>
-</ol>
+<h3 id="step-1-add-dfp-and-bsp">Step 1: Add DFP and BSP</h3>
+<p>In the <code>*.csolution.yml</code> file under the <code>packs:</code> node, add the DFP (for the device) and the BSP (for the board). Under <code>target-types:</code>, add your board.</p>
 <pre><code class="language-yml">solution:
   cdefault:
   :
@@ -285,9 +293,8 @@ The <em>Reference Application</em> does not specify a target hardware. For execu
     - type: MyBoard
       board: B-U585I-IOT02A         # name of a target board
 </code></pre>
-<ol>
-<li>Run <code>cbuild setup</code> with the <code>*.csolution.yml</code> file. This identifies compatible layers with an output similar to:</li>
-</ol>
+<h3 id="step-2-run-cbuild-setup">Step 2: Run <code>cbuild setup</code></h3>
+<p>Run <code>cbuild setup</code> with the <code>*.csolution.yml</code> file. This identifies compatible layers with an output similar to:</p>
 <pre><code class="language-txt">&gt;cbuild setup xxx.csolution.yml
 error csolution: undefined variables in xxx.csolution.yml:
   - $Board-Layer$
@@ -505,17 +512,17 @@ int app_main (void)  {
 <td style="text-align: left;">CMSIS-Driver SPI connecting to SPI on Arduino pins D10..D13</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="#arduino_uno_i2c-arduino_uno_i2c-alt">ARDUINO_UNO_I2C</a></td>
+<td style="text-align: left;"><a href="#arduino_uno_i2c">ARDUINO_UNO_I2C</a></td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">CMSIS-Driver I2C connecting to I2C on Arduino pins D20..D21</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="#arduino_uno_i2c-arduino_uno_i2c-alt">ARDUINO_UNO_I2C-Alt</a></td>
+<td style="text-align: left;"><a href="#arduino_uno_i2c">ARDUINO_UNO_I2C-Alt</a></td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">CMSIS-Driver I2C connecting to I2C on Arduino pins D18..D19</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="#arduino_uno_d0-d21">ARDUINO_UNO_D0 .. D21</a></td>
+<td style="text-align: left;"><a href="#arduino_uno_dx">ARDUINO_UNO_D0 .. D21</a></td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">CMSIS-Driver GPIO connecting to Arduino pins D0..D21</td>
 </tr>
@@ -560,17 +567,17 @@ int app_main (void)  {
 <td style="text-align: left;"><strong>I/O Retargeting</strong></td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="#stdin-stdout-stderr">STDERR</a></td>
+<td style="text-align: left;"><a href="#stdio">STDERR</a></td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">Standard Error output</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="#stdin-stdout-stderr">STDIN</a></td>
+<td style="text-align: left;"><a href="#stdio">STDIN</a></td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">Standard Input</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="#stdin-stdout-stderr">STDOUT</a></td>
+<td style="text-align: left;"><a href="#stdio">STDOUT</a></td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">Standard Output</td>
 </tr>
@@ -596,8 +603,8 @@ int app_main (void)  {
 <p><code>CMSIS_target_header</code> contains driver instance number with this define:</p>
 <pre><code class="language-c">#define ARDUINO_UNO_UART    3     // CMSIS-Driver USART instance number
 </code></pre>
-<h3 id="arduino_uno_i2c-arduino_uno_i2c-alt">ARDUINO_UNO_I2C / ARDUINO_UNO_I2C-Alt</h3>
-<p>Connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__i2c__interface__gr.html">CMSIS-Driver I2C Interface</a> configured in controller mode.</p>
+<h3 id="arduino_uno_i2c">ARDUINO_UNO_I2C</h3>
+<p><code>ARDUINO_UNO_I2C</code> or <code>ARDUINO_UNO_I2C-Alt</code> connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__i2c__interface__gr.html">CMSIS-Driver I2C Interface</a> configured in controller mode.</p>
 <p><code>CMSIS_target_header</code> contains driver instance number with this define:</p>
 <pre><code class="language-c">#define ARDUINO_UNO_I2C    0     // CMSIS-Driver I2C instance number
 </code></pre>
@@ -607,8 +614,8 @@ int app_main (void)  {
 <p><code>CMSIS_target_header</code> contains driver instance number with this define:</p>
 <pre><code class="language-c">#define ARDUINO_UNO_SPI    1     // CMSIS-Driver SPI instance number
 </code></pre>
-<h3 id="arduino_uno_d0-d21">ARDUINO_UNO_D0 .. D21</h3>
-<p>Connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__gpio__interface__gr.html">CMSIS-Driver GPIO Interface</a>.</p>
+<h3 id="arduino_uno_dx">ARDUINO_UNO_Dx</h3>
+<p>The <code>ARDUINO_UNO_D0</code> .. <code>ARDUINO_UNO_D21</code> connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__gpio__interface__gr.html">CMSIS-Driver GPIO Interface</a>.</p>
 <p><code>CMSIS_target_header</code> contains the pin mapping to the physical driver.</p>
 <pre><code class="language-c">#define ARDUINO_UNO_D0  GPIO_PORTD(9U)  /* USART3: RX */
 #define ARDUINO_UNO_D1  GPIO_PORTD(8U)  /* USART3: TX */
@@ -655,8 +662,8 @@ int app_main (void)  {
 </code></pre>
 <h3 id="cmsis_vio">CMSIS_VIO</h3>
 <p>Connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__vio__interface__gr.html">CMSIS-Driver VIO Interface</a>, a virtual I/O interface that connects on physical boards to LEDs and switches.</p>
-<h3 id="stdin-stdout-stderr">STDIN / STDOUT / STDERR</h3>
-<p>I/O redirection via the <a href="https://arm-software.github.io/CMSIS-Compiler/main/index.html">CMSIS-Compiler</a> software component. Typical the redirect is to a UART dedicated for debugging.</p>
+<h3 id="stdio">STDIO</h3>
+<p>The <code>STDIN</code>, <code>STDOUT</code>, <code>STDERR</code> describes the I/O redirection via the <a href="https://arm-software.github.io/CMSIS-Compiler/main/index.html">CMSIS-Compiler</a> software component. Typical the redirect is to a UART dedicated for debugging.</p>
 <h2 id="arduino-shield">Arduino Shield</h2>
 <p>The software layers <a href="#board-layer">Board</a> and <a href="#shield-layer">Shield</a> are currently based on Arduino UNO connectors. To combine different boards and shields a consistent pin naming is required. The standardized mapping is shown in the diagram below.</p>
 <p><img alt="Arduino Shield Pinout" src="../images/Arduino-Shield.png" title="Arduino Shield Pinout" /></p>
