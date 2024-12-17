@@ -113,7 +113,7 @@ Directory `STM32CubeMX/MyBoard`     | Content
 `STM32CubeMX/GCC`                   | Project files for GCC; only startup code and linker scripts are used for *csolution projects*.
 `STM32CubeMX/MDK-ARM`               | Project files for MDK version 5; only startup code and linker scripts are used for *csolution projects*.
 
-[!NOTE]
+!!! Note
     CubeMX generates only the directory for the selected toolchain which is either `STM32CubeMX/EWARM`, `STM32CubeMX/GCC`, or `STM32CubeMX/MDK-ARM`.
 
 **Content of Generator Import File: `CubeMX.cgen.yml`**
@@ -157,7 +157,10 @@ Many applications require an RTOS kernel. By default, CubeMX implements interrup
 
 Adding an RTOS kernel requires these steps:
 
-1. **Add the RTOS kernel to application** (in this case RTX)
+### Step 1: Add RTOS
+
+The example below adds the [CMSIS-RTX](https://github.com/ARM-software/CMSIS-RTX) RTOS kernel to a project.
+Other kernels require different components and packs, but the concept is similar.
 
    **File: `CubeMX.cproject.yml`**    
 
@@ -176,12 +179,9 @@ project:
     - component: CMSIS:OS Tick:SysTick        # OS Tick implementation for RTOS
 ```    
 
-!!! Note
-    The example above uses CMSIS-RTX as the RTOS kernel, other kernels require different components and packs, but the concept is similar.
+### Step 2: Configure interrupt handlers
 
-2. **Configure interrupt handlers in CubeMX**
-
-Run CubeMX with:
+Configure the interrupt handlers by running CubeMX with:
 
 ```bash
 csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
@@ -278,16 +278,15 @@ CMSIS-Driver                     | Provided by [CMSIS-Driver_STM32](https://gith
 To migrate existing projects that where using the previous STM32CubeMX integration (based on `*.gpdsc` files) use the following steps:
 
 1. Remove all `component: Keil::Device:xxx` from the `*.cproject.yml` file.
-
 2. Add the `component: Device:CubeMX` to the `*.cproject.yml` file.
 3. Use `csolution run *.csolution.yml -g CubeMX` to initialize the directory structure.
 4. Replace the file `STM32CubeMX.ioc` with the file `STCubeGenerated.ioc` from the previous project.
 5. Copy source and include files from previous location as they may contain user modifications.
 6. Use `csolution run *.csolution.yml -g CubeMX` to generated the output from the previous STM32CubeMX project.
 7. Update the configuration in STM32CubeMX:
-   - In the tab `Project Manager - Project` set *Project Settings - Toolchain/IDE* to match the compiler selection in the csolution project.
-   - In the tab `Project Manager - Code Generator` under *STM32Cube MCU packages and embedded software packs* select `Copy only necessary library files`.
-   - Click `GENERATE CODE` to complete the migration.
+    - In the tab `Project Manager - Project` set *Project Settings - Toolchain/IDE* to match the compiler selection in the csolution project.
+    - In the tab `Project Manager - Code Generator` under *STM32Cube MCU packages and embedded software packs* select `Copy only necessary library files`.
+    - Click `GENERATE CODE` to complete the migration.
 
 ### uVision - Update STM32 DFP Packs
 
@@ -302,9 +301,9 @@ New `STM32*_DFP` software packs that contain in the release information **Update
 4. Open the dialog *Manage - Run-Time Environment* again.
 5. Select the component `Device:CubeMX` and start STM32CubeMX with the `play` button.
 6. Update the configuration in STM32CubeMX:
-   - In the tab `Project Manager - Project` set *Project Settings - Toolchain/IDE* to `MDK-ARM`.
-   - In the tab `Project Manager - Code Generator` under *STM32Cube MCU packages and embedded software packs* select `Copy only necessary library files`.
-   - Click `GENERATE CODE` to complete the migration.
+    - In the tab `Project Manager - Project` set *Project Settings - Toolchain/IDE* to `MDK-ARM`.
+    - In the tab `Project Manager - Code Generator` under *STM32Cube MCU packages and embedded software packs* select `Copy only necessary library files`.
+    - Click `GENERATE CODE` to complete the migration.
 
 **Starting a new project** works similar with these steps:
 
@@ -314,7 +313,7 @@ New `STM32*_DFP` software packs that contain in the release information **Update
 2. Open the dialog *Manage - Run-Time Environment*.
 3. Select the component `Device:CubeMX` and start STM32CubeMX with the `play` button.
 4. Create a new device configuration in STM32CubeMX:
-   - Follow the instructions of STM32CubeMX and verify settings.
-   - In the tab `Project Manager - Project` set *Project Settings - Toolchain/IDE* to `MDK-ARM`.
-   - In the tab `Project Manager - Code Generator` under *STM32Cube MCU packages and embedded software packs* select `Copy only necessary library files`.
-   - Click `GENERATE CODE` to complete the migration.
+    - Follow the instructions of STM32CubeMX and verify settings.
+    - In the tab `Project Manager - Project` set *Project Settings - Toolchain/IDE* to `MDK-ARM`.
+    - In the tab `Project Manager - Code Generator` under *STM32Cube MCU packages and embedded software packs* select `Copy only necessary library files`.
+    - Click `GENERATE CODE` to complete the migration.

@@ -266,6 +266,64 @@ A [template *linker script file*](build-overview.md#linker-script-templates) is 
 //   <i> Note: DMA descriptors and buffers are in this region
 ```
 
+### Troubleshooting
+
+The following section explains how to fix common linker problems.
+
+**Error: L6236E: No section matches selector - no section to be FIRST/LAST**
+
+Some devices (for example the NXP RT1064) use custom (non-CMSIS) assembly startup code. This is not compatible with the [default linker script](build-overview.md#linker-script-templates) that assume [C Startup code](https://arm-software.github.io/CMSIS_6/v6.0.0/Core/startup_c_pg.html) with standard CMSIS definitions.
+
+This problem can be solved by:
+
+- Using the linker script provided by the device vendor.
+- Change the linker script source file `ac6_linker_script.sct.src` that is local in your project, for example as shown below:
+
+```txt
+  ER_ROM0 __ROM0_BASE __ROM0_SIZE {
+    *(.isr_vector, +First)
+    *(InRoot$$Sections)
+    *(+RO +XO)
+  }
+```
+
+**Using RAM1 .. RAM3 Areas**
+
+Currently there is a problem with the default AC6 linker script template. It does not use by default the RAM1 .. RAM3 area.  
+
+A potential solution is discussed [here](https://github.com/Open-CMSIS-Pack/devtools/issues/1778#issuecomment-2356071535).  The investigation is currently ongoing.
+
+**Duplicate Heap definition in Assembler startup file**
+
+When using memory allocation functions (i.e. `malloc`), the application ends in a hard fault handler. This is typically caused by different methods of stack and heap definitions.
+The Arm Compiler offers [three ways to configure stack and heap](https://developer.arm.com/documentation/100073/0623/The-Arm-C-and-C---Libraries/Stack-and-heap-memory-allocation-and-the-Arm-C-and-C---libraries/Stack-pointer-initialization-and-heap-bounds). 
+
+- Use a scatter file to define `ARM_LIB_STACKHEAP`, `ARM_LIB_STACK`, or `ARM_LIB_HEAP` regions.
+- Use the symbols `__initial_sp`, `__heap_base`, and `__heap_limit`.
+- Implement `__user_setup_stackheap()` or `__user_initial_stackheap()`.
+
+!!! Warning
+    You have to choose one of these three ways.
+
+The [C startup code](https://arm-software.github.io/CMSIS_6/latest/Core/startup_c_pg.html) recommended by CMSIS Version 6 uses the linker scatter file for stack and heap definition.  The C startup code is generic and works across all toolchains that are supported by the CMSIS-Toolbox.
+
+However, some assembler startup files define stack and heap with other methods, for example by using the symbols `__initial_sp`, `__heap_base`, and `__heap_limit`.
+
+There are two options to solve the problem.
+
+1. Remove the stack and heap definition in the assembler startup code.
+
+2. Disable in the [Regions Header File](#regions-header-file) the stack and heap definition by setting `__STACK_SIZE` and `__HEAP_SIZE` to 0 as shown below.
+
+```txt
+// <h> Stack / Heap Configuration
+//   <o0> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
+//   <o1> Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
+#define __STACK_SIZE 0x00000000
+#define __HEAP_SIZE 0x00000000
+// </h>
+```
+
 ## Software Components
 
 A software component encapsulates a set of related functions. By offering API headers, it provides interfaces to other software components or to the user application.
@@ -304,20 +362,20 @@ ToDo: A potential improvement is to use the command `csolution list components` 
 The steps to create an application based on software components are:
 
 1. Step: **Select software components**
-   - Install the software pack that provides the required functionality (this could be based on pack datasheets) and identify the required software component(s).
-   - Add the pack and the component to your `*.cproject.yml` file.
-   - Run `csolution *.csolution.yml list dependencies` to identify other required software components.
-   - Run `csolution list components --filter` to identify packs that provide this software components.
-   - Repeat this step until all software components are part of your project.
+    - Install the software pack that provides the required functionality (this could be based on pack datasheets) and identify the required software component(s).
+    - Add the pack and the component to your `*.cproject.yml` file.
+    - Run `csolution *.csolution.yml list dependencies` to identify other required software components.
+    - Run `csolution list components --filter` to identify packs that provide this software components.
+    - Repeat this step until all software components are part of your project.
 
 2. Step: **Configure software components**
-   - Run `csolution *.csolution.yml update-rte` to copy configuration files into the [RTE directory](./build-overview.md#rte-directory-structure).
-   - Set the parameters in the configuration files for your application.
+    - Run `csolution *.csolution.yml update-rte` to copy configuration files into the [RTE directory](./build-overview.md#rte-directory-structure).
+    - Set the parameters in the configuration files for your application.
   
 3. Step: **Use software components in application program**
-   - User code templates provide a starting point for your application. 
-   - Copy these template files to your project directory add add it to your `*.cproject.yml` file.
-   - Adjust the code in the user template files as required.
+    - User code templates provide a starting point for your application. 
+    - Copy these template files to your project directory add add it to your `*.cproject.yml` file.
+    - Adjust the code in the user template files as required.
 
 ### Example: Network Stack
 

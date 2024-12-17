@@ -6,9 +6,10 @@
 This chapter describes the overall concept of the CMSIS-Toolbox build process. It outlines the content of *csolution project files* that describes the software application, and contains references to examples and project templates.
 
 - [Project Examples](#project-examples) helps to get started with the tools.
+- [Software Layers](#software-layers) provide reusable configurations  and give projects a better structure.
 - [Project Structure](#project-structure) describes the overall structure of projects.
 - [Linker Script Management](#linker-script-management) defines the  available memory and controls the linker operation.
-- [Generator Support](#generator-support) explains how to use configuration tools such as STM32CubeMX or MCUXpresso Config.
+- [Generator Support](#generator-support) integrates configuration tools such as STM32CubeMX or MCUXpresso Config.
 
 ## Overview of Operation
 
@@ -28,7 +29,7 @@ The tools process *csolution project files* (in YAML format) and *software packs
     - The term *CMSIS solution* refers to an application project that is specified with *csolution project files*.
     - *Software packs* describe software components in Open-CMSIS-Pack format that can contain middleware, drivers, board support, or device support. *Software packs* also provide documentation, examples, and reusable software layers.
 
-The overall features are:
+The features are:
 
 - Access the content of software packs in Open-CMSIS-Pack format to:
     - Setup the tool chain based on a *Device* or *Board* that is defined in software packs.
@@ -41,9 +42,13 @@ The overall features are:
 - Manage multiple build types to support software verification (debug build, test build, release build, etc.)
 - Support multiple compiler toolchains (GCC, Arm Compiler 6, IAR, LLVM) for project deployment.
 
-The diagram below outlines the operation of the `csolution` command `convert` that processes one or more [`context`](YML-Input-Format.md#context) configurations of the application (called *csolution project*). Refer to [Project Examples](#project-examples) for more information.
+The diagram below outlines the operation of the `csolution` command `convert` that processes one or more [`context`](YML-Input-Format.md#context) configurations of the application (called *csolution project*).
 
-![Operation Overview](./images/operation-overview.png "Operation Overview")
+!!! Tip
+    - [Project Examples](#project-examples) show different project types and provides templates for user projects.
+    - [Build Process Overview](build-operation.md#build-process-overview) explains the complete end-to-end build process.
+
+![Operation Overview of csolution](./images/operation-overview.png "Operation Overview of csolution")
 
 Input Files              | Description
 :------------------------|:---------------------------------
@@ -71,20 +76,20 @@ Output Files             | Description
 To build an application project, the `csolution` command `convert` executes the following steps:
 
 1. Read Input Files:
-   - Read *.YML input files and check files against schema (disable schema check with option: `--no-check-schema`)
-   - Parse *.YML input nodes.
-   - Load software packs for selected contexts (control packs with option: `--load [latest|all|required]`).
+    - Read *.YML input files and check files against schema (disable schema check with option: `--no-check-schema`)
+    - Parse *.YML input nodes.
+    - Load software packs for selected contexts (control packs with option: `--load [latest|all|required]`).
 
 2. Process each project context (select a specific context with option: `--context`):
-   - Apply [`pack:`](YML-Input-Format.md#pack), [`device:`](YML-Input-Format.md#device), [`board:`](YML-Input-Format.md#board), and [`compiler:`](YML-Input-Format.md#compiler) to filter the content of software packs.
-   - From [`groups:`](YML-Input-Format.md#groups) add the list of user source files.
-   - From [`components:`](YML-Input-Format.md#components) add the list of component source files.
-   - From [*.GPDSC files](build-tools.md#use-generators) add the list of generated source files.
+    - Apply [`pack:`](YML-Input-Format.md#pack), [`device:`](YML-Input-Format.md#device), [`board:`](YML-Input-Format.md#board), and [`compiler:`](YML-Input-Format.md#compiler) to filter the content of software packs.
+    - From [`groups:`](YML-Input-Format.md#groups) add the list of user source files.
+    - From [`components:`](YML-Input-Format.md#components) add the list of component source files.
+    - From [*.GPDSC files](build-tools.md#use-generators) add the list of generated source files.
 
 3. Generate output files:
-   - Update [configuration files](#plm-of-configuration-files) in RTE directory (disable with option: `--no-update-rte`).
-   - Print results of software component dependency validation.
-   - Create `cbuild-idx.yml`, `cbuild.yml` and `*.CPRJ` files.
+    - Update [configuration files](#plm-of-configuration-files) in RTE directory (disable with option: `--no-update-rte`).
+    - Print results of software component dependency validation.
+    - Create `cbuild-idx.yml`, `cbuild.yml` and `*.CPRJ` files.
 
 ### Source Code of Software Packs
 
@@ -265,8 +270,6 @@ default:
 
 #### Compiler Selection
 
-Toolchain agnostic projects do not contain a [`compiler:`](YML-Input-Format.md#compiler) selection in the `*.csolution.yml` project file. Instead the [`select-compiler:`](YML-Input-Format.md#select-compiler) node may list the compilers that this *csolution project* is tested with.
-
 There are two ways to select a toolchain:
 
 - An explicit [`compiler:`](YML-Input-Format.md#compiler) selection in the `*.csolution.yml` project file:
@@ -283,6 +286,9 @@ solution:
 ```shell
 cbuild Hello.csolution.yml --toolchain GCC
 ```
+
+!!! Tip
+    [Toolchain agnostic example projects](pack-tools.md#project-examples) do not contain a [`compiler:`](YML-Input-Format.md#compiler) selection in the `*.csolution.yml` project file. Instead the [`select-compiler:`](YML-Input-Format.md#select-compiler) node list the compilers that this *csolution project* is tested with.
 
 ### Reproducible builds
 
@@ -310,177 +316,11 @@ To support reproducible builds the following files should be committed to a repo
 !!! Note
     If the file `*.cbuild-set.yml` file is missing, the `setup` command creates a `*.cbuild-set` file with selection of the first `target-type` and the first `build-type`.
 
-### Software Layers
-
-Software layers collect source files and software components along with configuration files for re-use in different projects as shown in the picture below.
-
-![Project Layers](./images/Layers.png "Project Layers")
-
-**Simple Example:**
-
-This example uses a layer to include an RTOS kernel.  Using a layer has several benefits, for example that the configuration can be shared across many projects.
-
-The file `MyProject.cproject.yml` includes the file `RTOS.clayer.yml` using the [`layers:`](YML-Input-Format.md#linker) node:
-
-```yml
-project:
-  groups:
-    - group: App
-      files:
-        - file: ./main.c
-
-  components:
-    - component: CMSIS:CORE
-    - component: Device:Startup
-
-  layers:
-    - layer: ../Layer/RTOS.clayer.yml
-```
-
-The `RTOS.clayer.yml` file defines the kernel along with configuration settings.
-
-```yml
-layer:
-  description: RTX RTOS with configuration settings
-
-  packs:
-    - pack: ARM:CMSIS-RTX
-
-  components:
-    - component: CMSIS:RTOS2:Keil RTX5&Source
-```
-
-**Re-target Example:**
-
-The project [AVH-MLOps-Main](https://github.com/ARM-software/AVH-MLOps/tree/main/AVH-MLOps-main) is a test project that shows retargeting to different processors using a layer.
-
-**IoT Example:**
-
-The project [AWS_MQTT_MutualAuth_SW_Framework](https://github.com/Open-CMSIS-Pack/AWS_MQTT_MutualAuth_SW_Framework) provides an IoT cloud application that is composed of various layers:
-
-- **Demo.cproject.yml**: Implements the IoT Reference example.
-- **Socket.clayer.yml**: A software layer that provides the socket interface for Internet connectivity.
-- **Board.clayer.yml**: A software layer that provides the hardware interfaces to the device hardware.
-
-**Example:**
-
-#### Configuration Settings
-
-A software layer is a set of source files and pre-configured software components or source code that can be shared across multiple projects. To achieve this, the configuration files of a [`layer`](YML-Input-Format.md#layer) are stored within the directory structure of the software layer. This separate [RTE Directory Structure](#rte-directory-structure) allows that projects
-can share a `layer` with common configuration settings.
-
-!!! Note
-    When using a generator, such as CubeMX or MCUxpresso, the output should be redirected as described under [Configure Generator Output](#configure-generator-output).
-
-#### Software Layers in Packs
-
-Software layers for [*reference applications*](ReferenceApplications.md) may be published in software packs. Refer to [Pack Creation &raquo; Layers](pack-tools.md#layers) for more information.
-
-### Project Setup for Multiple Targets and Builds
-
-Complex examples require frequently slightly different targets and/or modifications during build, i.e. for testing. The
-picture below shows a setup during software development that supports:
-
-- Unit/Integration Testing on simulation models (called Virtual Hardware) where Virtual Drivers implement the interface
-  to simulated I/O.
-- Unit/Integration Testing for the same software setup on a physical board where Hardware Drivers implement the interface to
-  physical I/O.
-- System Testing where the software is combined with more software components that compose the final application.
-
-![Target and Build Types](./images/Target-Layer.png "Target and Build Types")
-
-As the software may share a large set of common files, provisions are required to manage such projects. The common is to add:
-
-- **target-types** (required) that select a target system. In the example this would be:
-    - `Virtual`: for simulation models.
-    - `Board`: for a physical evaluation board.
-    - `Production-HW`: for system integration test and product delivery on the final hardware.
-- **build-types** (optional) add the flexibility to configure each target build towards a specific test. For example:
-    - `Debug`: for a full debug build of the software used in an interactive debug session.
-    - `Test`: for a specific timing test using a test interface with maximum code optimization.
-    - `Release`: for the final code deployment to the system.
-
-**Flexible Builds for Multi-Target Projects**
-
-Multi-target projects may be created using `target-types` that select different physical or virtual hardware systems.
-
-**File: MultiTarget.csolution.yml**
-
-```yml
-solution:
-  cdefault:
-  compiler: AC6
-
-    :                              # pack definition not shown
-
-  target-types:
-    - type: Board
-      board: NUCLEO-L552ZE-Q
-      variables:
-        - HAL-Layer: ./NUCLEO-L552ZE-Q/Board.clayer.yml
-
-    - type: Production-HW
-      device: STM32L552XY          # specifies device
-      variables:
-        - HAL-Layer: ./HW/Production.clayer.yml
-
-    - type: Virtual
-      board: VHT-Corstone-300      # Virtual Hardware platform (appears as board)
-      variables:
-        - HAL-Layer: ./Corstone-300/AVH.clayer.yml
-      
-  build-types:
-    - type: Debug
-      optimize: none
-      debug: on
-
-    - type: Test
-      optimize: size
-      debug: on
-
-    - type: Release
-      optimize: size
-      debug: off
-
-projects:
-  - project: ./MyProject.cproject.yml
-```
-
-**File: MyProject.cproject.yml**
-
-```yml
-project:
-  groups:
-    - group: My group1
-      files:
-        - file: file1a.c
-        - file: file1b.c
-        - file: file1c.c
-
-    - group: My group2
-      files:
-        - file: file2a.c
-
-    - group: Test-Interface
-      for-context: .Test
-      files:
-        - file: fileTa.c
-
-  layers:
-    - layer: $HAL-Layer$                        # include target-type specific HAL layer
-
-  components:
-    - component: Device:Startup
-    - component: CMSIS:RTOS2:FreeRTOS
-    - component: ARM::CMSIS:DSP&Source          # not added for build type: Test
-      not-for-context: .Test                           
-```
-
 ### Project Setup for Related Projects
 
 A solution is the software view of the complete system. It combines projects that can be generated independently and
 therefore manages related projects. It may be also deployed to different targets during development as described in the
-previous section under [Project Setup for Multiple Targets and Builds](#project-setup-for-multiple-targets-and-builds).
+previous section under [Software Layers](#software-layers).
 
 The picture below shows a system that is composed of:
 
@@ -599,6 +439,136 @@ project:                                 # Non-secure project
         - file: $cmse-lib(Project_S)$    # Secure part of an application
 ```
 
+## Software Layers
+
+Software layers collect source files and software components along with configuration files for re-use in different projects. Software Layers gives projects a better structure and simplifies:
+
+- Development flows with evaluation boards and production hardware.
+- Evaluation of middleware and hardware modules across different microcontroller boards.
+- Code reuse across projects, i.e. board support for test-case deployment.
+- Test-driven software development on simulation model and hardware.
+
+**Simple Example:**
+
+This example uses a layer to include an RTOS kernel. The file `MyProject.cproject.yml` includes the file `RTOS.clayer.yml` using the [`layers:`](YML-Input-Format.md#linker) node:
+
+```yml
+project:
+  groups:
+    - group: App
+      files:
+        - file: ./main.c
+
+  components:
+    - component: CMSIS:CORE
+    - component: Device:Startup
+
+  layers:
+    - layer: ../Layer/RTOS.clayer.yml    # Add RTOS kernel
+```
+
+The `RTOS.clayer.yml` file defines the kernel along with configuration settings.
+
+```yml
+layer:
+  description: RTX RTOS with configuration settings
+
+  packs:
+    - pack: ARM:CMSIS-RTX
+
+  components:
+    - component: CMSIS:RTOS2:Keil RTX5&Source
+```
+
+The diagram below shows two different scenarios that are explained in the following sections.
+
+![Layer Usage](./images/Layers.png "Layer Usage")
+
+### Target Production Hardware
+
+Software development frequently starts on evalution boards. Using a board layer simplifes re-targeting to  production hardware. The following `*.csolution.yml` file exemplifies the concept. A software developer starts with a board layer for the evaluation board in the folder `MyBoard`. Once the production hardware is available, this layer is copied to a different folder (i.e. `MyHardware`). As both layers are independently managed, the configuration of the `MyHardware` layer can be modified, for example to target different devices, pin layout, or peripheral configurations.
+
+In the `*.csolution.yml` project the layer is defined using a [variable](YML-Input-Format.md#variables). By changing the `target-type` during the build process the software developer can continue to use the evaluation board or target the production hardware.
+
+```yml
+solution:
+  cdefault:
+  compiler: AC6
+
+  target-types:
+    - type: EvalBoard
+      board: STMicroelectronics::B-U585I-IOT02A:Rev.C
+      device: STMicroelectronics::STM32U585AIIx
+      variables:
+        - Board-Layer: $SolutionDir()$/MyBoard/Board.clayer.yml
+
+    - type: ProductionHW
+      device: STMicroelectronics::STM32U575AIIx    # uses a different device
+      variables:
+        - Board-Layer: $SolutionDir()$/MyHardware/Board.clayer.yml
+
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: debug
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  projects:
+    - project: HID/HID.cproject.yml
+```
+
+!!! Tip
+    - The [MDK-Middleware examples](https://arm-software.github.io/MDK-Middleware/latest/General/working_with_examples.html) are structured in this way. Start with a board layer that is provided in several [Board Support Packs](https://github.com/Open-CMSIS-Pack#stm32-packs-with-generator-support).
+    - Another project that extends this concept to hardware shields is the [Sensor-SDK-Example](https://github.com/Open-CMSIS-Pack/Sensor-SDK-Example).
+
+### Test Case Project
+
+Modern software design mandates for [test-driven development](https://en.wikipedia.org/wiki/Test-driven_development) that utilizes DevOps or CI principals. Simulation models such as the [Arm Virtual Hardware (AVH) FVP](https://arm-software.github.io/AVH/main/overview/html/index.html) allow test automation without target hardware.
+
+However, in some cases test should be also performed physical hardware. A test case project may therefore contain targets for simulation and physical hardware. The *csolution project* format allows to combine multiple test projects that validate different parts of the application.
+
+```yml
+solution:
+  cdefault:
+  compiler: GCC
+    :                              # pack definition not shown
+
+  target-types:
+    - type: Board
+      board: NUCLEO-L552ZE-Q
+      variables:
+        - Board-Layer: ./Board/NUCLEO-L552ZE-Q/Board.clayer.yml
+
+    - type: Virtual
+      board: VHT-Corstone-300      # Virtual Hardware platform (appears as board)
+      variables:
+        - Board-Layer: ./Board/Corstone-300/AVH.clayer.yml
+
+  projects:
+    - project: ./TestSuite1/TestCases.cproject.yml
+    - project: ./TestSuite2/TestCases.cproject.yml
+    - project: ./TestSuite3/TestCases.cproject.yml
+```
+
+!!! Tip
+    - Several [examples for Arm Virtual Hardware (AVH) FVP simulation models](https://github.com/Arm-Examples#avh-fvp-examples) show usage of *csolution projects* in CI workflows.
+    - The project [AVH-MLOps-Main](https://github.com/ARM-software/AVH-MLOps/tree/main/AVH-MLOps-main) is a test project that shows retargeting to different processors using a layer.
+    - The project [AWS_MQTT_Demo](https://github.com/Arm-Examples/AWS_MQTT_Demo) extends this concept with retargeting of a IP communication to virtual or physical hardware.
+
+### Configuration Settings
+
+A software layer is a set of source files and pre-configured software components or source code that can be shared across multiple projects. To achieve this, the configuration files of a [`layer`](YML-Input-Format.md#layer) are stored within the directory structure of the software layer. This separate [RTE Directory Structure](#rte-directory-structure) allows that projects
+can share a `layer` with common configuration settings.
+
+!!! Note
+    When using a generator, such as CubeMX or MCUxpresso, the output should be redirected as described under [Configure Generator Output](#configure-generator-output).
+
+### Software Layers in Packs
+
+Software layers for [*reference applications*](ReferenceApplications.md) may be published in software packs. Refer to [Pack Creation &raquo; Layers](pack-tools.md#layers) for more information.
+
 ## Project Structure
 
 This section describes how the `csolution` based project files should be organized to allow the scenarios described above. This section gives also guidelines for a directory structure.
@@ -667,7 +637,7 @@ Output                                        | Content
 
 ### Software Components
 
-Software components are re-usable library or source files that require no modification in the user application.
+[Software components](CreateApplications.md#software-components) are re-usable library or source files that require no modification in the user application.
 Optionally, configurable source and header files are provided that allow to set parameters for the software component.
 
 - Configurable source and header files are copied to the project using the directory structure explained above.
@@ -676,11 +646,10 @@ Optionally, configurable source and header files are provided that allow to set 
   project.
 - An include path to the header files of the software component is added to the C/C++ Compiler control string.
 
-!!! Note
-
-The `csolution` command `convert` provides the option `--no-update-rte` that disables generation of files in the `./RTE` directory and therefore the management of configuration files and the `RTE_Components.h` file.
-
-The `csolution` command `update-rte` only updates the configuration files in the `RTE` directory and provides with the option `--verbose` additional version details.
+!!! Notes
+    - The `csolution` command `convert` provides the option `--no-update-rte` that disables generation of files in the `./RTE` directory and therefore the management of configuration files and the `RTE_Components.h` file.
+    - The `csolution` command `update-rte` only updates the configuration files in the `RTE` directory.
+    - Using the option `--verbose` outputs additional version details.
 
 ### PLM of Configuration Files
 
@@ -817,11 +786,11 @@ This section describes the Linker Script management of the **`csolution` Project
 
 1. The [`linker:`](YML-Input-Format.md#linker) node specifies an explicit Linker Script and/or memory regions header file. This overrules Linker Scripts that are part of software components or specified using the `file:` notation.
 
-1. The [`linker:`](YML-Input-Format.md#linker) `auto:` enables the [automatic Linker Script generation](#automatic-linker-script-generation).
+2. The [`linker:`](YML-Input-Format.md#linker) `auto:` enables the [automatic Linker Script generation](#automatic-linker-script-generation).
   
-1. If no [`linker:`](YML-Input-Format.md#linker) node is used, a Linker Script file can be provided as part of software components. The extensions `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
+3. If no [`linker:`](YML-Input-Format.md#linker) node is used, a Linker Script file can be provided as part of software components. The extensions `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
 
-1. If no Linker Script is found, the [automatic Linker Script generation](#automatic-linker-script-generation) is used.
+4. If no Linker Script is found, the [automatic Linker Script generation](#automatic-linker-script-generation) is used.
 
 ### Linker Script Preprocessing
 
@@ -873,9 +842,9 @@ Linker Script Template       | Linker control file for ...
 The steps for creating a `*.csolution.yml` application with a *Generator* are:
 
 1. Create the `*.csolution.yml` container that refers the projects and selects `device:` or `board:`  (by using `target-types:`)
-1. Create `*.cproject.yml` files that are referred by the `*.csolution.yml` container.
-1. Add `components:` to the `*.cproject.yml` file.
-1. For components that have a `<generator-id>`, run the related generator.
+2. Create `*.cproject.yml` files that are referred by the `*.csolution.yml` container.
+3. Add `components:` to the `*.cproject.yml` file.
+4. For components that have a `<generator-id>`, run the related generator.
 
 The *Generator* can add files, components, and settings to a project using the [*Generator* import file (`*.cgen.yml`)](YML-CBuild-Format.md#generator-import-file). The format of this file is similar to a [software layer](#software-layers).
 
@@ -919,4 +888,7 @@ A Generator output configuration is useful for:
 
 ### Detailed Usage Instructions
 
-[**Configure STM32 Devices with CubeMX**](CubeMX.md) explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) to manage device and board configuration.
+These chapters explain how to manage device and board configuration in more detail:
+
+- [**Configure STM32 Devices with CubeMX**](CubeMX.md)
+- [**Configure NXP Devices with MCUXpresso Config Tools**](MCUXpressoConfig.md)

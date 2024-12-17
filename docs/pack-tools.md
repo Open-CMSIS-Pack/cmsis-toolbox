@@ -98,8 +98,7 @@ solution:
 A *template project* does not define a [`device:`](YML-Input-Format.md#device) or [`board:`](YML-Input-Format.md#board) in the `*.csolution.yml` file. When a IDE starts such an *template* the `device:` and/or `board:` information along with `pack:` information is added depending on user selection. The [`target-types:`](YML-Input-Format.md#target-types) contains a  `Name` that may be replaced by a descriptive target name.
 
 !!! Note
-
-A *template project* should not specify the DFP or BSP with a `pack:` node as this gets added by the IDE during project start.
+    A *template project* should not specify the DFP or BSP with a `pack:` node as this gets added by the IDE during project start.
 
 **Simple Template:**
 
@@ -147,8 +146,7 @@ project:
 ```
 
 !!! Note
-
-*Templates* should compile when the above information is added to the `*.csolution.yml` file. The exception is when *templates* require parts of the code provided by a generator.
+    *Templates* should compile when the above information is added to the `*.csolution.yml` file. The exception is when *templates* require parts of the code provided by a generator.
 
 **Register Template in PDSC File:**
 
@@ -266,8 +264,7 @@ solution:
 ```
 
 !!! Note
-
-The [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware/tree/main/Examples) contains several *reference applications* that exemplify the overall structure.
+    The [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware/tree/main/Examples) contains several *reference applications* that exemplify the overall structure.
 
 **Register *Reference Applications* in PDSC File:**
 
@@ -299,8 +296,7 @@ The [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware/tree/main/Ex
 ```
 
 !!! Note
-
-Several [STM32 Board Support Packs (BSP)](https://github.com/Open-CMSIS-Pack#stm32-packs-with-generator-support)  contain *layers* that are pre-configured for certain applications. For example, the *layer* in the [ST_NUCLEO-F756ZG_BSP](https://github.com/Open-CMSIS-Pack/ST_NUCLEO-F756ZG_BSP/tree/main/Layers/Default) supports applications that require Ethernet, USB Device, UART, or I2C interfaces.
+    Several [STM32 Board Support Packs (BSP)](https://github.com/Open-CMSIS-Pack#stm32-packs-with-generator-support)  contain *layers* that are pre-configured for certain applications. For example, the *layer* in the [ST_NUCLEO-F756ZG_BSP](https://github.com/Open-CMSIS-Pack/ST_NUCLEO-F756ZG_BSP/tree/main/Layers/Default) supports applications that require Ethernet, USB Device, UART, or I2C interfaces.
 
 ## Code Templates
 
@@ -323,8 +319,20 @@ Several [STM32 Board Support Packs (BSP)](https://github.com/Open-CMSIS-Pack#stm
 ```
 
 !!! Note
+    The [CMSIS-RTX](https://github.com/ARM-software/CMSIS-RTX) and [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware) pack contains several *code templates* that exemplify the overall structure.
 
-The [CMSIS-RTX](https://github.com/ARM-software/CMSIS-RTX) and [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware) pack contains several *code templates* that exemplify the overall structure.
+## Pack Generation
+
+Packs should be generated using scripts. Several scripts are available on [github.com/open-cmsis-pack](https://github.com/open-cmsis-pack):
+
+- [gen-pack](https://github.com/Open-CMSIS-Pack/gen-pack) is library for scripts creating software packs.
+- [gen-pack-action](https://github.com/Open-CMSIS-Pack/gen-pack-action) is a GitHub workflow action generating documentation and software packs.
+
+To start a pack, add a [`*.PDSC` file](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packFormat.html) with meta information and configure the above scripts.
+
+!!! Tip
+    - Arm uses GitHub actions to create packs. Review this process under the `workflow` directory on the projects available on [github.com/arm-software](https://github.com/arm-software) or [github.com/open-cmsis-pack](https://github.com/open-cmsis-pack).
+    - A good simple pack project is the [CMSIS-Driver pack](https://github.com/arm-software/cmsis-driver). Once this pack is published it is available for software developers using pack managers or [web portals](https://www.keil.arm.com/packs/cmsis-driver-arm/overview/).
 
 ## Pack Examples
 

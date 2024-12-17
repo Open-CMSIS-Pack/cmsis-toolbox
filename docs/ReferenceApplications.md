@@ -361,9 +361,9 @@ Currently, the following **`connect` names** are used.
 .                                                            |.                       | **Arduino Shield Interface**
 [ARDUINO_UNO_UART](#arduino_uno_uart)                        | -                      | CMSIS-Driver USART connecting to UART on Arduino pins D0..D1
 [ARDUINO_UNO_SPI](#arduino_uno_spi)                          | -                      | CMSIS-Driver SPI connecting to SPI on Arduino pins D10..D13
-[ARDUINO_UNO_I2C](#arduino_uno_i2c-arduino_uno_i2c-alt)     | -                      | CMSIS-Driver I2C connecting to I2C on Arduino pins D20..D21
-[ARDUINO_UNO_I2C-Alt](#arduino_uno_i2c-arduino_uno_i2c-alt) | -                      | CMSIS-Driver I2C connecting to I2C on Arduino pins D18..D19
-[ARDUINO_UNO_D0 .. D21](#arduino_uno_d0-d21)                | -                      | CMSIS-Driver GPIO connecting to Arduino pins D0..D21
+[ARDUINO_UNO_I2C](#arduino_uno_i2c)                          | -                      | CMSIS-Driver I2C connecting to I2C on Arduino pins D20..D21
+[ARDUINO_UNO_I2C-Alt](#arduino_uno_i2c)                      | -                      | CMSIS-Driver I2C connecting to I2C on Arduino pins D18..D19
+[ARDUINO_UNO_D0 .. D21](#arduino_uno_dx)                     | -                      | CMSIS-Driver GPIO connecting to Arduino pins D0..D21
 .                                                            |.                       | **CMSIS Driver and RTOS Interfaces**
 [CMSIS_ETH](#cmsis_eth)                                      | -                      | CMSIS-Driver ETH connected to physical board connector
 [CMSIS_MCI](#cmsis_mci)                                      | -                      | CMSIS-Driver MCI connected to physical board connector
@@ -372,9 +372,9 @@ Currently, the following **`connect` names** are used.
 [CMSIS_VIO](#cmsis_vio)                                      | -                      | CMSIS-Driver VIO interface for virtual I/O
 CMSIS-RTOS2                                                  | -                      | CMSIS-RTOS2 compliant RTOS
 .                                                            |.                       | **I/O Retargeting**
-[STDERR](#stdin-stdout-stderr)                             | -                      | Standard Error output
-[STDIN](#stdin-stdout-stderr)                              | -                      | Standard Input
-[STDOUT](#stdin-stdout-stderr)                             | -                      | Standard Output
+[STDERR](#stdio)                                             | -                      | Standard Error output
+[STDIN](#stdio)                                              | -                      | Standard Input
+[STDOUT](#stdio)                                             | -                      | Standard Output
 .                                                            |.                       | **Memory allocation**
 Heap                                                         | Heap Size              | Memory heap configuration
 
@@ -393,9 +393,9 @@ Connects to a [CMSIS-Driver USART Interface](https://arm-software.github.io/CMSI
 #define ARDUINO_UNO_UART    3     // CMSIS-Driver USART instance number
 ```
 
-### ARDUINO_UNO_I2C / ARDUINO_UNO_I2C-Alt
+### ARDUINO_UNO_I2C
 
-Connects to a [CMSIS-Driver I2C Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__i2c__interface__gr.html) configured in controller mode.
+`ARDUINO_UNO_I2C` or `ARDUINO_UNO_I2C-Alt` connects to a [CMSIS-Driver I2C Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__i2c__interface__gr.html) configured in controller mode.
 
 `CMSIS_target_header` contains driver instance number with this define:
 
@@ -415,9 +415,9 @@ The Target Select (SS) pin (typically on ARDUINO_UNO_D10) is not handled by CMSI
 #define ARDUINO_UNO_SPI    1     // CMSIS-Driver SPI instance number
 ```
 
-### ARDUINO_UNO_D0 .. D21
+### ARDUINO_UNO_Dx
 
-Connects to a [CMSIS-Driver GPIO Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__gpio__interface__gr.html).
+The `ARDUINO_UNO_D0` .. `ARDUINO_UNO_D21` connects to a [CMSIS-Driver GPIO Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__gpio__interface__gr.html).
 
 `CMSIS_target_header` contains the pin mapping to the physical driver.
 
@@ -490,9 +490,9 @@ Connects to a [CMSIS-Driver USB Host Interface](https://arm-software.github.io/C
 
 Connects to a [CMSIS-Driver VIO Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__vio__interface__gr.html), a virtual I/O interface that connects on physical boards to LEDs and switches.
 
-### STDIN / STDOUT / STDERR
+### STDIO
 
-I/O redirection via the [CMSIS-Compiler](https://arm-software.github.io/CMSIS-Compiler/main/index.html) software component. Typical the redirect is to a UART dedicated for debugging.
+The `STDIN`, `STDOUT`, `STDERR` describes the I/O redirection via the [CMSIS-Compiler](https://arm-software.github.io/CMSIS-Compiler/main/index.html) software component. Typical the redirect is to a UART dedicated for debugging.
 
 ## Arduino Shield
 

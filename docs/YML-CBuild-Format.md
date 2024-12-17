@@ -175,8 +175,10 @@ The `cbuild.yml` file is structured into several sections.  The top-level struct
 &nbsp;&nbsp;&nbsp; `compiler:`                           | [Compiler toolchain](YML-Input-Format.md#compiler) used for code generation.
 &nbsp;&nbsp;&nbsp; `board:`                              | [Board name](YML-Input-Format.md#board) used for this context.
 &nbsp;&nbsp;&nbsp; `board-pack:`                         | BSP that is defining the [Board name](YML-Input-Format.md#board) used for this context.
+&nbsp;&nbsp;&nbsp; `board-books:`                        | List board documentation as defined in the [PDSC element `<board>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_boards_pg.html#element_board_book).
 &nbsp;&nbsp;&nbsp; `device:`                             | [Device name](YML-Input-Format.md#device) with processor core selection used in this  project context.
 &nbsp;&nbsp;&nbsp; `device-pack:`                        | DFP that is defining the [Device name](YML-Input-Format.md#device) with processor core selection used in this  project context.
+&nbsp;&nbsp;&nbsp; `device-books:`                       | List device documentation as defined in the [PDSC element `<device>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_book).
 &nbsp;&nbsp;&nbsp; `processor:`                          | List of [processor attributes](YML-Input-Format.md#processor) used in this project context.
 &nbsp;&nbsp;&nbsp; [`packs:`](#packs)                    | List of software [packs](#packs) along with path information used to generate this project context.
 &nbsp;&nbsp;&nbsp; `optimize:`                           | Generic [optimize](YML-Input-Format.md#optimize) level for code generation.

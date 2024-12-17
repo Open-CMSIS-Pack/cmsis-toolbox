@@ -136,7 +136,8 @@ export CMSIS_COMPILER_ROOT=/opt/cmsis-toolbox/etc
 export PATH=/opt/cmsis-toolbox/bin:$PATH
 ```
 
-Note: The command `printenv` should list these environment variables.
+!!! Note
+    The command `printenv` should list these environment variables.
 
 #### Setup macOS
 
@@ -176,8 +177,6 @@ The command to install and enable `vcpkg` depends on the shell.
 
 ```bat
 curl -LO https://aka.ms/vcpkg-init.cmd && .\vcpkg-init.cmd
-```
-```bat
 %USERPROFILE%\.vcpkg\vcpkg-init.cmd
 ```
 
@@ -185,8 +184,6 @@ curl -LO https://aka.ms/vcpkg-init.cmd && .\vcpkg-init.cmd
 
 ```ps1
 iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
-```
-```ps1
 . ~/.vcpkg/vcpkg-init.ps1
 ```
 
@@ -194,8 +191,6 @@ iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
 
 ```sh
 . <(curl https://aka.ms/vcpkg-init.sh -L)
-```
-```sh
 . ~/.vcpkg/vcpkg-init
 ```
   

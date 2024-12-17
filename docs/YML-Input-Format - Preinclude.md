@@ -1222,9 +1222,6 @@ A [`context`](#context-name-conventions) is an enviroment setup for a project th
 - `.build-type` that defines typically build specific settings such as for debug, release, or test.
 - `+target-type` that defines typically target specific settings such as device, board, or usage of processor features.
 
-The section
-[Project setup for multiple targets and test builds](build-overview.md#project-setup-for-multiple-targets-and-builds)
-explains the overall concept of  `target-types` and `build-types`. These `target-types` and `build-types` are defined in the `*.csolution.yml` that defines the overall application for a system.
 
 The settings of the `target-types:` are processed first; then the settings of the `build-types:` that potentially overwrite the `target-types:` settings.
 

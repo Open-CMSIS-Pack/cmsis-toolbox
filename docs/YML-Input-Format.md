@@ -29,10 +29,11 @@ File Extension           | [Category](https://open-cmsis-pack.github.io/Open-CMS
 The **`csolution` Project Manager** uses the following syntax to specify the `pack:` names in the `*.yml` files.
 
 ```yml
-[vendor ::] pack-name [@version]         # If specified, with exact version
-[vendor ::] pack-name [@>=version]       # If specified, with version equal or higher
-[vendor ::] pack-name [@^version]        # If specified, with version equal or higher but same major version
-[vendor ::] pack-name [@~version]        # If specified, with version equal or higher but same major and minor version
+[vendor ::] pack-name                # Use latest version of the pack
+[vendor ::] pack-name@version        # With exact version
+[vendor ::] pack-name@>=version      # With version equal or higher
+[vendor ::] pack-name@^version       # With version equal or higher but same major version
+[vendor ::] pack-name@~version       # With version equal or higher but same major and minor version
 ```
 
 Element      |              | Description
@@ -51,13 +52,13 @@ Element      |              | Description
 **Examples:**
 
 ```yml
-- pack:   ARM::CMSIS@5.9.0                  # 'CMSIS' Pack (with version 5.5.0)
-- pack:   MDK-Middleware@>=7.13.0           # 'MDK-Middleware` latest installed version 7.13.0 or higher 
-- pack:   MDK-Middleware@^7.13.0            # 'MDK-Middleware' latest installed version 7.13.0 or higher but lower then 8.0.0
-- pack:   Keil::TFM                         # 'TFM' Software Pack from vendor Keil, latest installed version
-- pack:   AWS                               # All latest versions of Software Packs from vendor 'AWS'
-- pack:   Keil::STM*                        # All latest versions of Software Packs that start with 'STM' from vendor 'Keil'
-- pack:   MDK-Middleware@>=8.0.0-0          # `MDK-Middleware` version 8.0.0 or higher including development versions
+- pack:   ARM::CMSIS@5.9.0           # 'CMSIS' Pack with version 5.5.0
+- pack:   MDK-Middleware@>=7.13.0    # latest version 7.13.0 or higher 
+- pack:   MDK-Middleware@^7.13.0     # latest version 7.13.0 or higher, but lower than 8.0.0
+- pack:   Keil::TFM                  # 'TFM' Pack from vendor Keil, latest installed version
+- pack:   AWS                        # All Software Packs from vendor 'AWS', latest version
+- pack:   Keil::STM*                 # Software Packs that start with 'STM' from vendor 'Keil'
+- pack:   MDK-Middleware@>=8.0.0-0   # version 8.0.0 or higher including development versions
 ```
 
 ### `component:` Name Conventions
@@ -87,12 +88,15 @@ A component can be partly defined in *csolution project files* (`*.cproject.yml`
 - when a partly specified component resolves to several possible choices, the tool selects:
     - (a) the default `Cvariant` of the component as defined in the PDSC file. 
     - (b) the component with the higher `Cversion` value.
-    - (c) and error message is issued when two identical components are defined by multiple vendors and `Cvendor` is not specified.
+    - (c) an error message is issued when two identical components are defined by multiple vendors and `Cvendor` is not specified.
 - the partly specified component is extended by:
     - version information from the software pack.
     - default variant definition from the software pack.
 
 The fully resolved component name is shown in the [`*.cbuild.yml`](YML-CBuild-Format.md) output file.
+
+!!! Note
+    Before CMSIS-Toolbox 2.7, a component that omitted `Csub` resolved to the first matching component. Installing additional software packs could change therefore component selection. When a component is defined with `Csub` it is now required to specify.
 
 **Multiple component definitions are rejected**
 
@@ -429,7 +433,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 
 ```yml
 solution:
-  created-for: cmsis-toolbox@2.0  # minimum CMSIS-Toolbox version required for project build
+  created-for: cmsis-toolbox@2.6  # minimum CMSIS-Toolbox version required for project build
   cdefault:                       # use default setup of toolchain specific controls.
   compiler: GCC                   # overwrite compiler definition in 'cdefaults.yml'
 
@@ -568,10 +572,9 @@ The following nodes control the directory structure for the application.
 
 Allows to control the directory structure for build output files and temporary files.  
 
->**Note:**
-
-- This control is only possible at `csolution.yml` level.
-- CMake manages the temporary directory of all projects therefore `tmpdir:` does not support access sequences.
+!!! Notes
+    - This control is only possible at `csolution.yml` level.
+    - CMake manages the temporary directory of all projects therefore `tmpdir:` does not support access sequences.
 
 `output-dirs:`                     |              | Content
 :----------------------------------|--------------|:------------------------------------
@@ -733,7 +736,7 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 &nbsp;&nbsp;&nbsp;[`for-context:`](#for-context)            |  Optional  | Include Linker Script for a list of *build* and *target* type names.
 &nbsp;&nbsp;&nbsp;[`not-for-context:`](#not-for-context)    |  Optional  | Exclude Linker Script for a list of *build* and *target* type names.
 
-!!! Notes:
+!!! Notes
     - The `linker:` node must have at least `regions:`, `script:`, `auto:`, or `define:`.
     - If no `script:` file is specified, compiler specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
     - A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`.
@@ -789,6 +792,7 @@ Configure the generated output files.
 `- elf`           | Executable in ELF format. The file extension is toolchain specific.
 `- hex`           | Intel HEX file in HEX-386 format.
 `- bin`           | Binary image.
+`- map`           | Linker MAP file.
 
 The **default** setting for `output:` is:
 
@@ -801,18 +805,25 @@ output:
 **Example:**
 
 ```yml
-output:                  # configure output files
+output:
+  type: 
+  - elf                  # Generate executeable file.
+  - map                  # Generate Linker MAP file.
+```
+
+```yml
+output:                  # configure output files.
   base-name: MyProject   # used for all output files, including linker map file.
   type:
   - elf                  # Generate executeable file.
-  - hex                  # generate a HEX file 
-  - bin                  # generate a BIN file 
+  - hex                  # generate a HEX file.
+  - bin                  # generate a BIN file.
 ```
 
 Generate a **library**:
 
 ```yml
-output:                  # configure output files
+output:                  # configure output files.
   type: lib              # Generate library file.
 ```
 
@@ -862,6 +873,8 @@ Value                                                 | Select C++ Language Stan
 `gnu++17`                                             | same as `c++17` but with additional GNU extensions.
 `c++20`                                               | compile C++ source files as defined in C++20 standard (ISO/IEC 14882:2020).
 `gnu++20`                                             | same as `c++20` but with additional GNU extensions.
+`c++23`                                               | compile C++ source files as defined in C++23 standard (ISO/IEC 14882:2023).
+`gnu++23`                                             | same as `c++23` but with additional GNU extensions.
 
 ### `optimize:`
 
@@ -927,9 +940,8 @@ Contains a list of symbol #define statements that are passed via the command lin
 &nbsp;&nbsp;&nbsp; `- <symbol-name>: <value>`               | #define symbol with value passed via command line
 &nbsp;&nbsp;&nbsp; `- <symbol-name>: \"<string>\"`          | #define symbol with string value passed via command line
 
->**Note:**
-
-This control only applies to C and C++ source files (or to the [linker](#linker) script preprocessor).  For assembler source files use the `define-asm:` node.
+!!! Note
+    This control only applies to C and C++ source files (or to the [linker](#linker) script preprocessor).  For assembler source files use the `define-asm:` node.
 
 **Example:**
 
@@ -986,9 +998,8 @@ Add include paths to the command line of the development tools for C and C++ sou
 :----------------------------------------------------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `- <path-name>`                         | Named path to be added
 
->**Note:**
-
-This control only applies to C and C++ source files.  For assembler source files use the `add-path-asm:` node.
+!!! Note
+    This control only applies to C and C++ source files.  For assembler source files use the `add-path-asm:` node.
 
 **Example:**
 
@@ -1012,9 +1023,8 @@ Add include paths to the command line of the development tools for assembly sour
 :----------------------------------------------------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `- <path-name>`                         | Named path to be added
 
->**Note:**
-
-This control only applies to assembler source files.  For C and C++ source files use the `add-path:` node.
+!!! Note
+    This control only applies to assembler source files.  For C and C++ source files use the `add-path:` node.
 
 **Example:**
 
@@ -1150,7 +1160,7 @@ The `packs:` node can be specified in the `*.csolution.yml` file allows you to:
 The  [Pack Name Conventions](#pack-name-conventions) are used to specify the name of the software packs.
 The `pack:` definition may be specific to a [`context`](#context) that specifies `target-types:` and/or `build-types:` or provide a local path to a development repository of a software pack.
 
-!!! Notes:
+!!! Notes
     - By default, the **`csolution` Project Manager** only loads the latest version of the installed software packs. It is however possible to request specific versions using the `- pack:` node.
     - An attempt to add two different versions of the same software pack results in an error.
 
@@ -1261,7 +1271,7 @@ A [`context`](#context-name-conventions) is an enviroment setup for a project th
     - The [`context`](#context-name-conventions) name is used througout the build process and is reflected in directory names. Even when there is not a fixed limit, keep identifiers short. Recommended is less than 32 characters for the [`context`](#context-name-conventions) name.
     - Blank characters (' ') in the context name are not permitted by CMake.  
 
-The section [Project setup for multiple targets and test builds](build-overview.md#project-setup-for-multiple-targets-and-builds)
+The section [project setup for related projects](build-overview.md#project-setup-for-related-projects)
 explains the overall concept of  `target-types` and `build-types`. These `target-types` and `build-types` are defined in the `*.csolution.yml` that defines the overall application for a system.
 
 The settings of the `target-types:` are processed first; then the settings of the `build-types:` that potentially overwrite the `target-types:` settings.
@@ -1292,9 +1302,8 @@ The `target-types:` node may include [toolchain options](#toolchain-options), [t
 &nbsp;&nbsp;&nbsp; [`context-map:`](#context-map)  |   Optional   | Use different `target-types:` for specific projects.
 &nbsp;&nbsp;&nbsp; [`variables:`](#variables)      |   Optional   | Variables that can be used to define project components.
 
-**Note::**
-
-Either `device:` or `board:` is required.
+!!! Note
+    Either `device:` or `board:` is required.
 
 ### `build-types:`
 

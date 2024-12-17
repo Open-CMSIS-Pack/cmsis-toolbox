@@ -22,7 +22,7 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.6.0 (C) 2024 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.7.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -44,11 +44,12 @@ Options:
   -j, --jobs int           Number of job slots for parallel execution (default 8)
   -l, --load arg           Set policy for packs loading [latest | all | required] (default "required")
       --log arg            Save output messages in a log file
+  -n, --no-schema-check    Skip schema check
   -O, --output arg         Add prefix to 'outdir' and 'tmpdir'
   -p, --packs              Download missing software packs with cpackget
   -q, --quiet              Suppress output messages except build invocations
   -r, --rebuild            Remove intermediate and output directories and rebuild
-  -s, --schema             Validate project input file(s) against schema
+  -s, --schema             Validate project input file(s) against schema [deprecated]
   -t, --target arg         Optional CMake target name
       --toolchain arg      Input toolchain to be used
       --update-rte         Update the RTE directory and files
@@ -66,7 +67,7 @@ Use "cbuild [command] --help" for more information about a command.
 Create build information for embedded applications that consist of one or more related projects.
 
 ```text
-csolution: Project Manager 2.6.0 (C) 2024 Arm Ltd. and Contributors
+csolution: Project Manager 2.7.0 (C) 2024 Arm Ltd. and Contributors
 
 Usage:
   csolution <command> [<name>.csolution.yml] [options]
@@ -99,7 +100,7 @@ Options:
   -m, --missing                 List only required packs that are missing in the pack repository
   -n, --no-check-schema         Skip schema check
   -N, --no-update-rte           Skip creation of RTE directory and files
-  -o,-O --output arg            Add prefix to 'outdir' and 'tmpdir'
+  -o,-O --output base-dir       Add prefix to 'outdir' and 'tmpdir'
   -q, --quiet                   Run silently, printing only error messages
   -R, --relative-paths          Print paths relative to project or ${CMSIS_PACK_ROOT}
   -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
@@ -350,9 +351,8 @@ variants. There are two ways to specify the CMSIS-PACK root directory:
 cpackget add Vendor.PackName --pack-root ./MyLocal/Packs
 ```
 
->**Note:**
-
-As the various tools of the CMSIS-Toolbox all rely on the CMSIS-Pack root directory, it is recommended to use the `CMSIS_PACK_ROOT` environment variable.
+!!! Note
+    As the various tools of the CMSIS-Toolbox all rely on the CMSIS-Pack root directory, it is recommended to use the `CMSIS_PACK_ROOT` environment variable.
 
 ### Initialize CMSIS-Pack root directory
 
@@ -554,9 +554,8 @@ List all packs present in the local copy of the **Pack Index File** (`index.pidx
 cpackget list --public
 ```
 
->**Note:**
-
-[Update Pack Index File](#update-pack-index) before using the `list` command to list all public software packs.
+!!! Note
+    [Update Pack Index File](#update-pack-index) before using the `list` command to list all public software packs.
 
 ### Remove packs
 
@@ -590,7 +589,7 @@ cpackget rm Vendor.PackName.pdsc
 
 ## DevOps Usage
 
-The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The `./out` directory contains all build artifacts of an application for execution on physical hardware or simulation models. [Arm Virtual Hardware - Fixed Virtual Platforms (AVH FVP)](https://github.com/ARM-software/AVH) enable unit tests and integration tests with simulation models and various virtual interfaces. Using layers allows a [Project Setup for Multiple Targets](build-overview.md#project-setup-for-multiple-targets-and-builds), for example to test on physical hardware or AVH-FVP simulation models. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.
+The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The `./out` directory contains all build artifacts of an application for execution on physical hardware or simulation models. [Arm Virtual Hardware - Fixed Virtual Platforms (AVH FVP)](https://github.com/ARM-software/AVH) enable unit tests and integration tests with simulation models and various virtual interfaces. Using [software layers](build-overview.md#software-layers) allows for example to test on physical hardware or AVH-FVP simulation models. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.
 
 The commands below show typical builds in a CI system. Using `--packs` installs all public packs with implicit acceptance of licenses. This command builds all projects, target-types, and build-types. Using [`--context`](build-overview.md#context) reduces the scope of the build. Using [`--frozen-packs`](build-overview.md#reproducible-builds) uses exactly the packs that are specified in the file `*.cbuild-pack.yml`.
 
