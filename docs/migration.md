@@ -48,7 +48,8 @@ in `output-dirs`:
 - `gendir` (replaced by `generators` node)
 - `rtedir` (replaced by `rte` node in `*.cproject.yml`)
 
->Note: RTE files belonging to components specified in `*.clayer.yml` files remain next to such `*.clayer.yml.`
+!!! Note
+    RTE files belonging to components specified in `*.clayer.yml` files remain next to such `*.clayer.yml.`
 
 in [`processor`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#processor):
 
@@ -63,7 +64,9 @@ in [`cdefault:`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs
 **The cdefault enablement has changed:**
 
 The [`cdefault:`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#default) empty node must be added to *.csolution.yml to activate its use.
->Note: the file must be named `cdefault.yml` or `cdefault.yaml` without leading dot.
+
+!!! Note
+    The file must be named `cdefault.yml` or `cdefault.yaml` without leading dot.
 
 **The following [Access Sequences](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#access-sequences) were removed:**
 
