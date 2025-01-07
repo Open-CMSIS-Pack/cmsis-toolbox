@@ -210,7 +210,7 @@ cbuild example.csolution.yml --toolchain GCC --output outGCC
 The [Component Configuration​](build-overview.md#directory-structure) is stored in the [RTE directory](build-overview.md#rte-directory-structure). When files are missing or new software pack versions are installed, it might be required to update the RTE configuration files:
 
 ```shell
-csolution example.csolution.yml --update-rte
+csolution example.csolution.yml update-rte
 ```
 
 ### Add Software Packs
