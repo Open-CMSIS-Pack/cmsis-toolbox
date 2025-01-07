@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Build Overview - CMSIS-Toolbox</title>
+    <title>CSolution Project Structure - CMSIS-Toolbox</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Build Overview";
+        var mkdocs_page_name = "CSolution Project Structure";
         var mkdocs_page_input_path = "build-overview.md";
         var mkdocs_page_url = null;
       </script>
@@ -52,8 +52,12 @@
                 <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+                </li>
+              </ul>
               <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">Build Overview</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">CSolution Project Structure</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#overview-of-operation">Overview of Operation</a>
         <ul>
@@ -109,7 +113,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#project-structure">Project Structure</a>
+    <li class="toctree-l2"><a class="reference internal" href="#directory-structure">Directory Structure</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#working-areas">Working Areas</a>
     </li>
@@ -165,11 +169,7 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
                 </li>
               </ul>
               <ul>
@@ -218,7 +218,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Build Overview</li>
+      <li class="breadcrumb-item active">CSolution Project Structure</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/build-overview.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -228,68 +228,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="build-overview">Build Overview</h1>
+                <h1 id="csolution-project-structure">CSolution Project Structure</h1>
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-<p>This chapter describes the overall concept of the CMSIS-Toolbox build process. It outlines the content of <em>csolution project files</em> that describes the software application, and contains references to examples and project templates.</p>
+<p>This chapter outlines the structure of <em>csolution project files</em> that contain the build information of the software application.</p>
 <ul>
-<li><a href="#project-examples">Project Examples</a> helps to get started with the tools.</li>
+<li><a href="#project-examples">Project Examples</a> and project templates helps to get started with the tools.</li>
 <li><a href="#software-layers">Software Layers</a> provide reusable configurations  and give projects a better structure.</li>
-<li><a href="#project-structure">Project Structure</a> describes the overall structure of projects.</li>
+<li><a href="#directory-structure">Directory Structure</a> describes the overall directory structure of projects.</li>
 <li><a href="#linker-script-management">Linker Script Management</a> defines the  available memory and controls the linker operation.</li>
 <li><a href="#generator-support">Generator Support</a> integrates configuration tools such as STM32CubeMX or MCUXpresso Config.</li>
 </ul>
 <h2 id="overview-of-operation">Overview of Operation</h2>
-<p>The following tools support the creation of build information for embedded applications:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Tool</th>
-<th style="text-align: left;">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><a href="../build-tools/#cpackget-invocation">cpackget</a></td>
-<td style="text-align: left;">Pack Manager: install and manage software packs in the host development environment.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><a href="../build-tools/#cbuild-invocation">cbuild</a></td>
-<td style="text-align: left;">Build Invocation: orchestrate the build steps utilizing CMSIS tools and a CMake compilation process.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><a href="../build-tools/#csolution-invocation">csolution</a></td>
-<td style="text-align: left;">Project Manager: create build information for embedded applications that consist of one or more related projects.</td>
-</tr>
-</tbody>
-</table>
-<p>The tools process <em>csolution project files</em> (in YAML format) and <em>software packs</em>
-(in <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html">Open-CMSIS-Pack</a> format) to generate independent projects which may be a part of a more complex application.</p>
-<div class="admonition notes">
-<p class="admonition-title">Notes</p>
-<ul>
-<li>This documentation uses the filename extension <code>*.yml</code>, but the extension <code>*.yaml</code> is also supported.</li>
-<li>The term <em>CMSIS solution</em> refers to an application project that is specified with <em>csolution project files</em>.</li>
-<li><em>Software packs</em> describe software components in Open-CMSIS-Pack format that can contain middleware, drivers, board support, or device support. <em>Software packs</em> also provide documentation, examples, and reusable software layers.</li>
-</ul>
-</div>
-<p>The features are:</p>
-<ul>
-<li>Access the content of software packs in Open-CMSIS-Pack format to:<ul>
-<li>Setup the tool chain based on a <em>Device</em> or <em>Board</em> that is defined in software packs.</li>
-<li>Add software components that are provided in the various software packs to the application.</li>
-</ul>
-</li>
-<li>Organize applications (with a <code>*.csolution.yml</code> file) into projects that are independently managed
-  (using <code>*.cproject.yml</code> files).</li>
-<li>Organize software layers (with a <code>*.clayer.yml</code> file) with pre-configured software components that enable code reuse across similar applications.</li>
-<li>Manage multiple hardware targets to allow application deployment to different hardware
-  (test board, production hardware, etc.).</li>
-<li>Manage multiple build types to support software verification (debug build, test build, release build, etc.)</li>
-<li>Support multiple compiler toolchains (GCC, Arm Compiler 6, IAR, LLVM) for project deployment.</li>
-</ul>
-<p>The diagram below outlines the operation of the <code>csolution</code> command <code>convert</code> that processes one or more <a href="../YML-Input-Format/#context"><code>context</code></a> configurations of the application (called <em>csolution project</em>).</p>
+<p>The diagram below outlines the operation of the <code>csolution</code> command <code>convert</code> that processes the <em>csolution project</em> with one or more <a href="../YML-Input-Format/#context"><code>context</code></a> configurations for an application.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <ul>
@@ -324,11 +276,11 @@
 </tr>
 <tr>
 <td style="text-align: left;"><a href="../YML-Input-Format/#solution">*.csolution.yml</a></td>
-<td style="text-align: left;">Complete scope of the application with build order of sub-projects. Defines <a href="../YML-Input-Format/#target-types">target</a> and <a href="../YML-Input-Format/#build-types">build</a> types.</td>
+<td style="text-align: left;">Complete scope of the application with sub-projects. Defines <a href="../YML-Input-Format/#target-types">target</a> and <a href="../YML-Input-Format/#build-types">build</a> types.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="../YML-Input-Format/#project">*.cproject.yml</a></td>
-<td style="text-align: left;">Content of an independent build (linker or archiver run) - directly relates to a <code>*.cprj</code> file.</td>
+<td style="text-align: left;">Content of an independent build step (linker or library archiver run).</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="../YML-Input-Format/#layer">*.clayer.yml</a></td>
@@ -345,11 +297,11 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><a href="../YML-CBuild-Format/#file-structure-of-cbuild-packyml">*.cbuild-pack.yml</a></td>
+<td style="text-align: left;"><a href="../YML-CBuild-Format/#cbuild-packyml">*.cbuild-pack.yml</a></td>
 <td style="text-align: left;">Exact list of the packs that are used by the application; enables <a href="#reproducible-builds">reproducible builds</a> as it locks the pack versions.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="../YML-CBuild-Format/#file-structure-of-cbuild-setyml">*.cbuild-set.yml</a></td>
+<td style="text-align: left;"><a href="../YML-CBuild-Format/#cbuild-setyml">*.cbuild-set.yml</a></td>
 <td style="text-align: left;">Specifies the <a href="#working-with-context-set">context set</a> of projects, target-types, and build-types that are used to generate the application image.</td>
 </tr>
 </tbody>
@@ -363,16 +315,12 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><a href="../YML-CBuild-Format/#file-structure-of-cbuild-idxyml">*.cbuild-idx.yml</a></td>
+<td style="text-align: left;"><a href="../YML-CBuild-Format/#cbuild-idxyml">*.cbuild-idx.yml</a></td>
 <td style="text-align: left;">Index file of all <code>*.cbuild.yml</code> build descriptions; contains also overall information for the application.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="../YML-CBuild-Format/#file-structure-of-cbuild-idxyml">*.cbuild.yml</a></td>
+<td style="text-align: left;"><a href="../YML-CBuild-Format/#cbuild-idxyml">*.cbuild.yml</a></td>
 <td style="text-align: left;">Build description of a single <a href="../YML-Input-Format/#project-file-structure"><code>*.cproject.yml</code></a> input file for each context.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><a href="https://arm-software.github.io/CMSIS_5/Build/html/cprjFormat_pg.html">Project Build Files *.cprj</a></td>
-<td style="text-align: left;">Project build information in legacy format.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="#rte-directory-structure">Run-Time Environment (RTE)</a></td>
@@ -384,31 +332,24 @@
 </tr>
 </tbody>
 </table>
-<p>To build an application project, the <code>csolution</code> command <code>convert</code> executes the following steps:</p>
+<p>To generate the build information of an application project, the <code>csolution</code> command <code>convert</code> executes the following steps:</p>
 <ol>
 <li>
-<p>Read Input Files:</p>
-<ul>
-<li>Read *.YML input files and check files against schema (disable schema check with option: <code>--no-check-schema</code>)</li>
-<li>Parse *.YML input nodes.</li>
-<li>Load software packs for selected contexts (control packs with option: <code>--load [latest|all|required]</code>).</li>
-</ul>
+<p>Read Input Files (<em>csolution project</em> and <em>Software Packs</em>)</p>
 </li>
 <li>
-<p>Process each project context (select a specific context with option: <code>--context</code>):</p>
+<p>Process each project context (selected by a <a href="#working-with-context-set">context-set</a> or option: <code>--context</code>):</p>
 <ul>
 <li>Apply <a href="../YML-Input-Format/#pack"><code>pack:</code></a>, <a href="../YML-Input-Format/#device"><code>device:</code></a>, <a href="../YML-Input-Format/#board"><code>board:</code></a>, and <a href="../YML-Input-Format/#compiler"><code>compiler:</code></a> to filter the content of software packs.</li>
 <li>From <a href="../YML-Input-Format/#groups"><code>groups:</code></a> add the list of user source files.</li>
 <li>From <a href="../YML-Input-Format/#components"><code>components:</code></a> add the list of component source files.</li>
-<li>From <a href="../build-tools/#use-generators">*.GPDSC files</a> add the list of generated source files.</li>
 </ul>
 </li>
 <li>
-<p>Generate output files:</p>
+<p>Generate <em>Output Files</em>:</p>
 <ul>
 <li>Update <a href="#plm-of-configuration-files">configuration files</a> in RTE directory (disable with option: <code>--no-update-rte</code>).</li>
 <li>Print results of software component dependency validation.</li>
-<li>Create <code>cbuild-idx.yml</code>, <code>cbuild.yml</code> and <code>*.CPRJ</code> files.</li>
 </ul>
 </li>
 </ol>
@@ -436,10 +377,6 @@
 <tr>
 <td style="text-align: left;"><a href="https://github.com/Open-CMSIS-Pack/csolution-examples">csolution-examples</a></td>
 <td style="text-align: left;">Contains several getting started examples that show single-core, multi-core, and TrustZone setup as well as how to use a generator (CubeMX).</td>
-</tr>
-<tr>
-<td style="text-align: left;"><a href="https://github.com/Open-CMSIS-Pack/vscode-get-started">vscode-get-started</a></td>
-<td style="text-align: left;">Contains the setup for a VS Code development environment including an example project.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="https://github.com/Arm-Examples">github.com/Arm-Examples</a></td>
@@ -617,10 +554,13 @@
 </code></pre>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p><a href="../pack-tools/#project-examples">Toolchain agnostic example projects</a> do not contain a <a href="../YML-Input-Format/#compiler"><code>compiler:</code></a> selection in the <code>*.csolution.yml</code> project file. Instead the <a href="../YML-Input-Format/#select-compiler"><code>select-compiler:</code></a> node list the compilers that this <em>csolution project</em> is tested with.</p>
+<ul>
+<li><a href="../pack-tools/#project-examples">Toolchain agnostic example projects</a> do not contain a <a href="../YML-Input-Format/#compiler"><code>compiler:</code></a> selection in the <a href="../YML-Input-Format/#solution"><code>*.csolution.yml</code></a> project file.</li>
+<li>Instead the <a href="../YML-Input-Format/#select-compiler"><code>select-compiler:</code></a> node list the compilers that this <em>csolution project</em> is tested with. The <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">VS Code extension Arm CMSIS Solution</a> adds the <a href="../YML-Input-Format/#compiler"><code>compiler:</code></a> node based on the installed compiler in your environment.</li>
+</ul>
 </div>
 <h3 id="reproducible-builds">Reproducible builds</h3>
-<p>Reproducible builds are supported by the <a href="../YML-CBuild-Format/#file-structure-of-cbuild-packyml">*.cbuild-pack.yml</a> file that is created and read by the <strong>csolution</strong> project manager. This file:</p>
+<p>Reproducible builds are supported by the <a href="../YML-CBuild-Format/#cbuild-packyml">*.cbuild-pack.yml</a> file that is created and read by the <strong>csolution</strong> project manager. This file:</p>
 <ul>
 <li>Records the exact list of the pack versions used during creation of an application.</li>
 <li>Ensures that pack versions do not change during development even when new packs are installed on the host computer, for example to develop other applications.</li>
@@ -628,16 +568,16 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>The <a href="../YML-CBuild-Format/#file-structure-of-cbuild-packyml">*.cbuild-pack.yml</a> file should be committed to a repository to ensure reproducible builds.</li>
-<li>The <code>cbuild</code> option <code>--frozen-packs</code> checks that the <a href="../YML-CBuild-Format/#file-structure-of-cbuild-packyml">*.cbuild-pack.yml</a> file exists and reports an error if any pack is changed or not available.</li>
-<li>To update a pack to a new version, delete the file <a href="../YML-CBuild-Format/#file-structure-of-cbuild-packyml">*.cbuild-pack.yml</a> or remove the information about a specific pack in this file.</li>
+<li>The <a href="../YML-CBuild-Format/#cbuild-packyml">*.cbuild-pack.yml</a> file should be committed to a repository to ensure reproducible builds.</li>
+<li>The <code>cbuild</code> option <code>--frozen-packs</code> checks that the <a href="../YML-CBuild-Format/#cbuild-packyml">*.cbuild-pack.yml</a> file exists and reports an error if any pack is changed or not available.</li>
+<li>To update a pack to a new version, delete the file <a href="../YML-CBuild-Format/#cbuild-packyml">*.cbuild-pack.yml</a> or remove the information about a specific pack in this file.</li>
 </ul>
 </div>
 <h4 id="repository-contents">Repository Contents</h4>
 <p>To support reproducible builds the following files should be committed to a repository of a version control system.</p>
 <ul>
 <li>All user source code files.</li>
-<li>All csolution project files (<code>cdefault.yml</code>, <code>*.csolution.yml</code>, <code>*.cproject.yml</code>, etc.).</li>
+<li>All <em>csolution project files</em> (<code>cdefault.yml</code>, <code>*.csolution.yml</code>, <code>*.cproject.yml</code>, etc.).</li>
 <li>All files in the RTE directory<ul>
 <li>Ensure that there are no files with the extension <em>.update@</em> as this indicates that configuration files are not up-to-date due to updated software packs.</li>
 </ul>
@@ -651,8 +591,7 @@
 </div>
 <h3 id="project-setup-for-related-projects">Project Setup for Related Projects</h3>
 <p>A solution is the software view of the complete system. It combines projects that can be generated independently and
-therefore manages related projects. It may be also deployed to different targets during development as described in the
-previous section under <a href="#software-layers">Software Layers</a>.</p>
+therefore manages related projects. It may be also deployed to different targets during development as described in section <a href="#software-layers">Software Layers</a>.</p>
 <p>The picture below shows a system that is composed of:</p>
 <ul>
 <li>Project A that implements a time-critical control algorithm running on a independent processor #2.</li>
@@ -697,14 +636,16 @@ previous section under <a href="#software-layers">Software Layers</a>.</p>
       debug: on
 
   projects:
-    - project: ./security/TFM.cproject.yml           # Only generated for build type: Release
+    - project: ./security/TFM.cproject.yml           # Project D: Only generated for build type: Release
       for-context: .Release
-    - project: ./application/MQTT_AWS.cproject.yml
+    - project: ./application/MQTT_AWS.cproject.yml   # Project B
+    - project: ./mldata/Model.cproject.yml           # Project C
     - project: ./bootloader/Bootloader.cproject.yml  # Not generated for target type: Board
       not-for-context: +Board
+    - project: ./processor2/Control.cproject.yml     # Project A
 </code></pre>
 <h3 id="working-with-context-set">Working with context-set</h3>
-<p>Frequently, it is required to build applications with different <a href="#context">context</a> types. The following command line example generates the <code>iot-product.csolution.yml</code> with build type <code>Debug</code> for the project <code>MQTT_AWS.cproject.yml</code>, while the other projects use the build type <code>Release</code>. When using the option <code>-S</code> or <code>--context-set</code>, this selection is saved to the file <code>iot-product.cbuild-set.yml</code> located in the same directory as the <code>*.csolution.yml</code> file. Refer to <a href="../YML-CBuild-Format/#file-structure-of-cbuild-setyml">File Structure of <code>*.cbuild-set.yml</code></a> for details.</p>
+<p>Frequently, it is required to build applications with different <a href="#context">context</a> types. The following command line example generates the <code>iot-product.csolution.yml</code> with build type <code>Debug</code> for the project <code>MQTT_AWS.cproject.yml</code>, while the other projects use the build type <code>Release</code>. When using the option <code>-S</code> or <code>--context-set</code>, this selection is saved to the file <code>iot-product.cbuild-set.yml</code> located in the same directory as the <code>*.csolution.yml</code> file. Refer to <a href="../YML-CBuild-Format/#cbuild-setyml">File Structure of <code>*.cbuild-set.yml</code></a> for details.</p>
 <pre><code class="language-txt">cbuild iot-product.csolution.yml -c TFM.Release+Board -c MQTT_AWS.Debug+Board -c Bootloader.Release+Board -S
 </code></pre>
 <p>The saved context-set (<code>iot-product.cbuild-set.yml</code>) is used when the option <code>-S</code> or <code>--context-set</code> is used without option <code>--context</code> or <code>-c</code>.</p>
@@ -716,6 +657,10 @@ previous section under <a href="#software-layers">Software Layers</a>.</p>
 <li>Only one <a href="#context">build-type</a>  can be selected for a project.</li>
 <li>Projects that are not required can be excluded.</li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">VS Code extension Arm CMSIS Solution</a> always uses a <code>context-set</code> that is selected in the Manage Solution view.</p>
+</div>
 <h3 id="external-tools-and-build-order">External Tools and Build Order</h3>
 <p>The <a href="../YML-Input-Format/#executes"><code>executes:</code></a> node integrates <a href="../build-operation/#cmake-integration">CMake</a> scripts, projects, and external tools. The <code>input:</code> and  <code>output:</code> list typically refers to files and therefore defines the build order of projects:</p>
 <ul>
@@ -863,7 +808,7 @@ can share a <code>layer</code> with common configuration settings.</p>
 </div>
 <h3 id="software-layers-in-packs">Software Layers in Packs</h3>
 <p>Software layers for <a href="../ReferenceApplications/"><em>reference applications</em></a> may be published in software packs. Refer to <a href="../pack-tools/#layers">Pack Creation &raquo; Layers</a> for more information.</p>
-<h2 id="project-structure">Project Structure</h2>
+<h2 id="directory-structure">Directory Structure</h2>
 <p>This section describes how the <code>csolution</code> based project files should be organized to allow the scenarios described above. This section gives also guidelines for a directory structure.</p>
 <p>Refer to <a href="../YML-Input-Format/#directory-control">Directory Control</a> for information about configuring these directories.</p>
 <h3 id="working-areas">Working Areas</h3>
@@ -890,7 +835,7 @@ can share a <code>layer</code> with common configuration settings.</p>
 <tr>
 <td style="text-align: left;">Component source code</td>
 <td style="text-align: center;">RO</td>
-<td style="text-align: left;">Content of software packs; the location is specified by the environment variable <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables"><code>CMSIS_PACK_ROOT</code></a> or the node <a href="../YML-Input-Format/#pack"><code>pack: path</code></a> in project files.</td>
+<td style="text-align: left;">Content of software packs; the location is specified by the environment variable <a href="../installation/#environment-variables"><code>CMSIS_PACK_ROOT</code></a> or the node <a href="../YML-Input-Format/#pack"><code>pack: path</code></a> in project files.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="#rte-directory-structure">Component Configuration​</a></td>
@@ -1205,7 +1150,7 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
 <pre><code class="language-bash">csolution CubeMX.csolution.yml run --generator CubeMX
 </code></pre>
 <h3 id="configure-generator-output">Configure Generator Output</h3>
-<p>The <em>Generator</em> output directory and the name of the <a href="../YML-CBuild-Format/#generator-import-file"><em>Generator</em> import file (<code>*.cgen.yml</code>)</a> can be configured using the node <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#generators"><code>generators:</code></a> as shown below.</p>
+<p>The <em>Generator</em> output directory and the name of the <a href="../YML-CBuild-Format/#generator-import-file"><em>Generator</em> import file (<code>*.cgen.yml</code>)</a> can be configured using the node <a href="../YML-Input-Format/#generators"><code>generators:</code></a> as shown below.</p>
 <pre><code class="language-yml">  generators:
     options:
     - generator: CubeMX
@@ -1227,8 +1172,8 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../installation/" class="btn btn-neutral float-left" title="Installation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../build-tools/" class="btn btn-neutral float-right" title="Build Tools">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../build-tools/" class="btn btn-neutral float-left" title="Build Tools"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../YML-Input-Format/" class="btn btn-neutral float-right" title="CSolution Project Format">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -1255,10 +1200,10 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
         </span>
     
     
-      <span><a href="../installation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../build-tools/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../build-tools/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../YML-Input-Format/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

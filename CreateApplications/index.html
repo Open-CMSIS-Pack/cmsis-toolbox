@@ -53,15 +53,15 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">Build Overview</a>
-                </li>
-              </ul>
-              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">CSolution Project Structure</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
                 </li>
               </ul>
               <ul class="current">
@@ -246,7 +246,7 @@
 <p>For simple projects, the default settings should be sufficient.</p>
 </li>
 <li>
-<p>The <a href="../YML-CBuild-Format/#cbuild-output-files">build information file</a> <code>&lt;name&gt;.cbuild.Debug+&lt;target-name&gt;.yml</code> lists configuration files of components and other useful information such as links to documentation of the component.</p>
+<p>The <a href="../YML-CBuild-Format/">build information file</a> <code>&lt;name&gt;.cbuild.Debug+&lt;target-name&gt;.yml</code> lists configuration files of components and other useful information such as links to documentation of the component.</p>
 </li>
 </ul>
 <h3 id="step-6-add-application-functionality">Step 6: Add application functionality</h3>
@@ -446,17 +446,13 @@
 <p>Currently there is a problem with the default AC6 linker script template. It does not use by default the RAM1 .. RAM3 area.  </p>
 <p>A potential solution is discussed <a href="https://github.com/Open-CMSIS-Pack/devtools/issues/1778#issuecomment-2356071535">here</a>.  The investigation is currently ongoing.</p>
 <p><strong>Duplicate Heap definition in Assembler startup file</strong></p>
-<p>When using memory allocation functions (i.e. <code>malloc</code>), the application ends in a hard fault handler. This is typically caused by different methods of stack and heap definitions.
-The Arm Compiler offers <a href="https://developer.arm.com/documentation/100073/0623/The-Arm-C-and-C---Libraries/Stack-and-heap-memory-allocation-and-the-Arm-C-and-C---libraries/Stack-pointer-initialization-and-heap-bounds">three ways to configure stack and heap</a>. </p>
+<p>When using memory allocation functions (i.e. <code>malloc</code>), the application ends in a hard fault handler. This is typically caused by different methods of stack and heap definitions.</p>
+<p>The Arm Compiler offers <a href="https://developer.arm.com/documentation/100073/0623/The-Arm-C-and-C---Libraries/Stack-and-heap-memory-allocation-and-the-Arm-C-and-C---libraries/Stack-pointer-initialization-and-heap-bounds">three ways to configure stack and heap</a>. Only one of the following methods should be used:</p>
 <ul>
-<li>Use a scatter file to define <code>ARM_LIB_STACKHEAP</code>, <code>ARM_LIB_STACK</code>, or <code>ARM_LIB_HEAP</code> regions.</li>
+<li>Use a linker scatter file to define <code>ARM_LIB_STACKHEAP</code>, <code>ARM_LIB_STACK</code>, or <code>ARM_LIB_HEAP</code> regions.</li>
 <li>Use the symbols <code>__initial_sp</code>, <code>__heap_base</code>, and <code>__heap_limit</code>.</li>
 <li>Implement <code>__user_setup_stackheap()</code> or <code>__user_initial_stackheap()</code>.</li>
 </ul>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>You have to choose one of these three ways.</p>
-</div>
 <p>The <a href="https://arm-software.github.io/CMSIS_6/latest/Core/startup_c_pg.html">C startup code</a> recommended by CMSIS Version 6 uses the linker scatter file for stack and heap definition.  The C startup code is generic and works across all toolchains that are supported by the CMSIS-Toolbox.</p>
 <p>However, some assembler startup files define stack and heap with other methods, for example by using the symbols <code>__initial_sp</code>, <code>__heap_base</code>, and <code>__heap_limit</code>.</p>
 <p>There are two options to solve the problem.</p>
@@ -465,7 +461,7 @@ The Arm Compiler offers <a href="https://developer.arm.com/documentation/100073/
 <p>Remove the stack and heap definition in the assembler startup code.</p>
 </li>
 <li>
-<p>Disable in the <a href="#regions-header-file">Regions Header File</a> the stack and heap definition by setting <code>__STACK_SIZE</code> and <code>__HEAP_SIZE</code> to 0 as shown below.</p>
+<p>Disable in the <a href="#regions-header-file">Regions Header File</a> the stack and heap definition by setting <code>__STACK_SIZE</code> and <code>__HEAP_SIZE</code> to 0 as shown below.  This removes the definition in the linker scatter file.</p>
 </li>
 </ol>
 <pre><code class="language-txt">// &lt;h&gt; Stack / Heap Configuration
@@ -577,7 +573,7 @@ The Arm Compiler offers <a href="https://developer.arm.com/documentation/100073/
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../YML-Input-Format/" class="btn btn-neutral float-left" title="CMSIS Solution Project File Format"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../YML-Input-Format/" class="btn btn-neutral float-left" title="CSolution Project Format"><span class="icon icon-circle-arrow-left"></span> Previous</a>
         <a href="../ReferenceApplications/" class="btn btn-neutral float-right" title="Reference Applications">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 

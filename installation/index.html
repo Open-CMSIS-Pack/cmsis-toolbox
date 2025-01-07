@@ -101,15 +101,15 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">Build Overview</a>
-                </li>
-              </ul>
-              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">CSolution Project Structure</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
                 </li>
               </ul>
               <ul>
@@ -290,7 +290,7 @@
 <ul>
 <li>Toolchain cmake files <code>&lt;compiler-name&gt;.&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;.cmake</code> for the selected <a href="../YML-Input-Format/#compiler">compiler</a>.</li>
 <li>Default <a href="../build-overview/#linker-script-management">linker script files</a> (to be preprocessed): <code>&lt;compiler-name&gt;_linker_script.&lt;ext&gt;.src</code></li>
-<li>The <code>cdefault.yml</code> that is used when no other <a href="../YML-Input-Format/#cdefault"><code>cdefault.yml</code></a> file is found.</li>
+<li>The <code>cdefault.yml</code> that is used when no <a href="../YML-Input-Format/#cdefault"><code>cdefault.yml</code></a> file is found in the same directory as the <code>&lt;solution-name&gt;.csolution.yml</code> file.</li>
 </ul>
 </li>
 </ul>
@@ -494,7 +494,7 @@ vcpkg-shell activate
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
         <a href="../overview/" class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../build-overview/" class="btn btn-neutral float-right" title="Build Overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../build-tools/" class="btn btn-neutral float-right" title="Build Tools">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -524,7 +524,7 @@ vcpkg-shell activate
       <span><a href="../overview/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../build-overview/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../build-tools/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

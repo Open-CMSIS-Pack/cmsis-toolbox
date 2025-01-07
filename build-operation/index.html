@@ -53,15 +53,15 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">Build Overview</a>
-                </li>
-              </ul>
-              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">CSolution Project Structure</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
                 </li>
               </ul>
               <ul>
@@ -217,7 +217,7 @@
 <li>Check correctness of all files specified by <code>&lt;name&gt;.csolution.yml</code>.</li>
 <li>Evaluate the potential <a href="../YML-CBuild-Format/#configurations">software layers</a> for <a href="../ReferenceApplications/">Reference Applications</a> using <code>variables:</code> to refer to layers (if the value is undefined). All projects are considered in this step.</li>
 <li>Evaluate the <a href="../YML-CBuild-Format/#select-compiler">selectable compiler toolchains</a> when the <em>csolution project</em> does not contain a <code>compiler:</code> selection or the <code>--toolchain</code> option is not applied. The available toolchains are based on the <a href="../installation/#compiler-registration">compiler registration</a> and the <code>select-compiler:</code> node in the file <a href="../YML-Input-Format/#solution"><code>&lt;name&gt;.csolution.yml</code></a> or <a href="../YML-Input-Format/#cdefault"><code>cdefault.yml</code></a>.</li>
-<li>Create the file <code>compile_commands.json</code> in the <a href="../build-overview/#output-directory-structure">output directory</a> for the context defined in <a href="../YML-CBuild-Format/#cbuild-output-files"><code>*.cbuild-set.yml</code></a>.</li>
+<li>Create the file <code>compile_commands.json</code> in the <a href="../build-overview/#output-directory-structure">output directory</a> for the context defined in <a href="../YML-CBuild-Format/"><code>*.cbuild-set.yml</code></a>.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -226,7 +226,7 @@
 <p>The operation is further controlled by options: </p>
 <ul>
 <li>The option <code>--packs</code> downloads missing software packs.</li>
-<li>The option <code>--context-set</code> restricts the operation to the <a href="../build-overview/#working-with-context-set"><code>context-set</code></a> selected by the file <a href="../YML-CBuild-Format/#cbuild-output-files"><code>&lt;name&gt;.cbuild-set.yml</code></a>. If this file is missing a file <code>&lt;name&gt;.cbuild-set.yml</code> with selection of the first <code>target-type</code>, the first <code>build-type</code>, and first <code>project</code>  that is specified in the file <code>&lt;name&gt;.csolution.yml</code> is created. </li>
+<li>The option <code>--context-set</code> restricts the operation to the <a href="../build-overview/#working-with-context-set"><code>context-set</code></a> selected by the file <a href="../YML-CBuild-Format/"><code>&lt;name&gt;.cbuild-set.yml</code></a>. If this file is missing a file <code>&lt;name&gt;.cbuild-set.yml</code> with selection of the first <code>target-type</code>, the first <code>build-type</code>, and first <code>project</code>  that is specified in the file <code>&lt;name&gt;.csolution.yml</code> is created. </li>
 <li>The option <a href="../build-overview/#rte-directory-structure"><code>--update-rte</code></a> updates the configuration files of the application.</li>
 <li>With the option <code>--frozen-packs</code> the file <code>*.cbuild-pack.yml</code> is used as input. An error is issued when a pack version changes.</li>
 <li>The option <code>--toolchain</code> can be used to explicitly select a compiler.</li>
@@ -531,9 +531,9 @@ add_custom_command(OUTPUT ${OUTPUT} DEPENDS ${INPUT}
         - project/Web.c  # Output file for FCARM
 </code></pre>
 <h2 id="generator-integration">Generator Integration</h2>
-<p>The diagram below shows how a generator is integrated into the CMSIS build process. The data flow is exemplified on STM32CubeMX (Generator ID for this example is <code>CubeMX</code>). The information about the project is delivered to the generator using the <a href="../YML-CBuild-Format/#generator-information-files">Generator Information</a> files (<code>&lt;csolution-name&gt;.cbuild-gen-idx.yml</code> and <code>&lt;context&gt;.cbuild-gen.yml</code>). This information provides <code>CubeMX</code> with the project context, such as selected board or device, and CPU mode such as TrustZone disabled/enabled.</p>
+<p>The diagram below shows how a generator is integrated into the CMSIS build process. The data flow is exemplified on STM32CubeMX (Generator ID for this example is <code>CubeMX</code>). The information about the project is delivered to the generator using the <a href="../YML-CBuild-Format/#generator-information-files">Generator Information</a> files (<code>&lt;solution-name&gt;.cbuild-gen-idx.yml</code> and <code>&lt;context&gt;.cbuild-gen.yml</code>). This information provides <code>CubeMX</code> with the project context, such as selected board or device, and CPU mode such as TrustZone disabled/enabled.</p>
 <p><img alt="Generator Integration" src="../images/Generator-Integration.png" title="Generator Integration" /></p>
-<p>The utility <a href="https://github.com/Open-CMSIS-Pack/generator-bridge"><code>cbridge</code></a> gets as parameter the <code>&lt;csolution-name&gt;.cbuild-gen-idx.yml</code> and calls the generator. For the <code>CubeMX</code> generator example these files are created:</p>
+<p>The utility <a href="https://github.com/Open-CMSIS-Pack/generator-bridge"><code>cbridge</code></a> gets as parameter the <code>&lt;solution-name&gt;.cbuild-gen-idx.yml</code> and calls the generator. For the <code>CubeMX</code> generator example these files are created:</p>
 <ul>
 <li><code>*.ioc</code> CubeMX project file with current project settings</li>
 <li><code>*.c/.h</code> source files, i.e. for interfacing with drivers</li>

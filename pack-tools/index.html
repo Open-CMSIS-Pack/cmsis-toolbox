@@ -53,15 +53,15 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">Build Overview</a>
-                </li>
-              </ul>
-              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">CSolution Project Structure</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
                 </li>
               </ul>
               <ul>
@@ -215,7 +215,7 @@
 <li>This is useful when devices are are configured using generators or provide multiple linker scripts (i.e. RAM/ROM execution).</li>
 </ul>
 </li>
-<li>To distribute <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/build-overview.md#toolchain-agnostic-project">toolchain agnostic examples</a> as part of packs:<ul>
+<li>To distribute <a href="../build-overview/#toolchain-agnostic-project">toolchain agnostic examples</a> as part of packs:<ul>
 <li>Consider to use <a href="../YML-Input-Format/#select-compiler"><code>select-compiler</code></a> to make projects toolchain independent.</li>
 <li>To avoid that examples need updates with every pack release, specify the <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/blob/main/DualCore/HelloWorld.csolution.yml#L9">minium pack version required</a>.</li>
 <li>Use <a href="https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP/tree/main/.github/workflows">CI workflows</a> to validate that projects compile correctly.</li>

@@ -53,15 +53,15 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">Build Overview</a>
-                </li>
-              </ul>
-              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CMSIS Solution Project File Format</a>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">CSolution Project Structure</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
                 </li>
               </ul>
               <ul>
@@ -83,59 +83,63 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">Build Information Files</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#cbuild-output-files">cbuild Output Files</a>
+    <li class="toctree-l2"><a class="reference internal" href="#directory-structure">Directory Structure</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lock-pack-versions">Lock Pack Versions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#file-format">File Format</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#directory-structure">Directory Structure</a>
+    <li class="toctree-l3"><a class="reference internal" href="#cbuild-idxyml">*.cbuild-idx.yml</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#pack-locking">Pack locking</a>
+    <li class="toctree-l3"><a class="reference internal" href="#cbuildyml">*.cbuild.yml</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#file-structure-of-cbuild-idxyml">File Structure of *.cbuild-idx.yml</a>
+    <li class="toctree-l3"><a class="reference internal" href="#cbuild-packyml">*.cbuild-pack.yml</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#file-structure-of-cbuildyml">File Structure of *.cbuild.yml</a>
+    <li class="toctree-l3"><a class="reference internal" href="#cbuild-setyml">*.cbuild-set.yml</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#file-structure-of-cbuild-packyml">File Structure of *.cbuild-pack.yml</a>
+    <li class="toctree-l3"><a class="reference internal" href="#nodes-for-project-management">Nodes for Project Management</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#configurations">configurations:</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#file-structure-of-cbuild-setyml">File Structure of *.cbuild-set.yml</a>
+    <li class="toctree-l4"><a class="reference internal" href="#cprojects">cprojects:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#cbuilds">cbuilds:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#select-compiler">select-compiler:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#packs">packs:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#generators">generators:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#generator">generator:</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#cbuild-specific-nodes">cbuild-specific Nodes</a>
+    <li class="toctree-l3"><a class="reference internal" href="#nodes-for-file-management">Nodes for File Management</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#configurations">configurations:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#linker">linker:</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#cprojects">cprojects:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#groups">groups:</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#cbuilds">cbuilds:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#files-of-a-group">files: of a group</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#select-compiler">select-compiler:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#apis">apis:</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#packs">packs:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#components">components:</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#generators">generators:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#files-of-a-component">files: of a component</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#constructed-files">constructed-files:</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#source-file-management">Source File Management</a>
+    <li class="toctree-l3"><a class="reference internal" href="#nodes-for-license-information">Nodes for License Information</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#linker">linker:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#groups">groups:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#files-of-a-group">files: of a group</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#components">components:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#apis">apis:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#generator">generator:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#files-of-a-component">files: of a component</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#constructed-files">constructed-files:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#licenses">licenses:</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#licenses">licenses:</a>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#generator-information-files">Generator Information Files</a>
         <ul>
@@ -192,9 +196,12 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-<p>The following chapter explains the YAML cbuild format that describes how to build a complete application.</p>
-<h2 id="cbuild-output-files">cbuild Output Files</h2>
-<p>The following output files are generated by the <code>csolution</code> tool. Depending on options, the files <code>*.cbuild-pack.yml</code> and <code>*.cbuild-set.yml</code> are also used as input file.</p>
+<p>The following chapter explains the output files are generated by the <code>csolution</code> tool. Depending on options, the files <code>*.cbuild-pack.yml</code> and <code>*.cbuild-set.yml</code> are also used as input file. The build information files are used for:</p>
+<ul>
+<li>generate CMake input files via the <a href="../build-operation/#cbuild2cmake-generate-cmakelists-files">cbuild2cmake</a> tool.</li>
+<li>provide details for the graphical user interface in <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">VS Code extension Arm CMSIS Solution</a>.</li>
+<li>obtain a list of licenses used in a project.</li>
+</ul>
 <table>
 <thead>
 <tr>
@@ -204,31 +211,31 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><a href="#file-structure-of-cbuild-idxyml"><code>*.cbuild-idx.yml</code></a></td>
+<td style="text-align: left;"><a href="#cbuild-idxyml"><code>*.cbuild-idx.yml</code></a></td>
 <td style="text-align: left;">Index file of all <code>*.cbuild.yml</code> build descriptions; contains also overall information for the application.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="#file-structure-of-cbuildyml"><code>*.cbuild.&lt;build-type&gt;+&lt;target-type&gt;.yml</code></a></td>
+<td style="text-align: left;"><a href="#cbuildyml"><code>*.cbuild.yml</code></a></td>
 <td style="text-align: left;">Build description of a single <a href="../YML-Input-Format/#project-file-structure"><code>*.cproject.yml</code></a> input file; contains all information for the build step for a specific <a href="../build-overview/#context">context</a> including references to the content used from software packs.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="#file-structure-of-cbuild-packyml"><code>*.cbuild-pack.yml</code></a></td>
+<td style="text-align: left;"><a href="#cbuild-packyml"><code>*.cbuild-pack.yml</code></a></td>
 <td style="text-align: left;">Software packs recorded for the all input files (<a href="../YML-Input-Format/#project-file-structure"><code>*.csolution.yml</code></a>, <code>cproject.yml</code>, and <code>.clayer.yml</code>); used as input file to ensure <a href="../build-overview/#reproducible-builds">reproducible builds</a> that use the same software packs and pack versions.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="#file-structure-of-cbuild-setyml"><code>*.cbuild-set.yml</code></a></td>
+<td style="text-align: left;"><a href="#cbuild-setyml"><code>*.cbuild-set.yml</code></a></td>
 <td style="text-align: left;"><a href="../build-overview/#working-with-context-set">Context selection</a> for the build process, enabled with option <a href="../build-tools/#use-context-set">--context-set:</a>.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="directory-structure">Directory Structure</h3>
-<p>As <code>csolution</code> based projects should be portable across different host computers, <strong>relative file references</strong> are used within the directory structure.</p>
+<h2 id="directory-structure">Directory Structure</h2>
+<p>The <code>csolution</code> based projects are portable across different host computers and use therefore <strong>relative file references</strong>.</p>
 <ul>
 <li>
 <p>All file references use relative paths to the base directory of the related <code>*.yml</code> file.  Files that are within the file structure of the <code>csolution</code> base directory are also referenced using relative paths, i.e. <code>../layers/layer1/source-file1.c</code>.</p>
 </li>
 <li>
-<p>Files that are located in the <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables">CMSIS-Pack root directory</a> are prefixed with <code>${CMSIS_PACK_ROOT}</code>.</p>
+<p>Files that are located in the <a href="../installation/#environment-variables">CMSIS-Pack root directory</a> are prefixed with <code>${CMSIS_PACK_ROOT}</code>.</p>
 </li>
 </ul>
 <div class="admonition note">
@@ -246,25 +253,24 @@
  ┣ myapp.cbuild-set.yml
  ┣ 📂 project1
  ┃  ┣  mypro1.cproject.yml
- ┃  ┣  mypro1.cbuild.yml       # file references are relative to directory project1
+ ┃  ┣  mypro1.cbuild.Debug+Target.yml     # file references are relative to directory project1
  ┣ 📂 project2
  ┃  ┣  mypro2.cproject.yml
- ┃  ┣  mypro2.cbuild.yml       # file references are relative to directory project2
+ ┃  ┣  mypro2.cbuild.Debug+Target.yml     # file references are relative to directory project2
  ┣ 📂 layer
  ┃  ┣  mylayer.clayer.yml
 </code></pre>
-<h3 id="pack-locking">Pack locking</h3>
-<p>An application contains a set of packs coming from different places, e.g. from the <code>csolution</code> directly, or indirectly from <code>cprojects</code> or <code>clayers</code>.
-In order to have consistent pack usage in the application, as well as allowing projects to evolve and add new <code>target-types</code> or <code>build-types</code> but still remain on the same shared pack versions, the <code>cbuild-pack.yml</code> is introduced.</p>
-<p>It works in the following way. An entire application has a set of <code>pack requirements</code>. These requirements can come from many different locations or contexts, and may be:</p>
+<h2 id="lock-pack-versions">Lock Pack Versions</h2>
+<p>A <em>csolution project</em> refers to packs in different files (<code>*.csolution.yml</code>, <code>*.cproject.yml</code> or <code>*.clayer.yml</code>). To ensure consistent pack usage during application development (for example when new <code>target-types</code> or <code>build-types</code> are introduced) the <code>*.cbuild-pack.yml</code> file records the exact pack versions.</p>
+<p>The required packs can be specified in <em>csolution project files</em> in the following ways:</p>
 <ul>
-<li>specified exactly, e.g. <code>ARM::CMSIS@5.9.0</code></li>
-<li>specified with range, e.g. <code>ARM::CMSIS@&gt;=5.8.0</code></li>
-<li>specified without version, e.g. <code>ARM::CMSIS</code></li>
-<li>specified with wildcards on the pack name, e.g. <code>ARM::CMSI*</code></li>
-<li>specified without pack name, e.g. <code>ARM</code></li>
+<li>exactly, e.g. <code>ARM::CMSIS@5.9.0</code></li>
+<li>with range, e.g. <code>ARM::CMSIS@&gt;=5.8.0</code></li>
+<li>without version, e.g. <code>ARM::CMSIS</code></li>
+<li>with wildcards on the pack name, e.g. <code>ARM::CMSI*</code></li>
+<li>without pack name, e.g. <code>ARM</code></li>
 </ul>
-<p>All these <code>pack requirements</code> are <code>resolved</code> into exact versions in the <code>cbuild-pack.yml</code> file as a list of items on the following format:</p>
+<p>The required packs are resolved to an exact pack version that is recorded in the <code>*.cbuild-pack.yml</code> file as shown below:</p>
 <pre><code class="language-yml">cbuild-pack:
   resolved-packs:
     - resolved-pack: ARM::CMSIS@5.9.0
@@ -275,47 +281,38 @@ In order to have consistent pack usage in the application, as well as allowing p
         - ARM::CMSIS@&gt;=5.8.0
         - ARM::CMSIS@5.9.0
 </code></pre>
-<p>If a context is added or changed, the <code>selected-by</code> is used to ensure that the <code>pack requirements</code> are resolved to a <code>consistent</code> pack version, reducing surprising versions being selected in the entire application.
-If a <code>pack requirement</code> is no longer present in the application, then the <code>cbuild-pack.yml</code> file will be <em>cleaned</em> from the relevant entries during the <code>cbuild-pack.yml</code> generation step.</p>
-<p>The location of the <code>cbuild-pack.yml</code> file follows the <code>csolution.yml</code> file.</p>
+<p>If <em>csolution project files</em> are modified, the <code>selected-by-pack</code> information ensures that consistent pack versions are used. If a required pack is no longer used in present in the <em>csolution project</em>, the relevant entry <code>resolved-pack:</code> in  the <code>*.cbuild-pack.yml</code> file is removed.</p>
+<p>The <code>*.cbuild-pack.yml</code> file is located in the same directory as the <code>*.csolution.yml</code> file and is used by the <code>csolution</code> for every command that uses a <code>*.csolution.yml</code> file. Examples are:</p>
 <ul>
-<li><code>csolution convert</code> - Uses <strong>and updates</strong> <code>cbuild-pack.yml</code></li>
-<li><code>csolution list ...</code> - Uses <code>cbuild-pack.yml</code></li>
-<li><code>csolution run</code> - Uses <code>cbuild-pack.yml</code></li>
-<li><code>csolution update-rte</code> - Uses <strong>and updates</strong> <code>cbuild-pack.yml</code></li>
+<li><code>csolution convert</code> - uses <strong>and updates</strong> the <code>*.cbuild-pack.yml</code> file.</li>
+<li><code>csolution list ...</code> - uses the <code>*.cbuild-pack.yml</code> file</li>
+<li><code>csolution run</code> - uses the <code>*.cbuild-pack.yml</code> file.</li>
+<li><code>csolution update-rte</code> - uses <strong>and updates</strong> the <code>*.cbuild-pack.yml</code> file.</li>
 </ul>
-<pre><code class="language-mermaid">graph TD;
-  csolution.yml
-  cbuild-pack.yml
-  cproject.yml
-
-subgraph Loading
-  res1[&quot;&lt;center&gt;&lt;u&gt;Resolving step 1 (PopulateContexts)&lt;/u&gt;&lt;/center&gt;&lt;ul&gt;&lt;li&gt;Reading the files&lt;/li&gt;&lt;li&gt;Adds cbuild-pack.yml\npack requirements to the solution&lt;/li&gt;&lt;/ul&gt;&quot;]
-  res2[&quot;&lt;center&gt;&lt;u&gt;Resolving step 2 (AddPackRequirements)&lt;/u&gt;&lt;/center&gt;&lt;ul&gt;&lt;li&gt;Pack version ranges are matched to fully qualified versions using cbuild-pack.yml&lt;/li&gt;&lt;li&gt;Pack wildcards are matched to fully qualified versions using cbuild-pack.yml&lt;/li&gt;&lt;li&gt;Pack wildcards are kept for further expansion in the model&lt;/li&gt;&lt;li&gt;Local packs are left as-is&lt;/li&gt;&lt;/ul&gt;&quot;]
-  style res1 text-align:left
-  style res2 text-align:left
-end
-
-  action[&quot;&lt;u&gt;Some action&lt;/u&gt; &lt;br&gt; e.g. convert, list, run, update-rte, ...&quot;]
-
-subgraph Saving
-  res3[&quot;&lt;center&gt;&lt;u&gt;Resolving step 3 (GenerateCbuildPack)&lt;/u&gt;&lt;/center&gt;&lt;ul&gt;&lt;li&gt;Rebuild list of packs required by all contexts&lt;/li&gt;&lt;li&gt;Ensure that original 'pack expression' are kept in cbuild-pack.yml&lt;/li&gt;&lt;/ul&gt;&quot;]
-  write[&quot;&lt;center&gt;&lt;u&gt;Potentially write cbuild-pack.yml&lt;/u&gt;&lt;/center&gt;&lt;ul&gt;&lt;li&gt;Only done for the [convert, update-rte] commands&lt;/li&gt;&lt;/ul&gt;&quot;]
-  style res3 text-align:left
-end
-
-  csolution.yml --&gt; res1
-  cbuild-pack.yml --&gt; res1
-  cproject.yml --&gt; res1
-
-  res1 --&gt; res2
-  res2 --&gt; action
-  action --&gt; res3
-  res3 --&gt; write
-</code></pre>
-<p>This means that the <code>cbuild-pack.yml</code> information is used to load the appropriate fully qualified pack versions, matching previously used version ranges and pack wildcards.
-Subsequent runs, and newly added contexts, can therefore use the least surprising versions.</p>
-<h3 id="file-structure-of-cbuild-idxyml">File Structure of <code>*.cbuild-idx.yml</code></h3>
+<p>The operation of the <code>csolution</code> command is as follows:</p>
+<ul>
+<li>Load the <em>csolution project files</em> (<code>*.csolution.yml</code>, <code>*.cproject.yml</code> or <code>*.clayer.yml</code>).</li>
+<li>Initially there is no <code>*.cbuild-pack.yml</code> file. If it exists, the <code>*.cbuild-pack.yml</code> file is loaded. The packs are aligned with the <code>resolved-pack:</code> information of the <code>*.cbuild-pack.yml</code> file in these steps:<ul>
+<li><em>PopulateContexts</em>: Add <code>resolved-pack:</code> information to the <em>solution data model</em>.</li>
+<li><em>AddPackRequirements</em>: Pack version ranges and pack wildcards are matched to fully qualified versions of the <em>solution data model</em>. Pack wildcards are expanded to fully qualified packs using cbuild-pack.yml. Pack wildcards are kept for further expansion in the <em>solution data model</em>.</li>
+</ul>
+</li>
+<li>Execute the <code>csolution</code> command, for example <code>convert</code>, <code>list</code>, <code>run</code>, or <code>update-rte</code>.</li>
+<li>Update the <code>*.cbuild-pack.yml</code> file (only if the content changes):<ul>
+<li><em>GenerateCbuildPack</em>: Generate the <code>resolved-pack:</code> list of packs required by all <em>contexts</em>. The original <code>pack:</code> specification is stored under <code>selected-by-pack:</code>.</li>
+</ul>
+</li>
+</ul>
+<p>With subsequent <code>csolution</code> command the information of the <code>*.cbuild-pack.yml</code> file is used to load the appropriate fully qualified pack versions, matching previously used packs.</p>
+<h2 id="file-format">File Format</h2>
+<p>The following sections describe the format of the <em>build information files</em>. Many nodes are identical with the <a href="../YML-Input-Format/"><strong>CSolution Project Format</strong></a>, but optional information is fully expanded. The nodes that are different are explained below under:</p>
+<ul>
+<li><a href="#nodes-for-project-management"><strong>Nodes for Project Management</strong></a></li>
+<li><a href="#nodes-for-file-management"><strong>Nodes for File Management</strong></a></li>
+<li><a href="#nodes-for-license-information"><strong>Nodes for License Information</strong></a></li>
+</ul>
+<h3 id="cbuild-idxyml"><code>*.cbuild-idx.yml</code></h3>
+<p>The <code>&lt;solution-name&gt;.cbuild-idx.yml</code> file is generated for the <em>csolution project</em> and refers all <em>contexts</em> that are generated. It is structured as outlined below.</p>
 <table>
 <thead>
 <tr>
@@ -389,8 +386,8 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
     - pack: ARM::CMSIS-RTX      # with unspecified version
     - pack: ARM::CMSIS@6.0.0    # with specified version
 </code></pre>
-<h3 id="file-structure-of-cbuildyml">File Structure of <code>*.cbuild.yml</code></h3>
-<p>The <code>cbuild.yml</code> file is structured into several sections.  The top-level structure is outlined below.</p>
+<h3 id="cbuildyml"><code>*.cbuild.yml</code></h3>
+<p>The <code>&lt;project-name&gt;.&lt;build-type&gt;+&lt;target-type&gt;.cbuild.yml</code> contains all information for one <em>context</em>. It is structured as outlined below.</p>
 <table>
 <thead>
 <tr>
@@ -589,8 +586,8 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
     - file: RTE/_HelloWorld_cm0plus.Debug_FRDM-K32L3A6/RTE_Components.h
       category: header
 </code></pre>
-<h3 id="file-structure-of-cbuild-packyml">File Structure of <code>*.cbuild-pack.yml</code></h3>
-<p>The <code>cbuild-pack.yml</code> file is structured into several sections.  The top-level structure is outlined below.</p>
+<h3 id="cbuild-packyml"><code>*.cbuild-pack.yml</code></h3>
+<p>The <code>&lt;solution-name&gt;.cbuild-pack.yml</code> file contains the <a href="#lock-pack-versions">pack information</a> for the <em>csolution project</em>. It is structured as outlined below.</p>
 <table>
 <thead>
 <tr>
@@ -636,8 +633,8 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
       selected-by:
         - Keil::ARM_Compiler
 </code></pre>
-<h3 id="file-structure-of-cbuild-setyml">File Structure of <code>*.cbuild-set.yml</code></h3>
-<p>The <code>cbuild-set.yml</code> file is structured into several sections.  The top-level structure is outlined below.</p>
+<h3 id="cbuild-setyml"><code>*.cbuild-set.yml</code></h3>
+<p>The <code>&lt;solution-name&gt;.cbuild-set.yml</code> file selects the <a href="../build-overview/#working-with-context-set">context set</a> for the <em>csolution project</em>.  The structure is outlined below.</p>
 <table>
 <thead>
 <tr>
@@ -663,8 +660,8 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
     - context: CM33_s.Release+AVH
     - context: CM33_ns.Debug+AVH
 </code></pre>
-<h2 id="cbuild-specific-nodes">cbuild-specific Nodes</h2>
-<h3 id="configurations"><code>configurations:</code></h3>
+<h3 id="nodes-for-project-management">Nodes for Project Management</h3>
+<h4 id="configurations"><code>configurations:</code></h4>
 <p>The <code>configurations:</code> node lists possible configurations for <a href="../ReferenceApplications/">reference applications</a> that have undefined variable settings.</p>
 <table>
 <thead>
@@ -748,7 +745,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
                 file: frdmk22f.clayer.yml
                 copy-to: board/frdmk22f
 </code></pre>
-<h3 id="cprojects"><code>cprojects:</code></h3>
+<h4 id="cprojects"><code>cprojects:</code></h4>
 <p>The <code>cprojects:</code> node lists all <code>*.cproject.yml</code> input files along with <code>*.clayer.yml</code> files that are used to compose the application.</p>
 <table>
 <thead>
@@ -777,7 +774,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
         - clayer: AWS_MQTT_MutualAuth_SW_Framework/Socket/VSocket/Socket.clayer.yml
              :
 </code></pre>
-<h3 id="cbuilds"><code>cbuilds:</code></h3>
+<h4 id="cbuilds"><code>cbuilds:</code></h4>
 <p>The <code>cbuilds:</code> node lists all project context configurations that are generated with this build.</p>
 <table>
 <thead>
@@ -825,7 +822,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
         info:
           - test.cbuild-set.yml - file is already up-to-date
 </code></pre>
-<h3 id="select-compiler"><code>select-compiler:</code></h3>
+<h4 id="select-compiler"><code>select-compiler:</code></h4>
 <p>If no compiler is specified in the <em>csolution project</em>, the <a href="../build-operation/#details-of-the-setup-mode"><code>cbuild setup</code> command</a> lists the available compilers based on the <a href="../installation/#compiler-registration">compiler registration</a> and <code>select-compiler:</code> node in the file <a href="../YML-Input-Format/#solution"><code>*.csolution.yml</code></a> or <a href="../YML-Input-Format/#cdefault"><code>cdefault.yml</code></a>.</p>
 <table>
 <thead>
@@ -841,7 +838,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 </tr>
 </tbody>
 </table>
-<h3 id="packs"><code>packs:</code></h3>
+<h4 id="packs"><code>packs:</code></h4>
 <p>The <code>packs:</code> node is the start of a pack list that is used for the project context.</p>
 <table>
 <thead>
@@ -863,7 +860,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Packs that are located in the <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables">CMSIS-Pack root directory</a> are prefixed with <code>%CMSIS_PACK_ROOT%</code>.</p>
+<p>Packs that are located in the <a href="../installation/#environment-variables">CMSIS-Pack root directory</a> are prefixed with <code>%CMSIS_PACK_ROOT%</code>.</p>
 </div>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  packs:
@@ -875,7 +872,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
     - pack: MDK-Packs::IoT_Socket@1.3.1
       path: ../IoT_Socket
 </code></pre>
-<h3 id="generators"><code>generators:</code></h3>
+<h4 id="generators"><code>generators:</code></h4>
 <p>The <code>generators:</code> node contains information for calling a generator.</p>
 <table>
 <thead>
@@ -916,7 +913,26 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
             - ../../Release+STM32L4.cprj
             - ${CMSIS_PACK_ROOT}/Keil/STM32L4xx_DFP/2.6.1
 </code></pre>
-<h2 id="source-file-management">Source File Management</h2>
+<h4 id="generator"><code>generator:</code></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>generator:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- id:</code></td>
+<td style="text-align: left;">Generator identifier used for this component</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>path:</code></td>
+<td style="text-align: left;">File name and path to the *.cgen.yml file that is generated.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nodes-for-file-management">Nodes for File Management</h3>
 <table>
 <thead>
 <tr>
@@ -935,7 +951,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 </tr>
 </tbody>
 </table>
-<h3 id="linker"><code>linker:</code></h3>
+<h4 id="linker"><code>linker:</code></h4>
 <table>
 <thead>
 <tr>
@@ -958,7 +974,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 </tr>
 </tbody>
 </table>
-<h3 id="groups"><code>groups:</code></h3>
+<h4 id="groups"><code>groups:</code></h4>
 <table>
 <thead>
 <tr>
@@ -1005,7 +1021,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 </tr>
 </tbody>
 </table>
-<h3 id="files-of-a-group"><code>files:</code> of a group</h3>
+<h4 id="files-of-a-group"><code>files:</code> of a group</h4>
 <table>
 <thead>
 <tr>
@@ -1048,7 +1064,38 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 </tr>
 </tbody>
 </table>
-<h3 id="components"><code>components:</code></h3>
+<h4 id="apis"><code>apis:</code></h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>apis:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- api:</code></td>
+<td style="text-align: left;">Name of the API.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_conditions_pg.html#element_condition"><code>condition:</code></a></td>
+<td style="text-align: left;">Reference to the condition ID of the software pack that triggered inclusion of this API.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>from-pack:</code></td>
+<td style="text-align: left;">Pack that defines this API.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>implemented-by:</code></td>
+<td style="text-align: left;">Refers to the software componeent that implements the API.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#files-of-a-component"><code>files:</code></a></td>
+<td style="text-align: left;">List of files that belong to this API.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="components"><code>components:</code></h4>
 <table>
 <thead>
 <tr>
@@ -1115,57 +1162,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 </tr>
 </tbody>
 </table>
-<h3 id="apis"><code>apis:</code></h3>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>apis:</code></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>- api:</code></td>
-<td style="text-align: left;">Name of the API.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_conditions_pg.html#element_condition"><code>condition:</code></a></td>
-<td style="text-align: left;">Reference to the condition ID of the software pack that triggered inclusion of this API.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>from-pack:</code></td>
-<td style="text-align: left;">Pack that defines this API.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>implemented-by:</code></td>
-<td style="text-align: left;">Refers to the software componeent that implements the API.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#files-of-a-component"><code>files:</code></a></td>
-<td style="text-align: left;">List of files that belong to this API.</td>
-</tr>
-</tbody>
-</table>
-<h3 id="generator"><code>generator:</code></h3>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>generator:</code></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>- id:</code></td>
-<td style="text-align: left;">Generator identifier used for this component</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>path:</code></td>
-<td style="text-align: left;">File name and path to the *.cgen.yml file that is generated.</td>
-</tr>
-</tbody>
-</table>
-<h3 id="files-of-a-component"><code>files:</code> of a component</h3>
+<h4 id="files-of-a-component"><code>files:</code> of a component</h4>
 <table>
 <thead>
 <tr>
@@ -1212,7 +1209,7 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 </tr>
 </tbody>
 </table>
-<h3 id="constructed-files"><code>constructed-files:</code></h3>
+<h4 id="constructed-files"><code>constructed-files:</code></h4>
 <p>A list of files that are generated by the RTE management of the <code>csolution</code> tool.</p>
 <table>
 <thead>
@@ -1232,9 +1229,10 @@ Subsequent runs, and newly added contexts, can therefore use the least surprisin
 </tr>
 </tbody>
 </table>
-<h2 id="licenses"><code>licenses:</code></h2>
-<p>The <code>*.cbuild.yml</code> files contains license information about each software component that is included from software packs.
-Each different license that is used in an a project context has a sepearate section.</p>
+<h3 id="nodes-for-license-information">Nodes for License Information</h3>
+<p>The <code>*.cbuild.&lt;build-type&gt;+&lt;target-type&gt;.yml</code> files contains license information about each software component that is included from software packs.</p>
+<h4 id="licenses"><code>licenses:</code></h4>
+<p>Each different license that is used in an a project context has a sepearate section.</p>
 <table>
 <thead>
 <tr>
@@ -1303,7 +1301,7 @@ Each different license that is used in an a project context has a sepearate sect
 </tr>
 <tr>
 <td style="text-align: left;"><code>*.cbuild-gen.yml</code></td>
-<td style="text-align: left;">Build description of a single <a href="../YML-Input-Format/#project-file-structure"><code>*.cproject.yml</code></a> input file. The format is identical with the <a href="#file-structure-of-cbuildyml"><code>*.cbuild.yml</code></a> file.</td>
+<td style="text-align: left;">Build description of a single <a href="../YML-Input-Format/#project-file-structure"><code>*.cproject.yml</code></a> input file. The format is identical with the <a href="#cbuildyml"><code>*.cbuild.yml</code></a> file.</td>
 </tr>
 </tbody>
 </table>
@@ -1370,7 +1368,7 @@ Each different license that is used in an a project context has a sepearate sect
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- cbuild-gen:</code></td>
-<td style="text-align: left;">Build information file with name <code>&lt;context&gt;.cbuild-gen.yml</code>; structure identical with <a href="#file-structure-of-cbuildyml">*.cbuild.yml</a>.</td>
+<td style="text-align: left;">Build information file with name <code>&lt;context&gt;.cbuild-gen.yml</code>; structure identical with <a href="#cbuildyml">*.cbuild.yml</a>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>project:</code></td>
@@ -1407,7 +1405,7 @@ Each different license that is used in an a project context has a sepearate sect
           map: Boot           # map to STM32CubeMX run-time context (new in CMSIS-Toolbox 2.4.0)
 </code></pre>
 <h2 id="generator-import-file">Generator Import File</h2>
-<p>The <code>*.cgen.yml</code> file is lists the generated <em>csolution project</em> part and starts with the node <code>generator-import:</code>. It defines similar to a <a href="../build-overview/#software-layers">Software Layer</a> additional parameters, files, and components that are included in the project.</p>
+<p>The <code>*.cgen.yml</code> file lists the generated <em>csolution project</em> part and starts with the node <code>generator-import:</code>. It defines similar to a <a href="../build-overview/#software-layers">Software Layer</a> additional parameters, files, and components that are included in the project.</p>
 <h3 id="file-structure-of-cgenyml">File Structure of <code>*.cgen.yml</code></h3>
 <table>
 <thead>
