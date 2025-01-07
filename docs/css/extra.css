@@ -5,3 +5,11 @@
 .wy-table-responsive {
     overflow : visible !important;
 }
+
+.wy-nav-content {
+    max-width: 900px;
+}
+
+.rst-content .section ul li p:last-child {
+    padding: 0px 0px 8px 0px;
+}

@@ -5,9 +5,9 @@ nav:
     - Home: index.md
     - Overview: overview.md
     - Installation: installation.md
-    - Build Overview: build-overview.md
     - Build Tools: build-tools.md
-    - CMSIS Solution Project File Format: YML-Input-Format.md
+    - CSolution Project Structure: build-overview.md
+    - CSolution Project Format: YML-Input-Format.md
     - Create Applications: CreateApplications.md
     - Reference Applications: ReferenceApplications.md
     - Configure STM32 Devices with STM32CubeMX: CubeMX.md
