@@ -33,7 +33,7 @@ Hands-on Tutorial         | Description
     - Example: A component `Device:HAL:ENET` should not have description `ENET HAL Driver`, use `Ethernet HAL driver` instead.
 - Consider adding [project templates](https://github.com/Open-CMSIS-Pack/STM32U5xx_DFP/tree/main/Templates) to help get started with more complex projects.
     - This is useful when devices are are configured using generators or provide multiple linker scripts (i.e. RAM/ROM execution).
-- To distribute [toolchain agnostic examples](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/build-overview.md#toolchain-agnostic-project) as part of packs:
+- To distribute [toolchain agnostic examples](build-overview.md#toolchain-agnostic-project) as part of packs:
     - Consider to use [`select-compiler`](YML-Input-Format.md#select-compiler) to make projects toolchain independent.
     - To avoid that examples need updates with every pack release, specify the [minium pack version required](https://github.com/Open-CMSIS-Pack/csolution-examples/blob/main/DualCore/HelloWorld.csolution.yml#L9).
     - Use [CI workflows](https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP/tree/main/.github/workflows) to validate that projects compile correctly.

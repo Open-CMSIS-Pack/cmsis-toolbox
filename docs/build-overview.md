@@ -1,48 +1,19 @@
-# Build Overview
+# CSolution Project Structure
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-This chapter describes the overall concept of the CMSIS-Toolbox build process. It outlines the content of *csolution project files* that describes the software application, and contains references to examples and project templates.
+This chapter outlines the structure of *csolution project files* that contain the build information of the software application.
 
-- [Project Examples](#project-examples) helps to get started with the tools.
+- [Project Examples](#project-examples) and project templates helps to get started with the tools.
 - [Software Layers](#software-layers) provide reusable configurations  and give projects a better structure.
-- [Project Structure](#project-structure) describes the overall structure of projects.
+- [Directory Structure](#directory-structure) describes the overall directory structure of projects.
 - [Linker Script Management](#linker-script-management) defines the  available memory and controls the linker operation.
 - [Generator Support](#generator-support) integrates configuration tools such as STM32CubeMX or MCUXpresso Config.
 
 ## Overview of Operation
 
-The following tools support the creation of build information for embedded applications:
-
-Tool                     | Description
-:------------------------|:-----------------------
-[cpackget](build-tools.md#cpackget-invocation)  | Pack Manager: install and manage software packs in the host development environment.
-[cbuild](build-tools.md#cbuild-invocation)      | Build Invocation: orchestrate the build steps utilizing CMSIS tools and a CMake compilation process.
-[csolution](build-tools.md#csolution-invocation)| Project Manager: create build information for embedded applications that consist of one or more related projects.
-
-The tools process *csolution project files* (in YAML format) and *software packs*
-(in [Open-CMSIS-Pack](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html) format) to generate independent projects which may be a part of a more complex application.
-
-!!! Notes
-    - This documentation uses the filename extension `*.yml`, but the extension `*.yaml` is also supported.
-    - The term *CMSIS solution* refers to an application project that is specified with *csolution project files*.
-    - *Software packs* describe software components in Open-CMSIS-Pack format that can contain middleware, drivers, board support, or device support. *Software packs* also provide documentation, examples, and reusable software layers.
-
-The features are:
-
-- Access the content of software packs in Open-CMSIS-Pack format to:
-    - Setup the tool chain based on a *Device* or *Board* that is defined in software packs.
-    - Add software components that are provided in the various software packs to the application.
-- Organize applications (with a `*.csolution.yml` file) into projects that are independently managed
-  (using `*.cproject.yml` files).
-- Organize software layers (with a `*.clayer.yml` file) with pre-configured software components that enable code reuse across similar applications.
-- Manage multiple hardware targets to allow application deployment to different hardware
-  (test board, production hardware, etc.).
-- Manage multiple build types to support software verification (debug build, test build, release build, etc.)
-- Support multiple compiler toolchains (GCC, Arm Compiler 6, IAR, LLVM) for project deployment.
-
-The diagram below outlines the operation of the `csolution` command `convert` that processes one or more [`context`](YML-Input-Format.md#context) configurations of the application (called *csolution project*).
+The diagram below outlines the operation of the `csolution` command `convert` that processes the *csolution project* with one or more [`context`](YML-Input-Format.md#context) configurations for an application.
 
 !!! Tip
     - [Project Examples](#project-examples) show different project types and provides templates for user projects.
@@ -55,41 +26,35 @@ Input Files              | Description
 [Generic Software Packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/cp_PackTutorial.html#cp_SWComponents) | Provide re-usable software components that are typically configurable  towards a user application.
 [DFP Software Packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/cp_PackTutorial.html#createPack_DFP)     | Device related information (including memory sizes) for the tool configuration.
 [BSP Software Packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/cp_PackTutorial.html#createPackBoard)    | Board specific configuration (i.e. additional memory resources).
-[cdefault.yml](YML-Input-Format.md#cdefault)           | When enabled with [`cdefault:`](YML-Input-Format.md#solution), setup of toolchain specific controls and pre-defined toolchains.
-[*.csolution.yml](YML-Input-Format.md#solution)         | Complete scope of the application with build order of sub-projects. Defines [target](YML-Input-Format.md#target-types) and [build](YML-Input-Format.md#build-types) types.
-[*.cproject.yml](YML-Input-Format.md#project)           | Content of an independent build (linker or archiver run) - directly relates to a `*.cprj` file.
+[cdefault.yml](YML-Input-Format.md#cdefault)            | When enabled with [`cdefault:`](YML-Input-Format.md#solution), setup of toolchain specific controls and pre-defined toolchains.
+[*.csolution.yml](YML-Input-Format.md#solution)         | Complete scope of the application with sub-projects. Defines [target](YML-Input-Format.md#target-types) and [build](YML-Input-Format.md#build-types) types.
+[*.cproject.yml](YML-Input-Format.md#project)           | Content of an independent build step (linker or library archiver run).
 [*.clayer.yml](YML-Input-Format.md#layer)               | Set of source files along with pre-configured components for reuse in different applications.
 
 Input/Output Files       | Description
 :------------------------|:---------------------------------
-[*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml)  | Exact list of the packs that are used by the application; enables [reproducible builds](#reproducible-builds) as it locks the pack versions.
-[*.cbuild-set.yml](YML-CBuild-Format.md#file-structure-of-cbuild-setyml)    | Specifies the [context set](#working-with-context-set) of projects, target-types, and build-types that are used to generate the application image.
+[*.cbuild-pack.yml](YML-CBuild-Format.md#cbuild-packyml)  | Exact list of the packs that are used by the application; enables [reproducible builds](#reproducible-builds) as it locks the pack versions.
+[*.cbuild-set.yml](YML-CBuild-Format.md#cbuild-setyml)    | Specifies the [context set](#working-with-context-set) of projects, target-types, and build-types that are used to generate the application image.
 
 Output Files             | Description
 :------------------------|:---------------------------------
-[*.cbuild-idx.yml](YML-CBuild-Format.md#file-structure-of-cbuild-idxyml)  | Index file of all `*.cbuild.yml` build descriptions; contains also overall information for the application.
-[*.cbuild.yml](YML-CBuild-Format.md#file-structure-of-cbuild-idxyml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file for each context.
-[Project Build Files *.cprj](https://arm-software.github.io/CMSIS_5/Build/html/cprjFormat_pg.html) | Project build information in legacy format.
+[*.cbuild-idx.yml](YML-CBuild-Format.md#cbuild-idxyml)  | Index file of all `*.cbuild.yml` build descriptions; contains also overall information for the application.
+[*.cbuild.yml](YML-CBuild-Format.md#cbuild-idxyml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file for each context.
 [Run-Time Environment (RTE)](#rte-directory-structure)  | Contains the user configured files of a project along with `RTE_Components.h` inventory file.
 [Linker Script Files](#automatic-linker-script-generation) | Header file that describes the memory resources.
 
-To build an application project, the `csolution` command `convert` executes the following steps:
+To generate the build information of an application project, the `csolution` command `convert` executes the following steps:
 
-1. Read Input Files:
-    - Read *.YML input files and check files against schema (disable schema check with option: `--no-check-schema`)
-    - Parse *.YML input nodes.
-    - Load software packs for selected contexts (control packs with option: `--load [latest|all|required]`).
+1. Read Input Files (*csolution project* and *Software Packs*)
 
-2. Process each project context (select a specific context with option: `--context`):
+2. Process each project context (selected by a [context-set](#working-with-context-set) or option: `--context`):
     - Apply [`pack:`](YML-Input-Format.md#pack), [`device:`](YML-Input-Format.md#device), [`board:`](YML-Input-Format.md#board), and [`compiler:`](YML-Input-Format.md#compiler) to filter the content of software packs.
     - From [`groups:`](YML-Input-Format.md#groups) add the list of user source files.
     - From [`components:`](YML-Input-Format.md#components) add the list of component source files.
-    - From [*.GPDSC files](build-tools.md#use-generators) add the list of generated source files.
 
-3. Generate output files:
+3. Generate *Output Files*:
     - Update [configuration files](#plm-of-configuration-files) in RTE directory (disable with option: `--no-update-rte`).
     - Print results of software component dependency validation.
-    - Create `cbuild-idx.yml`, `cbuild.yml` and `*.CPRJ` files.
 
 ### Source Code of Software Packs
 
@@ -110,7 +75,6 @@ The following repositories provide several working examples:
 Repository            | Description
 :---------------------|:-------------------------------------
 [csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains several getting started examples that show single-core, multi-core, and TrustZone setup as well as how to use a generator (CubeMX).
-[vscode-get-started](https://github.com/Open-CMSIS-Pack/vscode-get-started) | Contains the setup for a VS Code development environment including an example project.
 [github.com/Arm-Examples](https://github.com/Arm-Examples) | Contains many examples that include CMSIS-Toolbox setup.
 
 The section below explains the overall concepts considered by the **`csolution` Project Manager** based on examples.
@@ -288,26 +252,27 @@ cbuild Hello.csolution.yml --toolchain GCC
 ```
 
 !!! Tip
-    [Toolchain agnostic example projects](pack-tools.md#project-examples) do not contain a [`compiler:`](YML-Input-Format.md#compiler) selection in the `*.csolution.yml` project file. Instead the [`select-compiler:`](YML-Input-Format.md#select-compiler) node list the compilers that this *csolution project* is tested with.
+    - [Toolchain agnostic example projects](pack-tools.md#project-examples) do not contain a [`compiler:`](YML-Input-Format.md#compiler) selection in the [`*.csolution.yml`](YML-Input-Format.md#solution) project file.
+    - Instead the [`select-compiler:`](YML-Input-Format.md#select-compiler) node list the compilers that this *csolution project* is tested with. The [VS Code extension Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) adds the [`compiler:`](YML-Input-Format.md#compiler) node based on the installed compiler in your environment.
 
 ### Reproducible builds
 
-Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file that is created and read by the **csolution** project manager. This file:
+Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.md#cbuild-packyml) file that is created and read by the **csolution** project manager. This file:
 
 - Records the exact list of the pack versions used during creation of an application.
 - Ensures that pack versions do not change during development even when new packs are installed on the host computer, for example to develop other applications.
 
 !!! Note
-    - The [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file should be committed to a repository to ensure reproducible builds.
-    - The `cbuild` option `--frozen-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) file exists and reports an error if any pack is changed or not available.
-    - To update a pack to a new version, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#file-structure-of-cbuild-packyml) or remove the information about a specific pack in this file.
+    - The [*.cbuild-pack.yml](YML-CBuild-Format.md#cbuild-packyml) file should be committed to a repository to ensure reproducible builds.
+    - The `cbuild` option `--frozen-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#cbuild-packyml) file exists and reports an error if any pack is changed or not available.
+    - To update a pack to a new version, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#cbuild-packyml) or remove the information about a specific pack in this file.
 
 #### Repository Contents
 
 To support reproducible builds the following files should be committed to a repository of a version control system.
 
 - All user source code files.
-- All csolution project files (`cdefault.yml`, `*.csolution.yml`, `*.cproject.yml`, etc.).
+- All *csolution project files* (`cdefault.yml`, `*.csolution.yml`, `*.cproject.yml`, etc.).
 - All files in the RTE directory
     - Ensure that there are no files with the extension *.update@* as this indicates that configuration files are not up-to-date due to updated software packs.
 - The file `*.cbuild-pack.yml` to allow [reproducible builds](#reproducible-builds).
@@ -319,8 +284,7 @@ To support reproducible builds the following files should be committed to a repo
 ### Project Setup for Related Projects
 
 A solution is the software view of the complete system. It combines projects that can be generated independently and
-therefore manages related projects. It may be also deployed to different targets during development as described in the
-previous section under [Software Layers](#software-layers).
+therefore manages related projects. It may be also deployed to different targets during development as described in section [Software Layers](#software-layers).
 
 The picture below shows a system that is composed of:
 
@@ -368,16 +332,18 @@ solution:
       debug: on
     
   projects:
-    - project: ./security/TFM.cproject.yml           # Only generated for build type: Release
+    - project: ./security/TFM.cproject.yml           # Project D: Only generated for build type: Release
       for-context: .Release
-    - project: ./application/MQTT_AWS.cproject.yml
+    - project: ./application/MQTT_AWS.cproject.yml   # Project B
+    - project: ./mldata/Model.cproject.yml           # Project C
     - project: ./bootloader/Bootloader.cproject.yml  # Not generated for target type: Board
       not-for-context: +Board
+    - project: ./processor2/Control.cproject.yml     # Project A
 ```
 
 ### Working with context-set
 
-Frequently, it is required to build applications with different [context](#context) types. The following command line example generates the `iot-product.csolution.yml` with build type `Debug` for the project `MQTT_AWS.cproject.yml`, while the other projects use the build type `Release`. When using the option `-S` or `--context-set`, this selection is saved to the file `iot-product.cbuild-set.yml` located in the same directory as the `*.csolution.yml` file. Refer to [File Structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-setyml) for details.
+Frequently, it is required to build applications with different [context](#context) types. The following command line example generates the `iot-product.csolution.yml` with build type `Debug` for the project `MQTT_AWS.cproject.yml`, while the other projects use the build type `Release`. When using the option `-S` or `--context-set`, this selection is saved to the file `iot-product.cbuild-set.yml` located in the same directory as the `*.csolution.yml` file. Refer to [File Structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-setyml) for details.
 
 ```txt
 cbuild iot-product.csolution.yml -c TFM.Release+Board -c MQTT_AWS.Debug+Board -c Bootloader.Release+Board -S
@@ -394,6 +360,9 @@ cbuild iot-product.csolution.yml -S
 - The same [target-type](#context) must be selected for all projects.
 - Only one [build-type](#context)  can be selected for a project.
 - Projects that are not required can be excluded.
+
+!!! Note
+    The [VS Code extension Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) always uses a `context-set` that is selected in the Manage Solution view.
 
 ### External Tools and Build Order
 
@@ -569,7 +538,7 @@ can share a `layer` with common configuration settings.
 
 Software layers for [*reference applications*](ReferenceApplications.md) may be published in software packs. Refer to [Pack Creation &raquo; Layers](pack-tools.md#layers) for more information.
 
-## Project Structure
+## Directory Structure
 
 This section describes how the `csolution` based project files should be organized to allow the scenarios described above. This section gives also guidelines for a directory structure.
 
@@ -583,7 +552,7 @@ Working Area                                                      | Access | Des
 :-----------------------------------------------------------------|:------:|:------------------
 [Project Area](#project-area)                                     | RW     | Contains user source code files managed by the user along with the  project files (see next item).
 [Project files](./YML-Input-Format.md#project-file-structure)     | RW     | Created by a user or an IDE to describe the application project.
-Component source code                                             | RO     | Content of software packs; the location is specified by the environment variable [`CMSIS_PACK_ROOT`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables) or the node [`pack: path`](./YML-Input-Format.md#pack) in project files.
+Component source code                                             | RO     | Content of software packs; the location is specified by the environment variable [`CMSIS_PACK_ROOT`](installation.md#environment-variables) or the node [`pack: path`](./YML-Input-Format.md#pack) in project files.
 [Component Configuration​](#rte-directory-structure)               | RW     | User editable config files of software components that are copied to the RTE directory.
 Generator artifacts​                                               | RO (see note) | Managed by domain specific configuration tools such as STM32CubeMX or MCUXpresso.
 [Build artifacts](./YML-Input-Format.md#directory-control)        | RW     | Created during the build process for example by a compiler.
@@ -871,7 +840,7 @@ csolution CubeMX.csolution.yml run --generator CubeMX
 
 ### Configure Generator Output
 
-The *Generator* output directory and the name of the [*Generator* import file (`*.cgen.yml`)](YML-CBuild-Format.md#generator-import-file) can be configured using the node [`generators:`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/YML-Input-Format.md#generators) as shown below.
+The *Generator* output directory and the name of the [*Generator* import file (`*.cgen.yml`)](YML-CBuild-Format.md#generator-import-file) can be configured using the node [`generators:`](YML-Input-Format.md#generators) as shown below.
 
 ```yml
   generators:

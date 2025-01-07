@@ -207,7 +207,7 @@ cbuild example.csolution.yml --toolchain GCC --output outGCC
 
 ### Update RTE Configuration Files
 
-The [Component Configuration​](build-overview.md#project-structure) is stored in the [RTE directory](build-overview.md#rte-directory-structure). When files are missing or new software pack versions are installed, it might be required to update the RTE configuration files:
+The [Component Configuration​](build-overview.md#directory-structure) is stored in the [RTE directory](build-overview.md#rte-directory-structure). When files are missing or new software pack versions are installed, it might be required to update the RTE configuration files:
 
 ```shell
 csolution example.csolution.yml --update-rte
@@ -306,7 +306,7 @@ csolution run -g CubeMX mysolution.csolution.yml -c Blinky.Debug+STM32L4
 
 When working with [multiple related projects](build-overview.md#project-setup-for-related-projects), it might be necessary to combine different build types for debug and download in the target hardware. With the option `--context-set` the selected `--context` options can be saved and re-used.
 
-Write the selected `--context` options to the file `SimpleTZ.cbuild-set.yml`. Refer to [file structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-setyml) for details.
+Write the selected `--context` options to the file `SimpleTZ.cbuild-set.yml`. Refer to [file structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-setyml) for details.
 
 ```shell
 cbuild SimpleTZ.csolution.yml -S -c CM33_s.Release -c CM33_ns.Debug
@@ -343,7 +343,7 @@ cbuild setup example.csolution.yml --context-set --packs
 variants. There are two ways to specify the CMSIS-PACK root directory:
 
 1. With the `CMSIS_PACK_ROOT` environment variable.
-   Refer to [Installation - Environment Variables](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables).
+   Refer to [Installation - Environment Variables](installation.md#environment-variables).
 
 2. With the option `--pack-root <path>`, for example:
 
@@ -626,8 +626,8 @@ Example            | Description
 [AVH_CI_Template](https://github.com/Arm-Examples/AVH_CI_Template)     | CI Template for unit test automation that uses GitHub Actions.
 [CMSIS Version 6](https://github.com/ARM-software/CMSIS_6/actions) | Runs a CMSIS-Core validation test across the supported processors using multiple compilers.
 [RTOS2 Validation](https://github.com/ARM-software/CMSIS-RTX/actions) | Runs the CMSIS-RTOS2 validation across Keil RTX using source and library variants.
-[STM32H743I-EVAL_BSP](https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP) | Build test of a Board Support Pack (BSP) with MDK-Middleware [Reference Applications](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/ReferenceApplications.md) using Arm Compiler or GCC. The artifacts store the various example projects for testing on the hardware board.
-[TFL Micro Speech](https://github.com/arm-software/AVH-TFLmicrospeech) | This example project shows the Virtual Streaming Interface with Audio input and uses [software layers](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/build-overview.md#software-layers) for retargeting.
+[STM32H743I-EVAL_BSP](https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP) | Build test of a Board Support Pack (BSP) with MDK-Middleware [Reference Applications](ReferenceApplications.md) using Arm Compiler or GCC. The artifacts store the various example projects for testing on the hardware board.
+[TFL Micro Speech](https://github.com/arm-software/AVH-TFLmicrospeech) | This example project shows the Virtual Streaming Interface with Audio input and uses [software layers](build-overview.md#software-layers) for retargeting.
 
 ## IDE Usage
 

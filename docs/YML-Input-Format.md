@@ -1,4 +1,4 @@
-# CMSIS Solution Project File Format
+# CSolution Project Format
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
@@ -394,14 +394,13 @@ When [`cdefault:`](#solution) is specified in the `*.csolution.yml` file, the **
 the compiler with specific default controls. The search order for this file is:
 
 - A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the same directory as the `<solution-name>.csolution.yml` file. 
-- A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the directory specified by the environment variable [`CMSIS_COMPILER_ROOT`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#environment-variables).
-- A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the directory [`<cmsis-toolbox-installation-dir>/etc`](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md##etccmake).
+- A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the directory [`<cmsis-toolbox-installation-dir>/etc`](installation.md#environment-variables).
 
 The `default:` node is the start of a [`cdefault.yml`](build-overview.md#cdefaultyml) file and contains the following.
 
 `default:`                                                |            | Content
 :---------------------------------------------------------|:-----------|:------------------------------------
-&nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls. Refer to [Build Overview - `cdefault.yml`](build-overview.md#cdefaultyml) for an example.
+&nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls. Refer to [CSolution Project Structure - `cdefault.yml`](build-overview.md#cdefaultyml) for an example.
 
 !!! Note
     The [`compiler:`](#compiler) selection in `cdefault.yml` has been deprecated in CMSIS-Toolbox 2.6.0.

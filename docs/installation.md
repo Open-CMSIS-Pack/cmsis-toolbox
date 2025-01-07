@@ -75,7 +75,7 @@ The environment variable **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are opt
 
     - Toolchain cmake files `<compiler-name>.<major>.<minor>.<patch>.cmake` for the selected [compiler](YML-Input-Format.md#compiler).
     - Default [linker script files](build-overview.md#linker-script-management) (to be preprocessed): `<compiler-name>_linker_script.<ext>.src`
-    - The `cdefault.yml` that is used when no other [`cdefault.yml`](YML-Input-Format.md#cdefault) file is found.
+    - The `cdefault.yml` that is used when no [`cdefault.yml`](YML-Input-Format.md#cdefault) file is found in the same directory as the `<solution-name>.csolution.yml` file.
 
 #### Compiler Registration
 

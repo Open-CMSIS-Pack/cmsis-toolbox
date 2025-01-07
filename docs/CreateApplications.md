@@ -74,7 +74,7 @@ An application is based on a *device* and/or *board* supported by a Device Famil
 
 - For simple projects, the default settings should be sufficient.
 
-- The [build information file](YML-CBuild-Format.md#cbuild-output-files) `<name>.cbuild.Debug+<target-name>.yml` lists configuration files of components and other useful information such as links to documentation of the component.
+- The [build information file](YML-CBuild-Format.md) `<name>.cbuild.Debug+<target-name>.yml` lists configuration files of components and other useful information such as links to documentation of the component.
   
 ### Step 6: Add application functionality
 
@@ -296,14 +296,12 @@ A potential solution is discussed [here](https://github.com/Open-CMSIS-Pack/devt
 **Duplicate Heap definition in Assembler startup file**
 
 When using memory allocation functions (i.e. `malloc`), the application ends in a hard fault handler. This is typically caused by different methods of stack and heap definitions.
-The Arm Compiler offers [three ways to configure stack and heap](https://developer.arm.com/documentation/100073/0623/The-Arm-C-and-C---Libraries/Stack-and-heap-memory-allocation-and-the-Arm-C-and-C---libraries/Stack-pointer-initialization-and-heap-bounds). 
 
-- Use a scatter file to define `ARM_LIB_STACKHEAP`, `ARM_LIB_STACK`, or `ARM_LIB_HEAP` regions.
+The Arm Compiler offers [three ways to configure stack and heap](https://developer.arm.com/documentation/100073/0623/The-Arm-C-and-C---Libraries/Stack-and-heap-memory-allocation-and-the-Arm-C-and-C---libraries/Stack-pointer-initialization-and-heap-bounds). Only one of the following methods should be used:
+
+- Use a linker scatter file to define `ARM_LIB_STACKHEAP`, `ARM_LIB_STACK`, or `ARM_LIB_HEAP` regions.
 - Use the symbols `__initial_sp`, `__heap_base`, and `__heap_limit`.
 - Implement `__user_setup_stackheap()` or `__user_initial_stackheap()`.
-
-!!! Warning
-    You have to choose one of these three ways.
 
 The [C startup code](https://arm-software.github.io/CMSIS_6/latest/Core/startup_c_pg.html) recommended by CMSIS Version 6 uses the linker scatter file for stack and heap definition.  The C startup code is generic and works across all toolchains that are supported by the CMSIS-Toolbox.
 
@@ -313,7 +311,7 @@ There are two options to solve the problem.
 
 1. Remove the stack and heap definition in the assembler startup code.
 
-2. Disable in the [Regions Header File](#regions-header-file) the stack and heap definition by setting `__STACK_SIZE` and `__HEAP_SIZE` to 0 as shown below.
+2. Disable in the [Regions Header File](#regions-header-file) the stack and heap definition by setting `__STACK_SIZE` and `__HEAP_SIZE` to 0 as shown below.  This removes the definition in the linker scatter file.
 
 ```txt
 // <h> Stack / Heap Configuration
