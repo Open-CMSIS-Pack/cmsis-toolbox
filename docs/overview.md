@@ -22,7 +22,7 @@ The CMSIS-Toolbox contains stand-alone tools [for all host platforms](https://ar
 
 ## Overall Workflow
 
-The CMSIS-Toolbox includes following tools for the creation of embedded applications:
+The CMSIS-Toolbox includes the following tools for the creation of embedded applications:
 
 Tool                     | Description
 :------------------------|:-----------------------
@@ -64,9 +64,9 @@ The overall benefits of the CMSIS-Toolbox are:
 
 - [*Software packs*](https://www.keil.arm.com/packs/) simplify tool setup with `device:` or `board:` selection and provide access to reusable software components.
 
-- Organize solutions with independent projects support a wide range of use cases including  multi-processor applications or unit testing.
+- Organize solutions with independent projects to support a wide range of use cases, including multi-processor applications or unit testing.
 
-- Integrates with domain specific [generators](build-overview.md#use-a-generator) (i.e. CubeMX or MCUXpresso Config Tools) for configuration of devices/boards and complex software stacks such as motor control.
+- Integrates with domain-specific [generators](build-overview.md#use-a-generator) (e.g., CubeMX or MCUXpresso Config Tools) for configuring devices/boards and complex software stacks such as motor control.
 
 - Target types allow application deployment to different hardware (test board, production hardware, virtual simulation models, etc.).
 
