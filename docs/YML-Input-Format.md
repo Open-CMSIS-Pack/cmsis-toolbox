@@ -29,11 +29,11 @@ File Extension           | [Category](https://open-cmsis-pack.github.io/Open-CMS
 The **`csolution` Project Manager** uses the following syntax to specify the `pack:` names in the `*.yml` files.
 
 ```yml
-[vendor ::] pack-name                # Use latest version of the pack
+[vendor ::] pack-name                # Use the latest version of the pack
 [vendor ::] pack-name@version        # With exact version
 [vendor ::] pack-name@>=version      # With version equal or higher
-[vendor ::] pack-name@^version       # With version equal or higher but same major version
-[vendor ::] pack-name@~version       # With version equal or higher but same major and minor version
+[vendor ::] pack-name@^version       # With version equal or higher but the same major version
+[vendor ::] pack-name@~version       # With version equal or higher but the same major and minor version
 ```
 
 Element      |              | Description
@@ -46,7 +46,7 @@ Element      |              | Description
 `@~version`  | Optional     | Automatically update patch version, i.e. `@^1.2.3` uses releases from `1.2.3` to `< 1.3.0`. 
 
 !!!Notes
-    - When no version is specified, the **`csolution` Project Manager** only loads the latests installed version of a software pack. This also applies when wildcards are used in the `pack-name`. 
+    - When no version is specified, the **`csolution` Project Manager** only loads the latest installed version of a software pack. This also applies when wildcards are used in the `pack-name`. 
     - Use [**`cpackget`**](build-tools.md#cpackget-invocation) to download and install new pack versions.
 
 **Examples:**
@@ -69,7 +69,7 @@ The **`csolution` Project Manager** uses the following syntax to specify the `co
 [Cvendor::] Cclass [&Cbundle] :Cgroup [:Csub] [&Cvariant] [@[>=]Cversion]
 ```
 
-Components are defined using the [Open-CMSIS-Pack - `<component>` element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#element_component). Several parts of a `component` are optional.  For example it is possible to just define a component using `Cclass` and `Cgroup` name. All elements of a component name are summarized in the following table.
+Components are defined using the [Open-CMSIS-Pack - `<component>` element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#element_component). Several parts of a `component` are optional.  For example, it is possible to just define a component using the `Cclass` and `Cgroup` names. All elements of a component name are summarized in the following table.
 
 Element    |              | Description
 :----------|--------------|:---------------------
@@ -100,7 +100,7 @@ The fully resolved component name is shown in the [`*.cbuild.yml`](YML-CBuild-Fo
 
 **Multiple component definitions are rejected**
 
-- If a component is added more then once in the *csolution project files* and an *error* is issued.
+- If a component is added more than once in the *csolution project files* and an *error* is issued.
 - An attempt to select multiple variants (using `Cvariant`) of a component results in an *error*.
 
 **Examples:**
@@ -121,7 +121,7 @@ The fully resolved component name is shown in the [`*.cbuild.yml`](YML-CBuild-Fo
 
 ### `device:` Name Conventions
 
-The device specifies multiple attributes about the target that ranges from the processor architecture to Flash
+The device specifies multiple attributes about the target that range from the processor architecture to Flash
 algorithms used for device programming. The following syntax is used to specify a `device:` value in the `*.yml` files.
 
 ```yml
@@ -130,14 +130,14 @@ algorithms used for device programming. The following syntax is used to specify 
 
 Element       |          | Description
 :-------------|----------|:---------------------
-`Dvendor`     | Optional | Name (without enum field) of the device vendor defined in `<devices><family>` element of the software pack.
-`Dname`       | Optional | Device name (Dname attribute) or when used the variant name (Dvariant attribute) as defined in the \<devices\> element.
+`Dvendor`     | Optional | Name (without enum field) of the device vendor-defined in `<devices><family>` element of the software pack.
+`Dname`       | Optional | Device name (Dname attribute) or, when used, the variant name (Dvariant attribute) as defined in the \<devices\> element.
 `Pname`       | Optional | Processor identifier (Pname attribute) as defined in the `<devices>` element.
 
 !!! Note
-    - All elements of a device name are optional which allows to supply additional information, such as the `:Pname` at
-      different stages of the project. However the `Dname` itself is a mandatory element and must be specified in
-      context of the various project files.
+    - All elements of a device name are optional, which allows to supply of additional information, such as the `:Pname` at
+      different stages of the project. However, the `Dname` itself is a mandatory element and must be specified in
+      the context of the various project files.
     - `Dvendor::` must be used in combination with the `Dname`.
 
 **Examples:**
@@ -152,7 +152,7 @@ device: :cm33_core0                        # Pname added to a previously defined
 
 ### `board:` Name Conventions
 
-Evaluation Boards define indirectly a device via the related BSP. The following syntax is used to specify a `board:`
+Evaluation Boards define a device indirectly via the related BSP. The following syntax is used to specify a `board:`
 value in the `*.yml` files.
 
 ```yml
@@ -161,7 +161,7 @@ value in the `*.yml` files.
 
 Element      |              | Description
 :------------|--------------|:---------------------
-`vendor`     | Optional     | Name of the board vendor defined in `<boards><board>` element of the board support pack (BSP).
+`vendor`     | Optional     | Name of the board vendor-defined in `<boards><board>` element of the board support pack (BSP).
 `Bname`      | **Required** | Board name (name attribute) as defined in the \<board\> element of the BSP.
 `revision`   | Optional     | Board revision (revision attribute) as defined in the \<board\> element of the BSP.
 
@@ -178,7 +178,7 @@ board: STMicroelectronics::NUCLEO-L476RG:Rev.C    # A board with revision specif
 
 ### `context:` Name Conventions
 
-A `context:` name combines `project-name`, `built-type`, and `target-type` and is used on various places in the CMSIS-Toolbox.  The following syntax is used to specify a `context:` name.
+A `context:` name combines `project-name`, `built-type`, and `target-type` and is used in various places in the CMSIS-Toolbox.  The following syntax is used to specify a `context:` name.
 
 ```yml
 [project-name][.build-type][+target-type]
@@ -191,14 +191,14 @@ Element             |              | Description
 `+target-type`      |   Optional   | The [`target-type`](#target-types) name that is currently processed (specified with `- type: name`).
 
 !!! Note
-    The `.build-type` and `+target-type` name allows letters (A-Z, a-z), digits (0-9), dash ('-'), and underscore ('_'); the maximum length is 32 characters.
+    The `.build-type` and `+target-type` names allow letters (A-Z, a-z), digits (0-9), dash ('-'), and underscore ('_'); the maximum length is 32 characters.
 
 - When `project-name` is omitted, the `project-name` is the base name of the `*.cproject.yml` file.
 - When `.build-type` is omitted, it matches with any possible `.build-type`.
 - When `+target-type` is omitted, it matches with any possible `+target-type`.
 
 By default, the specified `- type: name` of [`build-types:`](#build-types) and [`target-types:`](#target-types) nodes in the `*.csolution.yml` file are directly mapped to the `context` name.
-Using the [`context-map:`](#context-map) node it is possible to assign a different `.build-type` and/or `+target-type` mapping for a specific `project-name`.
+Using the [`context-map:`](#context-map) node, it is possible to assign a different `.build-type` and/or `+target-type` mapping for a specific `project-name`.
 
 **Example:**
 
@@ -214,13 +214,13 @@ Demo.Release+IP-Stack
 Demo.Release+WiFi
 ```
 
-The `context` name is also used in [`for-context:`](#for-context) and [`not-for-context:`](#not-for-context) nodes that allow to include or exclude items depending on the `context`. In many cases the `project-name` can be omitted as the `context` name is within a specific `*.cproject.yml` file or applied to a specific `*.cproject.yml` file.
+The `context` name is also used in [`for-context:`](#for-context) and [`not-for-context:`](#not-for-context) nodes that allow to include or exclude items depending on the `context`. In many cases, the `project-name` can be omitted as the `context` name is within a specific `*.cproject.yml` file or applied to a specific `*.cproject.yml` file.
 
 ## Access Sequences
 
 The **access sequences** export values from the CMSIS Project Manager for the 
 `*.yml` file nodes `define:`, `define-asm:`, `add-path:`, `misc:`, `files:`, and `executes:`. The **access sequences**
-can specify a different project and describe therefore project dependencies.
+can specify a different project and describe, therefore, project dependencies.
 
 Access Sequence                                | Description
 :----------------------------------------------|:--------------------------------------
@@ -248,7 +248,7 @@ Access Sequence                                | Description
 `$Dpack$`                                      | Path to the pack that defines the selected device (DFP).
 `$Pack(vendor::name)$`                         | Path to a specific pack. Example: `$Pack(NXP::K32L3A60_DFP)$`.
 
-For a [`context`](#context-name-conventions) the `project-name`, `.build-type`, and `+target-type` are optional. An **access sequence** that specifies only `project-name` uses the context that is currently processed. It is important that the `project` is part of the [context-set](build-overview.md#working-with-context-set) in the build process. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file. 
+For a [`context`](#context-name-conventions), the `project-name`, `.build-type`, and `+target-type` are optional. An **access sequence** that specifies only `project-name` uses the context that is currently processed. It is important that the `project` is part of the [context-set](build-overview.md#working-with-context-set) in the build process. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file. 
 
 **Example:**
 
@@ -286,7 +286,7 @@ For example, these references are possible in the file `MQTT_AWS.cproject.yml`.
     - file: $cmse-lib(TFM)$                         # use symbol output file of TFM Project
 ```
 
-The example above uses the `build-type` and `target-type` of the processed context for the project `TFM`. With a [context-set](build-overview.md#working-with-context-set) you may mix different `build-types` for an application. Note that it is important to build both projects in the same build process.
+The example above uses the `build-type` and `target-type` of the processed context for the project `TFM`. With a [context-set](build-overview.md#working-with-context-set) you may mix different `build-types` for an application. Note that it is important to build both projects using the same build process.
 
 ```bash
 cbuild iot-product.csolution.yml --context-set --context TFM.Release+Board --context MQTT_AWS.Debug+Board 
@@ -433,7 +433,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 ```yml
 solution:
   created-for: cmsis-toolbox@2.6  # minimum CMSIS-Toolbox version required for project build
-  cdefault:                       # use default setup of toolchain specific controls.
+  cdefault:                       # use default setup of toolchain-specific controls.
   compiler: GCC                   # overwrite compiler definition in 'cdefaults.yml'
 
   packs: 
@@ -565,11 +565,11 @@ layer:
 
 ## Directory Control
 
-The following nodes control the directory structure for the application.
+The following nodes control the application's directory structure.
 
 ### `output-dirs:`
 
-Allows to control the directory structure for build output files and temporary files.  
+Allows control of the directory structure for building output files and temporary files.  
 
 !!! Notes
     - This control is only possible at `csolution.yml` level.
@@ -604,7 +604,7 @@ output-dirs:
 
 ### `generators:`
 
-Allows to control the directory structure for generator output files.  
+Allows control of the directory structure for generator output files.  
 
 When no explicit `generators:` is specified, the **`csolution` Project Manager** uses as path:
 
@@ -618,7 +618,7 @@ The `generators:` node can be added at various levels of the `*.yml` input files
 3. Use `generators:` specification of the `*.csolution.yml` input file.
 
 !!! Notes
-    - Only relative paths are permitted to support portablity of projects.
+    - Only relative paths are permitted to support the portability of projects.
     - The location of the `*.yml` file that contains the `generators:` node is the reference for relative paths.
 
 `generators:`                  |            | Content
@@ -627,16 +627,16 @@ The `generators:` node can be added at various levels of the `*.yml` input files
 &nbsp;&nbsp;&nbsp; `options:`  |  Optional  | Specific generator options; allows explicit directory configuration for a generator.
 
 !!! Note
-    The base directory is extended for each generator with `/<generator-id>`; `<generator-id>` is defined by the `id` in the generators element of the PDSC file.
+    The base directory is extended for each generator with `/<generator-id>`; `<generator-id>` is defined by the `id` in the generator element of the PDSC file.
 
 #### `generators:` `options:`
 
 `options:`                     |            | Content
 :------------------------------|------------|:------------------------------------
 `- generator:`                 |  Optional  | Identifier of the generator tool, specified with `id` in the [generators element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_generators_pg.html#element_generator) of the PDSC file.
-&nbsp;&nbsp;&nbsp; `path:`     |  Optional  | Specifies the directory for generated files. Relative paths used location of `*.cproject.yml` or `*.clayer.yml` file as base directory.
+&nbsp;&nbsp;&nbsp; `path:`     |  Optional  | Specifies the directory for generated files. Relative paths used the location of the `*.cproject.yml` or `*.clayer.yml` file as the base directory.
 &nbsp;&nbsp;&nbsp; `name:`     |  Optional  | Specifies the base name of the [generator import file](YML-CBuild-Format.md#generator-import-file) (added in CMSIS-Toolbox 2.4.0); typically used for a board layer.
-&nbsp;&nbsp;&nbsp; `map:`      |  Optional  | Mapping of the *csolution project* to a generator specific run-time context name (added in CMSIS-Toolbox 2.4.0).
+&nbsp;&nbsp;&nbsp; `map:`      |  Optional  | Mapping of the *csolution project* to a generator-specific run-time context name (added in CMSIS-Toolbox 2.4.0).
 
 **Example:**
 
@@ -657,7 +657,7 @@ Allows to control the directory structure for [RTE (run-time environment)](build
 
 !!! Notes
     - This control is only possible at `*.cproject.yml` level.  
-    - Only relative paths are permitted to support portablity of projects.
+    - Only relative paths are permitted to support the portability of projects.
     - The location of the `*.cproject.yml` file is the reference for relative paths.
 
 `rte:`                         |            | Content
@@ -671,7 +671,7 @@ rte:
 
 ## Toolchain Options
 
-Toolchain options may be used at various places such as:
+Toolchain options may be used at various places, such as:
 
 - [`solution:`](#solution) level to specify options for a collection of related projects.
 - [`project:`](#projects) level to specify options for a project.
@@ -695,7 +695,7 @@ solution:
   created-for: cmsis-toolbox@2.5  # minimum CMSIS-Toolbox version required for project build
   select-compiler:                # list tested compilers that can be selected
     - compiler: GCC               # GCC is supported
-    - compiler: AC6@6.22          # AC6 is supported, version number is an hint on what was tested
+    - compiler: AC6@6.22          # AC6 is supported, version number is a hint on what was tested
 ```
 
 ### `compiler:`
@@ -708,7 +708,7 @@ Compiler Name                                         | Supported Compiler
 `AC6`                                                 | Arm Compiler version 6
 `GCC`                                                 | GCC Compiler
 `IAR`                                                 | IAR Compiler
-`CLANG`                                               | CLANG Compiler based on LLVM technlogy
+`CLANG`                                               | CLANG Compiler based on LLVM technology
 
 **Example:**
 
@@ -737,9 +737,9 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 
 !!! Notes
     - The `linker:` node must have at least `regions:`, `script:`, `auto:`, or `define:`.
-    - If no `script:` file is specified, compiler specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
+    - If no `script:` file is specified, compiler-specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
     - A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`.
-    - If both `auto:` and `script:` is specified a warning is issued and [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation) is performed and the specified `script:` is ignored.
+    - If both `auto:` and `script:` is specified, a warning is issued, and [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation) is performed, and the specified `script:` is ignored.
 
 **Examples:**
 
@@ -760,7 +760,7 @@ linker:
     for-compiler: AC6            # for Arm Compiler 6 
 
   - script:   MyLinker.ld        # linker script file, not pre-processed
-    for-compiler: CLANG          # for CLANG LLVM based compiler
+    for-compiler: CLANG          # for CLANG LLVM-based compiler
 ```
 
 ```yml
@@ -770,7 +770,7 @@ linker:
     regions:  MyRegions.h        # pre-processed using header file
 
   - script:   MyLinker.ld.src    # linker script file
-    for-compiler: CLANG          # for CLANG LLVM based compiler
+    for-compiler: CLANG          # for CLANG LLVM-based compiler
     regions:  MyRegions.h        # pre-processed using header file
     define:                      # with define setting 
       - Setup: 1                 # define with value
@@ -788,7 +788,7 @@ Configure the generated output files.
 `type:`           | Description
 :-----------------|:-------------
 `- lib`           | Library or archive. Note: GCC uses the prefix `lib` in the base name for archive files.
-`- elf`           | Executable in ELF format. The file extension is toolchain specific.
+`- elf`           | Executable in ELF format. The file extension is toolchain-specific.
 `- hex`           | Intel HEX file in HEX-386 format.
 `- bin`           | Binary image.
 `- map`           | Linker MAP file.
@@ -798,7 +798,7 @@ The **default** setting for `output:` is:
 ```yml
 output:
   base-name: $Project$   # used the base name of the `cproject.yml` file.
-  type: elf              # Generate executeable file.
+  type: elf              # Generate executable file.
 ```
 
 **Example:**
@@ -806,7 +806,7 @@ output:
 ```yml
 output:
   type: 
-  - elf                  # Generate executeable file.
+  - elf                  # Generate executable file.
   - map                  # Generate Linker MAP file.
 ```
 
@@ -814,7 +814,7 @@ output:
 output:                  # configure output files.
   base-name: MyProject   # used for all output files, including linker map file.
   type:
-  - elf                  # Generate executeable file.
+  - elf                  # Generate executable file.
   - hex                  # generate a HEX file.
   - bin                  # generate a BIN file.
 ```
@@ -837,7 +837,7 @@ The following translation control options may be used at various places such as:
 
 !!! Note
     - The keys `define:`, `define-asm:`, `add-path:`, `add-path-asm:`, `del-path:`, and `misc:` are additive. 
-    - All other keys can only be defined once at the level of `solution:`, `project:`, `setup:`, `layer:`, `build-types:`. or `target-types:`. However, it is possible to overwrite these keys at the level of `group:`, `file:`, or `component:`, for example it is possible to translate a file group with a different optimize level.
+    - All other keys can only be defined once at the level of `solution:`, `project:`, `setup:`, `layer:`and `build-types:`. or `target-types:`. However, it is possible to overwrite these keys at the level of `group:`, `file:`, or `component:`; for example it is possible to translate a file group with a different optimize level.
 
 ### `language-C:`
 
@@ -998,7 +998,7 @@ Add include paths to the command line of the development tools for C and C++ sou
 &nbsp;&nbsp;&nbsp; `- <path-name>`                         | Named path to be added
 
 !!! Note
-    This control only applies to C and C++ source files.  For assembler source files use the `add-path-asm:` node.
+    This control only applies to C and C++ source files.  For assembler source files, use the `add-path-asm:` node.
 
 **Example:**
 
@@ -1011,7 +1011,7 @@ project:
       C: [-fshort-enums, -fshort-wchar]
 
   add-path:
-    - $OutDir(Secure)$                   # add path to secure project's output directory
+    - $OutDir(Secure)$                   # add path to secure the project's output directory
 ```
 
 ### `add-path-asm:`
@@ -1030,7 +1030,7 @@ Add include paths to the command line of the development tools for assembly sour
 ```yml
 project:
   add-path-asm:
-    - .\MyAsmIncludes                    # add path to assembler include filessecure project's output directory
+    - .\MyAsmIncludes                    # add path to assembler include files secure project's output directory
 ```
 
 ### `del-path:`
@@ -1041,7 +1041,7 @@ Remove include paths (that are defined at the cproject level) from the command l
 :----------------------------------------------------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `- <path-name>`                         | Named path to be removed; `*` for all
 
-**Examle:**
+**Example:**
 
 ```yml
   target-types:
@@ -1099,14 +1099,14 @@ Add miscellaneous literal tool-specific controls that are directly passed to the
 
 ## Project Setups
 
-The `setups:` node can be used to create setups that are specific to a compiler, target-type, and/or built-type.
+The `setups:` node can be used to create setups specific to a compiler, target type, and/or built type.
 
 ### `setups:`
 
-The `setups:` node collects a list of `setup:` notes.  For each context, only one setup will be selected.
+The `setups:` node collects a list of `setup:` notes.  Only one setup will be selected for each context.
 
-The result is a `setup:` that collects various toolchain options and that is valid for all files and components in the
-project. It is however possible to change that `setup:` settings on a [`group:`](#groups) or [`file:`](#files) level.
+The result is a `setup:` that collects various toolchain options, and that is valid for all files and components in the
+project. It is, however, possible to change that `setup:` settings on a [`group:`](#groups) or [`file:`](#files) level.
 
 `setups:`                                            |              | Content
 :----------------------------------------------------|:-------------|:------------------------------------
@@ -1153,14 +1153,14 @@ project:
 The `packs:` node can be specified in the `*.csolution.yml` file allows you to:
   
 - Reduce the scope of software packs that are available for projects.
-- Add specific software packs optional with a version specification.
-- Provide a path to a local installation of a software pack that is for example project specific or under development.
+- Add specific software packs that are optional with version specifications.
+- Provide a path to a local installation of a software pack that is, for example, project-specific or under development.
 
-The  [Pack Name Conventions](#pack-name-conventions) are used to specify the name of the software packs.
-The `pack:` definition may be specific to a [`context`](#context) that specifies `target-types:` and/or `build-types:` or provide a local path to a development repository of a software pack.
+The  [Pack Name Conventions](#pack-name-conventions) specify the names of the software packs.
+The `pack:` definition may be specific to a [`context`](#context) that specifies `target-types:` and/or `build-types:` or provides a local path to a development repository of a software pack.
 
 !!! Notes
-    - By default, the **`csolution` Project Manager** only loads the latest version of the installed software packs. It is however possible to request specific versions using the `- pack:` node.
+    - By default, the **`csolution` Project Manager** only loads the latest version of the installed software packs. It is, however, possible to request specific versions using the `- pack:` node.
     - An attempt to add two different versions of the same software pack results in an error.
 
 ### `packs:`
@@ -1214,7 +1214,7 @@ This information is used to define the `device:` along with basic toolchain sett
 
 ### `device:`
 
-Specifies a [unique device name](#device-name-conventions), optionally with vendor that must be defined in software
+Specifies a [unique device name](#device-name-conventions), optionally with the vendor that must be defined in software
 packs. This information is used to define the `device:` along with basic toolchain settings.
 
 A `device:` is derived from the `board:` setting, but an explicit `device:` setting overrules the `board:` device.
@@ -1227,7 +1227,7 @@ At the level of a `cproject.yml` file, only the `pname` can be specified as the 
 
 ### `processor:`
 
-The `processor:` keyword specifies the usage of processor features for this project.
+The `processor:` keyword specifies the processor features used in this project.
 
 `processor:`                            | Content
 :---------------------------------------|:------------------------------------
@@ -1260,20 +1260,20 @@ project:
 
 ## Context
 
-A [`context`](#context-name-conventions) is an enviroment setup for a project that is composed of: 
+A [`context`](#context-name-conventions) is an environment setup for a project that is composed of: 
 
 - `project-name` that is the base name of the `*.cproject.yml` file.
-- `.build-type` that defines typically build specific settings such as for debug, release, or test.
-- `+target-type` that defines typically target specific settings such as device, board, or usage of processor features.
+- `.build-type` that defines typically build-specific settings such as for debug, release, or test.
+- `+target-type` that defines typically target-specific settings such as device, board, or usage of processor features.
 
 !!! Note
-    - The [`context`](#context-name-conventions) name is used througout the build process and is reflected in directory names. Even when there is not a fixed limit, keep identifiers short. Recommended is less than 32 characters for the [`context`](#context-name-conventions) name.
+    - The [`context`](#context-name-conventions) name is used throughout the build process and is reflected in directory names. Even when there is not a fixed limit, keep identifiers short. Recommended is less than 32 characters for the [`context`](#context-name-conventions) name.
     - Blank characters (' ') in the context name are not permitted by CMake.  
 
 The section [project setup for related projects](build-overview.md#project-setup-for-related-projects)
 explains the overall concept of  `target-types` and `build-types`. These `target-types` and `build-types` are defined in the `*.csolution.yml` that defines the overall application for a system.
 
-The settings of the `target-types:` are processed first; then the settings of the `build-types:` that potentially overwrite the `target-types:` settings.
+The settings of the `target-types:` are processed first, followed by the settings of the `build-types:`, which potentially overwrite the `target-types:` settings.
 
 ### `target-types:`
 
@@ -1354,7 +1354,7 @@ settings are processed in the following order:
    If `board:` is not specified, a `device:` must be specified.
 2. `device:` defines the target device. If `board:` is specified, the `device:` setting can be used to overwrite the
    device or specify the processor core used.
-3. `processor:` overwrites default settings for code generation, such as endianess, TrustZone mode, or disable Floating
+3. `processor:` overwrites default settings for code generation, such as endianness, TrustZone mode, or disabling Floating
    Point code generation.
 
 **Examples:**
@@ -1411,7 +1411,7 @@ This application combines two projects for a multi-processor device, but the pro
 
 **Example 2:**
 
-The following example uses three projects `Demo`, `TFM` and `Boot`. The project `TFM` should be always build using the context `TFM.Release+LibMode`.  For the target-type name `Board`, the Boot project requires the `+Flash` target, but any build-type could be used.
+The following example uses three projects: `Demo`, `TFM`, and `Boot`. The project `TFM` should always be built using the context `TFM.Release+LibMode`. For the target-type name `Board`, the Boot project requires the `+Flash` target, but any build type could be used.
 
 ```yml
   target-types:
@@ -1492,16 +1492,16 @@ The keyword `for-context:` and `not-for-context:` can be used for the following 
 List Node                                  | Description
 :------------------------------------------|:------------------------------------
 [`- project:`](#projects)                  | At `projects:` level it is possible to control inclusion of project.
-[`- layer:`](#layers)                      | At `layers:` level it is possible to control inclusion of a software layer.
+[`- layer:`](#layers)                      | At `layers:` level, it is possible to control the inclusion of a software layer.
 
 The keyword `for-context:`, `not-for-context:`, and `for-compiler:` can be applied to the following *list nodes*:
 
 List Node                                  | Description
 :------------------------------------------|:------------------------------------
-[`- component:`](#components)              | At `components:` level it is possible to control inclusion of a software component.
-[`- group:`](#groups)                      | At `groups:` level it is possible to control inclusion of a file group.
-[`- setup:`](#setups)                      | At `setups:` level it is define toolchain specific options that apply to the whole project.
-[`- file:`](#files)                        | At `files:` level it is possible to control inclusion of a file.
+[`- component:`](#components)              | At `components:` level, control the inclusion of a software component.
+[`- group:`](#groups)                      | At `groups:` level, control the inclusion of a file group.
+[`- setup:`](#setups)                      | At `setups:` level, define toolchain-specific options that apply to the whole project.
+[`- file:`](#files)                        | At `files:` level, control the inclusion of a file.
 
 The inclusion of a *list node* is processed with this hierarchy from top to bottom:
 
@@ -1510,7 +1510,7 @@ The inclusion of a *list node* is processed with this hierarchy from top to bott
 In other words, the restrictions specified by `for-context:` or `not-for-context` for a *list node* are applied to it child nodes. Child *list nodes* inherit the restrictions from their parent.
 
 !!! Note
-    With `for-context:` and `not-for-context:` the `project-name` of a [context](#context-name-conventions) cannot be applied. The `context` name must therefore start with `.` to refer the `build-type:` or `+` to refer the `target-type:`.
+    With `for-context:` and `not-for-context:` the `project-name` of a [context](#context-name-conventions) cannot be applied. The `context` name must, therefore, start with `.` to refer to the `build-type:` or `+` to refer to the `target-type:`.
 
 #### Regular Expressions
 
@@ -1538,8 +1538,8 @@ The following project is only included when the `build-type:` of a context conta
 ## Multiple Projects
 
 The section [Project setup for related projects](build-overview.md#project-setup-for-related-projects) describes the
-organization of multiple projects. The file `*.csolution.yml` describes the relationship of this projects and may also re-map
-`target-types:` and `build-types:` for this projects using [`context-map:`](#context-map).
+organization of multiple projects. The file `*.csolution.yml` describes the relationship of these projects and may also re-map
+`target-types:` and `build-types:` for projects using [`context-map:`](#context-map).
 
 ### `projects:`
 
@@ -1553,7 +1553,7 @@ The YAML structure of the section `projects:` is:
 
 **Examples:**
 
-This example uses two projects that are build in parallel using the same `build-type:` and `target-type:`.  Such a setup is typical for multi-processor systems.
+This example uses two projects that are built in parallel using the same `build-type:` and `target-type:`.  Such a setup is typical for multi-processor systems.
 
 ```yml
   projects:
@@ -1561,7 +1561,7 @@ This example uses two projects that are build in parallel using the same `build-
     - project: ./CM4/CM4.cproject.yml      # include project for Cortex-M4 processor
 ```
 
-This example uses multiple projects, but with additional controls.
+This example uses multiple projects but with additional controls.
 
 ```yml
   projects:
@@ -1842,7 +1842,7 @@ For detailed description refer to [Open-CMSIS-Pack specification - Component Ins
       instances: 2
 ```
 
-If the user selects multiple instances of the same component, all files with  attribute `config` in the `*.PDSC` file
+If the user selects multiple instances of the same component, all files with the attribute `config` in the `*.PDSC` file
 will be copied multiple times to the project. The name of the component (for example config_mylib.h) will get a postfix
 `_n` whereby `n` is the instance number starting with 0.
 
@@ -1864,16 +1864,16 @@ The CMSIS-Toolbox supports pre-build and post-build steps that utilize external 
 
 ### `executes:`
 
-Execute an external command for pre or post build steps used in `*.csolution.yml` and `*.cproject.yml` files. The `input:` and `output:` files are used for dependency checking and schedule the execution (as pre-build or post-build step) during the build process of an application (option `--context` is not used).
+Execute an external command for pre or post-build steps used in the `*.csolution.yml` and `*.cproject.yml` files. The `input:` and `output:` files are used for dependency checking and scheduling the execution (as a pre-build or post-build step) during the build process of an application (option `--context` is not used).
 
-Other CMake Build scripts may be integrated into the overall build process using the `executes:` node. Refer to [Build Operation - CMake Integration](build-operation.md#cmake-integration) for an example that utilizes a file converter for web site images.
+Other CMake Build scripts may be integrated into the overall build process using the `executes:` node. Refer to [Build Operation - CMake Integration](build-operation.md#cmake-integration) for an example that utilizes a file converter for website images.
 
 The structure of the `executes:` node is:
 
 `executes:`                                 |              | Content
 :-------------------------------------------|:-------------|:------------------------------------
-`- execute:`                                | **Required** | The identifier is used as CMake target name and must not contain spaces and special characters; recommended is less then 32 characters.
-&nbsp;&nbsp;&nbsp; `run:`                   | **Required** | Command string with name of the program or script (optionally with path) along with argument string.
+`- execute:`                                | **Required** | The identifier is used as a CMake target name and must not contain spaces and special characters; recommended is less than 32 characters.
+&nbsp;&nbsp;&nbsp; `run:`                   | **Required** | Command string with the name of the program or script (optionally with path) along with argument string.
 &nbsp;&nbsp;&nbsp; `always:`                |  Optional    | When present, the build step always runs and bypasses check for outdated `output:` files.
 &nbsp;&nbsp;&nbsp; `input:`                 |  Optional    | A list of input files (may contain [Access Sequences](#access-sequences)). 
 &nbsp;&nbsp;&nbsp; `output:`                |  Optional    | A list of output files (may contain [Access Sequences](#access-sequences)).
@@ -1897,17 +1897,17 @@ Consider the following:
 
 - The `execute:` node is processed only for an application build when no `--context` option is specified. The option `--context-set` can be used.
 
-- CMake uses Linux-style path names with `/` characters, it does not accept the Windows-style `\` characters in the `run:` node to specify the location of an executeable tool.
+- CMake uses Linux-style path names with `/` characters; it does not accept the Windows-style `\` characters in the `run:` node to specify the location of an executable tool.
 
-- [CMake provides several builtin command-line tools](https://cmake.org/cmake/help/latest/manual/cmake.1.html#run-a-command-line-tool) (copy, checksum, etc.) that run on every Host OS. Consider using these command-line tools instead of Windows or Linux specific commands. Use `CMake -E help` to list the available commands. 
+- [CMake provides several builtin command-line tools](https://cmake.org/cmake/help/latest/manual/cmake.1.html#run-a-command-line-tool) (copy, checksum, etc.) that run on every Host OS. Consider using these command-line tools instead of Windows or Linux-specific commands. Use `CMake -E help` to list the available commands. 
 
-- The base directory for execution is not controlled by the CMSIS-Toolbox and typically the `tmp` directory. The commands specified by `run:` should be in the path of the Host OS or the path/tool should be passed using an `$input(<n>)$` argument.
+- The base directory for execution is not controlled by the CMSIS-Toolbox and is typically the `tmp` directory. The commands specified by `run:` should be in the path of the Host OS or the path/tool should be passed using an `$input(<n>)$` argument.
 
 - At the `*.csolution.yml` level `for-context:` and `not-for-context:` is not evaluated.
 
 **Examples:**
 
-The tool `gen_image` combines multiple input images. It is called with the list of [elf files](#output) that are created by the various projects. It runs when `cbuild` executes a solution build (option `--context` is not used).
+The tool `gen_image` combines multiple input images. It is called together with the list of [elf files](#output) that are created by the various projects. It runs when `cbuild` executes a solution build (option `--context` is not used).
 
 ```yml
 solution:                                     # executed as part of a complete solution build
@@ -1923,7 +1923,7 @@ solution:                                     # executed as part of a complete s
         - $SolutionDir()$/$Solution$.out      # output file name
 ```
 
-The Windows batch file `KeyGen.bat` converts a input file `keyfile.txt` to a C source file. combines multiple input images. It is called with the list of [elf files](#output) that are created by the various projects. It runs when `cbuild` executes a solution build (option `--context` is not used).
+The Windows batch file `KeyGen.bat` converts an input file `keyfile.txt` to a C source file. combines multiple input images. It is called together with the list of [elf files](#output) that are created by the various projects. It runs when `cbuild` executes a solution build (option `--context` is not used).
 
 ```yml
 project:                                      # executed as part of a project build
@@ -1938,7 +1938,7 @@ project:                                      # executed as part of a project bu
         - $ProjectDir()$/keyfile.c            # output as C source file that is part of this project
 ```
 
-The builtin CMake command-line tool `copy` is used to copy the `ELF` output file.
+The built-in CMake command-line tool `copy` is used to copy the `ELF` output file.
 
 ```yml
 project:                       # executed as part of a project build
@@ -1952,7 +1952,7 @@ project:                       # executed as part of a project build
       for-context: .Release
 ```
 
-Refer to [Build Operation - CMake Integration](build-operation.md) for examples that integrate CMake scripts.
+For examples of integrating CMake scripts, refer to [Build Operation—CMake Integration](build-operation.md).
 
 ## Auto-select Layers
 
@@ -1968,11 +1968,11 @@ Example projects that use `connections:` for layer selection:
  
 - [Sensor SDK Example](https://github.com/Open-CMSIS-Pack/Sensor-SDK-Example) shows how board layers and shield layers may be used to run different sensor shields on many boards.
 
-- [AWS_MQTT_Demo}(https://github.com/Arm-Examples/AWS_MQTT_Demo) combines board layer and communication socket layer. Optionally a shield layer can be used to connect WiFi drivers.
+- [AWS_MQTT_Demo}(https://github.com/Arm-Examples/AWS_MQTT_Demo) combines the board layer and communication socket layer. Optionally a shield layer can be used to connect WiFi drivers.
  
 ### `connections:`
 
-The `connections:` node contains meta-data that describes the compatiblity of `*.cproject.yml` and `*.clayer.yml` project parts.  The `connections:` node lists functionality (drivers, pins, and other software or hardware resources). The node `consumes:` lists required functionality; the node `provides:` is the implemented functionality of that project part.
+The `connections:` node contains meta-data that describes the compatibility of the `*.cproject.yml` and `*.clayer.yml` project parts.  The `connections:` node lists functionality (drivers, pins, and other software or hardware resources). The node `consumes:` lists required functionality; the node `provides:` is the implemented functionality of that project part.
 
 This works across multiple levels, which means that a `*.clayer.yml` file could also require other functionality using `consumes:`.
   
@@ -1980,15 +1980,15 @@ The `connections:` node is used to identify compatible software layers. These so
 
 - A reference application described in a `*.cproject.yml` file could be provided in a git repository. This reference application uses software layers that are provided in CMSIS software packs.
 
-- A CMSIS Board Support Pack (BSP) contains a configured board layer desribed in a `*.clayer.yml` file. This software layer is pre-configured for a range of use-cases and provides drivers for I2C and SPI interfaces along with pin definitions and provisions for an Ardunio shield.
+A CMSIS Board Support Pack (BSP) contains a configured board layer described in a `*.clayer.yml` file. This software layer is pre-configured for a range of use cases and provides drivers for I2C and SPI interfaces, along with pin definitions and provisions for an Arduino shield.
 
-- For a sensor, a CMSIS software pack contains the sensor middleware and software layer (`*.clayer.yml`) that describes the hardware of the Ardunio sensor shield. This shield can be applied to many different hardware boards that provide an Ardunio shield connector.
+- For a sensor, a CMSIS software pack contains the sensor middleware and software layer (`*.clayer.yml`) that describes the hardware of the Arduino sensor shield. This shield can be applied to many different hardware boards that provide an Arduino shield connector.
 
 This `connections:` node enables therefore software reuse in multiple ways:
 
-- The board layer can be used by many different reference applications, as the `provided:` functionlity enables a wide range of use cases.
+- The board layer can be used by many different reference applications, as the `provided:` functionality enables a wide range of use cases.
   
-- The sensor hardware shield along with the middleware can be used across many different boards that provide an Ardunio shield connector along with board layer support.
+The sensor hardware shield and middleware can be used across many different boards that provide an Ardunio shield connector and board layer support.
 
 The structure of the `connections:` node is:
 
@@ -2003,7 +2003,7 @@ The `connect:` node describes one or more functionalities that belong together.
 `connect:`                           |              | Description
 :------------------------------------|--------------|:------------------------------------
 [`set:`](#set)                       |   Optional   | Specifies a *config-id*.*select* value that identifies a configuration option
-`info:`                              |   Optional   | Verbal desription displayed when this connect is selected
+`info:`                              |   Optional   | Verbal description displayed when this connect is selected
 [`provides:`](#provides)             |   Optional   | List of functionality (*key*/*value* pairs) that are provided
 [`consumes:`](#consumes)             |   Optional   | List of functionality (*key*/*value* pairs) that are required 
 
@@ -2018,7 +2018,7 @@ In the example below the `connect` for:
 
 - `Sensor Communication Interface` is only active when the `SENSOR_I2C` is in the `consumes:` list of other active `connect` nodes.  
 - `Sensor Interrupt` is only active when the `SENSOR_INT` is in the `consumes:` list of other active `connect` nodes.  
-- `Core Functionality` is always active as it has not `provides:` list.
+- `Core Functionality` is always active as it does not have a `provides:` list.
 
 ```yml
 layer:
@@ -2042,7 +2042,7 @@ layer:
 
 #### `set:`
 
-Some hardware boards have configuration settings (DIP switch or jumper) that configure interfaces. These settings have impact to the functionality (for example hardware interfaces). With `set:` *config-id*.*select* the possible configration options are considered when evaluating compatible `*.cproject.yml` and `*.clayer.yml` project parts. The **`csolution` Project Manager** iterates the `connect:` node with a `set:` *config-id*.*select* as described below:
+Some hardware boards have configuration settings (DIP switch or jumper) that configure interfaces. These settings have an impact on the functionality (for example, hardware interfaces). With `set:` *config-id*.*select*, the possible configuration options are considered when evaluating compatible `*.cproject.yml` and `*.clayer.yml` project parts. The **`csolution` Project Manager** iterates the `connect:` node with a `set:` *config-id*.*select* as described below:
 
 - For each *config-id* only one `connect:` node with a *select* value is active at a time. Each possible *select* value is checked for a matching configuration.
 
@@ -2054,21 +2054,21 @@ Refer to [Example: Sensor Shield](#example-sensor-shield) for a usage example.
 
 A user-defined *key*/*value* pair list of functionality that is implemented or provided by a `project:` or `layer:`. 
 
-The **`csolution` Project Manager** combines all the *key*/*value* pairs that listed under `provides:` and matches it with the *key*/*value* pairs that are listed under `consumes:`. For *key*/*value* pairs listed under `provides:` the following rules exist for a match with `consumes:` *key*/*value* pair:
+The **`csolution` Project Manager** combines all the *key*/*value* pairs that are listed under `provides:` and matches them with the *key*/*value* pairs that are listed under `consumes:`. For *key*/*value* pairs listed under `provides:` the following rules exist for a match with `consumes:` *key*/*value* pair:
 
 - It is possible to omit the *value*. It matches with an identical *key* listed in `consumes:`
-- A *value* is interpreted as number. Depending on the value prefix, this number must be:
-    - when `consumes:` *value* is a plain number, identical with this value.
+- A *value* is interpreted as a number. Depending on the value prefix, this number must be:
+    - when `consumes:` *value* is a plain number identical to this value.
     - when `consumes:` *value* is prefixed with `+`, higher or equal then this *value* or the sum of all *values* in multiple `consumes:` nodes.
 
 #### `consumes:`
 
-A user-defined *key*/*value* pair list of functionality that is requried or consumed by a `project:` or `layer:`. 
+A user-defined *key*/*value* pair list of functionality that is required or consumed by a `project:` or `layer:`. 
 
 For *key*/*value* pairs listed under `consumed:` the following rules exist:
 
 - When no *value* is specified, it matches with any *value* of an identical *key* listed under `provides:`.
-- A *value* is interpreted as number. This number must be identical in the `provides:` value pair.
+- A *value* is interpreted as a number. This number must be identical in the `provides:` value pair.
 - A *value* that is prefixed with `+` is interpreted as a number that is added together in case that the same *key* is listed multiple times under `consumes:`. The sum of this value must be lower or equal to the *value* upper limit of the `provides:` *key*.
  
 ### Example: Board
@@ -2076,7 +2076,7 @@ For *key*/*value* pairs listed under `consumed:` the following rules exist:
 This `connections:` node of a board layer describes the available interfaces.  The WiFi interface requires a CMSIS-RTOS2 function.
 
 ```yml
-  connections:                          # describes functionality of a board layer
+  connections:                          # describes the functionality of a board layer
     - connect: WiFi interface
       provides:
         - CMSIS-Driver WiFi:
@@ -2091,7 +2091,7 @@ This `connections:` node of a board layer describes the available interfaces.  T
 
 ### Example: Simple Project
 
-This shows a the `connections:` node of a complete application project that is composed of two software layers.
+This shows the `connections:` node of a complete application project composed of two software layers.
 
 *MyProject.cproject.yml*
 
@@ -2103,7 +2103,7 @@ This shows a the `connections:` node of a complete application project that is c
       consumes:
         - IoT_Socket:     # requires IoT_Socket interface
         - STDOUT:         # requires STDOUT interface
-        - Heap:  +30000   # requires additional 30000 bytes memory heap
+        - Heap:  +30000   # requires an additional 30000 bytes memory heap
   :
   layers:
     - layer: MySocket.clayer.yml
@@ -2118,7 +2118,7 @@ This shows a the `connections:` node of a complete application project that is c
       consumes:
         - RTOS2:          # requires RTOS2 API interface
         - VSocket:        # requires VSocket interface
-        - Heap: +20000    # requires additional 20000 bytes memory heap
+        - Heap: +20000    # requires an additional 20000 bytes memory heap
       provides:
         - IoT_Socket:     # provides IoT_Socket interface
 ```
