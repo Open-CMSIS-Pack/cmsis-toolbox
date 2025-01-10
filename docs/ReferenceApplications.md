@@ -10,13 +10,13 @@ This chapter explains how to work with *Reference Applications* that can run on 
 
 The CMSIS-Pack format supports different types of project examples:
 
-- *Template Projects* are [stub projects](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) that help getting started. Some software packs may contain device specific templates.
+- *Template Projects* are [stub projects](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) that help getting started. Some software packs may contain device-specific templates.
 - *Examples* are created for a specific hardware or evaluation board. These are typically complete projects that directly interface with board and device peripherals.
-- *Reference Applications* use defined interfaces (APIs) and are therefore hardware agnostic. These project examples show usage of middleware components and require additional [software layers](build-overview.md#software-layers) with API drivers for the specific target hardware, typically an evaluation board.
+- *Reference Applications* use defined interfaces (APIs) and are therefore hardware agnostic. These project examples show the usage of middleware components and require additional [software layers](build-overview.md#software-layers) with API drivers for the specific target hardware, typically an evaluation board.
  
 The following sections explain the usage, structure, and creation of *Reference Applications* that can target many different evaluation boards.
 
-Refer to [Pack Creation s&raquo; Project Examples](pack-tools.md#project-examples) for information on how to publish projects examples as part of software packs.
+Refer to [Pack Creation s&raquo; Project Examples](pack-tools.md#project-examples) for information on how to publish project examples as part of software packs.
 
 ## Types of Reference Applications
 
@@ -26,16 +26,16 @@ Refer to [Pack Creation s&raquo; Project Examples](pack-tools.md#project-example
 
 The [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) provides software components for IPv4/IPv6 networking, USB Host/Device communication, and a variety of file systems for data storage. 
 
-The MDK-Middleware software pack contains *Reference Applications* that show the usage of these software components. These examples are hardware agnostic; adding a board layer that provides the required APIs allows runnig the example project on a specific target hardware. 
+The MDK-Middleware software pack contains Reference Applications that show how to use these software components. These examples are hardware agnostic; adding a board layer that provides the required APIs allows running the example project on specific target hardware. 
 
 ![MDK-Middleware Example](./images/MDK-MW-Example.png "MDK-Middleware Example")
 
-The picture above shows how a USB HID example connects to a board specific software layer.
-The *Reference Application* does not specify a target hardware. For execution on target hardware, a software layer is required that provides the hardware specific APIs. These board specific layers are provided in BSP packs which allows to run the example on many different hardware targets.
+The picture above shows how a USB HID example connects to a board-specific software layer.
+The *Reference Application* does not specify a target hardware. For execution on target hardware, a software layer is required that provides the hardware-specific APIs. These board-specific layers are provided in BSP packs, which allows the example to run on many different hardware targets.
 
-The Reference example uses [`connections:`](YML-Input-Format.md#connections) to list the consumed (required) APIs. The board layer in the BSP pack provides these [`connections:`](YML-Input-Format.md#connections) and may offer several additional `connections:` that makes the layer suitable for a wide range of *Reference Applications*.
+The Reference example uses [`connections:`](YML-Input-Format.md#connections) to list the consumed (required) APIs. The board layer in the BSP pack provides these [`connections:`](YML-Input-Format.md#connections) and may offer several additional `connections:`, making the layer suitable for a wide range of Reference Applications.
 
-As the *Reference Application* is not hardware specific, it does not define a target type. Also, it does not add the board specific software layer. It requires two steps to configure the `*.csolution.yml` file of such an example for an evaluation board. Refer to the [Usage](#usage) section for more information.
+As the *Reference Application* is not hardware-specific, it does not define a target type. Also, it does not add the board-specific software layer. It requires two steps to configure the `*.csolution.yml` file of such an example for an evaluation board. Refer to the [Usage](#usage) section for more information.
 
 ***Reference Application* `*.csolution.yml` file**
 
@@ -60,24 +60,24 @@ solution:
 
 ### Sensor Reference Applications
 
-The overall concept of *Reference Applications* and the same board specific software layers can be used for a wide range of software stacks. For example, a sensor SDK pack may provide *Reference Applications* that show the usage of a MEMS sensor. This MEMS sensor is additional hardware that could be provided by a widely supported Arduino UNO shield.
+The overall concept of *Reference Applications* and the same board-specific software layers can be used for a wide range of software stacks. For example, a sensor SDK pack may provide *Reference Applications* that show the usage of a MEMS sensor. This MEMS sensor is additional hardware that could be provided by a widely supported Arduino UNO shield.
 
-The sensor SDK with the related Arduino shield can be structured to work with a wide range of evaluation boards that offer a compatible board specific software layer.
+The sensor SDK with the related Arduino shield can be structured to work with a wide range of evaluation boards that offer a compatible board-specific software layer.
 
 The overall structure of a sensor example project is shown in the picture below. It is composed of:
 
-- The *Reference Application* with sensor specific middleware that shows the usage of a MEMS sensor.
-- `Layer type: Board` contains the hardware specific setup of an evaluation board with a Cortex-M processor along with drivers, i.e. for SPI or I2C that connect to the pins of the Arduino shield.
-- `Layer type: Shield` defines the pin routing of the Arduino UNO shield that adds the MEMS sensor to the evaluation board.
+- The *Reference Application* with sensor-specific middleware that shows the usage of a MEMS sensor.
+- `Layer type: Board` contains the hardware-specific setup of an evaluation board with a Cortex-M processor along with drivers, i.e. for SPI or I2C that connect to the pins of the Arduino shield.
+- `Layer type: Shield` defines the pin routing of the Arduino UNO shield, which adds the MEMS sensor to the evaluation board.
 
 ![Sensor Reference Application](./images/Sensor-SDK-Example.png "Sensor Reference Application")
 
 !!! Note
-    As the `connections:` for the MEMS sensor are specific to the sensor itself, the same *Reference Application* also works with an evaluation board that integrates the MEMS sensor (and requires therefore no Shield layer). The board specific software layer adds in this case the sensor specific `connections:`.
+    As the `connections:` for the MEMS sensor are specific to the sensor itself, the same *Reference Application* also works with an evaluation board that integrates the MEMS sensor (and, therefore, requires no Shield layer). In this case, the board-specific software layer adds the sensor-specific `connections:`.
 
 ### Targeting Custom Hardware
 
-A *Reference Application* may serve as starting point for user applications that target custom hardware. 
+A *Reference Application* may serve as a starting point for user applications that target custom hardware. 
 
 It is required to provide:
 
@@ -117,7 +117,7 @@ layer:
 
 A *Reference Application* is an incomplete `*.csolution.yml` project file that requires additional intervention.
 
-The following steps explain how to to compile the project:
+The following steps explain how to compile the project:
 
 ### Step 1: Add DFP and BSP
 
@@ -165,11 +165,11 @@ build-idx:
               copy-to: .Board/U585
 ```
 
-As a user you have now two choices to work with the identified software layer:
+As a user, you have now two choices to work with the identified software layer:
 
 ### Refer layers in ${CMSIS_PACK_ROOT}
 
-This is useful when there is no plan to modify the software layer, for example in the early phase of adoption.
+This is useful when there is no plan to modify the software layer, for example, in the early phase of adoption.
 
 ```yml
 solution:
@@ -184,7 +184,7 @@ solution:
 
 ### Copy layers to csolution project
 
-This allows to modify the layer, for example add or remove drivers or change device settings.
+This allows the modification of the layer, for example, adding or removing drivers or changing device settings.
 
 It requires these steps:
 
@@ -212,7 +212,7 @@ The following section describes the overall file structure of *Reference Applica
 
 ### Project Files
 
-A `*.csolution.yml` project file that contains software layers for two different evaluation boards should look like shown below.  This project contains three different examples that show different features of a USB device middleware.
+A `*.csolution.yml` project file containing software layers for two different evaluation boards should look like the one shown below. This project contains three examples that show the different features of USB device middleware.
 
 The actual example project (HID, MSC, or CDC1) is selected using a [context set](build-overview.md#working-with-context-set); the compiler is selected using the `--toolchain` option. To translate the completed *Reference Applications* use:
 
@@ -254,7 +254,7 @@ solution:
 
 ### Typical Directory Structure
 
-The table below shows the typical directory structure of the above example from the programmers point of view. The software layer in the directory `./Board` is copied from the BSP of the related board.
+The table below shows the typical directory structure of the above example from the programmer's point of view. The software layer in the directory `./Board` is copied from the BSP of the related board.
 
 Directory Content                   | Content
 :-----------------------------------|:---------------
@@ -275,7 +275,7 @@ The *Reference Application* has no direct access to hardware. Therefore, it does
 
 To access target hardware, these header files are used by the *Reference Application*:
 
-- Standardized `Driver API header files` are used for the communication with device peripherals. Header files of CMSIS-Drivers are provided by the [CMSIS base software pack](https://arm-software.github.io/CMSIS_6/latest/General/index.html).
+- Standardized `Driver API header files` are used for communication with device peripherals. Header files of CMSIS-Drivers are provided by the [CMSIS base software pack](https://arm-software.github.io/CMSIS_6/latest/General/index.html).
 - The configuration of the driver interfaces is defined by the `CMSIS_target_header`. This header therefore specifies the available resources of the target hardware that can be used by the *Reference Application*. The [Header File Example](#header-file-example) shows a typical structure of the `CMSIS_target_header`.
 - When a shield is applied to an evaluation board, the `CMSIS_shield_header` extends the resource configuration of the `CMSIS_target_header`. 
 
@@ -295,7 +295,7 @@ int app_main (void)  {
 };
 ```
 
-The application may use a RTOS kernel or run a simple `while` loop. Additional software components such as [CMSIS-View](https://www.keil.arm.com/packs/cmsis-view-arm), [CMSIS-DSP](https://www.keil.arm.com/packs/cmsis-dsp-arm), or [MbedTLS](https://www.keil.arm.com/packs/mbedtls-arm/) are added directly to the *Reference Application*. In general, the `connections:` that are consumed should be minimized allowing to run the example on many different target boards.
+The application may use an RTOS kernel or run a simple `while` loop. Additional software components such as [CMSIS-View](https://www.keil.arm.com/packs/cmsis-view-arm), [CMSIS-DSP](https://www.keil.arm.com/packs/cmsis-dsp-arm), or [MbedTLS](https://www.keil.arm.com/packs/mbedtls-arm/) are added directly to the *Reference Application*. In general, the `connections:` that are consumed should be minimized, allowing the example to be run on many different target boards.
 
 ### Board Layer
 
@@ -303,7 +303,7 @@ The board layer provides system startup, board/device hardware initialization, a
 
 **Typical Features:**
 
-- System startup including clock and memory configuration.
+- System startup, including clock and memory configuration.
 - Device/Board hardware initialization.
 - Calls the application startup function.
 - Drivers for board peripherals \[optional].
@@ -324,7 +324,7 @@ The configuration parameters of the available APIs are defined in `CMSIS_target_
 
 **Generator Usage:**
 
-The board specific software layer is used by many different projects. When a board configuration is generated by tools, such as MCUXpresso or STM32CubeMX for example, [configure the generator output directory](build-overview.md#configure-generator-output) and import file using the [`generators:`](YML-Input-Format.md#generators) node in the `*.clayer.yml` file as shown below: 
+The board-specific software layer is used in many different projects. When a board configuration is generated by tools, such as MCUXpresso or STM32CubeMX, for example, [configure the generator output directory](build-overview.md#configure-generator-output) and import file using the [`generators:`](YML-Input-Format.md#generators) node in the `*.clayer.yml` file as shown below: 
 
 ```yml
 layer:
@@ -340,9 +340,9 @@ layer:
 
 A shield layer adds support for additional hardware via plugin shields (i.e. Arduino Uno).  Arduino shields [*consume connections*](YML-Input-Format.md#example-sensor-shield) with the prefix `ARDUINO_UNO_`. In the future, other shields may be supported as well.
 
-Shields may feature various hardware modules such as WiFi chips or MEMS sensors. Frequently, the shield's software layer only defines a header file that redirects the Arduino specific `connect:` to a chip specific `connect:` that is then used by application software.
+Shields may feature various hardware modules such as WiFi chips or MEMS sensors. Frequently, the shield's software layer only defines a header file that redirects the Arduino-specific `connect:` to a chip-specific `connect:`, which is then used by application software.
 
-The shield's software layer is configured from the board software layer which calls the following function:
+The shield's software layer is configured from the board software layer, which calls the following function:
 
 ``` c
 extern int32_t shield_setup (void);
@@ -350,9 +350,9 @@ extern int32_t shield_setup (void);
 
 ## Connections
 
-[Connections](YML-Input-Format.md#connections) are only used to identify compatible software layers. There are no strict rules for the **`connect` Name** it is therefore possible to extend it with additional name spacing, i.e. prefix with *ST_* to denote ST specific interfaces.
+[Connections](YML-Input-Format.md#connections) are only used to identify compatible software layers. Since there are no strict rules for the **`connect` Name**, it is possible to extend it with additional namespacing, i.e., prefixing with *ST_* to denote ST-specific interfaces.
 
-There are also no strict rules how the different software layers consume or provide the `connect` names.  However, guidelines will be developed once reference applications mature.
+There are also no strict rules on how the different software layers consume or provide the `connect` names.  However, guidelines will be developed once reference applications mature.
 
 Currently, the following **`connect` names** are used.
 
@@ -381,13 +381,13 @@ Heap                                                         | Heap Size        
 ToDo:
 
 - what features of CMSIS-RTOS2 are typically used by board layers?
-- more information about Heap. How is it configured? Which existing Reference Applications are using it?  FreeRTOS has it's own heap management; is it really required?
+- more information about Heap. How is it configured? Which existing Reference Applications are using it?  FreeRTOS has its own heap management; is it really required?
 
 ### ARDUINO_UNO_UART
 
 Connects to a [CMSIS-Driver USART Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__usart__interface__gr.html) configured in asynchronous UART mode with no modem lines.
 
-`CMSIS_target_header` contains driver instance number with this define:
+`CMSIS_target_header` contains the driver instance number with this definition:
 
 ```c
 #define ARDUINO_UNO_UART    3     // CMSIS-Driver USART instance number
@@ -397,7 +397,7 @@ Connects to a [CMSIS-Driver USART Interface](https://arm-software.github.io/CMSI
 
 `ARDUINO_UNO_I2C` or `ARDUINO_UNO_I2C-Alt` connects to a [CMSIS-Driver I2C Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__i2c__interface__gr.html) configured in controller mode.
 
-`CMSIS_target_header` contains driver instance number with this define:
+`CMSIS_target_header` contains the driver instance number with this definition:
 
 ```c
 #define ARDUINO_UNO_I2C    0     // CMSIS-Driver I2C instance number
@@ -407,9 +407,9 @@ Connects to a [CMSIS-Driver USART Interface](https://arm-software.github.io/CMSI
 
 Connects to a [CMSIS-Driver SPI Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__spi__interface__gr.html) configured in controller mode and CPOL/CPHA frame format (no TI or Microwire). 
 
-The Target Select (SS) pin (typically on ARDUINO_UNO_D10) is not handled by CMSIS-Driver SPI interface. This is driven by the GPIO interface. 
+The Target Select (SS) pin (typically on ARDUINO_UNO_D10) is not handled by CMSIS-Driver SPI interface; it is driven by the GPIO interface. 
 
-`CMSIS_target_header` contains driver instance number with this define:
+`CMSIS_target_header` contains the driver instance number with this definition:
 
 ```c
 #define ARDUINO_UNO_SPI    1     // CMSIS-Driver SPI instance number
@@ -492,7 +492,7 @@ Connects to a [CMSIS-Driver VIO Interface](https://arm-software.github.io/CMSIS_
 
 ### STDIO
 
-The `STDIN`, `STDOUT`, `STDERR` describes the I/O redirection via the [CMSIS-Compiler](https://arm-software.github.io/CMSIS-Compiler/main/index.html) software component. Typical the redirect is to a UART dedicated for debugging.
+The `STDIN`, `STDOUT`, and `STDERR` describe the I/O redirection via the [CMSIS-Compiler](https://arm-software.github.io/CMSIS-Compiler/main/index.html) software component. Typically, the redirect is to a UART dedicated to debugging.
 
 ## Arduino Shield
 
@@ -521,7 +521,7 @@ Refer to [Header File Structure](#header-file-structure) for more information.
 #include "Driver_SPI.h"
 #include "Driver_USART.h"
 
-// B-U585I-IOT02A Arduino Connector Pin Defintions
+// B-U585I-IOT02A Arduino Connector Pin Definitions
 #define ARDUINO_UNO_D0  GPIO_PORTD(9U)  /* USART3: RX */
 #define ARDUINO_UNO_D1  GPIO_PORTD(8U)  /* USART3: TX */
 #define ARDUINO_UNO_D2  GPIO_PORTD(15U)
