@@ -171,9 +171,9 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-<p>This chapter explains the overall build process that of the CMSIS-Toolbox and how to add a new compiler toolchain.</p>
+<p>This chapter explains the overall build process of the CMSIS-Toolbox and how to add a new compiler toolchain.</p>
 <h2 id="build-process-overview">Build Process Overview</h2>
-<p>This section contains details of the build process. Refer to <a href="../overview/#overall-workflow">Overall Workflow</a> for a high-level description of the build process.</p>
+<p>This section contains details of the build process. For a high-level description, refer to <a href="../overview/#overall-workflow">Overall Workflow</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
@@ -184,8 +184,8 @@
 <h3 id="cbuild-build-invocation"><code>cbuild</code> Build Invocation</h3>
 <p>The <code>cbuild</code> utility controls the overall build process. It has two operating modes:</p>
 <ul>
-<li><strong>build mode</strong> generates the application and is default command (no explicit command required).</li>
-<li><strong>setup mode</strong> generates the setup information for an IDE to populate dialogs, IntelliSense, and project outline views.</li>
+<li><strong>build mode</strong> generates the application and is the default command (no explicit command required).</li>
+<li><strong>setup mode</strong> generates the setup information for an IDE to populate dialogues, IntelliSense, and project outline views.</li>
 </ul>
 <h4 id="details-of-the-build-mode">Details of the build mode</h4>
 <p>Without a specific <code>cbuild</code> command, the application is built. The typical invocation is:</p>
@@ -208,13 +208,13 @@
 <p>By default, the <code>cbuild</code> invocation does not update or change configuration files in the <a href="../build-overview/#rte-directory-structure"><strong>RTE Directory</strong></a>. Use the option <code>--update-rte</code> if this is required.</p>
 </div>
 <h4 id="details-of-the-setup-mode">Details of the setup mode</h4>
-<p>The <code>cbuild setup</code> command prepares the data for an IDE environment. This command is called at start of an IDE or whenever a <em>csolution project</em> file is modified. The typical invocation is:</p>
+<p>The <code>cbuild setup</code> command prepares the data for an IDE environment. This command is called at the start of an IDE or whenever a <em>csolution project</em> file is modified. The typical invocation is:</p>
 <pre><code class="language-bash">cbuild setup &lt;name&gt;.csolution.yml [--packs] [--context-set] [--update-rte] [--frozen-packs]
 </code></pre>
 <p>Typical IDE environments use a <code>--context-set</code> that specifies the <a href="../build-overview/#context">context</a> configuration of the application. For an application described by a <code>&lt;name&gt;.csolution.yml</code> file, these steps are executed:</p>
 <ul>
 <li>Check YML file syntax against schema for all files specified by <code>&lt;name&gt;.csolution.yml</code>.</li>
-<li>Check correctness of all files specified by <code>&lt;name&gt;.csolution.yml</code>.</li>
+<li>Check the correctness of all files specified by <code>&lt;name&gt;.csolution.yml</code>.</li>
 <li>Evaluate the potential <a href="../YML-CBuild-Format/#configurations">software layers</a> for <a href="../ReferenceApplications/">Reference Applications</a> using <code>variables:</code> to refer to layers (if the value is undefined). All projects are considered in this step.</li>
 <li>Evaluate the <a href="../YML-CBuild-Format/#select-compiler">selectable compiler toolchains</a> when the <em>csolution project</em> does not contain a <code>compiler:</code> selection or the <code>--toolchain</code> option is not applied. The available toolchains are based on the <a href="../installation/#compiler-registration">compiler registration</a> and the <code>select-compiler:</code> node in the file <a href="../YML-Input-Format/#solution"><code>&lt;name&gt;.csolution.yml</code></a> or <a href="../YML-Input-Format/#cdefault"><code>cdefault.yml</code></a>.</li>
 <li>Create the file <code>compile_commands.json</code> in the <a href="../build-overview/#output-directory-structure">output directory</a> for the context defined in <a href="../YML-CBuild-Format/"><code>*.cbuild-set.yml</code></a>.</li>
@@ -226,7 +226,7 @@
 <p>The operation is further controlled by options: </p>
 <ul>
 <li>The option <code>--packs</code> downloads missing software packs.</li>
-<li>The option <code>--context-set</code> restricts the operation to the <a href="../build-overview/#working-with-context-set"><code>context-set</code></a> selected by the file <a href="../YML-CBuild-Format/"><code>&lt;name&gt;.cbuild-set.yml</code></a>. If this file is missing a file <code>&lt;name&gt;.cbuild-set.yml</code> with selection of the first <code>target-type</code>, the first <code>build-type</code>, and first <code>project</code>  that is specified in the file <code>&lt;name&gt;.csolution.yml</code> is created. </li>
+<li>The option <code>--context-set</code> restricts the operation to the <a href="../build-overview/#working-with-context-set"><code>context-set</code></a> selected by the file <a href="../YML-CBuild-Format/"><code>&lt;name&gt;.cbuild-set.yml</code></a>. If this file is missing a file <code>&lt;name&gt;.cbuild-set.yml</code> with a selection of the first <code>target-type</code>, the first <code>build-type</code>, and the first <code>project</code> that is specified in the file <code>&lt;name&gt;.csolution.yml</code> is created. </li>
 <li>The option <a href="../build-overview/#rte-directory-structure"><code>--update-rte</code></a> updates the configuration files of the application.</li>
 <li>With the option <code>--frozen-packs</code> the file <code>*.cbuild-pack.yml</code> is used as input. An error is issued when a pack version changes.</li>
 <li>The option <code>--toolchain</code> can be used to explicitly select a compiler.</li>
@@ -244,7 +244,7 @@
 </ul>
 </li>
 <li>In the <a href="../build-overview/#project-area"><strong>base directory of the solution</strong></a>:<ul>
-<li>Generate the file <code>*.cbuild-pack.yml</code> that records all used <em>software packs</em>. With the option <code>--frozen-packs</code> this file is used as input.</li>
+<li>Generate the file <code>*.cbuild-pack.yml</code> that records all used <em>software packs</em>. With the option <code>--frozen-packs</code>, this file is used as input.</li>
 <li>With the option <code>--context-set</code> the file <code>*.cbuild-set.yml</code> specifies the <a href="../build-overview/#context">context</a> configuration of the application. When <code>--context</code> names are specified this file is updated with this selection.</li>
 </ul>
 </li>
@@ -279,18 +279,18 @@
 </tr>
 <tr>
 <td style="text-align: left;"><code>./&lt;tmp-dir&gt;/&lt;context&gt;/groups.cmake</code></td>
-<td style="text-align: left;">Contains all definitions and source files that related to file <a href="../YML-Input-Format/#groups">groups</a>.</td>
+<td style="text-align: left;">Contains all definitions and source files that are related to file <a href="../YML-Input-Format/#groups">groups</a>.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>./&lt;tmp-dir&gt;/&lt;context&gt;/components.cmake</code></td>
-<td style="text-align: left;">Contains all definitions and source files that related to <a href="../YML-Input-Format/#components">components</a>.</td>
+<td style="text-align: left;">Contains all definitions and source files that are related to <a href="../YML-Input-Format/#components">components</a>.</td>
 </tr>
 </tbody>
 </table>
 <h3 id="cmake-invocation"><code>CMake</code> Invocation</h3>
 <p>The CMake build system is invoked with the following commands:</p>
 <ul>
-<li>CMake configuration command defines build generator, source, and build directory with:</li>
+<li>CMake configuration command defines the build generator, source, and build directory with:</li>
 </ul>
 <p><code>cmake -G Ninja -S &lt;tmpdir&gt; -B &lt;tmpdir&gt; -Wnodev</code></p>
 <ul>
@@ -310,7 +310,7 @@
 <li>Add this <code>compiler_name</code> to the <code>"CompilerType":</code> in the schema file <a href="https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/projmgr/schemas/common.schema.json"><code>./tools/projmgr/schemas/common.schema.json</code></a>.</li>
 <li>Create a new CMake file in <a href="https://github.com/Open-CMSIS-Pack/devtools/tree/main/tools/buildmgr/cbuildgen/config"><code>./tools/buildmgr/cbuildgen/config</code></a> with the naming convention <code>compiler_name.&lt;version&gt;.cmake</code>.</li>
 <li>Map with the file <code>compiler_name.&lt;version&gt;.cmake</code>. the <strong>CMake</strong> input variables to the <strong>CMake</strong> toolchain variables.</li>
-<li>Use an existing <code>*.cmake</code> file, i.e. <code>GCC.&lt;version&gt;.cmake</code> as reference.</li>
+<li>Use an existing <code>*.cmake</code> file, i.e. <code>GCC.&lt;version&gt;.cmake</code> as a reference.</li>
 </ol>
 <h3 id="cmake-variables">CMake Variables</h3>
 <p>The <code>CMakeLists.txt</code> file sets the following <strong>CMake</strong> input variables that should be processed by <code>compiler_name.&lt;version&gt;.cmake</code>.</p>
@@ -473,7 +473,7 @@
 </tbody>
 </table>
 <h2 id="cmake-integration">CMake Integration</h2>
-<p>The <a href="../YML-Input-Format/#executes"><code>executes:</code></a> node in the <em>csolution project</em> files allows to integrate other CMake projects or scripts.</p>
+<p>The <a href="../YML-Input-Format/#executes"><code>executes:</code></a> node in the <em>csolution project</em> files allows the integration of other CMake projects or scripts.</p>
 <h3 id="example">Example</h3>
 <p>The following <code>CMakeLists.txt</code> file integrates the <a href="https://arm-software.github.io/MDK-Middleware/latest/Network/group__nw__sw__util__fcarm.html">FCARM file converter</a> that is part of the MDK-Middleware. The FCARM file converter reformats all web files into a single C-file which is then included and compiled into the project. </p>
 <pre><code class="language-cmake"># CMakeLists.txt for calling FCARM
@@ -516,7 +516,7 @@ add_custom_command(OUTPUT ${OUTPUT} DEPENDS ${INPUT}
   WORKING_DIRECTORY ${WORKING_DIRECTORY}
 )
 </code></pre>
-<p>Integration in a <em>csolution project</em>. In this case it is part of the <code>*.csolution.yml</code>, but it may be also part of <code>*.cproject.yml</code> file that uses the source file <code>Web.c</code> as input. The CMake build system checks for project dependencies and schedules the overall build process.</p>
+<p>Integration in a <em>csolution project</em>. In this case, it is part of the <code>*.csolution.yml</code>, but it may also be part of the <code>*.cproject.yml</code> file that uses the source file <code>Web.c</code> as input. The CMake build system checks for project dependencies and schedules the overall build process.</p>
 <pre><code class="language-yml">solution:
   :
 
@@ -531,9 +531,9 @@ add_custom_command(OUTPUT ${OUTPUT} DEPENDS ${INPUT}
         - project/Web.c  # Output file for FCARM
 </code></pre>
 <h2 id="generator-integration">Generator Integration</h2>
-<p>The diagram below shows how a generator is integrated into the CMSIS build process. The data flow is exemplified on STM32CubeMX (Generator ID for this example is <code>CubeMX</code>). The information about the project is delivered to the generator using the <a href="../YML-CBuild-Format/#generator-information-files">Generator Information</a> files (<code>&lt;solution-name&gt;.cbuild-gen-idx.yml</code> and <code>&lt;context&gt;.cbuild-gen.yml</code>). This information provides <code>CubeMX</code> with the project context, such as selected board or device, and CPU mode such as TrustZone disabled/enabled.</p>
+<p>The diagram below shows how a generator is integrated into the CMSIS build process. The data flow is exemplified on STM32CubeMX (Generator ID for this example is <code>CubeMX</code>). The information about the project is delivered to the generator using the <a href="../YML-CBuild-Format/#generator-information-files">Generator Information</a> files (<code>&lt;solution-name&gt;.cbuild-gen-idx.yml</code> and <code>&lt;context&gt;.cbuild-gen.yml</code>). This information provides <code>CubeMX</code> with the project context, such as the selected board or device, and CPU mode, such as TrustZone, disabled/enabled.</p>
 <p><img alt="Generator Integration" src="../images/Generator-Integration.png" title="Generator Integration" /></p>
-<p>The utility <a href="https://github.com/Open-CMSIS-Pack/generator-bridge"><code>cbridge</code></a> gets as parameter the <code>&lt;solution-name&gt;.cbuild-gen-idx.yml</code> and calls the generator. For the <code>CubeMX</code> generator example these files are created:</p>
+<p>The utility <a href="https://github.com/Open-CMSIS-Pack/generator-bridge"><code>cbridge</code></a> gets as parameter the <code>&lt;solution-name&gt;.cbuild-gen-idx.yml</code> and calls the generator. For the <code>CubeMX</code> generator example, these files are created:</p>
 <ul>
 <li><code>*.ioc</code> CubeMX project file with current project settings</li>
 <li><code>*.c/.h</code> source files, i.e. for interfacing with drivers</li>
@@ -555,7 +555,7 @@ add_custom_command(OUTPUT ${OUTPUT} DEPENDS ${INPUT}
 <p>No <code>&lt;generator&gt;</code> element in the *.PDSC file is required when the <a href="#global-generator-registry-file">Global Generator Registry File</a> is used. The <code>generator="id"</code> attribute of the <code>&lt;component&gt;</code> element in the <code>*.PDSC</code> file is the reference to the <code>- id:</code> list node in the <code>global.generator.yml</code> file.</p>
 </div>
 <h3 id="global-generator-registry-file">Global Generator Registry File</h3>
-<p>For generators that have no <code>&lt;generator&gt;</code> element in the *.PDSC file, the <code>global.generator.yml</code> in the CMSIS-Toolbox <code>./etc</code> directory contains is used. The <code>generator:</code> node in this YAML file registers the supported generators with the following keys:</p>
+<p>For generators with no <code>&lt;generator&gt;</code> element in the *.PDSC file, the <code>global.generator.yml</code> in the CMSIS-Toolbox <code>./etc</code> directory contains is used. The <code>generator:</code> node in this YAML file registers the supported generators with the following keys:</p>
 <table>
 <thead>
 <tr>
