@@ -234,7 +234,7 @@
 
 <p>This chapter outlines the structure of <em>csolution project files</em> that contain the build information of the software application.</p>
 <ul>
-<li><a href="#project-examples">Project Examples</a> and project templates helps to get started with the tools.</li>
+<li><a href="#project-examples">Project Examples</a> and project templates help to get started with the tools.</li>
 <li><a href="#software-layers">Software Layers</a> provide reusable configurations  and give projects a better structure.</li>
 <li><a href="#directory-structure">Directory Structure</a> describes the overall directory structure of projects.</li>
 <li><a href="#linker-script-management">Linker Script Management</a> defines the  available memory and controls the linker operation.</li>
@@ -245,7 +245,7 @@
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <ul>
-<li><a href="#project-examples">Project Examples</a> show different project types and provides templates for user projects.</li>
+<li><a href="#project-examples">Project Examples</a> show different project types and provide templates for user projects.</li>
 <li><a href="../build-operation/#build-process-overview">Build Process Overview</a> explains the complete end-to-end build process.</li>
 </ul>
 </div>
@@ -264,7 +264,7 @@
 </tr>
 <tr>
 <td style="text-align: left;"><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/cp_PackTutorial.html#createPack_DFP">DFP Software Packs</a></td>
-<td style="text-align: left;">Device related information (including memory sizes) for the tool configuration.</td>
+<td style="text-align: left;">Device-related information (including memory sizes) for the tool configuration.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/cp_PackTutorial.html#createPackBoard">BSP Software Packs</a></td>
@@ -324,7 +324,7 @@
 </tr>
 <tr>
 <td style="text-align: left;"><a href="#rte-directory-structure">Run-Time Environment (RTE)</a></td>
-<td style="text-align: left;">Contains the user configured files of a project along with <code>RTE_Components.h</code> inventory file.</td>
+<td style="text-align: left;">Contains the user-configured files of a project along with the <code>RTE_Components.h</code> inventory file.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="#automatic-linker-script-generation">Linker Script Files</a></td>
@@ -354,12 +354,12 @@
 </li>
 </ol>
 <h3 id="source-code-of-software-packs">Source Code of Software Packs</h3>
-<p>Software packs and the related <a href="#software-components">components:</a> allow you to share and reuse code. The content of a software pack is therefore <em>read-only</em> (with the exception of <a href="#configuration-settings">configuration files</a> that are copied to the <a href="#rte-directory-structure">RTE directory</a>) as these source code files should not be modified by a user.</p>
-<p>The <strong>benefit</strong> is a clean project directory that only contains the user code as well as <a href="#configuration-settings">configuration files</a> for <a href="#software-components">components:</a>. This keeps a <a href="#repository-contents">repository</a> small and makes it easy to upgrade to a <a href="#plm-of-configuration-files">new pack version</a>.</p>
+<p>Software packs and the related <a href="#software-components">components:</a> allow you to share and reuse code. The content of a software pack is, therefore, <em>read-only</em> (with the exception of <a href="#configuration-settings">configuration files</a> that are copied to the <a href="#rte-directory-structure">RTE directory</a>) as these source code files should not be modified by a user.</p>
+<p>The <strong>benefit</strong> is a clean project directory that only contains the user code and <a href="#configuration-settings">configuration files</a> for <a href="#software-components">components:</a>. This keeps a <a href="#repository-contents">repository</a> small and makes it easy to upgrade to a <a href="#plm-of-configuration-files">new pack version</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>During development of a software pack you may <a href="../build-tools/#install-a-repository">install a repository</a> that contains the source of the software pack.</li>
+<li>During the development of a software pack, you may <a href="../build-tools/#install-a-repository">install a repository</a>, which contains the source of the software pack.</li>
 <li>You may copy the content of a software pack to your project workspace and provide a <a href="../YML-Input-Format/#pack">path to the pack</a>.</li>
 </ul>
 </div>
@@ -422,7 +422,7 @@
 <p><code>Sample.csolution.yml</code> that defines a <a href="../YML-Input-Format/#target-types">target type</a> with <a href="../YML-Input-Format/#board">board</a> or <a href="../YML-Input-Format/#device">device</a>. It includes a <a href="../YML-Input-Format/#projects">project</a> and selects a <a href="../YML-Input-Format/#compiler">compiler</a>.</p>
 </li>
 <li>
-<p><code>Sample.cproject.yml</code> that defines the files and software components that are translated into an image or library archive.</p>
+<p><code>Sample.cproject.yml</code> defines the files and software components that are translated into an image or library archive.</p>
 </li>
 </ul>
 <div class="admonition note">
@@ -470,18 +470,18 @@
 </code></pre>
 <h3 id="context">Context</h3>
 <p>A <a href="../YML-Input-Format/#context-name-conventions">context</a> is defined in the <code>*.csolution.yml</code> file by <code>projects:</code>, <code>target-types:</code>, and <code>build-types:</code>. It identifies a configuration with <code>project-name</code>, <code>build-type</code>, and <code>target-type</code> and is used on various places in the CMSIS-Toolbox.</p>
-<p>The following <a href="../YML-Input-Format/#context-name-conventions">context</a> refers to the example above and selects the <code>project: Sample.cproject.yml</code>, with <code>build-type: Debug</code> and <code>target-type: FRDM-K32L3A6</code>:</p>
+<p>The following <a href="../YML-Input-Format/#context-name-conventions">context</a> refers to the example above and selects the <code>project: Sample.cproject.yml</code> with <code>build-type: Debug</code> and <code>target-type: FRDM-K32L3A6</code>:</p>
 <pre><code class="language-txt">Sample.Debug+FRDM-K32L3A6
 </code></pre>
-<p>The <a href="../YML-Input-Format/#context-name-conventions">context</a> allows to refer to each possible build combination that by default uses a different <a href="#output-directory-structure">output directory</a>. A context may be partly specified in many places.</p>
+<p>The <a href="../YML-Input-Format/#context-name-conventions">context</a> allows you to refer to each possible build combination that, by default, uses a different <a href="#output-directory-structure">output directory</a>. A context may be partly specified in many places.</p>
 <p>The <a href="#working-with-context-set">context-set</a> defines a combination of projects and is useful when an application is composed of <a href="#project-setup-for-related-projects">multiple related projects</a>.</p>
 <h3 id="toolchain-agnostic-project">Toolchain Agnostic Project</h3>
 <p>Generic <a href="../YML-Input-Format/#translation-control"><strong>Translation Control</strong></a> settings enable projects that work across the range of supported compilers (AC6, GCC, IAR, CLANG). The <a href="../YML-Input-Format/#translation-control"><strong>Translation Control</strong></a> settings are mapped to specify compiler controls by the build tools.</p>
 <h4 id="cdefaultyml">cdefault.yml</h4>
-<p>The <code>cdefault.yml</code> file contains a common set of compiler specific settings that select reasonable defaults with <a href="../YML-Input-Format/#misc"><code>misc:</code></a> controls for each compiler. The <a href="../YML-Input-Format/#cdefault"><code>cdefault:</code></a> node in the <code>*.csolution.yml</code> file enables the usage of this file. The directory <a href="../installation/"><code>&lt;cmsis-toolbox-installation-dir&gt;/etc</code></a> contains a <code>cdefault.yml</code> file that is used when no local copy of the <code>cdefault.yml</code> file is provided.</p>
+<p>The <code>cdefault.yml</code> file contains a common set of compiler-specific settings that select reasonable defaults with <a href="../YML-Input-Format/#misc"><code>misc:</code></a> controls for each compiler. The <a href="../YML-Input-Format/#cdefault"><code>cdefault:</code></a> node in the <code>*.csolution.yml</code> file enables the usage of this file. The directory <a href="../installation/"><code>&lt;cmsis-toolbox-installation-dir&gt;/etc</code></a> contains a <code>cdefault.yml</code> file that is used when no local copy of the <code>cdefault.yml</code> file is provided.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is recommended to provide a local copy of the <code>cdefault.yml</code> file in the same directory that stores the <code>*.csolution.yml</code> file.</p>
+<p>It is recommended that a local copy of the <code>cdefault.yml</code> file be provided in the same directory that stores the <code>*.csolution.yml</code> file.</p>
 </div>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">default:
@@ -562,8 +562,8 @@
 <h3 id="reproducible-builds">Reproducible builds</h3>
 <p>Reproducible builds are supported by the <a href="../YML-CBuild-Format/#cbuild-packyml">*.cbuild-pack.yml</a> file that is created and read by the <strong>csolution</strong> project manager. This file:</p>
 <ul>
-<li>Records the exact list of the pack versions used during creation of an application.</li>
-<li>Ensures that pack versions do not change during development even when new packs are installed on the host computer, for example to develop other applications.</li>
+<li>Records the exact list of the pack versions used during the creation of an application.</li>
+<li>Ensures that pack versions do not change during development, even when new packs are installed on the host computer, for example, to develop other applications.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -574,7 +574,7 @@
 </ul>
 </div>
 <h4 id="repository-contents">Repository Contents</h4>
-<p>To support reproducible builds the following files should be committed to a repository of a version control system.</p>
+<p>To support reproducible builds, the following files should be committed to a repository of a version control system.</p>
 <ul>
 <li>All user source code files.</li>
 <li>All <em>csolution project files</em> (<code>cdefault.yml</code>, <code>*.csolution.yml</code>, <code>*.cproject.yml</code>, etc.).</li>
@@ -582,26 +582,26 @@
 <li>Ensure that there are no files with the extension <em>.update@</em> as this indicates that configuration files are not up-to-date due to updated software packs.</li>
 </ul>
 </li>
-<li>The file <code>*.cbuild-pack.yml</code> to allow <a href="#reproducible-builds">reproducible builds</a>.</li>
-<li>Optionally, the file <code>*.cbuild-set.yml</code> which defines the context set of the application that should be generated.</li>
+<li>The file <code>*.cbuild-pack.yml</code> to allow <a href="#reproducible-builds">reproducible builds</a>.
+Optionally, the file <code>*.cbuild-set.yml</code> defines the application's context set that should be generated.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If the file <code>*.cbuild-set.yml</code> file is missing, the <code>setup</code> command creates a <code>*.cbuild-set</code> file with selection of the first <code>target-type</code> and the first <code>build-type</code>.</p>
+<p>If the file <code>*.cbuild-set.yml</code> file is missing, the <code>setup</code> command creates a <code>*.cbuild-set</code> file with a selection of the first <code>target-type</code> and the first <code>build-type</code>.</p>
 </div>
 <h3 id="project-setup-for-related-projects">Project Setup for Related Projects</h3>
 <p>A solution is the software view of the complete system. It combines projects that can be generated independently and
-therefore manages related projects. It may be also deployed to different targets during development as described in section <a href="#software-layers">Software Layers</a>.</p>
+therefore, manages related projects. It may also be deployed to different targets during development as described in section <a href="#software-layers">Software Layers</a>.</p>
 <p>The picture below shows a system that is composed of:</p>
 <ul>
-<li>Project A that implements a time-critical control algorithm running on a independent processor #2.</li>
-<li>Project B that is a cloud connected IoT application with Machine Learning (ML) functionality.</li>
-<li>Project C that is the separate data model of the ML algorithm allowing independent updates.</li>
-<li>Project D that implements the device security (for example with TF-M that runs with TrustZone in secure mode).</li>
+<li>Project A that implements a time-critical control algorithm running on an independent processor #2.</li>
+<li>Project B is a cloud-connected IoT application with Machine Learning (ML) functionality.</li>
+<li>Project C is the separate data model of the ML algorithm, allowing independent updates.</li>
+<li>Project D implements the device security (for example, with TF-M that runs with TrustZone in secure mode).</li>
 </ul>
 <p>In addition, such systems may have a boot-loader that can also be implemented as another independent project.</p>
 <p><img alt="Related Projects of an Embedded System" src="../images/Solution.png" title="Related Projects of an Embedded System" /></p>
-<p>At the level of the <code>*.csolution.yml</code> file, the <code>target-types:</code> and <code>build-types:</code> are managed, so that a common set is available across all <code>*.cproject.yml</code> files the system.</p>
+<p>At the level of the <code>*.csolution.yml</code> file, the <code>target-types:</code> and <code>build-types:</code> are managed so that a common set is available across all <code>*.cproject.yml</code> files in the system.</p>
 <ul>
 <li>
 <p><code>target-types:</code> typically describe a different hardware target system.</p>
@@ -610,7 +610,7 @@ therefore manages related projects. It may be also deployed to different targets
 <p><code>build-types:</code> typically describe a build variant of the same hardware target system.</p>
 </li>
 </ul>
-<p>Both types are used for peripherals and the same hardware configuration, but may compile a different variant (i.e. with test I/O enabled) of an application.</p>
+<p>Both types are used for peripherals and the same hardware configuration but may compile a different variant (i.e. with test I/O enabled) of an application.</p>
 <p><strong>Related Projects: <code>iot-product.csolution.yml</code></strong></p>
 <pre><code class="language-yml">solution:
    :                            # setup not shown
@@ -662,13 +662,13 @@ therefore manages related projects. It may be also deployed to different targets
 <p>The <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">VS Code extension Arm CMSIS Solution</a> always uses a <code>context-set</code> that is selected in the Manage Solution view.</p>
 </div>
 <h3 id="external-tools-and-build-order">External Tools and Build Order</h3>
-<p>The <a href="../YML-Input-Format/#executes"><code>executes:</code></a> node integrates <a href="../build-operation/#cmake-integration">CMake</a> scripts, projects, and external tools. The <code>input:</code> and  <code>output:</code> list typically refers to files and therefore defines the build order of projects:</p>
+<p>The <a href="../YML-Input-Format/#executes"><code>executes:</code></a> node integrates <a href="../build-operation/#cmake-integration">CMake</a> scripts, projects, and external tools. The <code>input:</code> and  <code>output:</code> list typically refers to files and therefore define the build order of projects:</p>
 <ul>
-<li>When <code>input:</code> contains files that are the <a href="../YML-Input-Format/#output">output</a> of a <code>cproject.yml</code> this project part is build first.</li>
-<li>When <code>output:</code> contains files that are the input of a <code>cproject.yml</code> the <code>execute:</code> node is build first.</li>
+<li>When <code>input:</code> contains files that are the <a href="../YML-Input-Format/#output">output</a> of a <code>cproject.yml</code>, this project part is built first.</li>
+<li>When <code>output:</code> contains files that are the input of a <code>cproject.yml</code>, the <code>execute:</code> node is built first.</li>
 </ul>
 <p><strong>Example:</strong></p>
-<p>The <code>KeyGenerator</code> tool builds the file <code>keys.c</code> which is added as source <a href="../YML-Input-Format/#files">file:</a> in other projects. Using <code>cbuild My.csolution.yml [--context-set]</code> starts the build process of the application and runs the <code>KeyGenerator</code> before building projects that use the source file <code>keys.c</code> as input.</p>
+<p>The <code>KeyGenerator</code> tool builds the file <code>keys.c</code>, which is added as a source <a href="../YML-Input-Format/#files">file:</a> for other projects. Using <code>cbuild My.csolution.yml [--context-set]</code> starts the build process of the application and runs the <code>KeyGenerator</code> before building projects that use the source file <code>keys.c</code> as input.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Using <code>cbuild</code> with the option <code>--context</code> does not run <code>execute:</code> nodes as it triggers project builds only. The option <code>--context-set</code> must be used.</p>
@@ -680,7 +680,7 @@ therefore manages related projects. It may be also deployed to different targets
       run: KeyGenerator -k $input(0)$ -p $input(1)$ -o $output$
       input:
         - $SolutionDir()$/keyfile.txt       # input(0) contains key in text format
-        - $SolutionDir()$/passcode.txt      # input(1) contains pass code in text format
+        - $SolutionDir()$/passcode.txt      # input(1) contains passcode in text format
       output:
         - $SolutionDir()$/keys.c            # output keys source file (input to other projects)
 </code></pre>
@@ -696,7 +696,7 @@ therefore manages related projects. It may be also deployed to different targets
         - file: $cmse-lib(Project_S)$    # Secure part of an application
 </code></pre>
 <h2 id="software-layers">Software Layers</h2>
-<p>Software layers collect source files and software components along with configuration files for re-use in different projects. Software Layers gives projects a better structure and simplifies:</p>
+<p>Software layers collect source files and software components along with configuration files for reuse in different projects. Software Layers gives projects a better structure and simplifies:</p>
 <ul>
 <li>Development flows with evaluation boards and production hardware.</li>
 <li>Evaluation of middleware and hardware modules across different microcontroller boards.</li>
@@ -728,11 +728,11 @@ therefore manages related projects. It may be also deployed to different targets
   components:
     - component: CMSIS:RTOS2:Keil RTX5&amp;Source
 </code></pre>
-<p>The diagram below shows two different scenarios that are explained in the following sections.</p>
+<p>The diagram below shows two different scenarios, which are explained in the following sections.</p>
 <p><img alt="Layer Usage" src="../images/Layers.png" title="Layer Usage" /></p>
 <h3 id="target-production-hardware">Target Production Hardware</h3>
-<p>Software development frequently starts on evalution boards. Using a board layer simplifes re-targeting to  production hardware. The following <code>*.csolution.yml</code> file exemplifies the concept. A software developer starts with a board layer for the evaluation board in the folder <code>MyBoard</code>. Once the production hardware is available, this layer is copied to a different folder (i.e. <code>MyHardware</code>). As both layers are independently managed, the configuration of the <code>MyHardware</code> layer can be modified, for example to target different devices, pin layout, or peripheral configurations.</p>
-<p>In the <code>*.csolution.yml</code> project the layer is defined using a <a href="../YML-Input-Format/#variables">variable</a>. By changing the <code>target-type</code> during the build process the software developer can continue to use the evaluation board or target the production hardware.</p>
+<p>Software development frequently starts on evaluation boards. Using a board layer simplifies re-targeting to  production hardware. The following <code>*.csolution.yml</code> file exemplifies the concept. A software developer starts with a board layer for the evaluation board in the folder <code>MyBoard</code>. Once the production hardware is available, this layer is copied to a different folder (i.e. <code>MyHardware</code>). As both layers are independently managed, the configuration of the <code>MyHardware</code> layer can be modified, for example, to target different devices, pin layout, or peripheral configurations.</p>
+<p>In the <code>*.csolution.yml</code> project, the layer is defined using a <a href="../YML-Input-Format/#variables">variable</a>. By changing the <code>target-type</code> during the build process, the software developer can continue to use the evaluation board or target the production hardware.</p>
 <pre><code class="language-yml">solution:
   cdefault:
   compiler: AC6
@@ -768,8 +768,8 @@ therefore manages related projects. It may be also deployed to different targets
 </ul>
 </div>
 <h3 id="test-case-project">Test Case Project</h3>
-<p>Modern software design mandates for <a href="https://en.wikipedia.org/wiki/Test-driven_development">test-driven development</a> that utilizes DevOps or CI principals. Simulation models such as the <a href="https://arm-software.github.io/AVH/main/overview/html/index.html">Arm Virtual Hardware (AVH) FVP</a> allow test automation without target hardware.</p>
-<p>However, in some cases test should be also performed physical hardware. A test case project may therefore contain targets for simulation and physical hardware. The <em>csolution project</em> format allows to combine multiple test projects that validate different parts of the application.</p>
+<p>Modern software design mandates for <a href="https://en.wikipedia.org/wiki/Test-driven_development">test-driven development</a> that utilize DevOps or CI principals. Simulation models such as the <a href="https://arm-software.github.io/AVH/main/overview/html/index.html">Arm Virtual Hardware (AVH) FVP</a> allow test automation without target hardware.</p>
+<p>However, in some cases, tests should also be performed on physical hardware. A test case project may, therefore, contain targets for simulation and physical hardware. The <em>csolution project</em> format allows multiple test projects to be combined to validate different parts of the application.</p>
 <pre><code class="language-yml">solution:
   cdefault:
   compiler: GCC
@@ -782,7 +782,7 @@ therefore manages related projects. It may be also deployed to different targets
         - Board-Layer: ./Board/NUCLEO-L552ZE-Q/Board.clayer.yml
 
     - type: Virtual
-      board: VHT-Corstone-300      # Virtual Hardware platform (appears as board)
+      board: VHT-Corstone-300      # Virtual Hardware platform (appears as a board)
       variables:
         - Board-Layer: ./Board/Corstone-300/AVH.clayer.yml
 
@@ -796,7 +796,7 @@ therefore manages related projects. It may be also deployed to different targets
 <ul>
 <li>Several <a href="https://github.com/Arm-Examples#avh-fvp-examples">examples for Arm Virtual Hardware (AVH) FVP simulation models</a> show usage of <em>csolution projects</em> in CI workflows.</li>
 <li>The project <a href="https://github.com/ARM-software/AVH-MLOps/tree/main/AVH-MLOps-main">AVH-MLOps-Main</a> is a test project that shows retargeting to different processors using a layer.</li>
-<li>The project <a href="https://github.com/Arm-Examples/AWS_MQTT_Demo">AWS_MQTT_Demo</a> extends this concept with retargeting of a IP communication to virtual or physical hardware.</li>
+<li>The project <a href="https://github.com/Arm-Examples/AWS_MQTT_Demo">AWS_MQTT_Demo</a> extends this concept with retargeting of an IP communication to virtual or physical hardware.</li>
 </ul>
 </div>
 <h3 id="configuration-settings">Configuration Settings</h3>
@@ -807,9 +807,9 @@ can share a <code>layer</code> with common configuration settings.</p>
 <p>When using a generator, such as CubeMX or MCUxpresso, the output should be redirected as described under <a href="#configure-generator-output">Configure Generator Output</a>.</p>
 </div>
 <h3 id="software-layers-in-packs">Software Layers in Packs</h3>
-<p>Software layers for <a href="../ReferenceApplications/"><em>reference applications</em></a> may be published in software packs. Refer to <a href="../pack-tools/#layers">Pack Creation &raquo; Layers</a> for more information.</p>
+<p>Software layers for <a href="../ReferenceApplications/"><em>reference applications</em></a> may be published in software packs. For more information, refer to <a href="../pack-tools/#layers">Pack Creation &raquo; Layers</a>.</p>
 <h2 id="directory-structure">Directory Structure</h2>
-<p>This section describes how the <code>csolution</code> based project files should be organized to allow the scenarios described above. This section gives also guidelines for a directory structure.</p>
+<p>This section describes how the <code>csolution</code> based project files should be organized to allow the scenarios described above. This section also gives guidelines for a directory structure.</p>
 <p>Refer to <a href="../YML-Input-Format/#directory-control">Directory Control</a> for information about configuring these directories.</p>
 <h3 id="working-areas">Working Areas</h3>
 <p>The table below explains the different working area sections of an application project.</p>
@@ -840,12 +840,12 @@ can share a <code>layer</code> with common configuration settings.</p>
 <tr>
 <td style="text-align: left;"><a href="#rte-directory-structure">Component Configuration​</a></td>
 <td style="text-align: center;">RW</td>
-<td style="text-align: left;">User editable config files of software components that are copied to the RTE directory.</td>
+<td style="text-align: left;">User-editable config files of software components that are copied to the RTE directory.</td>
 </tr>
 <tr>
 <td style="text-align: left;">Generator artifacts​</td>
 <td style="text-align: center;">RO (see note)</td>
-<td style="text-align: left;">Managed by domain specific configuration tools such as STM32CubeMX or MCUXpresso.</td>
+<td style="text-align: left;">Managed by domain-specific configuration tools such as STM32CubeMX or MCUXpresso.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="../YML-Input-Format/#directory-control">Build artifacts</a></td>
@@ -856,30 +856,26 @@ can share a <code>layer</code> with common configuration settings.</p>
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Some generators allow user modification to the generated files. For example, STM32CubeMX allows to modify source code between <code>/* USER CODE BEGIN */</code> and <code>/* USER CODE END */</code> and preserves this modification even when the STM32CubeMX regenerates the files.</p>
+<p>Some generators allow user modification of the generated files. For example, STM32CubeMX allows modification of source code between <code>/* USER CODE BEGIN */</code> and <code>/* USER CODE END */</code> and preserves this modification even when the STM32CubeMX regenerates the files.</p>
 </div>
 <h3 id="project-area">Project Area</h3>
 <p>There are no strict rules on how to organize the project area that stores the user source code. However, the following guidelines apply:</p>
 <ul>
-<li>
-<p>Each <a href="#project-examples">solution</a> should have a distinct base directory. This directory contains the file <code>*.csolution.yml</code> which refers to the independent projects defined with <code>*.cproject.yml</code> files.</p>
-</li>
-<li>
-<p>Each project should have a distinct base directory. This directory contains the file <code>*.cproject.yml</code> that defines the content of the project. The source code of the project might be grouped in sub-directories that are typically stored in this base directory. The <a href="#rte-directory-structure">configuration​ files</a> of the software components are typically stored in a sub-directory with the name <code>./RTE</code>.</p>
-</li>
-<li>
-<p>A <code>*.cproject.yml</code> may refer one or more <a href="#software-layers">software layers</a> with <code>*.clayer.yml</code> files. Each software layer should have a distinct base directory with a similar structure as a project. This base directory contains the file <code>*.clayer.yml</code> that defines the content of the software layer. It also contains the user source code (optionally organized in sub-directories) and the <a href="#rte-directory-structure">configuration​ files</a> of software components that belong to this layer, typically stored in a sub-directory with the name <code>./RTE</code>.</p>
-</li>
+<li>Each <a href="#project-examples">solution</a> should have a distinct base directory. This directory contains the file <code>*.csolution.yml</code> which refers to the independent projects defined with <code>*.cproject.yml</code> files.</li>
+</ul>
+<p>Each project should have a distinct base directory. This directory contains the file <code>*.cproject.yml</code>, which defines the project's content. The project's source code might be grouped in subdirectories that are typically stored in this base directory. The <a href="#rte-directory-structure">configuration files</a> of the software components are typically stored in a subdirectory with the name <code>./RTE</code>.</p>
+<ul>
+<li>A <code>*.cproject.yml</code> may refer to one or more <a href="#software-layers">software layers</a> with <code>*.clayer.yml</code> files. Each software layer should have a distinct base directory with a similar structure as a project. This base directory contains the file <code>*.clayer.yml</code> that defines the content of the software layer. It also contains the user source code (optionally organized in sub-directories) and the <a href="#rte-directory-structure">configuration​ files</a> of software components that belong to this layer, typically stored in a sub-directory with the name <code>./RTE</code>.</li>
 </ul>
 <h3 id="rte-directory-structure">RTE Directory Structure</h3>
 <p>The table below summarizes the overall directory structure and further details the <code>./RTE</code> directory. The <code>./RTE</code> directory contains the configuration information for software components and is managed by the <strong><code>csolution</code> Project Manager</strong>. It contains:</p>
 <ul>
 <li>Configuration files of the software components. These files have <code>attr="config"</code> in the PDSC-file of the software packs.  Refer to <a href="#plm-of-configuration-files">PLM of Configuration Files</a> for more information.</li>
-<li>The file <a href="#rte_componentsh"><code>RTE_components.h</code></a> and pre-include files that are generated based on the PDSC-file information of the software packs.</li>
+<li>The file <a href="#rte_componentsh"><code>RTE_components.h</code></a> and pre-include files are generated based on the software packs' PDSC file information.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code>./RTE</code> directory structure is maintained by tools. You should not modify the structure of this directory. However, the complete directory should be committed to a repository of a version control system.</p>
+<p>The <code>./RTE</code> directory structure is maintained by tools. You should not modify its structure. However, the complete directory should be committed to a repository of a version control system.</p>
 </div>
 <table>
 <thead>
@@ -926,7 +922,7 @@ can share a <code>layer</code> with common configuration settings.</p>
 <p>The <code>&lt;context-dir&gt;</code> has the following format: <code>_&lt;build-type&gt;_&lt;target-type&gt;</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>cbuild</code> does no longer generate the <code>&lt;context-dir&gt;</code> by default. It is therefore required to align the naming of <code>&lt;context-dir&gt;</code> with other tools (MDK, CMSIS-Pack-Eclipse, etc.) that support the CMSIS-Pack system.</p>
+<p><code>cbuild</code> no longer generates the <code>&lt;context-dir&gt;</code> by default. It is, therefore, required to align the naming of <code>&lt;context-dir&gt;</code> with other tools (MDK, CMSIS-Pack-Eclipse, etc.) that support the CMSIS-Pack system.</p>
 </div>
 <h3 id="output-directory-structure">Output Directory Structure</h3>
 <p>By default, the following output directories are used. Use <a href="../build-tools/#build-a-project"><code>cbuild</code></a> to generate the content of these output directories.</p>
@@ -945,8 +941,8 @@ can share a <code>layer</code> with common configuration settings.</p>
 </tbody>
 </table>
 <h3 id="software-components">Software Components</h3>
-<p><a href="../CreateApplications/#software-components">Software components</a> are re-usable library or source files that require no modification in the user application.
-Optionally, configurable source and header files are provided that allow to set parameters for the software component.</p>
+<p><a href="../CreateApplications/#software-components">Software components</a> are re-usable library or source files that do not require modification in the user application.
+Optionally, configurable source and header files are provided to allow the setting of parameters for the software component.</p>
 <ul>
 <li>Configurable source and header files are copied to the project using the directory structure explained above.</li>
 <li>Libraries, source, and header files that are not configurable (and need no modification) are stored in the directory
@@ -957,13 +953,13 @@ Optionally, configurable source and header files are provided that allow to set 
 <div class="admonition notes">
 <p class="admonition-title">Notes</p>
 <ul>
-<li>The <code>csolution</code> command <code>convert</code> provides the option <code>--no-update-rte</code> that disables generation of files in the <code>./RTE</code> directory and therefore the management of configuration files and the <code>RTE_Components.h</code> file.</li>
+<li>The <code>csolution</code> command <code>convert</code> provides the option <code>--no-update-rte</code> that disables the generation of files in the <code>./RTE</code> directory and, therefore the management of configuration files and the <code>RTE_Components.h</code> file.</li>
 <li>The <code>csolution</code> command <code>update-rte</code> only updates the configuration files in the <code>RTE</code> directory.</li>
 <li>Using the option <code>--verbose</code> outputs additional version details.</li>
 </ul>
 </div>
 <h3 id="plm-of-configuration-files">PLM of Configuration Files</h3>
-<p>Configurable source and header files have a version information that is required during Project Lifetime Management
+<p>Configurable source and header files have a piece of version information that is required during Project Lifetime Management
 (PLM) of a project. The version number is important when the underlying software pack changes and provides a newer
 configuration file version.</p>
 <p>Depending on the PLM status of the application, <code>csolution</code> performs the following operation for configuration files:</p>
@@ -972,7 +968,7 @@ configuration file version.</p>
 <li><strong>Upgrade</strong> (or downgrade) a software component.</li>
 </ol>
 <h4 id="add"><strong>Add</strong></h4>
-<p>When adding a software component for the first time the related config file is copied twice into the related <code>RTE</code>
+<p>When adding a software component for the first time, the related config file is copied twice into the related <code>RTE</code>
 project directory. The first copy can be modified by the user with the parameters for the user application. The
 second copy is an unmodified  backup file with the format <code>&lt;configfile&gt;.&lt;ext&gt;.base@version</code>.</p>
 <p><strong>Example:</strong> A configuration file <code>ConfigFile.h</code> at version <code>1.2.0</code> is copied:</p>
@@ -980,7 +976,7 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
 ./RTE/component_class/ConfigFile.h.base@1.2.0       // current unmodified configuration file with version
                                                     // information; used as a base for version comparison
 </code></pre>
-<p><code>csolution</code> shows a user notification to indicate that files are added:</p>
+<p><code>csolution</code> shows a user notification to indicate that files have been added:</p>
 <pre><code class="language-text">./RTE/component_class/ConfigFile.h -  info: component 'name' added configuration file version '1.2.0'
 </code></pre>
 <div class="admonition note">
@@ -988,13 +984,13 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
 <p>The unmodified files with <code>@version</code> information should be committed to the repository of the version control system as these files are used to upgrade configuration information using merge utilities.</p>
 </div>
 <h4 id="upgrade"><strong>Upgrade</strong></h4>
-<p>When upgrade (or downgrade) a software component the version information of the configuration file is considered.</p>
+<p>When upgrading (or downgrading) a software component, the version information of the configuration file is considered.</p>
 <ul>
 <li>If the version of the unmodified backup file is identical, no operation is performed.</li>
 <li>If the version differs, the new configuration file is copied with the format <code>&lt;configfile&gt;.&lt;ext&gt;.update@version</code>.</li>
 </ul>
 <p><strong>Example:</strong> after updating the configuration file <code>ConfigFile.h</code> to version <code>1.3.0</code>, the directory contains these files:</p>
-<pre><code class="language-c">./RTE/component_class/ConfigFile.h                  // user editable configuration file (based on current version)
+<pre><code class="language-c">./RTE/component_class/ConfigFile.h                  // user editable configuration file (based on the current version)
 ./RTE/component_class/ConfigFile.h.update@1.3.0     // new configuration file; used to start a 3-way merge
 ./RTE/component_class/ConfigFile.h.base@1.2.0       // current unmodified configuration file with version 
                                                     // information; used as a base for version comparison
@@ -1004,7 +1000,7 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
                                               added, but file inactive
 </code></pre>
 <p><strong>User action to complete upgrade</strong></p>
-<p>The user has now several options (outside of <code>csolution</code>) to merge the configuration file information. A potential way could be to use a 3-way merge utility. After merging the configuration file, the original <code>base@version</code> file should be deleted and the unmodified new version should become the new <code>base@version</code>. The previous configuration file may be stored as backup as shown below.</p>
+<p>The user now has several options (outside of <code>csolution</code>) to merge the configuration file information. A potential way could be to use a 3-way merge utility. After merging the configuration file, the original <code>base@version</code> file should be deleted, and the new unmodified version should become the new <code>base@version</code>. The previous configuration file may be stored as a backup, as shown below.</p>
 <pre><code class="language-c">./RTE/component_class/ConfigFile.h                  // new configuration file with merge configuration
 ./RTE/component_class/ConfigFile.h.bak              // previous configuration file stored as backup
 ./RTE/component_class/ConfigFile.h.base@1.3.0       // current unmodified configuration file with version 
@@ -1018,7 +1014,7 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
 ./RTE/component_class/ConfigFile_1.h.base@1.2.0
 </code></pre>
 <h3 id="rte_componentsh">RTE_Components.h</h3>
-<p>The file <code>./RTE/RTE_Components.h</code> is created by the CMSIS Project Manager when the option <code>--update-rte</code> is used. This option is default for the <code>csolution convert</code> command. For each selected software component, it contains <code>#define</code> statements required by the component. These statements are defined in the <code>*.PDSC</code> file for that component. The following example shows a sample content of a RTE_Components.h file:</p>
+<p>The file <code>./RTE/RTE_Components.h</code> is created by the CMSIS Project Manager when the option <code>--update-rte</code> is used. This option is the default for the <code>csolution convert</code> command. For each selected software component, it contains <code>#define</code> statements required by the component. These statements are defined in the <code>*.PDSC</code> file for that component. The following example shows a sample content of a RTE_Components.h file:</p>
 <pre><code class="language-c">/* Auto generated Run-Time-Environment Component Configuration File *** Do not modify ! *** */
 
 #ifndef RTE_COMPONENTS_H
@@ -1034,7 +1030,7 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
 
 #endif /* RTE_COMPONENTS_H */
 </code></pre>
-<p>The typical usage of the <code>RTE_Components.h</code> file is in other header files to control the inclusion of files that are related to other components of the same software pack.</p>
+<p>The <code>RTE_Components.h</code> file is typically used in other header files to control the inclusion of files related to other components of the same software pack.</p>
 <pre><code class="language-c">#include &quot;RTE_Components.h&quot;
 #include  CMSIS_device_header
 
@@ -1048,7 +1044,7 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
 <p>The preprocessor symbol <code>_RTE_</code> is added to the compiler invocation when a CMSIS build system manages the file <code>RTE_Components.h</code>. This symbol can be used as follows:</p>
 <pre><code class="language-c">#ifdef _RTE_                           // Is a CMSIS build system used?
 #include &quot;RTE_Components.h&quot;            // Include Run-Time-Environment symbols
-#else                                  // Otherwise use different ways to supply required symbols
+#else                                  // Otherwise, use different ways to supply required symbols
 #define CMSIS_device_header &quot;stm32f10x.h&quot;     
 #endif
 </code></pre>
@@ -1076,9 +1072,9 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
 <li>the linker script file extension is <code>*.src</code>.</li>
 <li>the <a href="../YML-Input-Format/#linker"><code>linker:</code></a> node contains a <code>regions:</code> header file or a <code>define:</code>.</li>
 </ul>
-<p>Otherwise, no preprocessor is used and the Linker Script file is directly passed to the linker.</p>
+<p>Otherwise, no preprocessor is used, and the Linker Script file is directly passed to the linker.</p>
 <h3 id="automatic-linker-script-generation">Automatic Linker Script generation</h3>
-<p>The automatic Linker Script generation uses a Linker Script template and generates a <code>&lt;regions&gt;.h</code> file based on information of the software packs using the:</p>
+<p>The automatic Linker Script generation uses a Linker Script template and generates a <code>&lt;regions&gt;.h</code> file based on information from the software packs using the:</p>
 <ul>
 <li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_boards_pg.html#element_board_memory"><code>&lt;device&gt;</code> - <code>&lt;memory&gt;</code> element in the DFP</a></li>
 <li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory"><code>&lt;board&gt;</code> - <code>&lt;memory&gt;</code> element in the BSP</a></li>
@@ -1091,10 +1087,10 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
 <p>Both files, the Linker Script template and the <code>&lt;regions&gt;.h</code> can be modified by the user as it might be required to adjust the memory regions or give additional attributes (such as <code>noinit</code>).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Refer to <a href="../CreateApplications/#configure-linker-scripts">Create Applications - Configure Linker Scripts</a> for more information.</p>
+<p>For more information, refer to <a href="../CreateApplications/#configure-linker-scripts">Create Applications—Configure Linker Scripts</a>.</p>
 </div>
 <h4 id="linker-script-templates">Linker Script Templates</h4>
-<p>The following compiler specific Linker Script template files are copied to the <code>\RTE\Device\&lt;device&gt;</code> directory when no Linker Script exists. The files are located in the directory <a href="../installation/"><code>&lt;cmsis-toolbox-installation-dir&gt;/etc</code></a> of the CMSIS-Toolbox.</p>
+<p>The following compiler-specific Linker Script template files are copied to the <code>\RTE\Device\&lt;device&gt;</code> directory when no Linker Script exists. The files are located in the directory <a href="../installation/"><code>&lt;cmsis-toolbox-installation-dir&gt;/etc</code></a> of the CMSIS-Toolbox.</p>
 <table>
 <thead>
 <tr>
@@ -1124,14 +1120,14 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
 <h2 id="generator-support">Generator Support</h2>
 <p><em>Generators</em>, such as STM32CubeMX or MCUXpresso Config Tools, simplify the configuration for devices and boards. The CMSIS-Toolbox implements a <a href="../build-operation/#generator-integration">generic interface for generators</a>. <em>Generators</em> may be used to:</p>
 <ul>
-<li>Configure device and/or board settings, for example clock configuration or pinout.</li>
-<li>Add and configure software drivers, for example for UART, SPI, or I/O ports.</li>
-<li>Configure parameters of an algorithm, for example DSP filter design or motor control parameters.</li>
+<li>Configure device and/or board settings, such as clock configuration or pinout.</li>
+<li>Add and configure software drivers, for example, for UART, SPI, or I/O ports.</li>
+<li>Configure parameters of an algorithm, such as DSP filter design or motor control parameters.</li>
 </ul>
 <p>The steps for creating a <code>*.csolution.yml</code> application with a <em>Generator</em> are:</p>
 <ol>
-<li>Create the <code>*.csolution.yml</code> container that refers the projects and selects <code>device:</code> or <code>board:</code>  (by using <code>target-types:</code>)</li>
-<li>Create <code>*.cproject.yml</code> files that are referred by the <code>*.csolution.yml</code> container.</li>
+<li>Create the <code>*.csolution.yml</code> container that refers to the projects and selects <code>device:</code> or <code>board:</code>  (by using <code>target-types:</code>)</li>
+<li>Create <code>*.cproject.yml</code> files that are referred to by the <code>*.csolution.yml</code> container.</li>
 <li>Add <code>components:</code> to the <code>*.cproject.yml</code> file.</li>
 <li>For components that have a <code>&lt;generator-id&gt;</code>, run the related generator.</li>
 </ol>
