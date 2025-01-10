@@ -262,31 +262,31 @@
   :
 </code></pre>
 <ul>
-<li>Again, the project should compile with the command <code>cbuild &lt;name&gt;.csolution.yml --update-rte --packs --context .Debug</code>. Repeat step (4) when you added new components that require configuration.</li>
+<li>Again, the project should compile with the command <code>cbuild &lt;name&gt;.csolution.yml --update-rte --packs --context .Debug</code>. Repeat step (4) when you add new components that require configuration.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution extension for VS Code</a> guides you through these steps with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution#create-new-solution-view"><code>Create New Solution</code> workflow</a>.</p>
 </div>
 <h2 id="configure-linker-scripts">Configure Linker Scripts</h2>
-<p>A <em>linker script file</em> defines the physical memory layout for a <code>*.cproject.yml</code> based. It may also allocate specific program sections (for example DMA buffers or non-volatile variables) to special memory regions. While complex devices may use a bespoke linker script to manage multi-core and multi-master bus systems, many single core devices can use the <a href="../build-overview/#automatic-linker-script-generation">automatic linker script generation</a> of the <strong><code>csolution</code> Project Manager</strong> which uses a generic <em>regions header file</em> in combination with a toolchain-specific <em>linker script template</em>.</p>
+<p>A <em>linker script file</em> defines the physical memory layout for a <code>*.cproject.yml</code> based. It may also allocate specific program sections (for example, DMA buffers or non-volatile variables) to special memory regions. While complex devices may use a bespoke linker script to manage multi-core and multi-master bus systems, many single-core devices can use the <a href="../build-overview/#automatic-linker-script-generation">automatic linker script generation</a> of the <strong><code>csolution</code> Project Manager</strong> which uses a generic <em>regions header file</em> in combination with a toolchain-specific <em>linker script template</em>.</p>
 <p>The following section describes the usage of a <em>linker script template</em> and a <em>regions header file</em> which is combined by a C preprocessor into the final <em>linker script file</em>. It uses <a href="../build-overview/#automatic-linker-script-generation">auto-generated files</a>, but the methods also apply somewhat to bespoke linker scripts.</p>
 <p>The overall process to configure linker scripts for independent projects is:</p>
 <ol>
 <li>Step: Review and adjust the physical memory layout in the <em>regions header file</em>.</li>
-<li>Step: Optionally add specific program sections to the <em>linker script template</em> or change the default behavior of that file. </li>
+<li>Step: Optionally add specific program sections to the <em>linker script template</em> or change the default behaviour of that file. </li>
 </ol>
 <h3 id="regions-header-file">Regions Header File</h3>
 <p>An initial <em>regions header file</em> is generated based on the memory information coming from the used software packs (DFP and BSP). This file has the name <code>regions_&lt;device_or_board&gt;.h</code> and is located in the directory <a href="../build-overview/#rte-directory-structure"><code>./RTE/Device/&lt;device&gt;</code></a>.</p>
-<p>For memory with the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory"><em>default</em> attribute set</a> in DFP or BSP the following region settings are generated:</p>
+<p>For memory with the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory"><em>default</em> attribute set</a> in DFP or BSP, the following region settings are generated:</p>
 <ul>
 <li>The region __ROM0 is the startup region and contains memory with the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory"><em>startup</em> attribute set</a>.</li>
 <li>The region __RAM0 contains uninitialized memory, STACK and HEAP. <ul>
 <li>STACK default is 0x200.</li>
-<li>HEAP default is 0xC00 for devices with more than 6KB RAM (otherwise HEAP is set to 0).</li>
+<li>HEAP default is 0xC00 for devices with more than 6KB RAM (otherwise, HEAP is set to 0).</li>
 </ul>
 </li>
-<li>Contiguous memory with same access (rw, rwx, rx) is combined into one region.</li>
+<li>Contiguous memory with the same access (rw, rwx, rx) is combined into one region.</li>
 </ul>
 <p>For memory with the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory"><em>default</em> attribute no set</a> in DFP or BSP, the memory is listed under <strong>resources that are not allocated to linker regions</strong>.</p>
 <p>The user may modify this generated <em>regions header file</em>:</p>
@@ -405,7 +405,7 @@
 <p>A <a href="../build-overview/#linker-script-templates">template <em>linker script file</em></a> is copied to the directory <a href="../build-overview/#rte-directory-structure"><code>./RTE/Device/&lt;device&gt;</code></a>. The user may modify this file:</p>
 <ul>
 <li>to specify program sections that require dedicated physical memory regions.</li>
-<li>to change the allocation behavior of the linker script.</li>
+<li>to change the allocation behaviour of the linker script.</li>
 </ul>
 <p><strong>Example: DMA section allocation in <code>ac6_linker_script.sct.src</code> linker script template</strong></p>
 <pre><code class="language-c">#if __RAM1_SIZE &gt; 0
@@ -430,11 +430,11 @@
 <h3 id="troubleshooting">Troubleshooting</h3>
 <p>The following section explains how to fix common linker problems.</p>
 <p><strong>Error: L6236E: No section matches selector - no section to be FIRST/LAST</strong></p>
-<p>Some devices (for example the NXP RT1064) use custom (non-CMSIS) assembly startup code. This is not compatible with the <a href="../build-overview/#linker-script-templates">default linker script</a> that assume <a href="https://arm-software.github.io/CMSIS_6/v6.0.0/Core/startup_c_pg.html">C Startup code</a> with standard CMSIS definitions.</p>
+<p>Some devices (for example, the NXP RT1064) use custom (non-CMSIS) assembly startup code. This is not compatible with the <a href="../build-overview/#linker-script-templates">default linker script</a> that assumes <a href="https://arm-software.github.io/CMSIS_6/v6.0.0/Core/startup_c_pg.html">C Startup code</a> with standard CMSIS definitions.</p>
 <p>This problem can be solved by:</p>
 <ul>
 <li>Using the linker script provided by the device vendor.</li>
-<li>Change the linker script source file <code>ac6_linker_script.sct.src</code> that is local in your project, for example as shown below:</li>
+<li>Change the linker script source file <code>ac6_linker_script.sct.src</code> that is local in your project, for example, as shown below:</li>
 </ul>
 <pre><code class="language-txt">  ER_ROM0 __ROM0_BASE __ROM0_SIZE {
     *(.isr_vector, +First)
@@ -443,7 +443,7 @@
   }
 </code></pre>
 <p><strong>Using RAM1 .. RAM3 Areas</strong></p>
-<p>Currently there is a problem with the default AC6 linker script template. It does not use by default the RAM1 .. RAM3 area.  </p>
+<p>Currently, there is a problem with the default AC6 linker script template. It does not use, by default, the RAM1 .. RAM3 area.  </p>
 <p>A potential solution is discussed <a href="https://github.com/Open-CMSIS-Pack/devtools/issues/1778#issuecomment-2356071535">here</a>.  The investigation is currently ongoing.</p>
 <p><strong>Duplicate Heap definition in Assembler startup file</strong></p>
 <p>When using memory allocation functions (i.e. <code>malloc</code>), the application ends in a hard fault handler. This is typically caused by different methods of stack and heap definitions.</p>
@@ -454,7 +454,7 @@
 <li>Implement <code>__user_setup_stackheap()</code> or <code>__user_initial_stackheap()</code>.</li>
 </ul>
 <p>The <a href="https://arm-software.github.io/CMSIS_6/latest/Core/startup_c_pg.html">C startup code</a> recommended by CMSIS Version 6 uses the linker scatter file for stack and heap definition.  The C startup code is generic and works across all toolchains that are supported by the CMSIS-Toolbox.</p>
-<p>However, some assembler startup files define stack and heap with other methods, for example by using the symbols <code>__initial_sp</code>, <code>__heap_base</code>, and <code>__heap_limit</code>.</p>
+<p>However, some assembler startup files define stack and heap with other methods, for example, by using the symbols <code>__initial_sp</code>, <code>__heap_base</code>, and <code>__heap_limit</code>.</p>
 <p>There are two options to solve the problem.</p>
 <ol>
 <li>
@@ -472,7 +472,7 @@
 // &lt;/h&gt;
 </code></pre>
 <h2 id="software-components">Software Components</h2>
-<p>A software component encapsulates a set of related functions. By offering API headers, it provides interfaces to other software components or to the user application.</p>
+<p>A software component encapsulates a set of related functions. Offering API headers provides interfaces to other software components or to the user application.</p>
 <p>The software pack provides for a software component other optional items such as configuration files, documentation, user code templates that show the usage of the software component, and a debug view description (for <a href="https://arm-software.github.io/CMSIS-View/latest/index.html">CMSIS-View</a>). A software component typically interfaces to other software components or to device peripherals.</p>
 <p><img alt="Software Component Overview" src="../images/sw-component.png" title="Software Component Overview" /></p>
 <p>In the CMSIS-Pack system software components:</p>
@@ -481,20 +481,20 @@
 <li>Use dependencies to describe required interfaces.</li>
 <li>List API header files for provided interfaces.</li>
 </ul>
-<p>For example the lwIP network stack:</p>
+<p>For example, the lwIP network stack:</p>
 <ul>
-<li>requires an CMSIS-RTOS2 compliant kernel or a FreeRTOS kernel</li>
-<li>CMSIS-Drivers for the communication interface.</li>
+<li>requires a CMSIS-RTOS2 compliant kernel or a FreeRTOS kernel</li>
+<li>CMSIS drivers for the communication interface.</li>
 <li>List API header files for their interfaces.</li>
 </ul>
 <h3 id="required-interfaces">Required Interfaces</h3>
-<p>There are two ways to describe required interfaces as shown in the diagram below. </p>
+<p>There are two ways to describe required interfaces, as shown in the diagram below. </p>
 <ul>
 <li>Dependency reference to a component (a selection list is supported).</li>
-<li>Dependency reference to a API definition. Components that implement this API fulfill then the required interface.</li>
+<li>Dependency reference to an API definition. Components that implement this API fulfil then the required interface.</li>
 </ul>
 <p><img alt="Software Component Stacking" src="../images/sw-component-stacking.png" title="Software Component Stacking" /></p>
-<p>The API definition has the benefit that components which implement the interface can be added over time. The exact component names need not to be known by the component that requires an interface.</p>
+<p>The API definition has the benefit that components which implement the interface can be added over time. The exact name of the component that requires an interface does not need to be known by the component.</p>
 <p>ToDo: A potential improvement is to use the command <code>csolution list components</code> to show available implementations for a required interface.</p>
 <h3 id="using-components">Using Components</h3>
 <p>The steps to create an application based on software components are:</p>
@@ -505,7 +505,7 @@
 <li>Install the software pack that provides the required functionality (this could be based on pack datasheets) and identify the required software component(s).</li>
 <li>Add the pack and the component to your <code>*.cproject.yml</code> file.</li>
 <li>Run <code>csolution *.csolution.yml list dependencies</code> to identify other required software components.</li>
-<li>Run <code>csolution list components --filter</code> to identify packs that provide this software components.</li>
+<li>Run <code>csolution list components --filter</code> to identify packs that provide these software components.</li>
 <li>Repeat this step until all software components are part of your project.</li>
 </ul>
 </li>
@@ -520,13 +520,13 @@
 <p>Step: <strong>Use software components in application program</strong></p>
 <ul>
 <li>User code templates provide a starting point for your application. </li>
-<li>Copy these template files to your project directory add add it to your <code>*.cproject.yml</code> file.</li>
+<li>Copy these template files to your project directory and add them to your <code>*.cproject.yml</code> file.</li>
 <li>Adjust the code in the user template files as required.</li>
 </ul>
 </li>
 </ol>
 <h3 id="example-network-stack">Example: Network Stack</h3>
-<p>In this example, the application requires TCP Socket connectivity. Using the steps described under <a href="#using-components">Using Components</a> delivers this content for <code>*.cproject.yml</code> file.</p>
+<p>In this example, the application requires TCP Socket connectivity. The steps described under <a href="#using-components">Using Components</a> deliver this content for the <code>*.cproject.yml</code> file.</p>
 <pre><code class="language-yml">  packs:
     - pack: Keil::MDK-Middleware@7.16.0
     - pack: ARM::CMSIS@5.9.0
@@ -547,7 +547,7 @@
 </code></pre>
 <p>The required interfaces are identified using <code>csolution list dependencies</code>:</p>
 <p><img alt="Network Stack - Component View" src="../images/Network-components.png" title="Network Stack - Component View" /></p>
-<p>Adding more components such as a IoT Client would be the next step.</p>
+<p>Adding more components, such as an IoT Client, would be the next step.</p>
 <p><img alt="Network Stack - Class View" src="../images/Network-classes.png" title="Network Stack - Class View" /></p>
 <h2 id="update-software-packs">Update Software Packs</h2>
 <p>An update of a software pack can be performed with these steps:</p>
@@ -567,7 +567,7 @@
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The text <code>update@version</code> indicates that there is a new configuration file available. Use a merge utility to identify and merge configuration settings from a previous version. Refer to <a href="../build-overview/#plm-of-configuration-files">PLM of configuration files</a> for more information.</p>
+<p>The text <code>update@version</code> indicates that a new configuration file is available. Use a merge utility to identify and merge configuration settings from a previous version. Refer to <a href="../build-overview/#plm-of-configuration-files">PLM of configuration files</a> for more information.</p>
 </div>
               
             </div>

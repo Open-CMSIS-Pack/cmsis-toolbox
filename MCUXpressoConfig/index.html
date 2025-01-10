@@ -141,18 +141,18 @@
 <p>MCUXpresso Config Tools integration with CMSIS-Toolbox is available with CMSIS packs based on MCUXpresso SDK 2.16.0 (or higher).</p>
 </div>
 <h2 id="overview">Overview</h2>
-<p>The <a href="https://www.nxp.com/configtools">MCUXpresso Config Tool</a> is a graphical tool for configuration of a NXP device or board. MCUXpresso generates C code for project and peripheral initialization based on user settings. The CMSIS-Toolbox interacts with MCUXpresso Config Tools using the <a href="../build-operation/#generator-integration">generic interface for generators</a> and automatically adds generated source code to the project.</p>
-<p>The <code>component: Device:Config Tools</code> connects a <em>csolution project</em> to MCUXpresso. This component imports the MCUXpresso generated files for a selected <code>device:</code> or <code>board:</code> using the <a href="../YML-CBuild-Format/#generator-import-file">generator import file</a> (<code>*.cgen.yml</code>). This <code>*.cgen.yml</code> file is similar to a <a href="../build-overview/#software-layers">software layer</a> but managed by MCUXpresso and should be not modified directly.</p>
+<p>The <a href="https://www.nxp.com/configtools">MCUXpresso Config Tool</a> is a graphical tool for configuring an NXP device or board. Based on user settings, MCUXpresso generates C code for project and peripheral initialization. The CMSIS-Toolbox interacts with MCUXpresso Config Tools using the <a href="../build-operation/#generator-integration">generic interface for generators</a> and automatically adds generated source code to the project.</p>
+<p>The <code>component: Device:Config Tools</code> connects a <em>csolution project</em> to MCUXpresso. This component imports the MCUXpresso generated files for a selected <code>device:</code> or <code>board:</code> using the <a href="../YML-CBuild-Format/#generator-import-file">generator import file</a> (<code>*.cgen.yml</code>). This <code>*.cgen.yml</code> file is similar to a <a href="../build-overview/#software-layers">software layer</a> but managed by MCUXpresso and should not be modified directly.</p>
 <p>An example project created with MCUXpresso can be found in <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/DualCore"><strong>csolution-examples/DualCore</strong></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>When a board is specified in the <em>csolution project</em>, MCUXpresso pre-configures the device peripherals with sensible settings for the evaluation board. The user may change these settings using the MCUXpresso dialogs.</li>
-<li>When only a device is specified, the user need to configure the peripherals manually using MCUXpresso dialogs.</li>
+<li>When a board is specified in the <em>csolution project</em>, MCUXpresso pre-configures the device peripherals with sensible settings for the evaluation board. The user may change these settings using the MCUXpresso dialogues.</li>
+<li>When only a device is specified, the user needs to configure the peripherals manually using MCUXpresso dialogs.</li>
 </ul>
 </div>
 <h2 id="simple-project">Simple Project</h2>
-<p>Below is a simple project that just adds the MCUXpresso generated components.</p>
+<p>Below is a simple project that just adds the MCUXpresso-generated components.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>The packs required for boards and devices are listed on <a href="https://www.keil.arm.com/boards/">www.keil.arm.com/boards</a> and <a href="https://www.keil.arm.com/devices/">www.keil.arm.com/devices</a>.</p>
@@ -204,7 +204,7 @@
         name: ConfigTools
 
   # List components to use for your application.
-  # A software component is a re-usable unit that may be configurable.
+  # A software component is a reusable unit that may be configurable.
   components:
     - component: Device:Config Tools:Init
     - component: Device:Startup
@@ -223,7 +223,7 @@
       files:
         - file: ./main.c
 </code></pre>
-<p>Such a project cannot be built directly as initially the <code>*.cgen.yml</code> file is missing. It requires to run the MCUXpresso generator. Before you start, you may need to <a href="../build-tools/#install-missing-packs"><code>install missing packs</code></a>.</p>
+<p>Such a project cannot be built directly as the <code>*.cgen.yml</code> file is initially missing. It requires running the MCUXpresso generator. Before you start, you may need to <a href="../build-tools/#install-missing-packs"><code>install missing packs</code></a>.</p>
 <ul>
 <li>Identify the required generator and the directory where the generated files are stored with:</li>
 </ul>
@@ -239,7 +239,7 @@ MCUXpressoConfig (Global Registered Generator MCUXpresso Config tools)
 </ul>
 <pre><code class="language-bash">csolution Simple.csolution.yml run --generator MCUXpressoConfig --context Simple.Debug+MCXN947VDF
 </code></pre>
-<p>It starts MCUXpresso and passes the information about the selected board, device, and selected toolchain. For a project that selects a board, MCUXpresso imports the default configuration for the evaluation kit. In MCUXpresso, review and adjust configuration options as required for your application, then just click the button <code>Update Code</code>. The generated files will be stored in the directory <code>./MCUXpressoConfig</code>.</p>
+<p>It starts MCUXpresso and passes information about the selected board, device, and selected toolchain. For a project that selects a board, MCUXpresso imports the default configuration for the evaluation kit. In MCUXpresso, review and adjust configuration options as required for your application, then just click the button <code>Update Code</code>. The generated files will be stored in the directory <code>./MCUXpressoConfig</code>.</p>
 <ul>
 <li>Build the project using this command:</li>
 </ul>
@@ -247,10 +247,10 @@ MCUXpressoConfig (Global Registered Generator MCUXpresso Config tools)
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You may run the MCUXpresso Config Tools any time to change the configuration setting of your device or board.</p>
+<p>You may run the MCUXpresso Config Tools at any time to change the configuration setting of your device or board.</p>
 </div>
 <p><strong>Directory with generated files</strong></p>
-<p>MCUXpresso generates the following content in the generator output directory of the <em>csolution project</em>. In our example the generator output directory is <code>./MCUXpressoConfig</code>.</p>
+<p>MCUXpresso generates the following content in the generator output directory of the <em>csolution project</em>. In our example, the generator output directory is <code>./MCUXpressoConfig</code>.</p>
 <table>
 <thead>
 <tr>
@@ -261,7 +261,7 @@ MCUXpressoConfig (Global Registered Generator MCUXpresso Config tools)
 <tbody>
 <tr>
 <td style="text-align: left;"><code>ConfigTools.cgen.yml</code></td>
-<td style="text-align: left;">Import file which adds the generated files to the <em>csolution project</em>.</td>
+<td style="text-align: left;">Import file, which adds the generated files to the <em>csolution project</em>.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>FRDM-MCXN947.mex</code></td>
@@ -277,7 +277,7 @@ MCUXpressoConfig (Global Registered Generator MCUXpresso Config tools)
 </tr>
 <tr>
 <td style="text-align: left;"><code>board/peripherals.c</code></td>
-<td style="text-align: left;">Board peripherals setup via init functions.</td>
+<td style="text-align: left;">Board peripherals are set up via init functions.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>board/peripherals.h</code></td>
@@ -294,7 +294,7 @@ MCUXpressoConfig (Global Registered Generator MCUXpresso Config tools)
 </tbody>
 </table>
 <p><strong>Content of Generator Import File: <code>ConfigTools.cgen.yml</code></strong></p>
-<p>The file <code>ConfigTools.cgen.yml</code> lists the files and settings that are generated by MCUXpresso and imported in the <em>csolution project</em>. You may add further <a href="../YML-Input-Format/#files">user files</a> here.</p>
+<p>The file <code>ConfigTools.cgen.yml</code> lists the files and settings that are generated by MCUXpresso and imported into the <em>csolution project</em>. You may add further <a href="../YML-Input-Format/#files">user files</a> here.</p>
 <pre><code class="language-yml">generator-import:
   generated-by: 'MCUXpresso config tools Generated: 09/12/2024 17:02:22'
   for-device: MCXN947
@@ -314,8 +314,8 @@ MCUXpressoConfig (Global Registered Generator MCUXpresso Config tools)
 provided, for GCC, a linker script file with the ending <code>*.ld</code> is provided and for IAR, the provided linker script files
 end with <code>*.icf</code> extension.</p>
 <h2 id="create-a-board-layer">Create a Board Layer</h2>
-<p>A <a href="../build-overview/#software-layers">software layer</a> is a set of pre-configured software components and source files for re-use in multiple projects. A board layer contains typically basic I/O drivers and related device and board configuration. MCUXpresso does generate a significant part of a board layer.</p>
-<p>The board layer is stored in an separate directory that is independent of a specific <em>csolution project</em>. To create a board layer, copy the related source files, the MCUXpresso generated files, and the configuration files of the <code>RTE directory</code> that relate to software components in the board layer.</p>
+<p>A <a href="../build-overview/#software-layers">software layer</a> is a set of pre-configured software components and source files that can be reused in multiple projects. A board layer typically contains basic I/O drivers and related device and board configuration. MCUXpresso generates a significant part of a board layer.</p>
+<p>The board layer is stored in a separate directory that is independent of a specific <em>csolution project</em>. To create a board layer, copy the related source files, the MCUXpresso generated files, and the configuration files of the <code>RTE directory</code> that relate to software components in the board layer.</p>
 <p><strong>Example directory content of a NXP board layer</strong></p>
 <table>
 <thead>
@@ -339,7 +339,7 @@ end with <code>*.icf</code> extension.</p>
 </tr>
 </tbody>
 </table>
-<p>The <code>Board.clayer.yml</code> file defines with the <code>generators:</code> node, options to locate the MCUXpresso generated files in the directory structure of the <a href="../build-overview/#software-layers">software layer</a>. As a board layer is used by many projects, the name of the generator import file should be explicitly specified as shown below:</p>
+<p>The <code>Board.clayer.yml</code> file defines, with the <code>generators:</code> node, options to locate the MCUXpresso generated files in the directory structure of the <a href="../build-overview/#software-layers">software layer</a>. As a board layer is used by many projects, the name of the generator import file should be explicitly specified, as shown below:</p>
 <pre><code class="language-yml">generators:
     options:
     - generator: MCUXpressoConfig
