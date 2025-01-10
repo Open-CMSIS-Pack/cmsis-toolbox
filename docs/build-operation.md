@@ -4,11 +4,11 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-This chapter explains the overall build process that of the CMSIS-Toolbox and how to add a new compiler toolchain.
+This chapter explains the overall build process of the CMSIS-Toolbox and how to add a new compiler toolchain.
 
 ## Build Process Overview
 
-This section contains details of the build process. Refer to [Overall Workflow](overview.md#overall-workflow) for a high-level description of the build process.
+This section contains details of the build process. For a high-level description, refer to [Overall Workflow](overview.md#overall-workflow).
 
 !!! Note
     - The tool options `--verbose` and `--debug` enable detailed output about the build process for analysis.
@@ -18,8 +18,8 @@ This section contains details of the build process. Refer to [Overall Workflow](
 
 The `cbuild` utility controls the overall build process. It has two operating modes:
 
-- **build mode** generates the application and is default command (no explicit command required).
-- **setup mode** generates the setup information for an IDE to populate dialogs, IntelliSense, and project outline views.
+- **build mode** generates the application and is the default command (no explicit command required).
+- **setup mode** generates the setup information for an IDE to populate dialogues, IntelliSense, and project outline views.
 
 #### Details of the build mode
 
@@ -44,7 +44,7 @@ It generates the application program that is described with the `<name>.csolutio
 
 #### Details of the setup mode
 
-The `cbuild setup` command prepares the data for an IDE environment. This command is called at start of an IDE or whenever a *csolution project* file is modified. The typical invocation is:
+The `cbuild setup` command prepares the data for an IDE environment. This command is called at the start of an IDE or whenever a *csolution project* file is modified. The typical invocation is:
 
 ```bash
 cbuild setup <name>.csolution.yml [--packs] [--context-set] [--update-rte] [--frozen-packs]
@@ -53,7 +53,7 @@ cbuild setup <name>.csolution.yml [--packs] [--context-set] [--update-rte] [--fr
 Typical IDE environments use a `--context-set` that specifies the [context](build-overview.md#context) configuration of the application. For an application described by a `<name>.csolution.yml` file, these steps are executed:
 
 - Check YML file syntax against schema for all files specified by `<name>.csolution.yml`.
-- Check correctness of all files specified by `<name>.csolution.yml`.
+- Check the correctness of all files specified by `<name>.csolution.yml`.
 - Evaluate the potential [software layers](YML-CBuild-Format.md#configurations) for [Reference Applications](ReferenceApplications.md) using `variables:` to refer to layers (if the value is undefined). All projects are considered in this step.
 - Evaluate the [selectable compiler toolchains](YML-CBuild-Format.md#select-compiler) when the *csolution project* does not contain a `compiler:` selection or the `--toolchain` option is not applied. The available toolchains are based on the [compiler registration](installation.md#compiler-registration) and the `select-compiler:` node in the file [`<name>.csolution.yml`](YML-Input-Format.md#solution) or [`cdefault.yml`](YML-Input-Format.md#cdefault).
 - Create the file `compile_commands.json` in the [output directory](build-overview.md#output-directory-structure) for the context defined in [`*.cbuild-set.yml`](YML-CBuild-Format.md).
@@ -64,7 +64,7 @@ Typical IDE environments use a `--context-set` that specifies the [context](buil
 The operation is further controlled by options: 
 
 - The option `--packs` downloads missing software packs.
-- The option `--context-set` restricts the operation to the [`context-set`](build-overview.md#working-with-context-set) selected by the file [`<name>.cbuild-set.yml`](YML-CBuild-Format.md). If this file is missing a file `<name>.cbuild-set.yml` with selection of the first `target-type`, the first `build-type`, and first `project`  that is specified in the file `<name>.csolution.yml` is created. 
+- The option `--context-set` restricts the operation to the [`context-set`](build-overview.md#working-with-context-set) selected by the file [`<name>.cbuild-set.yml`](YML-CBuild-Format.md). If this file is missing a file `<name>.cbuild-set.yml` with a selection of the first `target-type`, the first `build-type`, and the first `project` that is specified in the file `<name>.csolution.yml` is created. 
 - The option [`--update-rte`](build-overview.md#rte-directory-structure) updates the configuration files of the application.
 - With the option `--frozen-packs` the file `*.cbuild-pack.yml` is used as input. An error is issued when a pack version changes.
 - The option `--toolchain` can be used to explicitly select a compiler.
@@ -79,7 +79,7 @@ The operation is further controlled by options:
     - Generate for each [context](YML-Input-Format.md#context) the [RTE_components.h](build-overview.md#rte_componentsh) file and pre-include files from the software pack (`*.pdsc`)  metadata.
     - [Copy the configuration files](build-overview.md#plm-of-configuration-files) from selected software componentsand provide [PLM](build-overview.md#plm-of-configuration-files) information.
 - In the [**base directory of the solution**](build-overview.md#project-area):
-    - Generate the file `*.cbuild-pack.yml` that records all used *software packs*. With the option `--frozen-packs` this file is used as input.
+    - Generate the file `*.cbuild-pack.yml` that records all used *software packs*. With the option `--frozen-packs`, this file is used as input.
     - With the option `--context-set` the file `*.cbuild-set.yml` specifies the [context](build-overview.md#context) configuration of the application. When `--context` names are specified this file is updated with this selection.
 
 The picture below outlines the operation.
@@ -96,14 +96,14 @@ Output Directory/File                    | Description
 `./<tmp-dir>/<context>`                  | Each context has a separate sub-directory with the following files:
 `./<tmp-dir>/<context>/CMakeList.txt`    | Describes the build process for this context.
 `./<tmp-dir>/<context>/toolchain.cmake`  | Describes the toolchain used for this context.
-`./<tmp-dir>/<context>/groups.cmake`     | Contains all definitions and source files that related to file [groups](YML-Input-Format.md#groups).
-`./<tmp-dir>/<context>/components.cmake` | Contains all definitions and source files that related to [components](YML-Input-Format.md#components).
+`./<tmp-dir>/<context>/groups.cmake`     | Contains all definitions and source files that are related to file [groups](YML-Input-Format.md#groups).
+`./<tmp-dir>/<context>/components.cmake` | Contains all definitions and source files that are related to [components](YML-Input-Format.md#components).
 
 ### `CMake` Invocation
 
 The CMake build system is invoked with the following commands:
 
-- CMake configuration command defines build generator, source, and build directory with:
+- CMake configuration command defines the build generator, source, and build directory with:
 
   `cmake -G Ninja -S <tmpdir> -B <tmpdir> -Wnodev`
 
@@ -127,7 +127,7 @@ The section below describes the steps to add a new compiler toolchain to the CMS
 2. Add this `compiler_name` to the `"CompilerType":` in the schema file [`./tools/projmgr/schemas/common.schema.json`](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/projmgr/schemas/common.schema.json).
 3. Create a new CMake file in [`./tools/buildmgr/cbuildgen/config`](https://github.com/Open-CMSIS-Pack/devtools/tree/main/tools/buildmgr/cbuildgen/config) with the naming convention `compiler_name.<version>.cmake`.
 4. Map with the file `compiler_name.<version>.cmake`. the **CMake** input variables to the **CMake** toolchain variables.
-   - Use an existing `*.cmake` file, i.e. `GCC.<version>.cmake` as reference.
+   - Use an existing `*.cmake` file, i.e. `GCC.<version>.cmake` as a reference.
  
 ### CMake Variables
 
@@ -178,7 +178,7 @@ CMake Variable                                   | Description
 
 ## CMake Integration
 
-The [`executes:`](YML-Input-Format.md#executes) node in the *csolution project* files allows to integrate other CMake projects or scripts.
+The [`executes:`](YML-Input-Format.md#executes) node in the *csolution project* files allows the integration of other CMake projects or scripts.
 
 ### Example
 
@@ -226,7 +226,7 @@ add_custom_command(OUTPUT ${OUTPUT} DEPENDS ${INPUT}
 )
 ```
 
-Integration in a *csolution project*. In this case it is part of the `*.csolution.yml`, but it may be also part of `*.cproject.yml` file that uses the source file `Web.c` as input. The CMake build system checks for project dependencies and schedules the overall build process.
+Integration in a *csolution project*. In this case, it is part of the `*.csolution.yml`, but it may also be part of the `*.cproject.yml` file that uses the source file `Web.c` as input. The CMake build system checks for project dependencies and schedules the overall build process.
 
 ```yml
 solution:
@@ -245,11 +245,11 @@ solution:
 
 ## Generator Integration
 
-The diagram below shows how a generator is integrated into the CMSIS build process. The data flow is exemplified on STM32CubeMX (Generator ID for this example is `CubeMX`). The information about the project is delivered to the generator using the [Generator Information](YML-CBuild-Format.md#generator-information-files) files (`<solution-name>.cbuild-gen-idx.yml` and `<context>.cbuild-gen.yml`). This information provides `CubeMX` with the project context, such as selected board or device, and CPU mode such as TrustZone disabled/enabled.
+The diagram below shows how a generator is integrated into the CMSIS build process. The data flow is exemplified on STM32CubeMX (Generator ID for this example is `CubeMX`). The information about the project is delivered to the generator using the [Generator Information](YML-CBuild-Format.md#generator-information-files) files (`<solution-name>.cbuild-gen-idx.yml` and `<context>.cbuild-gen.yml`). This information provides `CubeMX` with the project context, such as the selected board or device, and CPU mode, such as TrustZone, disabled/enabled.
 
 ![Generator Integration](./images/Generator-Integration.png "Generator Integration")
 
-The utility [`cbridge`](https://github.com/Open-CMSIS-Pack/generator-bridge) gets as parameter the `<solution-name>.cbuild-gen-idx.yml` and calls the generator. For the `CubeMX` generator example these files are created:
+The utility [`cbridge`](https://github.com/Open-CMSIS-Pack/generator-bridge) gets as parameter the `<solution-name>.cbuild-gen-idx.yml` and calls the generator. For the `CubeMX` generator example, these files are created:
 
 - `*.ioc` CubeMX project file with current project settings
 - `*.c/.h` source files, i.e. for interfacing with drivers
@@ -275,7 +275,7 @@ A [`<component>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/ht
 
 ### Global Generator Registry File
 
-For generators that have no `<generator>` element in the *.PDSC file, the `global.generator.yml` in the CMSIS-Toolbox `./etc` directory contains is used. The `generator:` node in this YAML file registers the supported generators with the following keys:
+For generators with no `<generator>` element in the *.PDSC file, the `global.generator.yml` in the CMSIS-Toolbox `./etc` directory contains is used. The `generator:` node in this YAML file registers the supported generators with the following keys:
 
 `generator:`                                         |            | Content
 :----------------------------------------------------|:-----------|:------------------------------------
