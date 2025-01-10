@@ -3,7 +3,7 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects), [`csolution`](#csolution-invocation) (transform *csolution project files*), and [`cpackget`](#cpackget-invocation) (manage software packs). It includes command line syntax details and examples.
+This chapter describes the tools [`cbuild`](#cbuild-invocation) (build projects), [`csolution`](#csolution-invocation) (transform *csolution project files*), and [`cpackget`](#cpackget-invocation) (manage software packs). It includes details on command line syntax and examples.
 
 ## Requirements
 
@@ -38,7 +38,7 @@ Options:
   -c, --context arg [...]  Input context names [<project-name>][.<build-type>][+<target-type>]
   -S, --context-set        Select the context names from cbuild-set.yml for generating the target application
   -d, --debug              Enable debug messages
-      --frozen-packs       Pack list and versions from cbuild-pack.yml are fixed and raises errors if it changes
+      --frozen-packs       Pack list and versions from cbuild-pack.yml are fixed and raise errors if it changes
   -g, --generator arg      Select build system generator (default "Ninja")
   -h, --help               Print usage
   -j, --jobs int           Number of job slots for parallel execution (default 8)
@@ -86,7 +86,7 @@ Commands:
   list packs                    Print list of used packs from the pack repository
   list toolchains               Print list of supported toolchains
   run                           Run code generator
-  update-rte                    Create/update configuration files and validate solution
+  update-rte                    Create/update configuration files and validate the solution
 
 Options:
   -c, --context arg [...]       Input context names [<project-name>][.<build-type>][+<target-type>]
@@ -129,9 +129,9 @@ Available Commands:
   init             Initializes a pack root folder
   list             List installed packs
   rm               Remove Open-CMSIS-Pack packages
-  signature-create Digitally signs a pack with a X.509 certificate or PGP key
+  signature-create Digitally signs a pack with an X.509 certificate or PGP key
   signature-verify Verifies a signed pack
-  update           Update Open-CMSIS-Pack packages to latest
+  update           Update Open-CMSIS-Pack packages to the latest
   update-index     Update the public index
 
 Flags:
@@ -192,7 +192,7 @@ cbuild example.csolution.yml --toolchain GCC
 
 The `--toolchain` option is useful for:
 
-- Testing a new compiler or a different compiler version on the overall project.
+- Test a new compiler or a different compiler version for the overall project.
 - For unit test applications to allow the usage of different compilers.
 
 In [DevOps systems](#devops-usage) that run CI test with a matrix build, it is sometimes required to separate the output of various builds. The option `--output` adds a prefix to the [output directory](YML-Input-Format.md#output-dirs) for `outdir:`, `tmpdir:` and build information files. The following commands build the project with the AC6 and GCC compiler and separate the directories for output and temporary files.
@@ -290,13 +290,13 @@ Refer to [Software Layers](build-overview.md#software-layers) for more informati
 
 ### Use Generators
 
-List external code generators that are used to create software components. It outputs the generator ID that is required for the `run` command. When using the option `--verbose` the generator out directory is listed.
+List external code generators that are used to create software components. It outputs the generator ID that is required for the `run` command. When using the option `--verbose`, the generator out directory is listed.
 
 ```shell
 csolution list generators mysolution.csolution.yml -v
 ```
 
-Run a generator (in this case STM32CubeMX) for a specific project context.  Note that the context can be omitted when the same generator output directory is used.
+Run a generator (in this case, STM32CubeMX) for a specific project context.  Note that the context can be omitted when the same generator output directory is used.
 
 ```shell
 csolution run -g CubeMX mysolution.csolution.yml -c Blinky.Debug+STM32L4
@@ -304,7 +304,7 @@ csolution run -g CubeMX mysolution.csolution.yml -c Blinky.Debug+STM32L4
 
 ### Use context set
 
-When working with [multiple related projects](build-overview.md#project-setup-for-related-projects), it might be necessary to combine different build types for debug and download in the target hardware. With the option `--context-set` the selected `--context` options can be saved and re-used.
+When working with [multiple related projects](build-overview.md#project-setup-for-related-projects), it might be necessary to combine different build types for debugging and downloading in the target hardware. The option `--context-set` allows you to save and reuse the selected `--context` options.
 
 Write the selected `--context` options to the file `SimpleTZ.cbuild-set.yml`. Refer to [file structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-setyml) for details.
 
@@ -320,7 +320,7 @@ cbuild SimpleTZ.csolution.yml -S
 
 ### List configuration files
 
-List all configuration files that belong to software components and are stored in the [RTE directory](build-overview.md#rte-directory-structure). When [updating software packs](CreateApplications.md#update-software-packs), it shows also the update status of each file.
+List all configuration files that belong to software components and are stored in the [RTE directory](build-overview.md#rte-directory-structure). When [updating software packs](CreateApplications.md#update-software-packs), it also shows the update status of each file.
 
 ```shell
 csolution list configs SimpleTZ.csolution.yml -S
@@ -328,7 +328,7 @@ csolution list configs SimpleTZ.csolution.yml -S
 
 ### Setup Project (for IDE)
 
-In an IDE environment, this command downloads missing packs, creates [build information files](YML-CBuild-Format.md), and generates the file `compile_commands.json` for IntelliSense. Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
+In an IDE environment, this command downloads missing packs creates [build information files](YML-CBuild-Format.md), and generates the file `compile_commands.json` for IntelliSense. Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
 
 ```shell
 cbuild setup example.csolution.yml --context-set --packs
@@ -339,7 +339,7 @@ cbuild setup example.csolution.yml --context-set --packs
 
 ### Specify CMSIS-Pack root directory
 
-`cpackget` is compatible with other CMSIS-Pack management tools, such as the Pack Installer available in MDK or Eclipse
+`cpackget` is compatible with other CMSIS-Pack management tools, such as the Pack Installer, available in MDK or Eclipse
 variants. There are two ways to specify the CMSIS-PACK root directory:
 
 1. With the `CMSIS_PACK_ROOT` environment variable.
@@ -356,9 +356,9 @@ cpackget add Vendor.PackName --pack-root ./MyLocal/Packs
 
 ### Initialize CMSIS-Pack root directory
 
-CMSIS-Packs are typically distributed via a public web service, that offers a
+CMSIS-Packs are typically distributed via a public web service that offers a
 [**Pack Index File**](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packIndexFile.html)
-of available software packs. To initialize the CMSIS-Pack root directory run the command:
+of available software packs. To initialize the CMSIS-Pack root directory, run the command:
 
 ```shell
 cpackget init https://www.keil.com/pack/index.pidx
@@ -370,7 +370,7 @@ Sub-Directory   | Content
 :---------------|:------------------------
 `.Web`          | [**Pack Index File**](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packIndexFile.html) of a public web service and `*.PDSC` files.
 `.Download`     | Packs that are installed from a web service. Stores `*.PDSC` pack description file, `*.pack` content file, and related license information.
-`.Local`        | Index file `local_repository.pidx` that points to local installations for development of a software pack. Contains also the `*.PDSC` files from private software packs.
+`.Local`        | Index file `local_repository.pidx` that points to local installations for the development of a software pack. Contains also the `*.PDSC` files from private software packs.
 
 The `cpackget init` command [initializes the CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory) but does not download PDSC files. Combined with the option `--all-pdsc-files` it also downloads all PDSC files that are available in the public index.
 
@@ -380,19 +380,19 @@ cpackget init https://www.keil.com/pack/indexpidx --all-pdsc-files
 
 ### Update Pack Index
 
-When new software packs are available in on a public web service, the local copy of the **Pack Index File** requires an update. To update the **Pack Index File**, run:
+When new software packs are available on a public web service, the local copy of the **Pack Index File** requires an update. To update the **Pack Index File**, run:
 
 ```shell
 cpackget update-index
 ```
 
-The option `--sparse` avoids the update of the PDSC files and improves therefore the speed.
+The option `--sparse` avoids updating the PDSC files and improves, therefore, the speed.
 
 ```shell
 cpackget update-index --sparse
 ```
 
-To download all PDSC files that are available in the public index, use the option `--all-pdsc-files`.
+Use the option `--all-pdsc-files` to download all PDSC files available in the public index.
 
 ```shell
 cpackget update-index --all-pdsc-files
@@ -454,16 +454,16 @@ AWS::backoffAlgorithm@1.0.0-Beta
   :
 ```
 
-#### Accept End User License Agreement (EULA) from command line
+#### Accept End User License Agreement (EULA) from the command line
 
-Some packs come with licenses. By default, `cpackget` will prompt the user acceptance of this license agreement. For
+Some packs come with licenses. By default, `cpackget` will prompt the user's acceptance of this license agreement. For
 automated installation of software packs, this user prompting can be suppressed with the command line flag `--agree-embedded-license`:
 
 ```shell
 cpackget add -f list-of-packs.txt --agree-embedded-license
 ```
 
-In some cases, the user might want to only extract the license agreement of the software pack. This is supported with the
+In some cases, the user might want to only extract the license agreement of the software pack. This is supported by the
 command line flag `--extract-embedded-license`:
 
 ```shell
@@ -474,19 +474,19 @@ The extracted license file will be placed next to the pack. For example, if Vend
 
 #### Work behind a proxy
 
-Sometimes, `cpackget` seems to be unable to download software packs, for example when used behind a corporate firewall. Typically this is indicated by error messages such as:
+Sometimes, `cpackget` seems to be unable to download software packs, for example, when used behind a corporate firewall. Typically this is indicated by error messages such as:
 
 <!-- markdownlint-capture -->
 <!-- markdownlint-disable MD013 -->
 
 ```txt
 E: Get "<url>/<pack-name>.pack": dial tcp <ip-address>: connectex: No connection could be made because the target machine actively refused it.
-E: failed to download file
+E: failed to download the file
 ```
 
 <!-- markdownlint-restore -->
 
-In such cases, it might be required to access the Internet via a proxy. This can be done via environment variables that are used by `cpackget`:
+In such cases, accessing the Internet via a proxy might be required. This can be done via environment variables that are used by `cpackget`:
 
 ```shell
 # Windows
@@ -502,7 +502,7 @@ Then **all** HTTP/HTTPS requests will be going through the specified proxy.
 
 #### Install a private software pack
 
-A software pack can be distributed via different methods, for example via file exchange systems.  
+A software pack can be distributed via different methods, such as file exchange systems.  
 
 Once the software pack is available on the local computer, it can be installed by referring to the `*.pack` file
 itself:
@@ -542,7 +542,7 @@ cpackget list
 This will include all packs that are installed via `cpackget add` command, regardless of the source of the software
 pack. There are also a couple of flags that allow listing extra information.
 
-List all cached packs, that are present in the `.Download/` folder:
+List all cached packs that are present in the `.Download/` folder:
 
 ```shell
 cpackget list --cached
@@ -559,7 +559,7 @@ cpackget list --public
 
 ### Remove packs
 
-The commands below demonstrate how to remove packs. This is independent from how the software pack was added.
+The commands below demonstrate how to remove packs. This is independent of how the software pack was added.
 
 Remove a software pack with a specific version:
 
@@ -575,7 +575,7 @@ cpackget rm Vendor.PackName            # or
 cpackget rm Vendor::PackName
 ```
 
-Same as above, but also remove the cached files that relate to this pack in the `.Download/` directory.
+The procedure is the same as above, but you should also remove the cached files related to this pack from the `.Download/` directory.
 
 ```shell
 cpackget rm --purge Vendor.PackName`
@@ -589,7 +589,7 @@ cpackget rm Vendor.PackName.pdsc
 
 ## DevOps Usage
 
-The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The `./out` directory contains all build artifacts of an application for execution on physical hardware or simulation models. [Arm Virtual Hardware - Fixed Virtual Platforms (AVH FVP)](https://github.com/ARM-software/AVH) enable unit tests and integration tests with simulation models and various virtual interfaces. Using [software layers](build-overview.md#software-layers) allows for example to test on physical hardware or AVH-FVP simulation models. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.
+The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The `./out` directory contains all build artifacts of an application for execution on physical hardware or simulation models. [Arm Virtual Hardware - Fixed Virtual Platforms (AVH FVP)](https://github.com/ARM-software/AVH) enables unit tests and integration tests with simulation models and various virtual interfaces. Using [software layers](build-overview.md#software-layers) allows, for example, to test on physical hardware or AVH-FVP simulation models. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.
 
 The commands below show typical builds in a CI system. Using `--packs` installs all public packs with implicit acceptance of licenses. This command builds all projects, target-types, and build-types. Using [`--context`](build-overview.md#context) reduces the scope of the build. Using [`--frozen-packs`](build-overview.md#reproducible-builds) uses exactly the packs that are specified in the file `*.cbuild-pack.yml`.
 
@@ -599,7 +599,7 @@ cbuild Hello.csolution.yml --packs --context +AVH-SSE-300   # only build target 
 cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack versions
 ```
 
-Packs are that not public are installed using `cpackget`.  The following commands use the MDK-Middleware development repository to install a pre-release pack in a GitHub Actions CI workflow.
+Packs that are not public are installed using `cpackget`.  The following commands use the MDK-Middleware development repository to install a pre-release pack in a GitHub Actions CI workflow.
 
 ```yml
     - name: Checkout MDK-Middleware
@@ -617,11 +617,11 @@ Packs are that not public are installed using `cpackget`.  The following command
 
 ### Examples
 
-There are several examples that show CI workflows using the CMSIS-Toolbox.
+Several examples show CI workflows using the CMSIS-Toolbox.
 
 Example            | Description
 :------------------|:------------------
-[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Four different examples that execute CI tests with showing various concepts including matrix tests and AVH FVP simulation.
+[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Four different examples that execute CI tests showing various concepts, including matrix tests and AVH FVP simulation.
 [AVH-Hello](https://github.com/Arm-Examples/AVH-Hello) | Build and execution test for "Hello World" example using a GitHub Action matrix to target all Cortex-M processors, Arm Compiler or GCC, and AVH simulation.
 [AVH_CI_Template](https://github.com/Arm-Examples/AVH_CI_Template)     | CI Template for unit test automation that uses GitHub Actions.
 [CMSIS Version 6](https://github.com/ARM-software/CMSIS_6/actions) | Runs a CMSIS-Core validation test across the supported processors using multiple compilers.
@@ -631,7 +631,7 @@ Example            | Description
 
 ## IDE Usage
 
-An IDE may use the following `cbuild setup` command to setup the project outline view and get information about components and software layers.
+An IDE may use the following `cbuild setup` command to set up the project outline view and get information about components and software layers.
 
 ```shell
 cbuild setup example.csolution.yml --context-set [--packs] [--update-rte]
@@ -639,8 +639,8 @@ cbuild setup example.csolution.yml --context-set [--packs] [--update-rte]
 
 The command above is used when the IDE starts:
 
-- The option `--context-set` uses one `target-type` and optionally multiple related projects that are selected by a user in the file `*.cbuild-set.yml`. If this file is missing, it is created with the first `target-type` and the first `build-type` that are defined in the `*.csolution.yml` file.  
-- The option `--packs` can be enabled to download missing software packs that are public.
+- The option `--context-set` uses one `target-type` and optionally multiple related projects that are selected by a user in the file `*.cbuild-set.yml`. If this file is missing, it is created with the first `target-type` and the first `build-type` which are defined in the `*.csolution.yml` file.  
+- The option `--packs` can enable the download of missing software packs that are public.
 - The option `--update-rte` is used when the IDE changes `device:`, `board:` or `component:` settings.
 
 The `cbuild setup` command creates [build information files](YML-CBuild-Format.md) and generates the file `compile_commands.json` for IntelliSense in an VS Code IDE environment. Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
@@ -651,10 +651,10 @@ The project outline view in an IDE may utilize the project files as described be
 
 - The file `*.csolution.yml` contains the overall structure of projects, `build-types`, and `target-types`.
 - The file `*cbuild-set.yml` specifies the selected contexts; if it does not exist, the IDE may select the first project, first `build-type`, and first `target-type` from the file `*.csolution.yml`.
-- The files `*.cproject.yml` provides the source groups, source files and the list of components (but without source files).
-- The files `*.clayer.yml` or `*.cgen.yml` contain software layers with additional source groups, source files, and components. The `*.cbuild.<context>.yml` files provide the exact location of these files, for example when variables are used.
+- The file `*.cproject.yml` provides the source groups, source files, and the list of components (but without source files).
+- The files `*.clayer.yml` or `*.cgen.yml` contain software layers with additional source groups, source files, and components. The `*.cbuild.<context>.yml` files provide the exact location of these files, for example, when variables are used.
 
-Using above information it is possible to create an outline view, but without the file list for components. For software layers, the content may required the `*.cbuild.<context>.yml` files that are generated with the `cbuild setup` command.
+Using the above information, it is possible to create an outline view, but without the file list for components. For software layers, the content may require the `*.cbuild.<context>.yml` files that are generated with the `cbuild setup` command.
 
 The `cbuild-idx.yml` file provides the exact location of all `*.cbuild.<context>.yml` files that are used in this context-set. The `*.cbuild.<context>.yml` files contain for the components source files, configuration file information, API header files, user code templates, generator information, and links to documentation. The project outline view may provide access to this information.
 
@@ -667,6 +667,6 @@ cbuild example.csolution.yml --context-set [--packs] [--quite] [--rebuild]
 ```
 
 - The option `--context-set` selects the projects along with `target-type` and `build-type` for the application.
-- The option `--packs` can be enabled to download missing software packs that are public.
+- The option `--packs` can be enable the download missing software packs that are public.
 - The option `--quite` suppresses details about the build process.
 - The option `--rebuild` may be used to force a complete rebuild of the output files.
