@@ -237,6 +237,135 @@ cbuild-run:
     ...
 ```
 
+### `sequences:`
+
+The start of [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence) for the target.
+
+`sequences:`                                              |              | Content
+:---------------------------------------------------------|--------------|:------------------------------------
+`- name:`                                                 | **Required** | Name of the sequence.
+&nbsp;&nbsp;&nbsp; `info:`                                |   Optional   | Descriptive text to display for example for error diagnostics.
+&nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | Contains commands or blocks
+&nbsp;&nbsp;&nbsp; `execute:`                             |   Optional   | commands for execution
+&nbsp;&nbsp;&nbsp; `execute_atomic:`                      |   Optional   | commands for atomic execution
+&nbsp;&nbsp;&nbsp; `pname:`                               |   Optional   | Executes sequence only for connection to processor; Default is executed for all connections.
+
+`blocks:`                                                 |              | Content
+:---------------------------------------------------------|--------------|:------------------------------------
+`- info:`                                                 |   Optional   | Descriptive text to display for example for error diagnostics.
+&nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | Contains commands or blocks
+&nbsp;&nbsp;&nbsp; `execute:`                             |   Optional   | commands for execution
+&nbsp;&nbsp;&nbsp; `execute_atomic:`                      |   Optional   | commands for atomic execution
+&nbsp;&nbsp;&nbsp; `if:`                                  |   Optional   | only executed when expression is true
+&nbsp;&nbsp;&nbsp; `while:`                               |   Optional   | executed in loop until while expression is true
+&nbsp;&nbsp;&nbsp; `timeout:`                             |   Optional   | timeout in milliseconds for while loop
+
+
+Example: [debugPortSetup](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#debugPortSetup)
+```yml
+sequences:
+  - name: DebugPortSetup
+    execute:  |
+      __var isSWJ      = ((__protocol &amp; 0x00010000) != 0); 
+      __var hasDormant = __protocol &amp; 0x00020000;
+      __var protType   = __protocol &amp; 0x0000FFFF;
+
+    blocks:
+    - if: protType == 1 
+      blocks:
+      - if: isSWJ
+        blocks:
+        - if: hasDormant
+          execute_atomic:  |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+          
+            // Select Dormant State (from SWD)
+            DAP_SWJ_Sequence(16, 0xE3BC);
+          
+            // At least 8 cycles SWDIO/TMS HIGH
+            DAP_SWJ_Sequence(8, 0xFF);
+          
+            // Alert Sequence Bits  0.. 63
+            DAP_SWJ_Sequence(64, 0x86852D956209F392);
+        
+            // Alert Sequence Bits 64..127
+            DAP_SWJ_Sequence(64, 0x19BC0EA2E3DDAFE9);
+  
+            // 4 cycles SWDIO/TMS LOW + 8-Bit JTAG Activation Code (0x0A)            
+            DAP_SWJ_Sequence(12, 0x0A0);
+         
+            // Ensure JTAG interface is reset
+            DAP_SWJ_Sequence(6, 0x3F);
+
+        - if: !hasDormant
+          execute_atomic:   |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+          
+            // Execute SWJ-DP Switch Sequence SWD to JTAG (0xE73C)
+            // Change if SWJ-DP uses deprecated switch code (0xAEAE)
+            DAP_SWJ_Sequence(16, 0xE73C);
+          
+            // Ensure JTAG interface is reset
+            DAP_SWJ_Sequence(6, 0x3F);
+
+      - execute_atomic: |
+          // JTAG "Soft" Reset
+          DAP_JTAG_Sequence(6, 1, 0x3F);
+          DAP_JTAG_Sequence(1, 0, 0x01);
+
+    - if: protType == 2
+      blocks:
+      - if: isSWJ
+        blocks:
+        - if: hasDormant
+          execute_atomic:  |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+          
+            // Select Dormant State (from JTAG)
+            DAP_SWJ_Sequence(31, 0x33BBBBBA);
+          
+            // At least 8 cycles SWDIO/TMS HIGH
+            DAP_SWJ_Sequence(8, 0xFF);
+          
+            // Alert Sequence Bits  0.. 63
+            DAP_SWJ_Sequence(64, 0x86852D956209F392);
+        
+            // Alert Sequence Bits 64..127
+            DAP_SWJ_Sequence(64, 0x19BC0EA2E3DDAFE9);
+  
+            // 4 cycles SWDIO/TMS LOW + 8-Bit SWD Activation Code (0x1A)            
+            DAP_SWJ_Sequence(12, 0x1A0);
+         
+            // Enter SWD Line Reset State
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &gt; 50 cycles SWDIO/TMS High
+            DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
+
+        - if: !hasDormant
+          execute_atomic:  |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+          
+            // Execute SWJ-DP Switch Sequence JTAG to SWD (0xE79E)
+            // Change if SWJ-DP uses deprecated switch code (0xEDB6)
+            DAP_SWJ_Sequence(16, 0xE79E);
+          
+            // Enter SWD Line Reset State
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &gt; 50 cycles SWDIO/TMS High
+            DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
+
+              // Enter SWD Line Reset State
+          DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &gt; 50 cycles SWDIO/TMS High
+          DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
+
+    - execute:  |
+      // Read DPIDR to enable SWD interface (SW-DPv1 and SW-DPv2)
+      ReadDP(0x0);
+```
+
+
 ### Usage
 
 The `*.cbuild-run.yml` file can be directly passed to programmers and debug tools, for example, using a command-line option. It contains all information that needs to be passed.
