@@ -245,32 +245,34 @@ The start of [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack
 :---------------------------------------------------------|--------------|:------------------------------------
 `- name:`                                                 | **Required** | Name of the sequence.
 &nbsp;&nbsp;&nbsp; `info:`                                |   Optional   | Descriptive text to display for example for error diagnostics.
-&nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | Contains commands or blocks
-&nbsp;&nbsp;&nbsp; `execute:`                             |   Optional   | commands for execution
-&nbsp;&nbsp;&nbsp; `execute_atomic:`                      |   Optional   | commands for atomic execution
+&nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | A list of command blocks in order of execution.
 &nbsp;&nbsp;&nbsp; `pname:`                               |   Optional   | Executes sequence only for connection to processor; Default is executed for all connections.
 
 `blocks:`                                                 |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
 `- info:`                                                 |   Optional   | Descriptive text to display for example for error diagnostics.
-&nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | Contains commands or blocks
-&nbsp;&nbsp;&nbsp; `execute:`                             |   Optional   | commands for execution
-&nbsp;&nbsp;&nbsp; `execute_atomic:`                      |   Optional   | commands for atomic execution
+&nbsp;&nbsp;&nbsp; `blocks:`                              |   see Note   | A list of command blocks in order of execution.
+&nbsp;&nbsp;&nbsp; `execute:`                             |   see Note   | commands for execution.
+&nbsp;&nbsp;&nbsp; `execute_atomic:`                      |   see Note   | commands for atomic execution.
 &nbsp;&nbsp;&nbsp; `if:`                                  |   Optional   | only executed when expression is true
 &nbsp;&nbsp;&nbsp; `while:`                               |   Optional   | executed in loop until while expression is true
 &nbsp;&nbsp;&nbsp; `timeout:`                             |   Optional   | timeout in milliseconds for while loop
 
+!!! Note
+    - There must be only of these keys in a list node: `blocks:`, `execute:`, or `execute_atomic:`. The list order defines the order of execution.
 
 Example: [debugPortSetup](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#debugPortSetup)
+
 ```yml
 sequences:
   - name: DebugPortSetup
-    execute:  |
-      __var isSWJ      = ((__protocol &amp; 0x00010000) != 0); 
-      __var hasDormant = __protocol &amp; 0x00020000;
-      __var protType   = __protocol &amp; 0x0000FFFF;
 
     blocks:
+    - execute:  |
+        __var isSWJ      = ((__protocol &amp; 0x00010000) != 0); 
+        __var hasDormant = __protocol &amp; 0x00020000;
+        __var protType   = __protocol &amp; 0x0000FFFF;
+
     - if: protType == 1 
       blocks:
       - if: isSWJ
