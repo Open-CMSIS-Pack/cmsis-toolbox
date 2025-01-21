@@ -251,15 +251,15 @@ The start of [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack
 `blocks:`                                                 |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
 `- info:`                                                 |   Optional   | Descriptive text to display for example for error diagnostics.
-&nbsp;&nbsp;&nbsp; `blocks:`                              |   see Note   | A list of command blocks in order of execution.
-&nbsp;&nbsp;&nbsp; `execute:`                             |   see Note   | commands for execution.
-&nbsp;&nbsp;&nbsp; `execute_atomic:`                      |   see Note   | commands for atomic execution.
+&nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | A list of command blocks in the order of execution.
+&nbsp;&nbsp;&nbsp; `execute:`                             |   Optional   | Commands for execution.
+&nbsp;&nbsp;&nbsp; `atomic:`                              |   Optional   | Atomic execution of commands; cannot be used with `execute:`.
 &nbsp;&nbsp;&nbsp; `if:`                                  |   Optional   | only executed when expression is true
 &nbsp;&nbsp;&nbsp; `while:`                               |   Optional   | executed in loop until while expression is true
 &nbsp;&nbsp;&nbsp; `timeout:`                             |   Optional   | timeout in milliseconds for while loop
 
 !!! Note
-    - There must be only of these keys in a list node: `blocks:`, `execute:`, or `execute_atomic:`. The list order defines the order of execution.
+    - With `atomic:` set, the execution with no interrupts as fast as possible. With [CMSIS-DAP Atomic Commands](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__atomic__gr.html) are used. It has therefore restrictions and cannot be combined with `blocks:`. 
 
 Example: [debugPortSetup](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#debugPortSetup)
 
@@ -278,7 +278,8 @@ sequences:
       - if: isSWJ
         blocks:
         - if: hasDormant
-          execute_atomic:  |
+          atomic:
+          execute:  |
             // Ensure current debug interface is in reset state
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
           
@@ -301,7 +302,8 @@ sequences:
             DAP_SWJ_Sequence(6, 0x3F);
 
         - if: !hasDormant
-          execute_atomic:   |
+          atomic:
+          execute:   |
             // Ensure current debug interface is in reset state
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
           
@@ -312,7 +314,8 @@ sequences:
             // Ensure JTAG interface is reset
             DAP_SWJ_Sequence(6, 0x3F);
 
-      - execute_atomic: |
+      - atomic:
+        execute: |
           // JTAG "Soft" Reset
           DAP_JTAG_Sequence(6, 1, 0x3F);
           DAP_JTAG_Sequence(1, 0, 0x01);
@@ -322,7 +325,8 @@ sequences:
       - if: isSWJ
         blocks:
         - if: hasDormant
-          execute_atomic:  |
+          atomic:
+          execute:  |
             // Ensure current debug interface is in reset state
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
           
@@ -346,7 +350,8 @@ sequences:
             DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
 
         - if: !hasDormant
-          execute_atomic:  |
+          atomic:
+          execute:  |
             // Ensure current debug interface is in reset state
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
           
