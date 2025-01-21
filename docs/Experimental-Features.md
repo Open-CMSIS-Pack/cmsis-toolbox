@@ -253,7 +253,7 @@ The start of [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack
 `- info:`                                                 |   Optional   | Descriptive text to display for example for error diagnostics.
 &nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | A list of command blocks in the order of execution.
 &nbsp;&nbsp;&nbsp; `execute:`                             |   Optional   | Commands for execution.
-&nbsp;&nbsp;&nbsp; `atomic:`                              |   Optional   | Atomic execution of commands; cannot be used with `execute:`.
+&nbsp;&nbsp;&nbsp; `atomic:`                              |   Optional   | Atomic execution of commands; cannot be used with `blocks:`.
 &nbsp;&nbsp;&nbsp; `if:`                                  |   Optional   | only executed when expression is true
 &nbsp;&nbsp;&nbsp; `while:`                               |   Optional   | executed in loop until while expression is true
 &nbsp;&nbsp;&nbsp; `timeout:`                             |   Optional   | timeout in milliseconds for while loop
