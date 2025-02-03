@@ -156,21 +156,21 @@ In addition, the user may need the following information, which should be added 
 - ToDo: Device configuration information.
 - ToDo: Access information for protected debug ports (i.e. encryption keys).
 
-### `<target-name>.cbuild-run.yml`
+### `*.cbuild-run.yml`
 
-The `<target-name>.cbuild-run.yml` is generated in the `output` folder and provides the relevant information for executing Run and Debug commands. Using the option `--output` allows to redirect the build information files, the `tmp` and `out` directories. The `.cmsis` folder that contains the output is planned to be introduced for VS Code. Overall the `*.cbuild-run.yml` file:
+The file `<solution-name>+<target-type>.cbuild-run.yml` file is generated in the `output` folder and provides the relevant information for executing Run and Debug commands. Overall the `*.cbuild-run.yml` file:
 
 - simplifies the usage of Flash programmers and debuggers.
 - provides consistent information for command line and IDE workflows.
 - ensures that information is portable, i.e. from a cloud-hosted CI system to a desktop test system.
 
-The `<target-name>.cbuild-run.yml` file provides access to PDSC information and the build output of one target. It also exports the [Debug Access Sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html).
+The `*.cbuild-run.yml` file provides access to PDSC information and the build output of one target. It also exports the [Debug Access Sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html).
 
 ![Run and Debug Information Management](./images/cbuild-run.png "Run and Debug Information Management")
 
-The `<solution-name>+<target-name>.cbuild-run.yml` file represents a context-set of a solution.
+The `<solution-name>+<target-type>.cbuild-run.yml` file represents a single `target-type` of a solution.
 
-**Content of `<target-name>.cbuild-run.yml`:**
+**Content of `<solution-name>+<target-type>.cbuild-run.yml`:**
 
 ```yml
 cbuild-run:
@@ -235,6 +235,71 @@ cbuild-run:
 
   trace:
     ...
+```
+
+### `debug-config:`
+
+**ToDo: do we add debug-port and debug-clock to YML input**
+
+The start of [debug-config](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugconfig) section for the target for connection parameters.
+
+`debug-config:`                                           |              | Content
+:---------------------------------------------------------|--------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `default:`                             |   Optional   | Default protocol (jtag or swd).
+&nbsp;&nbsp;&nbsp; `clock:`                               |   Optional   | Default clock speed.
+&nbsp;&nbsp;&nbsp; `swj:`                                 |   Optional   | Device is able to switch between jtag and swd mode (0 or 1), default: 1
+&nbsp;&nbsp;&nbsp; `dormant:`                             |   Optional   | Do we need this?
+&nbsp;&nbsp;&nbsp; `sdf:`                                 |   Optional   | path to system description file (SDF)
+
+Example:
+
+```yml
+debug-config:
+  default: jtag
+  clock: 10000000
+  swj: 0
+  sdf: Debug/SDF/lpc4300.sdf
+```
+
+----
+
+With YML-Input
+
+`debug-config:`                                           |              | Content
+:---------------------------------------------------------|--------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `debug-port:`                          |   Optional   | Selected debug port (jtag or swd).
+&nbsp;&nbsp;&nbsp; `debug-clock:`                         |   Optional   | Selected debug clock speed.
+
+Example:
+
+```yml
+debug-config:
+  debug-port: jtag
+  debug-clock: 25000000
+```
+
+
+### `debug-vars:`
+
+**ToDo: handling of *.dbgconf files in RTE**
+
+The start of [debug-vars](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section for the target.
+
+`debug-vars:`                                             |              | Content
+:---------------------------------------------------------|--------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `vars:`                                |   Optional   | Initial values for debug variables used in [`sequences:`](#sequences).
+&nbsp;&nbsp;&nbsp; `file:`                                |   Optional   | Configuration file for debug variables.
+
+Example:
+
+```yml
+debug-vars:
+  file: RTE/Device/LPC55S69/LPC55xx.dbgconf
+  vars: |
+    // Debug Access Variables, can be modified by user via copies of DBGCONF files as created by uVision. Also see sub-family level.
+    __var SWO_Pin               = 0;                    // Serial Wire Output pin: 0 = PIO0_10, 1 = PIO0_8
+    __var Dbg_CR                = 0x00000000;           // DBG_CR
+    __var BootTime              = 10000;                // 10 milliseconds
 ```
 
 ### `sequences:`
