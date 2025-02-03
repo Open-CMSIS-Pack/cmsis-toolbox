@@ -12,4 +12,4 @@
 - [ ] 🤹 Manual testing has been performed (if necessary).
 - [ ] 🛡️ Security impacts have been considered (if relevant).
 - [ ] 📖 Documentation updates are complete (if required).
-- [ ] 🧠 No third-party dependencies were changed (if required).
+- [ ] 🧠 Third-party dependencies and TPIP updated (if required).
