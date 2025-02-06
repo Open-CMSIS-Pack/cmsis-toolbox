@@ -207,83 +207,54 @@ cbuild-run:
     - file: out/CubeMX/MyBoard_ROM/Debug/CubeMX.axf
       type: elf
 
-# information that may get added (from DFP, BSP) specific to the target
-# https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packFormat.html
-  board:                                     # Board element
-    debugProbe:
-      ...     
-    debugInterface:
-      ...
-  debug-port:                                # Information from DFP
-    access-port-v1:    
-      ...
-    access-port-v2:    
-      ...
-    jtag:
-    cjtag:
-    swd:
+  debugger:
+    - name: CMSIS-DAP
+      :
+    - name: JLink
+      :
 
-    default-settings:                        # Default debug configuration
-      default:                               # debug protocol (SWD or JTAG) to use for target connections.
-      clock:                                 # clock setting in Hz for a target connection.
-      swj:                                   # allows Serial Wire Debug (SWD) and JTAG protocols
-      dormant:                               # device access via CoreSight DP requires the dormant state
-      sdf: ${CMSIS_PACK_ROOT}/DFP-path/<sdf> # path of the system description file (SDF).
+  debug-vars:
+      :
 
   sequences:
-    ...
-
-  trace:
-    ...
+      :
 ```
 
-### `debug-config:`
+### `debugger:`
 
-**ToDo: do we add debug-port and debug-clock to YML input**
+[**Proposal: debugger configuration to YML input**](https://github.com/Open-CMSIS-Pack/devtools/issues/1947)
 
-The start of [debug-config](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugconfig) section for the target for connection parameters.
+This node contains connection information to one or more debuggers.
 
-`debug-config:`                                           |              | Content
-:---------------------------------------------------------|--------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `default:`                             |   Optional   | Default protocol (jtag or swd).
-&nbsp;&nbsp;&nbsp; `clock:`                               |   Optional   | Default clock speed.
-&nbsp;&nbsp;&nbsp; `swj:`                                 |   Optional   | Device is able to switch between jtag and swd mode (0 or 1), default: 1
-&nbsp;&nbsp;&nbsp; `dormant:`                             |   Optional   | Do we need this?
-&nbsp;&nbsp;&nbsp; `sdf:`                                 |   Optional   | path to system description file (SDF)
+The information is supplied from the `csolution.yml` file and DFP and BSP information.
 
-Example:
+`debugger:`                                               |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- name:`                                                 |**Required** | Identifies the debug configuration.
+&nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the connection
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Selected debug port (jtag or swd).
+&nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Selected debug clock speed.
+&nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
+
+**Example:**
 
 ```yml
-debug-config:
-  default: jtag
+debugger:
+  name: CMSIS-DAP 
+  info: On-Board debugger of MCB4300 
+  port: jtag
   clock: 10000000
-  swj: 0
-  sdf: Debug/SDF/lpc4300.sdf
+  dbgconf: RTE/Device/lpc4300/lpc4300.dbgconf
 ```
-
-----
-
-With YML-Input
-
-`debug-config:`                                           |              | Content
-:---------------------------------------------------------|--------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `debug-port:`                          |   Optional   | Selected debug port (jtag or swd).
-&nbsp;&nbsp;&nbsp; `debug-clock:`                         |   Optional   | Selected debug clock speed.
-
-Example:
-
-```yml
-debug-config:
-  debug-port: jtag
-  debug-clock: 25000000
-```
-
 
 ### `debug-vars:`
 
-**ToDo: handling of *.dbgconf files in RTE**
+This node contains configuration variables and optionally configuration file for these variables.
 
-The start of [debug-vars](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section for the target.
+Q: is the file really required as it is supplied already under debugger:
+
+[**Review Proposal: handling of `*.dbgconf` files in RTE**](https://github.com/Open-CMSIS-Pack/devtools/issues/1946)
+
 
 `debug-vars:`                                             |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
@@ -304,7 +275,7 @@ debug-vars:
 
 ### `sequences:`
 
-The start of [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence) for the target.
+This node contains the [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence) from the DFP for the target.  These sequences overwrite default parameters.
 
 `sequences:`                                              |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
@@ -436,7 +407,6 @@ sequences:
       // Read DPIDR to enable SWD interface (SW-DPv1 and SW-DPv2)
       ReadDP(0x0);
 ```
-
 
 ### Usage
 
