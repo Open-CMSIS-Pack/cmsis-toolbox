@@ -427,6 +427,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`build-types:`](#build-types)    |  Optional  | List of build-types (i.e. Release, Debug, Test).
 &nbsp;&nbsp;&nbsp; [`projects:`](#projects)          |**Required**| List of projects that belong to the solution.
 &nbsp;&nbsp;&nbsp; [`executes:`](#executes)          |  Optional  | Additional pre or post build steps using external tools.
+&nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)          |  Optional  | Defines parameters for a debugger connection.
 
 **Example:**
 
@@ -2181,4 +2182,52 @@ This sensor shield layer provides a set of interfaces that are configurable.
         - Sensor_IRQ:
       consumes:
         - Ardunio_Uno_D3:
+```
+
+## Debugger Configuration
+
+Packs contain information for configuring debugger connection to a device or board. The `debugger:` node in the *csolution project* allows 
+to overwrite configuration information or to define new debugger setups.
+
+### `debugger:`
+
+`debugger:`                                               |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- name:`                                                 |**Required** | Identifier for the debugger configuration.
+&nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the debugger configuration.
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Select debug port (jtag or swd).
+&nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Select debug clock speed (in Hz) or "auto".
+&nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
+&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | Debugger configuration applied for a list of *context* types.
+&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | Debugger configuration not applied for a list of *context* types.
+
+**Examples:**
+
+```yml
+debugger:
+  - name: CMSIS-DAP
+    info: connect via on-board debugger
+    port: swd
+    clock: 20000000   # 20 MHz
+```
+
+```yml
+debugger:
+  - name: ULink
+    info: connect via ULink-plus
+    port: jtag
+    clock: 10000000               # 10 MHz
+    0dbgconf: MyHardware.dbgconf   
+    for-context: +MyHardware      # only for target-type MyHardware
+
+  - name: JLink
+    info: connect via Segger JLink
+    clock: auto
+    port: swd
+```
+
+Depending on the debugger, a specific debugger connection can be selected using command line options, for example:
+
+```bash
+pyOCD MyTarget.cbuild-run.yml --debugger ULink
 ```
