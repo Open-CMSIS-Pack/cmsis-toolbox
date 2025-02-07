@@ -246,7 +246,7 @@ Options:
   -l, --load arg           Set policy for packs loading [latest | all | required] (default &quot;required&quot;)
       --log arg            Save output messages in a log file
   -n, --no-schema-check    Skip schema check
-  -O, --output arg         Add prefix to 'outdir' and 'tmpdir'
+  -O, --output arg         Base folder for output files, 'outdir' and 'tmpdir' (default &quot;./&quot;)
   -p, --packs              Download missing software packs with cpackget
   -q, --quiet              Suppress output messages except build invocations
   -r, --rebuild            Remove intermediate and output directories and rebuild
@@ -298,7 +298,7 @@ Options:
   -m, --missing                 List only required packs that are missing in the pack repository
   -n, --no-check-schema         Skip schema check
   -N, --no-update-rte           Skip creation of RTE directory and files
-  -o,-O --output base-dir       Add prefix to 'outdir' and 'tmpdir'
+  -o,-O --output arg            Base folder for output files, 'outdir' and 'tmpdir' (default &quot;./&quot;)
   -q, --quiet                   Run silently, printing only error messages
   -R, --relative-paths          Print paths relative to project or ${CMSIS_PACK_ROOT}
   -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
