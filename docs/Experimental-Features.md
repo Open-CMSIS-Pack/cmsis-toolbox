@@ -129,10 +129,10 @@ solution:
       device: STMicroelectronics::STM32F746NGHx
       memory:                                  # Additional memory available in MyHardware
         - name: Ext-Flash                      # Identifier
-        - access: rx                           # access permission 
-        - start: 0x40000000        
-        - size: 0x200000
-        - algorithm: Flash/Ext-Flash.flm       # Programming algorithm
+          access: rx                           # access permission 
+          start: 0x40000000        
+          size: 0x200000
+          algorithm: Flash/Ext-Flash.flm       # Programming algorithm
 ```
 
 ## Run and Debug Management
@@ -207,6 +207,10 @@ cbuild-run:
     - file: out/CubeMX/MyBoard_ROM/Debug/CubeMX.axf
       type: elf
 
+  system-resources:
+    memory:
+      :
+
   debugger:
     - name: CMSIS-DAP
       :
@@ -216,8 +220,44 @@ cbuild-run:
   debug-vars:
       :
 
-  sequences:
+  debug-sequences:
       :
+```
+
+### `system-resources:`
+
+The `system-resources:` node lists the resources of a target system.  It includes memory from the DFP, BSP, and `memory:` definitions from the `csolution.yml` file.
+
+`system-resources:`                                       |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- memory:`                                               |  Optional   | Identifies the section for memory.
+
+`memory:`                                                 |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- name:`                                                 |**Required** | Name of the memory region (when PDSC contains id, it uses the id as name).
+&nbsp;&nbsp;&nbsp; `access:`                              |  Optional   | Access permission of the memory.
+&nbsp;&nbsp;&nbsp; `start:`                               |  Optional   | Base address of the memory.
+&nbsp;&nbsp;&nbsp; `size:`                                |  Optional   | Size of the memory.
+&nbsp;&nbsp;&nbsp; `default:`                             |  Optional   | Memory is always accessible (used for algorithm when no `ram-start` is specified). 
+&nbsp;&nbsp;&nbsp; `startup:`                             |  Optional   | Default startup code location (vector table).
+&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Only accessible by a specific processor.
+&nbsp;&nbsp;&nbsp; `uninit:`                              |  Optional   | Memory content must not be altered.
+&nbsp;&nbsp;&nbsp; `alias:`                               |  Optional   | Name of identical memory exposed at different address.
+&nbsp;&nbsp;&nbsp; `from-pack:`                           |  Optional   | Pack that defines this memory.
+
+```yml
+system-resources:
+  memory:
+    - name: ITCM_Flash
+      access: rx
+      start: 0x00200000
+      size: 0x00100000
+      from-pack: Keil::STM32U5xx_DFP@3.0.0
+    - name: Ext-Flash
+      access: rx
+      start: 0x40000000        
+      size: 0x200000
+      default: true
 ```
 
 ### `debugger:`
@@ -249,23 +289,23 @@ debugger:
 
 ### `debug-vars:`
 
-This node contains configuration variables and optionally configuration file for these variables.
+This node contains the [debug vars](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence) from the DFP for the target.
 
-Q: is the file really required as it is supplied already under debugger:
+!!! Note
+    `pname` is not required as variables are queried by `debug-sequences:`. It is enough when these sequences are `pname`-specific.  Currently only one PDSC contains pname (iMX-D7)
+    `dbgconf` file is exposed under `debugger:`.  This allows multiple copies for different debugger connection settings.
+    Additional node `vars:` is kept to allow for future extensions.
 
 [**Review Proposal: handling of `*.dbgconf` files in RTE**](https://github.com/Open-CMSIS-Pack/devtools/issues/1946)
 
-
 `debug-vars:`                                             |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `vars:`                                |   Optional   | Initial values for debug variables used in [`sequences:`](#sequences).
-&nbsp;&nbsp;&nbsp; `file:`                                |   Optional   | Configuration file for debug variables.
+&nbsp;&nbsp;&nbsp; `vars:`                                |   Optional   | Initial values for debug variables used in [`debug-sequences:`](#debug-sequences).
 
 Example:
 
 ```yml
 debug-vars:
-  file: RTE/Device/LPC55S69/LPC55xx.dbgconf
   vars: |
     // Debug Access Variables, can be modified by user via copies of DBGCONF files as created by uVision. Also see sub-family level.
     __var SWO_Pin               = 0;                    // Serial Wire Output pin: 0 = PIO0_10, 1 = PIO0_8
@@ -273,16 +313,16 @@ debug-vars:
     __var BootTime              = 10000;                // 10 milliseconds
 ```
 
-### `sequences:`
+### `debug-sequences:`
 
-This node contains the [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence) from the DFP for the target.  These sequences overwrite default parameters.
+This node contains the [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence) from the DFP for the target. These sequences overwrite default parameters.
 
-`sequences:`                                              |              | Content
+`debug-sequences:`                                        |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
 `- name:`                                                 | **Required** | Name of the sequence.
 &nbsp;&nbsp;&nbsp; `info:`                                |   Optional   | Descriptive text to display for example for error diagnostics.
 &nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | A list of command blocks in order of execution.
-&nbsp;&nbsp;&nbsp; `pname:`                               |   Optional   | Executes sequence only for connection to processor; Default is executed for all connections.
+&nbsp;&nbsp;&nbsp; `pname:`                               |   Optional   | Executes sequence only for connection to a specific processor; default is for all processors.
 
 `blocks:`                                                 |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
@@ -300,7 +340,7 @@ This node contains the [debug sequences](https://open-cmsis-pack.github.io/Open-
 Example: [debugPortSetup](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#debugPortSetup)
 
 ```yml
-sequences:
+debug-sequences:
   - name: DebugPortSetup
 
     blocks:
