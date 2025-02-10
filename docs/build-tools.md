@@ -45,7 +45,7 @@ Options:
   -l, --load arg           Set policy for packs loading [latest | all | required] (default "required")
       --log arg            Save output messages in a log file
   -n, --no-schema-check    Skip schema check
-  -O, --output arg         Base folder for output files, 'outdir' and 'tmpdir' (default "./")
+  -O, --output arg         Base folder for output files, 'outdir' and 'tmpdir' (default "Same as '*.csolution.yml'")
   -p, --packs              Download missing software packs with cpackget
   -q, --quiet              Suppress output messages except build invocations
   -r, --rebuild            Remove intermediate and output directories and rebuild
@@ -100,7 +100,7 @@ Options:
   -m, --missing                 List only required packs that are missing in the pack repository
   -n, --no-check-schema         Skip schema check
   -N, --no-update-rte           Skip creation of RTE directory and files
-  -o,-O --output arg            Base folder for output files, 'outdir' and 'tmpdir' (default "./")
+  -o,-O --output arg            Base folder for output files, 'outdir' and 'tmpdir' (default "Same as '*.csolution.yml'")
   -q, --quiet                   Run silently, printing only error messages
   -R, --relative-paths          Print paths relative to project or ${CMSIS_PACK_ROOT}
   -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
