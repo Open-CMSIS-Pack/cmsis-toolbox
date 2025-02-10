@@ -11,7 +11,8 @@ This document outlines the security procedures and policies for the Open-CMSIS-P
 
 The Open-CMSIS-Pack cmsis-toolbox maintainers take security issues seriously and appreciate responsible disclosure. Your efforts to improve project security are highly valued.  
 
-We use GitHub's [private vulnerability reporting](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability). To submit a report, please include:  
+We use GitHub's [private vulnerability reporting](https://docs.github.com/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability) guidelines.
+To report a security issue, please raise a [Security Advisory](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/security/advisories/new) and include:  
 
 - A detailed description of the issue  
 - Steps to reproduce the vulnerability  
