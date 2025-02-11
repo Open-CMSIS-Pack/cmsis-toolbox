@@ -153,7 +153,7 @@ In addition, the user may need the following information, which should be added 
 
 - Flash algorithms for external memory in custom hardware (see [Adding Memory](#adding-memory)).
 - ToDo: Additional images that should be loaded.
-- ToDo: Device configuration information.
+- [Device configuration](#debugger) information for the debugger.
 - ToDo: Access information for protected debug ports (i.e. encryption keys).
 
 ### `*.cbuild-run.yml`
@@ -230,7 +230,7 @@ The `system-resources:` node lists the resources of a target system.  It include
 
 `system-resources:`                                       |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
-`- memory:`                                               |  Optional   | Identifies the section for memory.
+&nbsp;&nbsp;&nbsp; `memory:`                              |  Optional   | Identifies the section for memory.
 
 `memory:`                                                 |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
@@ -300,13 +300,13 @@ This node contains the [debug vars](https://open-cmsis-pack.github.io/Open-CMSIS
 
 `debug-vars:`                                             |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `vars:`                                |   Optional   | Initial values for debug variables used in [`debug-sequences:`](#debug-sequences).
+`- vars:`                                                 |   Optional   | Initial values for debug variables used in [`debug-sequences:`](#debug-sequences).
 
 Example:
 
 ```yml
 debug-vars:
-  vars: |
+  - vars: |
     // Debug Access Variables, can be modified by user via copies of DBGCONF files as created by uVision. Also see sub-family level.
     __var SWO_Pin               = 0;                    // Serial Wire Output pin: 0 = PIO0_10, 1 = PIO0_8
     __var Dbg_CR                = 0x00000000;           // DBG_CR
