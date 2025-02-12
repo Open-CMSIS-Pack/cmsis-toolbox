@@ -428,6 +428,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`projects:`](#projects)          |**Required**| List of projects that belong to the solution.
 &nbsp;&nbsp;&nbsp; [`executes:`](#executes)          |  Optional  | Additional pre or post build steps using external tools.
 &nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)          |  Optional  | Defines parameters for a debugger connection.
+&nbsp;&nbsp;&nbsp; [`load:`](#load)                  |  Optional  | Add additional images to the `*.cbuild-run.yml`.
 
 **Example:**
 
@@ -2231,3 +2232,30 @@ Depending on the debugger, a specific debugger connection can be selected using 
 ```bash
 pyOCD MyTarget.cbuild-run.yml --debugger ULink
 ```
+
+## Add Images
+
+For Debug and Run the `load:` node allows to specify additional files that should be added to the `output:` node of the `*.cbuild-run.yml` file.
+
+### `load:`
+
+`load:`                                                   |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- file:`                                                 |**Required** | Specifies the file name.
+&nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the file.
+&nbsp;&nbsp;&nbsp; `type:`                                |  Optional   | Specifies an explicit file type. 
+&nbsp;&nbsp;&nbsp; `run:`                                 |  Optional   | Additional command string for download or programming.
+&nbsp;&nbsp;&nbsp; `debug:`                               |  Optional   | Additional command string for debug.
+&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | Debugger configuration applied for a list of *context* types.
+&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | Debugger configuration not applied for a list of *context* types.
+
+Using `run:` or `debug:` allows to specify additional command information, for example an offset or load symbols only.
+
+With `type:` an explicit file type can be specified which is required for unknow file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.
+
+`type:`           | Auto-detected Extension | Description
+:-----------------|:------------------------|:-------------
+`- lib`           | `.lib`, `.a`            | Library or archive. 
+`- elf`           | `.axf`, `.elf`          | Executable in ELF format. 
+`- hex`           | `.h386`                 | Intel HEX file in HEX-386 format.
+`- bin`           | `.bin`                  | Binary image.

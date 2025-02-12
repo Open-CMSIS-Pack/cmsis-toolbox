@@ -15,6 +15,7 @@ nav:
     - Build Information Files: YML-CBuild-Format.md
     - Build Operation: build-operation.md
     - Pack Creation: pack-tools.md
+    - Troubleshooting: Troubleshooting.md
     - Experimental Features: Experimental-Features.md
 theme:
   name: readthedocs
