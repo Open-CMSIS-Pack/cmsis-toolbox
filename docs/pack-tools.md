@@ -1,30 +1,83 @@
 # Pack Creation
 
-This chapter describes how to create software packs and explains the tools `packchk` (software pack verification) and `svdconv` (SVD file converter).
+This chapter describes how to create software packs and explains the tools `packchk` (software pack verification) and `svdconv` (SVD file converter).  A pack provides a [Pack Description file in XML format (*.pdsc)](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packFormat.html) and collects information that is required by software developers and tools to work effectively with devices, boards, and middleware.
+
+## Introduction
+
+The picture below shows the structure of the different packs and how boards, devices, and examples are exposed to an user in the [VS Code Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension.
+
+![Project Examples in Packs](./images/ExamplesInPacks.png "Project Examples in Packs")
+
+### Device Family Pack (DFP) Content
+
+The DFP provides foundation support for a device or device family and is used by:
+
+- Arm Compiler, GCC, IAR, and LLVM with startup code, project templates, and memory information for linker scripts.
+- Debuggers with SVD description files for peripheral awareness and debug description for configuration options.
+- Programmers with download algorithms and debug description for download options.
+- IDE and web portals with parameter information and links to documentation, repository, and support.
+- Other technologies such as RUST or Zephyr as the DFP content can be exported.
+- HAL drivers and CMSIS-Drivers that offer interfaces to device peripherals.
+
+Therefore, the DFP collects the following information.
+
+| Must have              | Strongly recommended          | Optional          |
+|:-----------------------|:------------------------------|:------------------|
+| Device description     | `Overview.md` file            | Project templates |
+| SVD description files  | Links to documentation        | Debug description |
+| Device Header file     | Device features               | HAL drivers       |
+| Startup files (note)   |                               | CMSIS-Drivers     |
+| Download algorithms    |                               |                   |
+
+!!! Note
+    - Startup files not required if templates for a configuration generator (such as CubeMX) exports the startup code.
+
+### Board Support Pack (BSP) Content
+
+The BSP extends the DFP with information that relates to boards:
+
+- The Blinky example verifies hardware and tool setup and provides the bootstrap for IDE workflows.
+- With CMSIS-Driver VIO simple I/O such as LED and push buttons is controlled and test automation is supported.
+- A Layer can provide a pre-configured driver set for Reference Applications that interface to middleware.
+- Board memory with download algorithms extend the information for Programmers and linker scripts.
+
+| Must have         | Strongly recommended                 | Optional                              |
+|:------------------|:-------------------------------------|:--------------------------------------|
+| Board description | `Overview.md` file                   | Additional examples                   |
+|                   | Blinky example                       | Layers for Reference Applications     |
+|                   | CMSIS-Driver VIO for LED and button  | HAL drivers for board peripherals     |
+|                   | Board features                       | Project templates (board specific)    |
+|                   | Download algorithms for board memory |                                       |
+
+!!! Note
+    - The content of a DFP and BSP may be provided in a single pack.
+
+### Generic Software Pack (GSP) Content
+
+The GSP can provide additional middleware software such as RTOS, communication stacks, or crypto libraries.
+
+### Hands-on Tutorials
+
+Several [tools and scripts](https://github.com/Open-CMSIS-Pack#ready-to-use-tools) help to automate the pack creation and are used in these hands-on tutorials.
+
+| Hands-on Tutorial         | Description  |
+|:--------------------------|:-------------|
+| [**DFP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/DFP-Pack-HandsOn)   | Explains the structure and creation of a Device Family Pack (DFP). |
+| [**BSP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/BSP-Pack-HandsOn)   | Explains the structure and creation of a Board Support Pack (BSP). |
+| [**GSP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/GSP-Pack-HandsOn)   | Explains the steps to create a software pack |
 
 ## Pack Creation Tools
 
 The following tools support the creation of Software Packs in [CMSIS-Pack format](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html):
 
-Tool           | Description
-:--------------|:-------------
-**packchk**    | **Pack Validation:** installs and manages software packs in the local development environment.
-**svdconv**    | **SVD Check / Convert:** validate and/or convert System View Description (SVD) files.
+| Tool           | Description  |
+|:---------------|:-------------|
+| **packchk**    | **Pack Validation:** installs and manages software packs in the local development environment. |
+| **svdconv**    | **SVD Check / Convert:** validate and/or convert System View Description (SVD) files. |
 
 ## Scripts
 
 Several [tools and scripts](https://github.com/Open-CMSIS-Pack#ready-to-use-tools) help to automate the pack creation.
-
-## Hands-on Tutorials
-
-These scripts are in several hands-on tutorials.
-
-Hands-on Tutorial         | Description
-:-------------------------|:-------------
-[**DFP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/DFP-Pack-HandsOn)   | Explains the structure and creation of a Device Family Pack (DFP).
-[**BSP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/BSP-Pack-HandsOn)   | Explains the structure and creation of a Board Support Pack (BSP).  
-[**SW-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/SW-Pack-HandsOn)    | Explains the steps to create a simple software pack using the Open-CMSIS-Pack technology.
-[**Create-Scaleable-SW**](https://github.com/Open-CMSIS-Pack/Create-Scalable-SW) | Explains how to structure complex middleware stacks.
 
 ## Hints for Pack Creation
 
@@ -51,10 +104,6 @@ In addition, packs may contain:
 
 - [*Layers*](#layers) are  pre-configured software components or source code that can be shared across multiple projects.
 - [*Code Templates*](#code-templates) are stub source files for middleware components that can be incorporated into user code.
-
-The picture below shows the different packs used to publish project examples. These examples are available for software developers on web pages and can be directly accessed from IDEs that are, for example, enabled with the [VS Code Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension.
-
-![Project Examples in Packs](./images/ExamplesInPacks.png "Project Examples in Packs")
 
 The following section explains how the different types of project examples are structured and registered within a CMSIS-Pack.
 
