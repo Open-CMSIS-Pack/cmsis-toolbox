@@ -1,0 +1,79 @@
+# Troubleshooting
+
+<!-- markdownlint-disable MD036 -->
+
+## Missing Dependencies for Build
+
+Files added using the GNU assembler syntax `.incbin` or `.include` directives, or armasm syntax `INCBIN`, `INCLUDE`, or `GET` directives, are not included in the file dependency list. As such, the CMake/Ninja build system cannot trigger automatically a build when an file changes that is included with such directives.
+
+Using [`execute`](YML-Input-Format.md#prepost-build-steps) in the related `cproject.yml` file overcomes this issue.
+In this example the file `image.bin` is included using assembler syntax. The `touch` command changes the time stamp of the related assembler file which triggers a rebuild.
+
+```yml
+  executes:
+    - execute: image_dep
+      run: ${CMAKE_COMMAND} -E touch $output$
+      input:
+        - image.bin
+      output:
+        - asm.s
+```
+
+!!! Tip
+    Use [Add Images](YML-Input-Format.md#add-images) with the `load:` node to add the output of external builds.
+
+## Common Linker Problems
+
+The following section explains how to fix common linker problems.
+
+**Error: L6236E: No section matches selector - no section to be FIRST/LAST**
+
+Some devices (for example, the NXP RT1064) use custom (non-CMSIS) assembly startup code. This is not compatible with the [default linker script](build-overview.md#linker-script-templates) that assumes [C Startup code](https://arm-software.github.io/CMSIS_6/v6.0.0/Core/startup_c_pg.html) with standard CMSIS definitions.
+
+This problem can be solved by:
+
+- Using the linker script provided by the device vendor.
+- Change the linker script source file `ac6_linker_script.sct.src` that is local in your project, for example, as shown below:
+
+```txt
+  ER_ROM0 __ROM0_BASE __ROM0_SIZE {
+    *(.isr_vector, +First)
+    *(InRoot$$Sections)
+    *(+RO +XO)
+  }
+```
+
+**Using RAM1 .. RAM3 Areas**
+
+Currently, there is a problem with the default AC6 linker script template. It does not use, by default, the RAM1 .. RAM3 area.  
+
+A potential solution is discussed [here](https://github.com/Open-CMSIS-Pack/devtools/issues/1778#issuecomment-2356071535).  The investigation is currently ongoing.
+
+**Duplicate Heap definition in Assembler startup file**
+
+When using memory allocation functions (i.e. `malloc`), the application ends in a hard fault handler. This is typically caused by different methods of stack and heap definitions.
+
+The Arm Compiler offers [three ways to configure stack and heap](https://developer.arm.com/documentation/100073/0623/The-Arm-C-and-C---Libraries/Stack-and-heap-memory-allocation-and-the-Arm-C-and-C---libraries/Stack-pointer-initialization-and-heap-bounds). Only one of the following methods should be used:
+
+- Use a linker scatter file to define `ARM_LIB_STACKHEAP`, `ARM_LIB_STACK`, or `ARM_LIB_HEAP` regions.
+- Use the symbols `__initial_sp`, `__heap_base`, and `__heap_limit`.
+- Implement `__user_setup_stackheap()` or `__user_initial_stackheap()`.
+
+The [C startup code](https://arm-software.github.io/CMSIS_6/latest/Core/startup_c_pg.html) recommended by CMSIS Version 6 uses the linker scatter file for stack and heap definition.  The C startup code is generic and works across all toolchains that are supported by the CMSIS-Toolbox.
+
+However, some assembler startup files define stack and heap with other methods, for example, by using the symbols `__initial_sp`, `__heap_base`, and `__heap_limit`.
+
+There are two options to solve the problem.
+
+1. Remove the stack and heap definition in the assembler startup code.
+
+2. Disable in the [Regions Header File](CreateApplications.md#regions-header-file) the stack and heap definition by setting `__STACK_SIZE` and `__HEAP_SIZE` to 0 as shown below.  This removes the definition in the linker scatter file.
+
+```txt
+// <h> Stack / Heap Configuration
+//   <o0> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
+//   <o1> Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
+#define __STACK_SIZE 0x00000000
+#define __HEAP_SIZE 0x00000000
+// </h>
+```
