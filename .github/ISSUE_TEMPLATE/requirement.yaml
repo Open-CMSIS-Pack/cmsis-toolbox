@@ -1,0 +1,53 @@
+name: "Feature Request / Requirement"
+description: "Submit a new requirement or feature request"
+title: "[Requirement]: "
+labels: ["requirement"]
+
+body:
+  - type: input
+    id: title
+    attributes:
+      label: "Short Summary"
+      description: "Provide a brief title for the requirement."  
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: "Provide a detailed description of the requirement, including the problem it solves and any relevant context."
+      placeholder: "Explain why this requirement is needed and how it should work."
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "Acceptance Criteria"
+      description: "Define the conditions that must be met for this requirement to be considered complete."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "Priority"
+      description: "Select the priority level of this requirement."
+      options:
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+
+  - type: input
+    id: related_issues
+    attributes:
+      label: "Related Issues (Optional)"
+      description: "Link any related GitHub issues."
+      placeholder: "e.g., #123, #456"
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "Additional Notes (Optional)"
+      description: "Provide any extra information or concerns regarding this requirement."
