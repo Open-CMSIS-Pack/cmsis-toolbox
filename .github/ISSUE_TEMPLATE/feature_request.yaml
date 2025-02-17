@@ -1,21 +1,20 @@
-name: "Feature Request / Requirement"
-description: "Submit a new requirement or feature request"
-title: "[Requirement]: "
-labels: ["requirement"]
+name: "Feature Request"
+description: "Submit a new feature request"
+title: "[Feature Request]: "
+labels: ["enhancement"]
 
 body:
   - type: input
     id: title
     attributes:
       label: "Short Summary"
-      description: "Provide a brief title for the requirement."  
+      description: "Provide a brief title for the request."
 
   - type: textarea
     id: description
     attributes:
       label: "Description"
-      description: "Provide a detailed description of the requirement, including the problem it solves and any relevant context."
-      placeholder: "Explain why this requirement is needed and how it should work."
+      description: "Provide a detailed description of the request, including the problem it solves and any relevant context."
     validations:
       required: true
 
@@ -23,7 +22,7 @@ body:
     id: acceptance_criteria
     attributes:
       label: "Acceptance Criteria"
-      description: "Define the conditions that must be met for this requirement to be considered complete."
+      description: "Define the conditions that must be met for this request to be considered complete."
     validations:
       required: true
 
@@ -31,7 +30,7 @@ body:
     id: priority
     attributes:
       label: "Priority"
-      description: "Select the priority level of this requirement."
+      description: "Select the priority level of this request."
       options:
         - High
         - Medium
@@ -50,4 +49,4 @@ body:
     id: additional_notes
     attributes:
       label: "Additional Notes (Optional)"
-      description: "Provide any extra information or concerns regarding this requirement."
+      description: "Provide any extra information or concerns regarding this request."
