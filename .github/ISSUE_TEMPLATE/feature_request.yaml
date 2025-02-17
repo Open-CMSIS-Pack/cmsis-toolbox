@@ -12,16 +12,13 @@ body:
     validations:
       required: true
 
-  - type: dropdown
+  - type: checkboxes
     id: security-requirement
     attributes:
       label: "Is this request a Security Requirement?"
-      description: "Select whether this request relates to security. If you select 'Yes,' please add the 'security-requirement' label."
+      description: "If you select 'Yes,' please add the 'security-requirement' label."
       options:
-        - "No"
-        - "Yes (Apply 'security-requirement' label)"
-    validations:
-      required: true
+      - label: "Yes"
 
   - type: textarea
     id: acceptance_criteria
