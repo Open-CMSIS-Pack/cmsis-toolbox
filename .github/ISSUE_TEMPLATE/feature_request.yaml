@@ -4,17 +4,22 @@ title: "[Feature Request]: "
 labels: ["enhancement"]
 
 body:
-  - type: input
-    id: title
-    attributes:
-      label: "Short Summary"
-      description: "Provide a brief title for the request."
-
   - type: textarea
     id: description
     attributes:
       label: "Description"
       description: "Provide a detailed description of the request, including the problem it solves and any relevant context."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: security-requirement
+    attributes:
+      label: "Is this request a Security Requirement?"
+      description: "Select whether this request relates to security. If you select 'Yes,' please add the 'security-requirement' label."
+      options:
+        - "No"
+        - "Yes (Apply 'security-requirement' label)"
     validations:
       required: true
 
