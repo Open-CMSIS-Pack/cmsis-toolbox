@@ -20,14 +20,6 @@ body:
       options:
       - label: "Yes"
 
-  - type: textarea
-    id: acceptance_criteria
-    attributes:
-      label: "Acceptance Criteria"
-      description: "Define the conditions that must be met for this request to be considered complete."
-    validations:
-      required: true
-
   - type: dropdown
     id: priority
     attributes:
