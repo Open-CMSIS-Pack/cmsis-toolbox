@@ -20,12 +20,12 @@ To set up the **CMSIS-Toolbox** on a local computer, copy the content of the arc
 
 The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The installation of these tools is required.
 
-- [**CMake**](https://cmake.org/download) version 3.25.2 or higher.
+- [**CMake**](https://cmake.org/download) version 3.31.5 or higher.
 
 !!! Note
     For Win64, enable the install option *Add CMake to the system PATH*.
 
-- [**Ninja**](https://github.com/ninja-build/ninja/releases) version 1.10.2 or higher.
+- [**Ninja**](https://github.com/ninja-build/ninja/releases) version 1.12.0 or higher.
 
 !!! Note
     [**Ninja**](https://github.com/ninja-build/ninja/releases) may be copied to the `<cmsis-toolbox-installation-dir>/bin` directory.
