@@ -58,7 +58,7 @@ Element      |              | Description
 - pack:   Keil::TFM                  # 'TFM' Pack from vendor Keil, latest installed version
 - pack:   AWS                        # All Software Packs from vendor 'AWS', latest version
 - pack:   Keil::STM*                 # Software Packs that start with 'STM' from vendor 'Keil'
-- pack:   MDK-Middleware@>=8.0.0-0   # version 8.0.0 or higher including development versions
+- pack:   MDK-Middleware@>=8.0.0-0   # version 8.0.0 or higher including pre-release versions
 ```
 
 ### `component:` Name Conventions

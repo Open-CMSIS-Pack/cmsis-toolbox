@@ -4,82 +4,95 @@ This chapter describes how to create software packs and explains the tools `pack
 
 ## Introduction
 
-The picture below shows the structure of the different packs and how boards, devices, and examples are exposed to an user in the [VS Code Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension.
+The picture below shows the structure of the different packs and how boards, devices, and examples are exposed to an user in the [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension for VS Code. Packs are stacked:
 
+- The Device Family Pack (DFP) is the foundation.
+- The Board Support Pack (BSP) is based on DFP and are an extension.
+- The Generic Software Packs (GSP) should use boards defined in a BSP to publish examples or [Reference Applications](ReferenceApplications.md) that run on several boards.
+ 
 ![Project Examples in Packs](./images/ExamplesInPacks.png "Project Examples in Packs")
 
-### Device Family Pack (DFP) Content
+## Device Family Pack (DFP) Content
 
 The DFP provides foundation support for a device or device family and is used by:
 
-- Arm Compiler, GCC, IAR, and LLVM with startup code, project templates, and memory information for linker scripts.
-- Debuggers with SVD description files for peripheral awareness and debug description for configuration options.
-- Programmers with download algorithms and debug description for download options.
-- IDE and web portals with parameter information and links to documentation, repository, and support.
+- Compiler (Arm Compiler, GCC, IAR, and LLVM): startup code, project templates for bare-metal development, and memory information for linker scripts.
+- Debuggers: SVD description files for peripheral awareness and debug description for configuration options.
+- Programmers: download algorithms and debug description for download options.
+- IDE and web portals: parameter information and links to documentation, repository, and support.
 - Other technologies such as RUST or Zephyr as the DFP content can be exported.
 - HAL drivers and CMSIS-Drivers that offer interfaces to device peripherals.
 
-Therefore, the DFP collects the following information.
+Therefore, a DFP collects the following information:
 
-| Must have              | Strongly recommended          | Optional          |
-|:-----------------------|:------------------------------|:------------------|
-| Device description     | `Overview.md` file            | Project templates |
-| SVD description files  | Links to documentation        | Debug description |
-| Device Header file     | Device features               | HAL drivers       |
-| Startup files (note)   |                               | CMSIS-Drivers     |
-| Download algorithms    |                               |                   |
+| Must have                | Strongly recommended          | Optional          |
+|:-----------------------  |:------------------------------|:------------------|
+| [Device description](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_devices_pg.html) | [`Overview.md` file](https://github.com/Open-CMSIS-Pack/DFP-Pack-HandsOn/blob/main/Docs/Overview.md)                    | Project templates |
+| [SVD description files](https://open-cmsis-pack.github.io/svd-spec/main/index.html)                         | Links to documentation                                                                                                  | [Debug description](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html) |
+| [Device Header file](https://arm-software.github.io/CMSIS_6/latest/Core/device_h_pg.html)                   | [Device features](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_feature) | HAL drivers       |
+| [Startup files (see note)](https://arm-software.github.io/CMSIS_6/latest/Core/startup_c_pg.html)            | [Pack Requirements](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/element_requirements_pg.html)        | [CMSIS-Drivers](https://arm-software.github.io/CMSIS_6/latest/Driver/index.html)     |
+| [Download algorithms](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html) |                                                                                                                         |                   |
 
 !!! Note
-    - Startup files not required if templates for a configuration generator (such as CubeMX) exports the startup code.
+    Startup files are not required if templates for a configuration generator (such as CubeMX) exports the startup code.
 
-### Board Support Pack (BSP) Content
+**Hands-on Tutorial:**
 
-The BSP extends the DFP with information that relates to boards:
+- [DFP-Pack-HandsOn](https://github.com/Open-CMSIS-Pack/DFP-Pack-HandsOn) explains the structure and creation of a Device Family Pack (DFP).
+
+**Pack Example:**
+
+- [STM32L4xx_DFP](https://github.com/Open-CMSIS-Pack/STM32L4xx_DFP) available on [keil.arm.com/packs/stm32l4xx_dfp-keil](https://www.keil.arm.com/packs/stm32l4xx_dfp-keil).
+
+## Board Support Pack (BSP) Content
+
+A BSP extends the DFP with information that relates to boards:
 
 - The Blinky example verifies hardware and tool setup and provides the bootstrap for IDE workflows.
-- With CMSIS-Driver VIO simple I/O such as LED and push buttons is controlled and test automation is supported.
-- A Layer can provide a pre-configured driver set for Reference Applications that interface to middleware.
-- Board memory with download algorithms extend the information for Programmers and linker scripts.
+- With CMSIS-Driver VIO, simple I/Os such as LEDs and push buttons are controlled, and test automation is supported.
+- Project templates configured for board peripherals.
+- A layer can provide a pre-configured driver set for reference applications that interface to middleware.
+- Board memory with download algorithms extend the information for programmers and linker scripts.
+
+!!! Tip
+    The Blinky example of the [BSP-Pack-HandsOn](https://github.com/Open-CMSIS-Pack/BSP-Pack-HandsOn) is generic. All it requires to adapt the `./Driver/vio*.c` to the actual hardware of the board.
+
 
 | Must have         | Strongly recommended                 | Optional                              |
 |:------------------|:-------------------------------------|:--------------------------------------|
-| Board description | `Overview.md` file                   | Additional examples                   |
-|                   | Blinky example                       | Layers for Reference Applications     |
-|                   | CMSIS-Driver VIO for LED and button  | HAL drivers for board peripherals     |
-|                   | Board features                       | Project templates (board specific)    |
-|                   | Download algorithms for board memory |                                       |
+| [Board description](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_boards_pg.html) | [`Overview.md` file](https://github.com/Open-CMSIS-Pack/BSP-Pack-HandsOn/blob/main/Docs/Overview.md)                                                    | Additional examples                   |
+|                                                                                                           | [Blinky example](https://github.com/Open-CMSIS-Pack/BSP-Pack-HandsOn/tree/main/Examples/Blinky)                                                         | [Layers](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#software-layers) for Reference Applications     |
+|                                                                                                           | [CMSIS-Driver VIO](https://arm-software.github.io/CMSIS_6/latest/Driver/group__vio__interface__gr.html) for LED and button                              | HAL drivers for board peripherals     |
+|                                                                                                           | [Board features](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_boards_pg.html#element_board_feature)                            | Project templates (board specific)    |
+|                                                                                                           | [Download algorithms for on-board memory](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_boards_pg.html#element_board_algorithm) |                                       |
+|  | [Pack Requirements](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/element_requirements_pg.html) |                                                                                                                                           |
 
 !!! Note
-    - The content of a DFP and BSP may be provided in a single pack.
+    The content of a DFP and BSP may be provided in a single pack.
 
-### Generic Software Pack (GSP) Content
+**Hands-on Tutorial:**
 
-The GSP can provide additional middleware software such as RTOS, communication stacks, or crypto libraries.
+- [BSP-Pack-HandsOn](https://github.com/Open-CMSIS-Pack/BSP-Pack-HandsOn) explains the structure and creation of a Board Support Pack (BSP).
 
-### Hands-on Tutorials
+**Pack Example:**
+
+- [NUCLEO-F746ZG_BSP](https://github.com/Open-CMSIS-Pack/ST_NUCLEO-F746ZG_BSP) available on [keil.arm.com/packs/nucleo-f746zg_bsp-keil](https://www.keil.arm.com/packs/nucleo-f746zg_bsp-keil/overview).
+
+## Generic Software Pack (GSP) Content
+
+A GSP may provide additional middleware software such as RTOS, communication stacks, or crypto libraries.
+
+**Hands-on Tutorial:**
+
+- [GSP-Pack-HandsOn](https://github.com/Open-CMSIS-Pack/GSP-Pack-HandsOn) explains the steps to create a software pack.
+
+**Pack Example:**
+
+- [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware) available on [www.keil.arm.com/packs/mdk-middleware-keil](https://www.keil.arm.com/packs/mdk-middleware-keil/overview/).
+
+### Hints for Pack Creation
 
 Several [tools and scripts](https://github.com/Open-CMSIS-Pack#ready-to-use-tools) help to automate the pack creation and are used in these hands-on tutorials.
-
-| Hands-on Tutorial         | Description  |
-|:--------------------------|:-------------|
-| [**DFP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/DFP-Pack-HandsOn)   | Explains the structure and creation of a Device Family Pack (DFP). |
-| [**BSP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/BSP-Pack-HandsOn)   | Explains the structure and creation of a Board Support Pack (BSP). |
-| [**GSP-Pack-HandsOn**](https://github.com/Open-CMSIS-Pack/GSP-Pack-HandsOn)   | Explains the steps to create a software pack |
-
-## Pack Creation Tools
-
-The following tools support the creation of Software Packs in [CMSIS-Pack format](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html):
-
-| Tool           | Description  |
-|:---------------|:-------------|
-| **packchk**    | **Pack Validation:** installs and manages software packs in the local development environment. |
-| **svdconv**    | **SVD Check / Convert:** validate and/or convert System View Description (SVD) files. |
-
-## Scripts
-
-Several [tools and scripts](https://github.com/Open-CMSIS-Pack#ready-to-use-tools) help to automate the pack creation.
-
-## Hints for Pack Creation
 
 - Use [C startup files](https://arm-software.github.io/CMSIS_6/latest/Core/cmsis_core_files.html) that allows the use of a DFP with any toolchain.
 - For elements, use a brief description text of less than 128 characters to explain the purpose. When possible, link to documentation with detailed information.
@@ -91,6 +104,129 @@ Several [tools and scripts](https://github.com/Open-CMSIS-Pack#ready-to-use-tool
     - To avoid that examples need updates with every pack release, specify the [minimum pack version required](https://github.com/Open-CMSIS-Pack/csolution-examples/blob/main/DualCore/HelloWorld.csolution.yml#L9).
     - Use [CI workflows](https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP/tree/main/.github/workflows) to validate that projects compile correctly.
 - Add an [overview.md file](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/element_package_description.html) that describes the software pack's overall usage. These files are displayed on [www.keil.arm.com/packs](https://www.keil.arm.com/packs) and indexed by Web search engines.
+
+## Pack Creation Tools
+
+The following tools are part of the CMSIS-Toolbox. These tools can be used to develop packs on a local computer and to automate the creation of packs.
+
+| Tool           | Description  |
+|:---------------|:-------------|
+| **packchk**    | **Pack Validation:** installs and manages software packs in the local development environment. |
+| **svdconv**    | **SVD Check / Convert:** validate and/or convert System View Description (SVD) files. |
+| **vidx2pidx**  | **SVD Check / Convert:** check Package index file (PIDX) for indexing in public pack services. |
+
+### Usage
+
+The following section is based on the repositories [DFP-Pack-HandsOn](https://github.com/Open-CMSIS-Pack/DFP-Pack-HandsOn) and [BSP-Pack-HandsOn](https://github.com/Open-CMSIS-Pack/BSP-Pack-HandsOn).  Checkout these packs for local development of pack content.
+
+!!! Tip
+    Install the VS Code extension [CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) and related tools. The [Keil Studio Pack](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) is a collection of such related extensions.
+
+**Step 1:** Create an empty workspace and ensure that development tools are available. When using the [Arm Tools Environment Manager](https://marketplace.visualstudio.com/items?itemName=Arm.environment-manager) this can be configured using the following vand related tools are installed.
+
+```json
+{
+    "registries": [
+        {
+            "name": "arm",
+            "kind": "artifact",
+            "location": "https://artifacts.tools.arm.com/vcpkg-registry"
+        }
+    ],
+    "requires": {
+        "arm:compilers/arm/armclang": "6.23.0",
+        "arm:compilers/arm/arm-none-eabi-gcc": "14.2.1",
+        "arm:compilers/arm/llvm-embedded": "19.1.5",
+        "arm:tools/kitware/cmake": "3.31.5",
+        "arm:tools/ninja-build/ninja": "1.12.0",
+        "arm:tools/open-cmsis-pack/cmsis-toolbox": "2.7.0"
+    }
+}
+```
+
+!!! Tip
+    Verify the setup with the commands `cbuild list environment` and `cbuild list toolchains`.
+
+**Step 2:** Register packs for development using these commands:
+  
+```txt
+cpackget add <workdir>/DFP-Pack-Handson/ACME.ACMECM4_DFP.pdsc
+cpackget add <workdir>/BSP-Pack-Handson/ACME.ACME_BSP.pdsc
+```
+
+!!! Tip
+    The CMSIS-Toolbox now uses this local repositories. Verify the installation with with the commands `cpackget list`, `csolution list devices`, and `csolution list boards`.
+
+!!! Note
+    CMSIS-Toolbox 2.7.0 adds an empty `<timestamp></timestamp>` line to the file `$CMSIS_PACK_ROOT/local/local_repository.pidx` which prevents the VS Code extension from using the local pack content. As workaround remove this line.
+
+Content of `$CMSIS_PACK_ROOT/local/local_repository.pidx`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<index schemaVersion="1.1.0">
+ <vendor>local repository</vendor>
+ <url>file://localhost/C:/Users/reikei01/AppData/Local/Arm/Packs</url>
+ <pindex>
+  <pdsc vendor="ACME" url="file://localhost/c:/w/DFP-Pack-Handson/" name="ACMECM4_DFP" version="1.1.1"></pdsc>
+  <pdsc vendor="ACME" url="file://localhost/C:/w/BSP-Pack-HandsOn/" name="ACME_BSP" version="1.0.0"></pdsc>
+ </pindex>
+</index>
+```
+
+**Step 3:** The various tools have now access to the local packs and you may change the PDSC files. Rename the packs to reflect your products and develop the content starting with the MUST HAVE items listed above.
+
+!!! Tip
+    Use the VS Code extension [Red Hat XML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml) for syntax help on the XML format.
+
+**Step 4:** Verify the packs using the following commands:
+
+```txt
+packchk <workdir>/DFP-Pack-Handson/ACME.ACMECM4_DFP.pdsc -i $CMSIS_PACK_ROOT/ARM/CMSIS/6.1.0/ARM.CMSIS.pdsc
+packchk <workdir>/BSP-Pack-Handson/ACME.ACME_BSP.pdsc -i <workdir>/DFP-Pack-Handson/ACME.ACMECM4_DFP -i $CMSIS_PACK_ROOT/ARM/CMSIS/6.1.0/ARM.CMSIS.pdsc
+```
+
+**Step 5:** Verify the Blinky example with a build test in an IDE and execution test on the board.
+
+**Step 6:** Commit the packs to the repository, verify the GitHub action workflows, download the artifacts. Make an end-to-end test of the packs on a different computer.
+
+**Step 7:** [Publish the packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html).
+
+## Pack Generation
+
+Packs may be generated using scripts. Several scripts are available on [github.com/open-cmsis-pack](https://github.com/open-cmsis-pack):
+
+- [gen-pack](https://github.com/Open-CMSIS-Pack/gen-pack) is a library for scripts creating software packs.
+- [gen-pack-action](https://github.com/Open-CMSIS-Pack/gen-pack-action) is a GitHub workflow action generating documentation and software packs.
+
+!!! Tip
+    - Arm uses GitHub actions to create packs. Review this process under the `workflow` directory on the projects available on [github.com/arm-software](https://github.com/arm-software) or [github.com/open-cmsis-pack](https://github.com/open-cmsis-pack).
+    - A good simple pack project is the [CMSIS-Driver pack](https://github.com/arm-software/cmsis-driver). Once this pack is published it is available for software developers using pack managers or [web portals](https://www.keil.arm.com/packs/cmsis-driver-arm/overview/).
+
+## Versioning
+
+The CMSIS-Pack system uses version numbers to track and differentiate various releases of packs, components, and configuration files. It supports these versioning schemas:
+
+1. **Semantic Versioning** ([SemVer](https://semver.org/)) is the recommended format with  `MAJOR.MINOR.PATCH`. for example: `1.4.2`. [SemVer](https://semver.org/)
+
+    - `MAJOR` indicates big updates that break backward compatibility.
+    - `MINOR` indicates new features, but still backward-compatible.
+    - `PATCH` indicates bug fixes or minor tweaks. `PATCH` can be omitted and defaults to `0` in this case.
+  
+2. **Calendar Versioning** ([CalVer](https://calver.org/)) is accepted when higher values indicated newer releases. The format should be therefore `YY.MM.DD`, `YY.MM`, or `YY.MM.PATCH`. For example:
+
+    - `22.04` indicates April 2022 release.
+    - `22.04.1` indicates April 2022 release, patch version 1.
+    - `25.02.07` indicates release date 7. Feb. 2025.
+
+Both versioning schemas support `-pre-release` labels that may be used during development and testing. For example:
+
+- `1.0.0-alpha` for early testing.
+- `22.04-rc.1` for a release candidate that is close to final.
+
+Product Lifecycle Management (PLM) and versioning are closely connected. Versioning ensures that each stage of PLM is properly controlled and documented. The CMSIS-Toolbox accepts therefore version numbers and ranges for `packs` and `components` and outputs version details in [build information files](YML-CBuild-Format.md).
+
+**Semantic Versioning** ([SemVer](https://semver.org/)) is recommended as it supports the PLM features of the CMSIS-Toolbox. It enables [PLM of configuration files](build-overview.md#plm-of-configuration-files) and simplifies the software pack updates. For example: `- pack: ARM::CMSIS@^6.1.0` accepts any pack version equal or higher but with the same `MAJOR` version. 
 
 ## Project Examples
 
@@ -369,19 +505,6 @@ solution:
 
 !!! Note
     The [CMSIS-RTX](https://github.com/ARM-software/CMSIS-RTX) and [MDK-Middleware](https://github.com/ARM-software/MDK-Middleware) packs contain several *code templates* that exemplify the overall structure.
-
-## Pack Generation
-
-Packs should be generated using scripts. Several scripts are available on [github.com/open-cmsis-pack](https://github.com/open-cmsis-pack):
-
-- [gen-pack](https://github.com/Open-CMSIS-Pack/gen-pack) is a library for scripts creating software packs.
-- [gen-pack-action](https://github.com/Open-CMSIS-Pack/gen-pack-action) is a GitHub workflow action generating documentation and software packs.
-
-To start a pack, add a [`*.PDSC` file](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packFormat.html) with meta information and configure the above scripts.
-
-!!! Tip
-    - Arm uses GitHub actions to create packs. Review this process under the `workflow` directory on the projects available on [github.com/arm-software](https://github.com/arm-software) or [github.com/open-cmsis-pack](https://github.com/open-cmsis-pack).
-    - A good simple pack project is the [CMSIS-Driver pack](https://github.com/arm-software/cmsis-driver). Once this pack is published it is available for software developers using pack managers or [web portals](https://www.keil.arm.com/packs/cmsis-driver-arm/overview/).
 
 ## Pack Examples
 
