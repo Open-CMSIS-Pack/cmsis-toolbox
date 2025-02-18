@@ -1,0 +1,46 @@
+name: "Feature Request"
+description: "Submit a new feature request"
+title: "[Feature Request]: "
+labels: ["enhancement"]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: "Provide a detailed description of the request, including the problem it solves and any relevant context."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: security-requirement
+    attributes:
+      label: "Is this request a Security Requirement?"
+      description: "If you select 'Yes,' please add the 'security-requirement' label."
+      options:
+      - label: "Yes"
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "Priority"
+      description: "Select the priority level of this request."
+      options:
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+
+  - type: input
+    id: related_issues
+    attributes:
+      label: "Related Issues (Optional)"
+      description: "Link any related GitHub issues."
+      placeholder: "e.g., #123, #456"
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "Additional Notes (Optional)"
+      description: "Provide any extra information or concerns regarding this request."
