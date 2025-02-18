@@ -58,7 +58,7 @@ Element      |              | Description
 - pack:   Keil::TFM                  # 'TFM' Pack from vendor Keil, latest installed version
 - pack:   AWS                        # All Software Packs from vendor 'AWS', latest version
 - pack:   Keil::STM*                 # Software Packs that start with 'STM' from vendor 'Keil'
-- pack:   MDK-Middleware@>=8.0.0-0   # version 8.0.0 or higher including development versions
+- pack:   MDK-Middleware@>=8.0.0-0   # version 8.0.0 or higher including pre-release versions
 ```
 
 ### `component:` Name Conventions
@@ -427,6 +427,8 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`build-types:`](#build-types)    |  Optional  | List of build-types (i.e. Release, Debug, Test).
 &nbsp;&nbsp;&nbsp; [`projects:`](#projects)          |**Required**| List of projects that belong to the solution.
 &nbsp;&nbsp;&nbsp; [`executes:`](#executes)          |  Optional  | Additional pre or post build steps using external tools.
+&nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)          |  Optional  | Defines parameters for a debugger connection.
+&nbsp;&nbsp;&nbsp; [`load:`](#load)                  |  Optional  | Add additional images to the `*.cbuild-run.yml`.
 
 **Example:**
 
@@ -2182,3 +2184,78 @@ This sensor shield layer provides a set of interfaces that are configurable.
       consumes:
         - Ardunio_Uno_D3:
 ```
+
+## Debugger Configuration
+
+Packs contain information for configuring debugger connection to a device or board. The `debugger:` node in the *csolution project* allows 
+to overwrite configuration information or to define new debugger setups.
+
+### `debugger:`
+
+`debugger:`                                               |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- name:`                                                 |**Required** | Identifier for the debugger configuration.
+&nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the debugger configuration.
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Select debug port (jtag or swd).
+&nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Select debug clock speed (in Hz) or "auto".
+&nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
+&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | Debugger configuration applied for a list of *context* types.
+&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | Debugger configuration not applied for a list of *context* types.
+
+**Examples:**
+
+```yml
+debugger:
+  - name: CMSIS-DAP
+    info: connect via on-board debugger
+    port: swd
+    clock: 20000000   # 20 MHz
+```
+
+```yml
+debugger:
+  - name: ULink
+    info: connect via ULink-plus
+    port: jtag
+    clock: 10000000               # 10 MHz
+    0dbgconf: MyHardware.dbgconf   
+    for-context: +MyHardware      # only for target-type MyHardware
+
+  - name: JLink
+    info: connect via Segger JLink
+    clock: auto
+    port: swd
+```
+
+Depending on the debugger, a specific debugger connection can be selected using command line options, for example:
+
+```bash
+pyOCD MyTarget.cbuild-run.yml --debugger ULink
+```
+
+## Add Images
+
+For Debug and Run the `load:` node allows to specify additional files that should be added to the `output:` node of the `*.cbuild-run.yml` file.
+
+### `load:`
+
+`load:`                                                   |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- file:`                                                 |**Required** | Specifies the file name.
+&nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the file.
+&nbsp;&nbsp;&nbsp; `type:`                                |  Optional   | Specifies an explicit file type. 
+&nbsp;&nbsp;&nbsp; `run:`                                 |  Optional   | Additional command string for download or programming.
+&nbsp;&nbsp;&nbsp; `debug:`                               |  Optional   | Additional command string for debug.
+&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | Debugger configuration applied for a list of *context* types.
+&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | Debugger configuration not applied for a list of *context* types.
+
+Using `run:` or `debug:` allows to specify additional command information, for example an offset or load symbols only.
+
+With `type:` an explicit file type can be specified which is required for unknow file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.
+
+`type:`           | Auto-detected Extension | Description
+:-----------------|:------------------------|:-------------
+`- lib`           | `.lib`, `.a`            | Library or archive. 
+`- elf`           | `.axf`, `.elf`          | Executable in ELF format. 
+`- hex`           | `.h386`                 | Intel HEX file in HEX-386 format.
+`- bin`           | `.bin`                  | Binary image.

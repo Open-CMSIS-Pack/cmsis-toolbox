@@ -152,7 +152,7 @@ build-idx:
 
 ### `*.cbuild.yml`
 
-The `<project-name>.<build-type>+<target-type>.cbuild.yml` contains all information for one *context*. It is structured as outlined below.
+The `<project-name>.<build-type>+<target-type>.cbuild.yml` file contains all information for one *context*. It is structured as outlined below.
 
 `build:`                                                 | Content
 :--------------------------------------------------------|:------------------------------------

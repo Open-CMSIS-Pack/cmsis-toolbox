@@ -32,6 +32,8 @@ Thank you for using the **CMSIS-Toolbox** that provides command-line tools for:
 
 - [**Pack Creation**](pack-tools.md) describes how to create software packs that optionally include examples and explains the pack creation tools `packchk` (software pack verification) and `svdconv` (SVD file verification and header file generator).
 
+- [**Troubleshooting**](Troubleshooting.md) lists known issues (such as missing file dependencies from assembler) with information on how to resolve it.
+
 - [**Experimental Features**](Experimental-Features.md) for resource management of multi-project linker scripts, run and debug management.
 
 ## Revision History

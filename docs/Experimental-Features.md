@@ -129,10 +129,10 @@ solution:
       device: STMicroelectronics::STM32F746NGHx
       memory:                                  # Additional memory available in MyHardware
         - name: Ext-Flash                      # Identifier
-        - access: rx                           # access permission 
-        - start: 0x40000000        
-        - size: 0x200000
-        - algorithm: Flash/Ext-Flash.flm       # Programming algorithm
+          access: rx                           # access permission 
+          start: 0x40000000        
+          size: 0x200000
+          algorithm: Flash/Ext-Flash.flm       # Programming algorithm
 ```
 
 ## Run and Debug Management
@@ -152,25 +152,25 @@ The CMSIS-Toolbox build system manages device/board/software components, control
 In addition, the user may need the following information, which should be added to the YML-Input files for the CMSIS-Toolbox.
 
 - Flash algorithms for external memory in custom hardware (see [Adding Memory](#adding-memory)).
-- ToDo: Additional images that should be loaded.
-- ToDo: Device configuration information.
+- [Additional images](YML-Input-Format.md#add-images) can be specified using the [`load:`](YML-Input-Format.md#load) node in the `*.csolution.yml` file
+- [Debugger configuration](YML-Input-Format.md#debugger-configuration) provided by packs can be adjusted using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file
 - ToDo: Access information for protected debug ports (i.e. encryption keys).
 
-### `<target-name>.cbuild-run.yml`
+### `*.cbuild-run.yml`
 
-The `<target-name>.cbuild-run.yml` is generated in the `output` folder and provides the relevant information for executing Run and Debug commands. Using the option `--output` allows to redirect the build information files, the `tmp` and `out` directories. The `.cmsis` folder that contains the output is planned to be introduced for VS Code. Overall the `*.cbuild-run.yml` file:
+The file `<solution-name>+<target-type>.cbuild-run.yml` file is generated in the `output` folder and provides the relevant information for executing Run and Debug commands. Overall the `*.cbuild-run.yml` file:
 
 - simplifies the usage of Flash programmers and debuggers.
 - provides consistent information for command line and IDE workflows.
 - ensures that information is portable, i.e. from a cloud-hosted CI system to a desktop test system.
 
-The `<target-name>.cbuild-run.yml` file provides access to PDSC information and the build output of one target. It also exports the [Debug Access Sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html).
+The `*.cbuild-run.yml` file provides access to PDSC information and the build output of one target. It also exports the [Debug Access Sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html).
 
 ![Run and Debug Information Management](./images/cbuild-run.png "Run and Debug Information Management")
 
-The `<solution-name>+<target-name>.cbuild-run.yml` file represents a context-set of a solution.
+The `<solution-name>+<target-type>.cbuild-run.yml` file represents a single `target-type` of a solution.
 
-**Content of `<target-name>.cbuild-run.yml`:**
+**Content of `<solution-name>+<target-type>.cbuild-run.yml`:**
 
 ```yml
 cbuild-run:
@@ -207,34 +207,261 @@ cbuild-run:
     - file: out/CubeMX/MyBoard_ROM/Debug/CubeMX.axf
       type: elf
 
-# information that may get added (from DFP, BSP) specific to the target
-# https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packFormat.html
-  board:                                     # Board element
-    debugProbe:
-      ...     
-    debugInterface:
-      ...
-  debug-port:                                # Information from DFP
-    access-port-v1:    
-      ...
-    access-port-v2:    
-      ...
-    jtag:
-    cjtag:
-    swd:
+  system-resources:
+    memory:
+      :
 
-    default-settings:                        # Default debug configuration
-      default:                               # debug protocol (SWD or JTAG) to use for target connections.
-      clock:                                 # clock setting in Hz for a target connection.
-      swj:                                   # allows Serial Wire Debug (SWD) and JTAG protocols
-      dormant:                               # device access via CoreSight DP requires the dormant state
-      sdf: ${CMSIS_PACK_ROOT}/DFP-path/<sdf> # path of the system description file (SDF).
+  debugger:
+    - name: CMSIS-DAP
+      :
+    - name: JLink
+      :
 
-  sequences:
-    ...
+  debug-vars:
+      :
 
-  trace:
-    ...
+  debug-sequences:
+      :
+```
+
+### `system-resources:`
+
+The `system-resources:` node lists the resources of a target system.  It includes memory from the DFP, BSP, and `memory:` definitions from the `csolution.yml` file.
+
+`system-resources:`                                       |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `memory:`                              |  Optional   | Identifies the section for memory.
+
+`memory:`                                                 |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- name:`                                                 |**Required** | Name of the memory region (when PDSC contains id, it uses the id as name).
+&nbsp;&nbsp;&nbsp; `access:`                              |  Optional   | Access permission of the memory.
+&nbsp;&nbsp;&nbsp; `start:`                               |  Optional   | Base address of the memory.
+&nbsp;&nbsp;&nbsp; `size:`                                |  Optional   | Size of the memory.
+&nbsp;&nbsp;&nbsp; `default:`                             |  Optional   | Memory is always accessible (used for algorithm when no `ram-start` is specified). 
+&nbsp;&nbsp;&nbsp; `startup:`                             |  Optional   | Default startup code location (vector table).
+&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Only accessible by a specific processor.
+&nbsp;&nbsp;&nbsp; `uninit:`                              |  Optional   | Memory content must not be altered.
+&nbsp;&nbsp;&nbsp; `alias:`                               |  Optional   | Name of identical memory exposed at different address.
+&nbsp;&nbsp;&nbsp; `from-pack:`                           |  Optional   | Pack that defines this memory.
+
+```yml
+system-resources:
+  memory:
+    - name: ITCM_Flash
+      access: rx
+      start: 0x00200000
+      size: 0x00100000
+      from-pack: Keil::STM32U5xx_DFP@3.0.0
+    - name: Ext-Flash
+      access: rx
+      start: 0x40000000        
+      size: 0x200000
+      default: true
+```
+
+### `output:`
+
+This node contains information about the images that should be loaded. The images that are generated by the *csolution project* are typically configured [using a context set](build-overview.md#working-with-context-set).
+Use the [`load:`](YML-Input-Format.md#load) node in the `*.csolution.yml` file to [add images](YML-Input-Format.md#add-images).
+
+`output:`                                                 |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- file:`                                                 |**Required** | Specifies the file name.
+&nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the file.
+&nbsp;&nbsp;&nbsp; `type:`                                |  Optional   | Specifies the file type. 
+&nbsp;&nbsp;&nbsp; `run:`                                 |  Optional   | Additional command string for download or programming.
+&nbsp;&nbsp;&nbsp; `debug:`                               |  Optional   | Additional command string for debug.
+
+!!! Note
+    `info: generate by <context>` indicates that an image is generated by a context of the *csolution project*. 
+
+### `debugger:`
+
+[**Proposal: debugger configuration to YML input**](https://github.com/Open-CMSIS-Pack/devtools/issues/1947)
+
+This node contains connection information to one or more debuggers.
+
+The information is supplied from DFP and BSP information and the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file.
+
+`debugger:`                                               |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- name:`                                                 |**Required** | Identifies the debug configuration.
+&nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the connection
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Selected debug port (jtag or swd).
+&nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Selected debug clock speed.
+&nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
+
+**Example:**
+
+```yml
+debugger:
+  name: CMSIS-DAP 
+  info: On-Board debugger of MCB4300 
+  port: jtag
+  clock: 10000000
+  dbgconf: RTE/Device/lpc4300/lpc4300.dbgconf
+```
+
+### `debug-vars:`
+
+This node contains the [debug vars](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence) from the DFP for the target.
+
+!!! Note
+    `pname` is not required as variables are queried by `debug-sequences:`. It is enough when these sequences are `pname`-specific.  Currently only one PDSC contains pname (iMX-D7)
+    `dbgconf` file is exposed under `debugger:`.  This allows multiple copies for different debugger connection settings.
+    Additional node `vars:` is kept to allow for future extensions.
+
+[**Review Proposal: handling of `*.dbgconf` files in RTE**](https://github.com/Open-CMSIS-Pack/devtools/issues/1946)
+
+`debug-vars:`                                             |              | Content
+:---------------------------------------------------------|--------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `vars:`                                                 |   Optional   | Initial values for debug variables used in [`debug-sequences:`](#debug-sequences).
+
+Example:
+
+```yml
+debug-vars:
+  vars: |
+    // Debug Access Variables, can be modified by user via copies of DBGCONF files as created by uVision. Also see sub-family level.
+    __var SWO_Pin               = 0;                    // Serial Wire Output pin: 0 = PIO0_10, 1 = PIO0_8
+    __var Dbg_CR                = 0x00000000;           // DBG_CR
+    __var BootTime              = 10000;                // 10 milliseconds
+```
+
+### `debug-sequences:`
+
+This node contains the [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence) from the DFP for the target. These sequences overwrite default parameters.
+
+`debug-sequences:`                                        |              | Content
+:---------------------------------------------------------|--------------|:------------------------------------
+`- name:`                                                 | **Required** | Name of the sequence.
+&nbsp;&nbsp;&nbsp; `info:`                                |   Optional   | Descriptive text to display for example for error diagnostics.
+&nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | A list of command blocks in order of execution.
+&nbsp;&nbsp;&nbsp; `pname:`                               |   Optional   | Executes sequence only for connection to a specific processor; default is for all processors.
+
+`blocks:`                                                 |              | Content
+:---------------------------------------------------------|--------------|:------------------------------------
+`- info:`                                                 |   Optional   | Descriptive text to display for example for error diagnostics.
+&nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | A list of command blocks in the order of execution.
+&nbsp;&nbsp;&nbsp; `execute:`                             |   Optional   | Commands for execution.
+&nbsp;&nbsp;&nbsp; `atomic:`                              |   Optional   | Atomic execution of commands; cannot be used with `blocks:`.
+&nbsp;&nbsp;&nbsp; `if:`                                  |   Optional   | only executed when expression is true
+&nbsp;&nbsp;&nbsp; `while:`                               |   Optional   | executed in loop until while expression is true
+&nbsp;&nbsp;&nbsp; `timeout:`                             |   Optional   | timeout in milliseconds for while loop
+
+!!! Note
+    - With `atomic:` set, the execution with no interrupts as fast as possible. With [CMSIS-DAP Atomic Commands](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__atomic__gr.html) are used. It has therefore restrictions and cannot be combined with `blocks:`. 
+
+Example: [debugPortSetup](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#debugPortSetup)
+
+```yml
+debug-sequences:
+  - name: DebugPortSetup
+
+    blocks:
+    - execute:  |
+        __var isSWJ      = ((__protocol &amp; 0x00010000) != 0); 
+        __var hasDormant = __protocol &amp; 0x00020000;
+        __var protType   = __protocol &amp; 0x0000FFFF;
+
+    - if: protType == 1 
+      blocks:
+      - if: isSWJ
+        blocks:
+        - if: hasDormant
+          atomic:
+          execute:  |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+          
+            // Select Dormant State (from SWD)
+            DAP_SWJ_Sequence(16, 0xE3BC);
+          
+            // At least 8 cycles SWDIO/TMS HIGH
+            DAP_SWJ_Sequence(8, 0xFF);
+          
+            // Alert Sequence Bits  0.. 63
+            DAP_SWJ_Sequence(64, 0x86852D956209F392);
+        
+            // Alert Sequence Bits 64..127
+            DAP_SWJ_Sequence(64, 0x19BC0EA2E3DDAFE9);
+  
+            // 4 cycles SWDIO/TMS LOW + 8-Bit JTAG Activation Code (0x0A)            
+            DAP_SWJ_Sequence(12, 0x0A0);
+         
+            // Ensure JTAG interface is reset
+            DAP_SWJ_Sequence(6, 0x3F);
+
+        - if: !hasDormant
+          atomic:
+          execute:   |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+          
+            // Execute SWJ-DP Switch Sequence SWD to JTAG (0xE73C)
+            // Change if SWJ-DP uses deprecated switch code (0xAEAE)
+            DAP_SWJ_Sequence(16, 0xE73C);
+          
+            // Ensure JTAG interface is reset
+            DAP_SWJ_Sequence(6, 0x3F);
+
+      - atomic:
+        execute: |
+          // JTAG "Soft" Reset
+          DAP_JTAG_Sequence(6, 1, 0x3F);
+          DAP_JTAG_Sequence(1, 0, 0x01);
+
+    - if: protType == 2
+      blocks:
+      - if: isSWJ
+        blocks:
+        - if: hasDormant
+          atomic:
+          execute:  |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+          
+            // Select Dormant State (from JTAG)
+            DAP_SWJ_Sequence(31, 0x33BBBBBA);
+          
+            // At least 8 cycles SWDIO/TMS HIGH
+            DAP_SWJ_Sequence(8, 0xFF);
+          
+            // Alert Sequence Bits  0.. 63
+            DAP_SWJ_Sequence(64, 0x86852D956209F392);
+        
+            // Alert Sequence Bits 64..127
+            DAP_SWJ_Sequence(64, 0x19BC0EA2E3DDAFE9);
+  
+            // 4 cycles SWDIO/TMS LOW + 8-Bit SWD Activation Code (0x1A)            
+            DAP_SWJ_Sequence(12, 0x1A0);
+         
+            // Enter SWD Line Reset State
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &gt; 50 cycles SWDIO/TMS High
+            DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
+
+        - if: !hasDormant
+          atomic:
+          execute:  |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+          
+            // Execute SWJ-DP Switch Sequence JTAG to SWD (0xE79E)
+            // Change if SWJ-DP uses deprecated switch code (0xEDB6)
+            DAP_SWJ_Sequence(16, 0xE79E);
+          
+            // Enter SWD Line Reset State
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &gt; 50 cycles SWDIO/TMS High
+            DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
+
+              // Enter SWD Line Reset State
+          DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &gt; 50 cycles SWDIO/TMS High
+          DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
+
+    - execute:  |
+      // Read DPIDR to enable SWD interface (SW-DPv1 and SW-DPv2)
+      ReadDP(0x0);
 ```
 
 ### Usage
