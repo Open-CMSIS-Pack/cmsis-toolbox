@@ -259,6 +259,18 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#debugger-configuration">Debugger Configuration</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#debugger">debugger:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#add-images">Add Images</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#load">load:</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -288,6 +300,10 @@
               </ul>
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Troubleshooting/">Troubleshooting</a>
                 </li>
               </ul>
               <ul>
@@ -446,7 +462,7 @@
 - pack:   Keil::TFM                  # 'TFM' Pack from vendor Keil, latest installed version
 - pack:   AWS                        # All Software Packs from vendor 'AWS', latest version
 - pack:   Keil::STM*                 # Software Packs that start with 'STM' from vendor 'Keil'
-- pack:   MDK-Middleware@&gt;=8.0.0-0   # version 8.0.0 or higher including development versions
+- pack:   MDK-Middleware@&gt;=8.0.0-0   # version 8.0.0 or higher including pre-release versions
 </code></pre>
 <h3 id="component-name-conventions"><code>component:</code> Name Conventions</h3>
 <p>The <strong><code>csolution</code> Project Manager</strong> uses the following syntax to specify the <code>component:</code> names in the <code>*.yml</code> files.</p>
@@ -1016,6 +1032,16 @@ the compiler with specific default controls. The search order for this file is:<
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#executes"><code>executes:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Additional pre or post build steps using external tools.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debugger"><code>debugger:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Defines parameters for a debugger connection.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#load"><code>load:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Add additional images to the <code>*.cbuild-run.yml</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -3866,6 +3892,161 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
       consumes:
         - Ardunio_Uno_D3:
 </code></pre>
+<h2 id="debugger-configuration">Debugger Configuration</h2>
+<p>Packs contain information for configuring debugger connection to a device or board. The <code>debugger:</code> node in the <em>csolution project</em> allows 
+to overwrite configuration information or to define new debugger setups.</p>
+<h3 id="debugger"><code>debugger:</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>debugger:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Identifier for the debugger configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Brief description of the debugger configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Select debug port (jtag or swd).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Select debug clock speed (in Hz) or "auto".</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>dbgconf:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Debugger configuration file (pinout, trace).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Debugger configuration applied for a list of <em>context</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Debugger configuration not applied for a list of <em>context</em> types.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">debugger:
+  - name: CMSIS-DAP
+    info: connect via on-board debugger
+    port: swd
+    clock: 20000000   # 20 MHz
+</code></pre>
+<pre><code class="language-yml">debugger:
+  - name: ULink
+    info: connect via ULink-plus
+    port: jtag
+    clock: 10000000               # 10 MHz
+    0dbgconf: MyHardware.dbgconf   
+    for-context: +MyHardware      # only for target-type MyHardware
+
+  - name: JLink
+    info: connect via Segger JLink
+    clock: auto
+    port: swd
+</code></pre>
+<p>Depending on the debugger, a specific debugger connection can be selected using command line options, for example:</p>
+<pre><code class="language-bash">pyOCD MyTarget.cbuild-run.yml --debugger ULink
+</code></pre>
+<h2 id="add-images">Add Images</h2>
+<p>For Debug and Run the <code>load:</code> node allows to specify additional files that should be added to the <code>output:</code> node of the <code>*.cbuild-run.yml</code> file.</p>
+<h3 id="load"><code>load:</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>load:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- file:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Specifies the file name.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Brief description of the file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies an explicit file type.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>run:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Additional command string for download or programming.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>debug:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Additional command string for debug.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Debugger configuration applied for a list of <em>context</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Debugger configuration not applied for a list of <em>context</em> types.</td>
+</tr>
+</tbody>
+</table>
+<p>Using <code>run:</code> or <code>debug:</code> allows to specify additional command information, for example an offset or load symbols only.</p>
+<p>With <code>type:</code> an explicit file type can be specified which is required for unknow file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>type:</code></th>
+<th style="text-align: left;">Auto-detected Extension</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- lib</code></td>
+<td style="text-align: left;"><code>.lib</code>, <code>.a</code></td>
+<td style="text-align: left;">Library or archive.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>- elf</code></td>
+<td style="text-align: left;"><code>.axf</code>, <code>.elf</code></td>
+<td style="text-align: left;">Executable in ELF format.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>- hex</code></td>
+<td style="text-align: left;"><code>.h386</code></td>
+<td style="text-align: left;">Intel HEX file in HEX-386 format.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>- bin</code></td>
+<td style="text-align: left;"><code>.bin</code></td>
+<td style="text-align: left;">Binary image.</td>
+</tr>
+</tbody>
+</table>
               
             </div>
           </div><footer>

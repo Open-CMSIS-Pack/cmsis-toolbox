@@ -89,8 +89,6 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#linker-script-template">Linker Script Template</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#troubleshooting">Troubleshooting</a>
-    </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#software-components">Software Components</a>
@@ -130,6 +128,10 @@
               </ul>
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Troubleshooting/">Troubleshooting</a>
                 </li>
               </ul>
               <ul>
@@ -426,50 +428,6 @@
 //   &lt;o&gt; Base address &lt;0x0-0xFFFFFFFF:8&gt;
 //   &lt;i&gt; Defines base address of memory region. Default: 0x20040000
 //   &lt;i&gt; Note: DMA descriptors and buffers are in this region
-</code></pre>
-<h3 id="troubleshooting">Troubleshooting</h3>
-<p>The following section explains how to fix common linker problems.</p>
-<p><strong>Error: L6236E: No section matches selector - no section to be FIRST/LAST</strong></p>
-<p>Some devices (for example, the NXP RT1064) use custom (non-CMSIS) assembly startup code. This is not compatible with the <a href="../build-overview/#linker-script-templates">default linker script</a> that assumes <a href="https://arm-software.github.io/CMSIS_6/v6.0.0/Core/startup_c_pg.html">C Startup code</a> with standard CMSIS definitions.</p>
-<p>This problem can be solved by:</p>
-<ul>
-<li>Using the linker script provided by the device vendor.</li>
-<li>Change the linker script source file <code>ac6_linker_script.sct.src</code> that is local in your project, for example, as shown below:</li>
-</ul>
-<pre><code class="language-txt">  ER_ROM0 __ROM0_BASE __ROM0_SIZE {
-    *(.isr_vector, +First)
-    *(InRoot$$Sections)
-    *(+RO +XO)
-  }
-</code></pre>
-<p><strong>Using RAM1 .. RAM3 Areas</strong></p>
-<p>Currently, there is a problem with the default AC6 linker script template. It does not use, by default, the RAM1 .. RAM3 area.  </p>
-<p>A potential solution is discussed <a href="https://github.com/Open-CMSIS-Pack/devtools/issues/1778#issuecomment-2356071535">here</a>.  The investigation is currently ongoing.</p>
-<p><strong>Duplicate Heap definition in Assembler startup file</strong></p>
-<p>When using memory allocation functions (i.e. <code>malloc</code>), the application ends in a hard fault handler. This is typically caused by different methods of stack and heap definitions.</p>
-<p>The Arm Compiler offers <a href="https://developer.arm.com/documentation/100073/0623/The-Arm-C-and-C---Libraries/Stack-and-heap-memory-allocation-and-the-Arm-C-and-C---libraries/Stack-pointer-initialization-and-heap-bounds">three ways to configure stack and heap</a>. Only one of the following methods should be used:</p>
-<ul>
-<li>Use a linker scatter file to define <code>ARM_LIB_STACKHEAP</code>, <code>ARM_LIB_STACK</code>, or <code>ARM_LIB_HEAP</code> regions.</li>
-<li>Use the symbols <code>__initial_sp</code>, <code>__heap_base</code>, and <code>__heap_limit</code>.</li>
-<li>Implement <code>__user_setup_stackheap()</code> or <code>__user_initial_stackheap()</code>.</li>
-</ul>
-<p>The <a href="https://arm-software.github.io/CMSIS_6/latest/Core/startup_c_pg.html">C startup code</a> recommended by CMSIS Version 6 uses the linker scatter file for stack and heap definition.  The C startup code is generic and works across all toolchains that are supported by the CMSIS-Toolbox.</p>
-<p>However, some assembler startup files define stack and heap with other methods, for example, by using the symbols <code>__initial_sp</code>, <code>__heap_base</code>, and <code>__heap_limit</code>.</p>
-<p>There are two options to solve the problem.</p>
-<ol>
-<li>
-<p>Remove the stack and heap definition in the assembler startup code.</p>
-</li>
-<li>
-<p>Disable in the <a href="#regions-header-file">Regions Header File</a> the stack and heap definition by setting <code>__STACK_SIZE</code> and <code>__HEAP_SIZE</code> to 0 as shown below.  This removes the definition in the linker scatter file.</p>
-</li>
-</ol>
-<pre><code class="language-txt">// &lt;h&gt; Stack / Heap Configuration
-//   &lt;o0&gt; Stack Size (in Bytes) &lt;0x0-0xFFFFFFFF:8&gt;
-//   &lt;o1&gt; Heap Size (in Bytes) &lt;0x0-0xFFFFFFFF:8&gt;
-#define __STACK_SIZE 0x00000000
-#define __HEAP_SIZE 0x00000000
-// &lt;/h&gt;
 </code></pre>
 <h2 id="software-components">Software Components</h2>
 <p>A software component encapsulates a set of related functions. Offering API headers provides interfaces to other software components or to the user application.</p>

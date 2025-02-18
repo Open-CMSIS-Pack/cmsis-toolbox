@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Troubleshooting - CMSIS-Toolbox</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Troubleshooting";
+        var mkdocs_page_input_path = "Troubleshooting.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">CSolution Project Structure</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">Configure STM32 Devices with STM32CubeMX</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">Configure NXP Devices with MCUXpresso Config Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Build Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Troubleshooting</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#missing-dependencies-for-build">Missing Dependencies for Build</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-linker-problems">Common Linker Problems</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CMSIS-Toolbox</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Troubleshooting</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/Troubleshooting.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="troubleshooting">Troubleshooting</h1>
+<!-- markdownlint-disable MD036 -->
+
+<h2 id="missing-dependencies-for-build">Missing Dependencies for Build</h2>
+<p>Files added using the GNU assembler syntax <code>.incbin</code> or <code>.include</code> directives, or armasm syntax <code>INCBIN</code>, <code>INCLUDE</code>, or <code>GET</code> directives, are not included in the file dependency list. As such, the CMake/Ninja build system cannot trigger automatically a build when an file changes that is included with such directives.</p>
+<p>Using <a href="../YML-Input-Format/#prepost-build-steps"><code>execute</code></a> in the related <code>cproject.yml</code> file overcomes this issue.
+In this example the file <code>image.bin</code> is included using assembler syntax. The <code>touch</code> command changes the time stamp of the related assembler file which triggers a rebuild.</p>
+<pre><code class="language-yml">  executes:
+    - execute: image_dep
+      run: ${CMAKE_COMMAND} -E touch $output$
+      input:
+        - image.bin
+      output:
+        - asm.s
+</code></pre>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use <a href="../YML-Input-Format/#add-images">Add Images</a> with the <code>load:</code> node to add the output of external builds.</p>
+</div>
+<h2 id="common-linker-problems">Common Linker Problems</h2>
+<p>The following section explains how to fix common linker problems.</p>
+<p><strong>Error: L6236E: No section matches selector - no section to be FIRST/LAST</strong></p>
+<p>Some devices (for example, the NXP RT1064) use custom (non-CMSIS) assembly startup code. This is not compatible with the <a href="../build-overview/#linker-script-templates">default linker script</a> that assumes <a href="https://arm-software.github.io/CMSIS_6/v6.0.0/Core/startup_c_pg.html">C Startup code</a> with standard CMSIS definitions.</p>
+<p>This problem can be solved by:</p>
+<ul>
+<li>Using the linker script provided by the device vendor.</li>
+<li>Change the linker script source file <code>ac6_linker_script.sct.src</code> that is local in your project, for example, as shown below:</li>
+</ul>
+<pre><code class="language-txt">  ER_ROM0 __ROM0_BASE __ROM0_SIZE {
+    *(.isr_vector, +First)
+    *(InRoot$$Sections)
+    *(+RO +XO)
+  }
+</code></pre>
+<p><strong>Using RAM1 .. RAM3 Areas</strong></p>
+<p>Currently, there is a problem with the default AC6 linker script template. It does not use, by default, the RAM1 .. RAM3 area.  </p>
+<p>A potential solution is discussed <a href="https://github.com/Open-CMSIS-Pack/devtools/issues/1778#issuecomment-2356071535">here</a>.  The investigation is currently ongoing.</p>
+<p><strong>Duplicate Heap definition in Assembler startup file</strong></p>
+<p>When using memory allocation functions (i.e. <code>malloc</code>), the application ends in a hard fault handler. This is typically caused by different methods of stack and heap definitions.</p>
+<p>The Arm Compiler offers <a href="https://developer.arm.com/documentation/100073/0623/The-Arm-C-and-C---Libraries/Stack-and-heap-memory-allocation-and-the-Arm-C-and-C---libraries/Stack-pointer-initialization-and-heap-bounds">three ways to configure stack and heap</a>. Only one of the following methods should be used:</p>
+<ul>
+<li>Use a linker scatter file to define <code>ARM_LIB_STACKHEAP</code>, <code>ARM_LIB_STACK</code>, or <code>ARM_LIB_HEAP</code> regions.</li>
+<li>Use the symbols <code>__initial_sp</code>, <code>__heap_base</code>, and <code>__heap_limit</code>.</li>
+<li>Implement <code>__user_setup_stackheap()</code> or <code>__user_initial_stackheap()</code>.</li>
+</ul>
+<p>The <a href="https://arm-software.github.io/CMSIS_6/latest/Core/startup_c_pg.html">C startup code</a> recommended by CMSIS Version 6 uses the linker scatter file for stack and heap definition.  The C startup code is generic and works across all toolchains that are supported by the CMSIS-Toolbox.</p>
+<p>However, some assembler startup files define stack and heap with other methods, for example, by using the symbols <code>__initial_sp</code>, <code>__heap_base</code>, and <code>__heap_limit</code>.</p>
+<p>There are two options to solve the problem.</p>
+<ol>
+<li>
+<p>Remove the stack and heap definition in the assembler startup code.</p>
+</li>
+<li>
+<p>Disable in the <a href="../CreateApplications/#regions-header-file">Regions Header File</a> the stack and heap definition by setting <code>__STACK_SIZE</code> and <code>__HEAP_SIZE</code> to 0 as shown below.  This removes the definition in the linker scatter file.</p>
+</li>
+</ol>
+<pre><code class="language-txt">// &lt;h&gt; Stack / Heap Configuration
+//   &lt;o0&gt; Stack Size (in Bytes) &lt;0x0-0xFFFFFFFF:8&gt;
+//   &lt;o1&gt; Heap Size (in Bytes) &lt;0x0-0xFFFFFFFF:8&gt;
+#define __STACK_SIZE 0x00000000
+#define __HEAP_SIZE 0x00000000
+// &lt;/h&gt;
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../pack-tools/" class="btn btn-neutral float-left" title="Pack Creation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../Experimental-Features/" class="btn btn-neutral float-right" title="Experimental Features">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../pack-tools/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../Experimental-Features/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
