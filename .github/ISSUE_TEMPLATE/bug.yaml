@@ -1,7 +1,7 @@
 name: Bug Report
 description: File a report for a non-blocking bug, i.e., issues that can be worked around.
 title: "[Bug]: "
-type: ["Bug"]
+type: Bug
 body:
   - type: checkboxes
     attributes:
