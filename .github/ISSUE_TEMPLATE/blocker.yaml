@@ -1,7 +1,8 @@
 name: Blocking Bug Report
 description: File a report for a blocking bug, i.e., issues that can't be worked around.
 title: "[Blocker]: "
-labels: ["bug", "critical"]
+type: "Bug"
+labels: ["critical"]
 body:
   - type: checkboxes
     attributes:
@@ -44,6 +45,8 @@ body:
       label: Affected tools
       description: Which tools are affected by this bug?
       options:
+        - label: cbridge
+          required: false
         - label: cbuild
           required: false
         - label: cbuild2cmake
@@ -56,11 +59,15 @@ body:
           required: false
         - label: svdconv
           required: false
+        - label: vicx2pidx
+          required: false
   - type: checkboxes
     attributes:
       label: Affected operating systems
       description: On which host os platforms does the bug occur?
       options:
+        - label: all
+          required: false
         - label: Windows amd64
           required: false
         - label: Windows arm64
