@@ -1,5 +1,5 @@
 # -------------------------------------------------------
-# Copyright (c) 2023-2024 Arm Limited. All rights reserved.
+# Copyright (c) 2023-2025 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 # -------------------------------------------------------
@@ -27,6 +27,7 @@ def test_check_archive(base_path):
         "cdefault.yml",
         "cgen.schema.json",
         "CLANG.17.0.1.cmake",
+        "CLANG_TI.4.0.1.cmake",
         "clang_linker_script.ld.src",
         "clayer.schema.json",
         "CMakeASM",
