@@ -418,7 +418,7 @@ jobs:
           submodules: recursive
 
       - name: Download cmsis toolbox ${{ matrix.config.target }} ${{ matrix.config.arch }}
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }}
           path: archive
@@ -474,7 +474,7 @@ jobs:
           egress-policy: audit
 
       - name: Download Artifacts
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           path: artifacts
 
@@ -493,73 +493,73 @@ jobs:
 
     steps:
       - name: Download cmsis toolbox windows amd64 zip
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: cmsis-toolbox-windows-amd64
           path: toolbox/zip
 
       - name: Download cmsis toolbox windows arm64 zip
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: cmsis-toolbox-windows-arm64
           path: toolbox/zip
 
       - name: Download cmsis toolbox linux amd64 zip
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: cmsis-toolbox-linux-amd64
           path: toolbox/zip
 
       - name: Download cmsis toolbox linux arm64 zip
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: cmsis-toolbox-linux-arm64
           path: toolbox/zip
 
       - name: Download cmsis toolbox darwin amd64 zip
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: cmsis-toolbox-darwin-amd64
           path: toolbox/zip
 
       - name: Download cmsis toolbox darwin arm64 zip
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: cmsis-toolbox-darwin-arm64
           path: toolbox/zip
 
       - name: Download test report windows-amd64
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: toolbox-test-windows-amd64
           path: testreports/
 
       - name: Download test report windows-arm64
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: toolbox-test-windows-arm64
           path: testreports/
 
       - name: Download unit test report linux-amd64
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: toolbox-test-linux-amd64
           path: testreports/
 
       - name: Download unit test report linux-arm64
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: toolbox-test-linux-arm64
           path: testreports/
 
       - name: Download unit test report darwin-amd64
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: toolbox-test-darwin-amd64
           path: testreports/
 
       - name: Download unit test report darwin-arm64
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: toolbox-test-darwin-arm64
           path: testreports/
@@ -599,7 +599,7 @@ jobs:
 
       # Debian Package
       - name: Download Debian Package
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: cmsis-toolbox-debian-package
           path: debian
