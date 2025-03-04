@@ -153,6 +153,24 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run-and-debug-management">Run and Debug Management</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#cbuild-runyml">*.cbuild-run.yml</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#system-resources">system-resources:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#output">output:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#debugger">debugger:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#debug-vars">debug-vars:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#debug-sequences">debug-sequences:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -229,6 +247,10 @@
 <tr>
 <td style="text-align: left;"><a href="#cbuild-setyml"><code>*.cbuild-set.yml</code></a></td>
 <td style="text-align: left;"><a href="../build-overview/#working-with-context-set">Context selection</a> for the build process, enabled with option <a href="../build-tools/#use-context-set">--context-set:</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#cbuild-runyml"><code>*.cbuild-run.yml</code></a></td>
+<td style="text-align: left;">Contains the information required to <a href="#run-and-debug-management">download and debug</a> a <em>csolution project</em> to a target.</td>
 </tr>
 </tbody>
 </table>
@@ -1461,6 +1483,498 @@
 </tr>
 </tbody>
 </table>
+<h2 id="run-and-debug-management">Run and Debug Management</h2>
+<p>The CMSIS-Pack PDSC files contain information about device/board parameters and software components:</p>
+<ul>
+<li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html">Flash algorithms</a> of device memory (in DFP) and board memory (in BSP).</li>
+<li>On-board debug adapter (a default programming/debug channel) including features.</li>
+<li>Available memory of device and board.</li>
+<li>Device parameters such as processor core(s) and clock speed.</li>
+<li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html">Debug Access Sequences</a> and <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/sdf_pg.html">System Description Files</a> that support more complex Cortex-A/R/M configurations.</li>
+<li><a href="https://open-cmsis-pack.github.io/svd-spec/main/index.html">CMSIS-SVD System View Description (SVD)</a> files for viewing device peripherals.</li>
+<li><a href="https://arm-software.github.io/CMSIS-View/latest/SCVD_Format.html">CMSIS-View Software Component Viewer Description (SCVD)</a> files for analysis of software components (RTOS, Middleware).</li>
+</ul>
+<p>The CMSIS-Toolbox build system manages device/board/software components, controls the build output (typically ELF/DWARF files), and has provisions for HEX, BIN and post-processing. It allows to manage different <a href="../build-overview/#project-setup-for-related-projects">target-types</a> and the <a href="../build-overview/#working-with-context-set">context set</a>  manages the images that belong to a target.</p>
+<p>In addition, the user may need the following information, which should be added to the YML-Input files for the CMSIS-Toolbox.</p>
+<ul>
+<li>Flash algorithms for external memory in custom hardware (see <a href="../YML-Input-Format/#add-memory">Adding Memory</a>).</li>
+<li><a href="../YML-Input-Format/#add-images">Additional images</a> can be specified using the <a href="../YML-Input-Format/#load"><code>load:</code></a> node in the <code>*.csolution.yml</code> file</li>
+<li><a href="../YML-Input-Format/#debugger-configuration">Debugger configuration</a> provided by packs can be adjusted using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file</li>
+</ul>
+<h3 id="cbuild-runyml"><code>*.cbuild-run.yml</code></h3>
+<p>The file <code>&lt;solution-name&gt;+&lt;target-type&gt;.cbuild-run.yml</code> file is generated in the <code>output</code> folder and provides the relevant information for executing Run and Debug commands. Overall the <code>*.cbuild-run.yml</code> file:</p>
+<ul>
+<li>simplifies the usage of Flash programmers and debuggers.</li>
+<li>provides consistent information for command line and IDE workflows.</li>
+<li>ensures that information is portable, i.e. from a cloud-hosted CI system to a desktop test system.</li>
+</ul>
+<p>The <code>*.cbuild-run.yml</code> file provides access to PDSC information and the build output of one target. It also exports the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html">Debug Access Sequences</a>.</p>
+<p><img alt="Run and Debug Information Management" src="../images/cbuild-run.png" title="Run and Debug Information Management" /></p>
+<p>The <code>&lt;solution-name&gt;+&lt;target-type&gt;.cbuild-run.yml</code> file represents a single <code>target-type</code> of a solution.</p>
+<p><strong>Content of <code>&lt;solution-name&gt;+&lt;target-type&gt;.cbuild-run.yml</code>:</strong></p>
+<pre><code class="language-yml">cbuild-run:
+  generated-by: csolution version 2.7.0
+  solution: CubeMX.csolution.yml
+  target-type: MyBoard_ROM
+  compiler: AC6
+  device: STMicroelectronics::STM32U585AIIx
+  device-pack: Keil::STM32U5xx_DFP@3.0.0
+  board: STMicroelectronics::B-U585I-IOT02A:Rev.C
+  board-pack: Keil::B-U585I-IOT02A_BSP@2.0.0
+  programming:
+    - algorithm: ${CMSIS_PACK_ROOT}/Keil/STM32U5xx_DFP/3.0.0/CMSIS/Flash/STM32U5xx_2M_0800.FLM
+      start: 0x08000000
+      size: 0x00200000
+      ram-start: 0x20000000
+      ram-size: 0x00008000
+      default: true
+    - algorithm: ${CMSIS_PACK_ROOT}/Keil/STM32U5xx_DFP/3.0.0/CMSIS/Flash/STM32U5xx_2M_0C00.FLM
+      start: 0x0C000000
+      size: 0x00200000
+      ram-start: 0x20000000
+      ram-size: 0x00008000
+      default: true
+    - algorithm: ${CMSIS_PACK_ROOT}/Keil/STM32U5xx_DFP/3.0.0/CMSIS/Flash/MX25LM51245G_STM32U575I-EVAL.FLM
+      start: 0x70000000
+      size: 0x04000000
+      ram-start: 0x20000000
+      ram-size: 0x000A0000
+  system-descriptions:
+    - file: ${CMSIS_PACK_ROOT}/Keil/STM32U5xx_DFP/3.0.0/CMSIS/SVD/STM32U585.svd
+      type: svd
+  output:
+    - file: out/CubeMX/MyBoard_ROM/Debug/CubeMX.axf
+      type: elf
+
+  system-resources:
+    memory:
+      :
+
+  debugger:
+    - name: CMSIS-DAP
+      :
+    - name: JLink
+      :
+
+  debug-vars:
+      :
+
+  debug-sequences:
+      :
+</code></pre>
+<h3 id="system-resources"><code>system-resources:</code></h3>
+<p>The <code>system-resources:</code> node lists the resources of a target system.  It includes memory from the DFP, BSP, and <code>memory:</code> definitions from the <code>csolution.yml</code> file.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>system-resources:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>memory:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Identifies the section for memory.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>memory:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Name of the memory region (when PDSC contains id, it uses the id as name).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>access:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Access permission of the memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>start:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Base address of the memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>size:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Size of the memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>default:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Memory is always accessible (used for algorithm when no <code>ram-start</code> is specified).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>startup:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Default startup code location (vector table).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Only accessible by a specific processor.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>uninit:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Memory content must not be altered.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>alias:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Name of identical memory exposed at different address.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>from-pack:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Pack that defines this memory.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-yml">system-resources:
+  memory:
+    - name: ITCM_Flash
+      access: rx
+      start: 0x00200000
+      size: 0x00100000
+      from-pack: Keil::STM32U5xx_DFP@3.0.0
+    - name: Ext-Flash
+      access: rx
+      start: 0x40000000        
+      size: 0x200000
+      default: true
+</code></pre>
+<h3 id="output"><code>output:</code></h3>
+<p>This node contains information about the images that should be loaded. The images that are generated by the <em>csolution project</em> are typically configured <a href="../build-overview/#working-with-context-set">using a context set</a>.
+Use the <a href="../YML-Input-Format/#load"><code>load:</code></a> node in the <code>*.csolution.yml</code> file to <a href="../YML-Input-Format/#add-images">add images</a>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>output:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- file:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Specifies the file name.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Brief description of the file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies the file type.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>run:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Additional command string for download or programming.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>debug:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Additional command string for debug.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>info: generate by &lt;context&gt;</code> indicates that an image is generated by a context of the <em>csolution project</em>.</p>
+</div>
+<h3 id="debugger"><code>debugger:</code></h3>
+<p><a href="https://github.com/Open-CMSIS-Pack/devtools/issues/1947"><strong>Proposal: debugger configuration to YML input</strong></a></p>
+<p>This node contains connection information to one or more debuggers.</p>
+<p>The information is supplied from DFP and BSP information and the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>debugger:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Identifies the debug configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Brief description of the connection</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Selected debug port (jtag or swd).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Selected debug clock speed.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>dbgconf:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Debugger configuration file (pinout, trace).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP 
+  info: On-Board debugger of MCB4300 
+  port: jtag
+  clock: 10000000
+  dbgconf: RTE/Device/lpc4300/lpc4300.dbgconf
+</code></pre>
+<h3 id="debug-vars"><code>debug-vars:</code></h3>
+<p>This node contains the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence">debug vars</a> from the DFP for the target.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>pname</code> is not required as variables are queried by <code>debug-sequences:</code>. It is enough when these sequences are <code>pname</code>-specific.  Currently only one PDSC contains pname (iMX-D7)
+<code>dbgconf</code> file is exposed under <code>debugger:</code>.  This allows multiple copies for different debugger connection settings.
+Additional node <code>vars:</code> is kept to allow for future extensions.</p>
+</div>
+<p><a href="https://github.com/Open-CMSIS-Pack/devtools/issues/1946"><strong>Review Proposal: handling of <code>*.dbgconf</code> files in RTE</strong></a></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>debug-vars:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>vars:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Initial values for debug variables used in <a href="#debug-sequences"><code>debug-sequences:</code></a>.</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<pre><code class="language-yml">debug-vars:
+  vars: |
+    // Debug Access Variables, can be modified by user via copies of DBGCONF files as created by uVision. Also see sub-family level.
+    __var SWO_Pin               = 0;                    // Serial Wire Output pin: 0 = PIO0_10, 1 = PIO0_8
+    __var Dbg_CR                = 0x00000000;           // DBG_CR
+    __var BootTime              = 10000;                // 10 milliseconds
+</code></pre>
+<h3 id="debug-sequences"><code>debug-sequences:</code></h3>
+<p>This node contains the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence">debug sequences</a> from the DFP for the target. These sequences overwrite default parameters.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>debug-sequences:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Name of the sequence.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Descriptive text to display for example for error diagnostics.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>blocks:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">A list of command blocks in order of execution.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Executes sequence only for connection to a specific processor; default is for all processors.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>blocks:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Descriptive text to display for example for error diagnostics.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>blocks:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">A list of command blocks in the order of execution.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>execute:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Commands for execution.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>atomic:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Atomic execution of commands; cannot be used with <code>blocks:</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>if:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">only executed when expression is true</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>while:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">executed in loop until while expression is true</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>timeout:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">timeout in milliseconds for while loop</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>With <code>atomic:</code> set, the execution with no interrupts as fast as possible. With <a href="https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__atomic__gr.html">CMSIS-DAP Atomic Commands</a> are used. It has therefore restrictions and cannot be combined with <code>blocks:</code>.</li>
+</ul>
+</div>
+<p>Example: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#debugPortSetup">debugPortSetup</a></p>
+<pre><code class="language-yml">debug-sequences:
+  - name: DebugPortSetup
+
+    blocks:
+    - execute:  |
+        __var isSWJ      = ((__protocol &amp;amp; 0x00010000) != 0); 
+        __var hasDormant = __protocol &amp;amp; 0x00020000;
+        __var protType   = __protocol &amp;amp; 0x0000FFFF;
+
+    - if: protType == 1 
+      blocks:
+      - if: isSWJ
+        blocks:
+        - if: hasDormant
+          atomic:
+          execute:  |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+
+            // Select Dormant State (from SWD)
+            DAP_SWJ_Sequence(16, 0xE3BC);
+
+            // At least 8 cycles SWDIO/TMS HIGH
+            DAP_SWJ_Sequence(8, 0xFF);
+
+            // Alert Sequence Bits  0.. 63
+            DAP_SWJ_Sequence(64, 0x86852D956209F392);
+
+            // Alert Sequence Bits 64..127
+            DAP_SWJ_Sequence(64, 0x19BC0EA2E3DDAFE9);
+
+            // 4 cycles SWDIO/TMS LOW + 8-Bit JTAG Activation Code (0x0A)            
+            DAP_SWJ_Sequence(12, 0x0A0);
+
+            // Ensure JTAG interface is reset
+            DAP_SWJ_Sequence(6, 0x3F);
+
+        - if: !hasDormant
+          atomic:
+          execute:   |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+
+            // Execute SWJ-DP Switch Sequence SWD to JTAG (0xE73C)
+            // Change if SWJ-DP uses deprecated switch code (0xAEAE)
+            DAP_SWJ_Sequence(16, 0xE73C);
+
+            // Ensure JTAG interface is reset
+            DAP_SWJ_Sequence(6, 0x3F);
+
+      - atomic:
+        execute: |
+          // JTAG &quot;Soft&quot; Reset
+          DAP_JTAG_Sequence(6, 1, 0x3F);
+          DAP_JTAG_Sequence(1, 0, 0x01);
+
+    - if: protType == 2
+      blocks:
+      - if: isSWJ
+        blocks:
+        - if: hasDormant
+          atomic:
+          execute:  |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+
+            // Select Dormant State (from JTAG)
+            DAP_SWJ_Sequence(31, 0x33BBBBBA);
+
+            // At least 8 cycles SWDIO/TMS HIGH
+            DAP_SWJ_Sequence(8, 0xFF);
+
+            // Alert Sequence Bits  0.. 63
+            DAP_SWJ_Sequence(64, 0x86852D956209F392);
+
+            // Alert Sequence Bits 64..127
+            DAP_SWJ_Sequence(64, 0x19BC0EA2E3DDAFE9);
+
+            // 4 cycles SWDIO/TMS LOW + 8-Bit SWD Activation Code (0x1A)            
+            DAP_SWJ_Sequence(12, 0x1A0);
+
+            // Enter SWD Line Reset State
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &amp;gt; 50 cycles SWDIO/TMS High
+            DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
+
+        - if: !hasDormant
+          atomic:
+          execute:  |
+            // Ensure current debug interface is in reset state
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
+
+            // Execute SWJ-DP Switch Sequence JTAG to SWD (0xE79E)
+            // Change if SWJ-DP uses deprecated switch code (0xEDB6)
+            DAP_SWJ_Sequence(16, 0xE79E);
+
+            // Enter SWD Line Reset State
+            DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &amp;gt; 50 cycles SWDIO/TMS High
+            DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
+
+              // Enter SWD Line Reset State
+          DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &amp;gt; 50 cycles SWDIO/TMS High
+          DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
+
+    - execute:  |
+      // Read DPIDR to enable SWD interface (SW-DPv1 and SW-DPv2)
+      ReadDP(0x0);
+</code></pre>
+<h3 id="usage">Usage</h3>
+<p>The <code>*.cbuild-run.yml</code> file can be directly passed to programmers and debug tools, for example, using a command-line option. It contains all information that needs to be passed.</p>
+<pre><code class="language-bash">&gt;programmer --csolution MyHardware.cbuild-run.yml
+</code></pre>
               
             </div>
           </div><footer>

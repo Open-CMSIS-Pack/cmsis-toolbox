@@ -265,6 +265,12 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#add-memory">Add Memory</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#memory">memory:</a>
+    </li>
+        </ul>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#add-images">Add Images</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#load">load:</a>
@@ -2643,6 +2649,11 @@ explains the overall concept of  <code>target-types</code> and <code>build-types
 <td>Optional</td>
 <td style="text-align: left;">Variables that can be used to define project components.</td>
 </tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#memory"><code>memory:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Add additional off-chip memory available in target hardware.</td>
+</tr>
 </tbody>
 </table>
 <div class="admonition note">
@@ -3964,6 +3975,64 @@ to overwrite configuration information or to define new debugger setups.</p>
 </code></pre>
 <p>Depending on the debugger, a specific debugger connection can be selected using command line options, for example:</p>
 <pre><code class="language-bash">pyOCD MyTarget.cbuild-run.yml --debugger ULink
+</code></pre>
+<h2 id="add-memory">Add Memory</h2>
+<p>Hardware targets may have additional off-chip memory. The <code>memory:</code> node that can be added as additional information to a target type.
+This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-management">Run and Debug Management</a> and the <a href="../build-overview/#automatic-linker-script-generation">Automatic Linker Script generation</a>.</p>
+<h3 id="memory"><code>memory:</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>memory:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Identifier of the memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>access:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Access permission of the memory (rx, rw, rwx).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>start:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Base address of the memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>size:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Size of the memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Only accessible by a specific processor.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>algorithm:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Programming algorithm for download.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">solution:
+  :
+  target-types:
+    - type: MyHardware
+      device: STMicroelectronics::STM32F746NGHx
+      memory:                                  # Additional memory available in MyHardware
+        - name: Ext-Flash                      # Identifier
+          access: rx                           # access permission 
+          start: 0x40000000        
+          size: 0x200000
+          algorithm: Flash/Ext-Flash.flm       # Programming algorithm
 </code></pre>
 <h2 id="add-images">Add Images</h2>
 <p>For Debug and Run the <code>load:</code> node allows to specify additional files that should be added to the <code>output:</code> node of the <code>*.cbuild-run.yml</code> file.</p>

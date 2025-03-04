@@ -227,7 +227,7 @@
 </ul>
 <h2 id="cbuild-invocation"><code>cbuild</code> Invocation</h2>
 <p>Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.</p>
-<pre><code class="language-txt">cbuild: Build Invocation 2.7.0 (C) 2024 Arm Ltd. and Contributors
+<pre><code class="language-txt">cbuild: Build Invocation 2.8.0 (C) 2022-2025 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] &lt;name&gt;.csolution.yml [options]
@@ -243,7 +243,7 @@ Options:
   -c, --context arg [...]  Input context names [&lt;project-name&gt;][.&lt;build-type&gt;][+&lt;target-type&gt;]
   -S, --context-set        Select the context names from cbuild-set.yml for generating the target application
   -d, --debug              Enable debug messages
-      --frozen-packs       Pack list and versions from cbuild-pack.yml are fixed and raise errors if it changes
+      --frozen-packs       Pack list and versions from cbuild-pack.yml are fixed and raises errors if it changes
   -g, --generator arg      Select build system generator (default &quot;Ninja&quot;)
   -h, --help               Print usage
   -j, --jobs int           Number of job slots for parallel execution (default 8)
@@ -269,7 +269,7 @@ Use &quot;cbuild [command] --help&quot; for more information about a command.
 </div>
 <h2 id="csolution-invocation"><code>csolution</code> Invocation</h2>
 <p>Create build information for embedded applications that consist of one or more related projects.</p>
-<pre><code class="language-text">csolution: Project Manager 2.7.0 (C) 2024 Arm Ltd. and Contributors
+<pre><code class="language-text">csolution: Project Manager 2.8.0 (C) 2022-2025 Arm Ltd. and Contributors
 
 Usage:
   csolution &lt;command&gt; [&lt;name&gt;.csolution.yml] [options]
@@ -288,7 +288,7 @@ Commands:
   list packs                    Print list of used packs from the pack repository
   list toolchains               Print list of supported toolchains
   run                           Run code generator
-  update-rte                    Create/update configuration files and validate the solution
+  update-rte                    Create/update configuration files and validate solution
 
 Options:
   -c, --context arg [...]       Input context names [&lt;project-name&gt;][.&lt;build-type&gt;][+&lt;target-type&gt;]
@@ -314,7 +314,9 @@ Use 'csolution &lt;command&gt; -h' for more information about a command.
 </code></pre>
 <h2 id="cpackget-invocation"><code>cpackget</code> Invocation</h2>
 <p>Manage the installation of <em>software packs</em> on the host computer.</p>
-<pre><code class="language-txt">Usage:
+<pre><code class="language-txt">cpackget version 2.1.6 (C) 2021-2023 Linaro, 2024-2025 Arm Ltd.
+
+Usage:
   cpackget [command] [flags]
 
 Available Commands:
@@ -327,21 +329,21 @@ Available Commands:
   init             Initializes a pack root folder
   list             List installed packs
   rm               Remove Open-CMSIS-Pack packages
-  signature-create Digitally signs a pack with an X.509 certificate or PGP key
+  signature-create Digitally signs a pack with a X.509 certificate or PGP key
   signature-verify Verifies a signed pack
-  update           Update Open-CMSIS-Pack packages to the latest
+  update           Update Open-CMSIS-Pack packages to latest
   update-index     Update the public index
 
 Flags:
   -C, --concurrent-downloads uint   Number of concurrent batch downloads. Set to 0 to disable concurrency (default 20)
   -h, --help                        help for cpackget
-  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable 
+  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable
   -q, --quiet                       Run cpackget silently, printing only error messages
   -T, --timeout uint                Set maximum duration (in seconds) of a download. Disabled by default
-  -v, --verbose                     Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging).
+  -v, --verbose                     Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging). Specify &quot;-q&quot; for no messages
   -V, --version                     Prints the version number of cpackget and exit
 
-Use &quot;cpackget [command] --help&quot; for more information about a command.
+Use &quot;cpackget [command] --help&quot; for more information about a command and command-specific flags.
 </code></pre>
 <h2 id="command-examples">Command Examples</h2>
 <h3 id="list-environment">List Environment</h3>
