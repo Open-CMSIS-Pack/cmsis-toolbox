@@ -22,7 +22,7 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.7.0 (C) 2024 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.8.0 (C) 2022-2025 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -38,7 +38,7 @@ Options:
   -c, --context arg [...]  Input context names [<project-name>][.<build-type>][+<target-type>]
   -S, --context-set        Select the context names from cbuild-set.yml for generating the target application
   -d, --debug              Enable debug messages
-      --frozen-packs       Pack list and versions from cbuild-pack.yml are fixed and raise errors if it changes
+      --frozen-packs       Pack list and versions from cbuild-pack.yml are fixed and raises errors if it changes
   -g, --generator arg      Select build system generator (default "Ninja")
   -h, --help               Print usage
   -j, --jobs int           Number of job slots for parallel execution (default 8)
@@ -67,7 +67,7 @@ Use "cbuild [command] --help" for more information about a command.
 Create build information for embedded applications that consist of one or more related projects.
 
 ```text
-csolution: Project Manager 2.7.0 (C) 2024 Arm Ltd. and Contributors
+csolution: Project Manager 2.8.0 (C) 2022-2025 Arm Ltd. and Contributors
 
 Usage:
   csolution <command> [<name>.csolution.yml] [options]
@@ -86,7 +86,7 @@ Commands:
   list packs                    Print list of used packs from the pack repository
   list toolchains               Print list of supported toolchains
   run                           Run code generator
-  update-rte                    Create/update configuration files and validate the solution
+  update-rte                    Create/update configuration files and validate solution
 
 Options:
   -c, --context arg [...]       Input context names [<project-name>][.<build-type>][+<target-type>]
@@ -116,6 +116,8 @@ Use 'csolution <command> -h' for more information about a command.
 Manage the installation of *software packs* on the host computer.
 
 ``` txt
+cpackget version 2.1.6 (C) 2021-2023 Linaro, 2024-2025 Arm Ltd.
+
 Usage:
   cpackget [command] [flags]
 
@@ -129,21 +131,21 @@ Available Commands:
   init             Initializes a pack root folder
   list             List installed packs
   rm               Remove Open-CMSIS-Pack packages
-  signature-create Digitally signs a pack with an X.509 certificate or PGP key
+  signature-create Digitally signs a pack with a X.509 certificate or PGP key
   signature-verify Verifies a signed pack
-  update           Update Open-CMSIS-Pack packages to the latest
+  update           Update Open-CMSIS-Pack packages to latest
   update-index     Update the public index
 
 Flags:
   -C, --concurrent-downloads uint   Number of concurrent batch downloads. Set to 0 to disable concurrency (default 20)
   -h, --help                        help for cpackget
-  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable 
+  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable
   -q, --quiet                       Run cpackget silently, printing only error messages
   -T, --timeout uint                Set maximum duration (in seconds) of a download. Disabled by default
-  -v, --verbose                     Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging).
+  -v, --verbose                     Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging). Specify "-q" for no messages
   -V, --version                     Prints the version number of cpackget and exit
 
-Use "cpackget [command] --help" for more information about a command.
+Use "cpackget [command] --help" for more information about a command and command-specific flags.
 ```
 
 ## Command Examples

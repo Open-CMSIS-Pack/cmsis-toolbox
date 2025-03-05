@@ -1302,6 +1302,7 @@ The `target-types:` node may include [toolchain options](#toolchain-options), [t
 &nbsp;&nbsp;&nbsp; [`processor:`](#processor)      |   Optional   | Processor specific settings.
 &nbsp;&nbsp;&nbsp; [`context-map:`](#context-map)  |   Optional   | Use different `target-types:` for specific projects.
 &nbsp;&nbsp;&nbsp; [`variables:`](#variables)      |   Optional   | Variables that can be used to define project components.
+&nbsp;&nbsp;&nbsp; [`memory:`](#memory)            |   Optional   | Add additional off-chip memory available in target hardware.
 
 !!! Note
     Either `device:` or `board:` is required.
@@ -2231,6 +2232,38 @@ Depending on the debugger, a specific debugger connection can be selected using 
 
 ```bash
 pyOCD MyTarget.cbuild-run.yml --debugger ULink
+```
+
+## Add Memory
+
+Hardware targets may have additional off-chip memory. The `memory:` node that can be added as additional information to a target type.
+This information is used for the [Run and Debug Management](YML-CBuild-Format.md#run-and-debug-management) and the [Automatic Linker Script generation](build-overview.md#automatic-linker-script-generation).
+
+### `memory:`
+ 
+`memory:`                                                 |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- name:`                                                 |**Required** | Identifier of the memory.
+&nbsp;&nbsp;&nbsp; `access:`                              |  Optional   | Access permission of the memory (rx, rw, rwx).
+&nbsp;&nbsp;&nbsp; `start:`                               |  Optional   | Base address of the memory.
+&nbsp;&nbsp;&nbsp; `size:`                                |  Optional   | Size of the memory.
+&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Only accessible by a specific processor.
+&nbsp;&nbsp;&nbsp; `algorithm:`                           |  Optional   | Programming algorithm for download.
+
+**Example:**
+
+```yml
+solution:
+  :
+  target-types:
+    - type: MyHardware
+      device: STMicroelectronics::STM32F746NGHx
+      memory:                                  # Additional memory available in MyHardware
+        - name: Ext-Flash                      # Identifier
+          access: rx                           # access permission 
+          start: 0x40000000        
+          size: 0x200000
+          algorithm: Flash/Ext-Flash.flm       # Programming algorithm
 ```
 
 ## Add Images

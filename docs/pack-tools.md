@@ -9,9 +9,14 @@ The picture below shows the structure of the different packs and how boards, dev
 - The Device Family Pack (DFP) is the foundation.
 - The Board Support Pack (BSP) is based on DFP and are an extension.
 - The Generic Software Packs (GSP) should use boards defined in a BSP to publish examples or [Reference Applications](ReferenceApplications.md) that run on several boards.
- 
+
 ![Project Examples in Packs](./images/ExamplesInPacks.png "Project Examples in Packs")
 
+!!! Tip
+    - A [**Blinky example**](#board-support-pack-bsp-content) in the BSP simplifies the bring up of an development environment in multiple ways.
+    - The VS Code extension [CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) gets examples via a web service. All required packs are automatically installed.
+    - It verifies compile, download, and hardware setup. The LED blinks with 1Hz which validates clock settings.
+  
 ## Device Family Pack (DFP) Content
 
 The DFP provides foundation support for a device or device family and is used by:
@@ -56,7 +61,6 @@ A BSP extends the DFP with information that relates to boards:
 
 !!! Tip
     The Blinky example of the [BSP-Pack-HandsOn](https://github.com/Open-CMSIS-Pack/BSP-Pack-HandsOn) is generic. All it requires to adapt the `./Driver/vio*.c` to the actual hardware of the board.
-
 
 | Must have         | Strongly recommended                 | Optional                              |
 |:------------------|:-------------------------------------|:--------------------------------------|
@@ -113,7 +117,7 @@ The following tools are part of the CMSIS-Toolbox. These tools can be used to de
 |:---------------|:-------------|
 | **packchk**    | **Pack Validation:** installs and manages software packs in the local development environment. |
 | **svdconv**    | **SVD Check / Convert:** validate and/or convert System View Description (SVD) files. |
-| **vidx2pidx**  | **SVD Check / Convert:** check Package index file (PIDX) for indexing in public pack services. |
+| **vidx2pidx**  | **Package Index Generator:** check Package index file (PIDX) for indexing in public pack services. |
 
 ### Usage
 
@@ -213,9 +217,8 @@ The CMSIS-Pack system uses version numbers to track and differentiate various re
     - `MINOR` indicates new features, but still backward-compatible.
     - `PATCH` indicates bug fixes or minor tweaks. `PATCH` can be omitted and defaults to `0` in this case.
   
-2. **Calendar Versioning** ([CalVer](https://calver.org/)) is accepted when higher values indicated newer releases. The format should be therefore `YY.MM.DD`, `YY.MM`, or `YY.MM.PATCH`. For example:
+2. **Calendar Versioning** ([CalVer](https://calver.org/)) is accepted when higher values indicated newer releases. The format should be therefore `YY.MM.DD`, or `YY.MM.PATCH`. For example:
 
-    - `22.04` indicates April 2022 release.
     - `22.04.1` indicates April 2022 release, patch version 1.
     - `25.02.07` indicates release date 7. Feb. 2025.
 
@@ -226,7 +229,7 @@ Both versioning schemas support `-pre-release` labels that may be used during de
 
 Product Lifecycle Management (PLM) and versioning are closely connected. Versioning ensures that each stage of PLM is properly controlled and documented. The CMSIS-Toolbox accepts therefore version numbers and ranges for `packs` and `components` and outputs version details in [build information files](YML-CBuild-Format.md).
 
-**Semantic Versioning** ([SemVer](https://semver.org/)) is recommended as it supports the PLM features of the CMSIS-Toolbox. It enables [PLM of configuration files](build-overview.md#plm-of-configuration-files) and simplifies the software pack updates. For example: `- pack: ARM::CMSIS@^6.1.0` accepts any pack version equal or higher but with the same `MAJOR` version. 
+**Semantic Versioning** ([SemVer](https://semver.org/)) is recommended as it supports the PLM features of the CMSIS-Toolbox. It enables [PLM of configuration files](build-overview.md#plm-of-configuration-files) and simplifies the software pack updates. For example: `- pack: ARM::CMSIS@^6.1.0` accepts any pack version equal or higher but with the same `MAJOR` version.
 
 ## Project Examples
 
@@ -280,23 +283,49 @@ solution:
 
 ### Template Projects
 
-A *template project* does not define a [`device:`](YML-Input-Format.md#device) or [`board:`](YML-Input-Format.md#board) in the `*.csolution.yml` file. When a IDE starts such an *template* the `device:` and/or `board:` information along with `pack:` information is added depending on user selection. The [`target-types:`](YML-Input-Format.md#target-types) contains a  `Name` that may be replaced by a descriptive target name.
+The VSCode extension [CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) supports *template projects* that are part of a DFP or BSP. It is a starting point for a user application and
+can be directly compiled, but the functionality is mostly empty. *Template projects* may provide:
+
+- Setup for single-core, TrustZone, or multi-core projects, optional with execution from ROM or RAM.
+- Can be device and board specific, optional Configuration Generator.
+- May contain other projects that are ready to use (Bootloader, Trusted Firmware).
+
+A *template project* may omit [`device:`](YML-Input-Format.md#device), [`board:`](YML-Input-Format.md#board), and [`pack:`](YML-Input-Format.md#pack) specification in the `*.csolution.yml` file. When a IDE starts a template this information is added depending on user selection.
 
 !!! Note
-    A *template project* should not specify the DFP or BSP with a `pack:` node, as the IDE adds this node during the project start.
+    *Templates* should compile when the IDE adds above information to the `*.csolution.yml` file. The exception is when *templates* require parts of the code provided by a generator.
 
 **Simple Template:**
 
-A simple *template* only defines one target.
+A simple *template* only defines one project.
 
 ```yml
+# A solution is a collection of related projects that share same base configuration.
 solution:
-      :
-  target-types:
-    - type: Name
-#     board:            # added during creation of solution
-#     device:           # added during creation of solution
-      :
+  created-for: CMSIS-Toolbox@2.6.0
+  cdefault:
+
+  # List of tested compilers that can be selected
+  select-compiler:
+    - compiler: AC6
+    - compiler: GCC
+    - compiler: IAR
+
+  target-types:      # empty, filled in by IDE
+
+  # List of different build configurations.
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: debug
+
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  # List related projects.
+  projects:
+    - project: Simple.cproject.yml
 ```
 
 **Multi-Target Template:**
@@ -307,17 +336,13 @@ A multi-target *template* may contain different configurations for the same targ
 solution:
       :
   target-types:
-    - type: Name-ROM
-#     board:           # added during creation of solution
-#     device:          # added during creation of solution
-      variables:
-        - regions_header: path/region_ROM.h 
+    - type: ${Name}_ROM
+      variables: 
+        - RegionsHeader: <path>/memory_flash.h
 
-    - type: Name-RAM
-#     board:           # added during creation of solution
-#     device:          # added during creation of solution
+    - type: ${Name}_RAM
       variables:
-        - regions_header: path/region_RAM.h 
+        - RegionsHeader: <path>/memory_ram.h
       :
 ```
 
@@ -327,11 +352,26 @@ In the example above, projects can use the [`linker:`](YML-Input-Format.md#linke
 project:
 
   linker:
-    - regions:  $regions_header$
+    - regions:  $RegionsHeader$
 ```
 
-!!! Note
-    *Templates* should compile when the above information is added to the `*.csolution.yml` file. The exception is when *templates* require parts of the code provided by a generator.
+**Board-specific Template:**
+
+Board specific *template projects* provide a meaningful configuration for peripherals on a board. As it is fixed to a board, it may define the *target-type* along with that packs required.
+
+```yml
+solution:
+      :
+  packs:
+    - pack: NXP::FRDM-MCXN947_BSP    # do not use pack version as it is part of a BSP
+    - pack: NXP::MCXN947_DFP
+    - pack: ARM::CMSIS
+
+  target-types:
+    - type: MCXN947
+      device: NXP::MCXN947VDF
+      board: NXP::FRDM-MCXN947
+```
 
 **Register Template in PDSC File:**
 
