@@ -2198,12 +2198,12 @@ to overwrite configuration information or to define new debugger setups.
 `- name:`                                                 |**Required** | Identifier for the debugger configuration.
 &nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the debugger configuration.
 &nbsp;&nbsp;&nbsp; `protocol:`                            |  Optional   | Select debug portocol (jtag or swd).
-&nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Select debug clock speed (in Hz) or "auto".
+&nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Select debug clock speed (in Hz).
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | Debugger configuration applied for a list of *context* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | Debugger configuration not applied for a list of *context* types.
 
-!!! Note The default values for `clock:` and `protocol:` are provided in the BSP or DFP.
+!!! Note The default values for `clock:` and `protocol:` are provided in the BSP or DFP. If no values are defined `clock: 10000000` and `protocol: swd` is assumed.
 
 **Examples:**
 
@@ -2211,7 +2211,7 @@ to overwrite configuration information or to define new debugger setups.
 debugger:
   - name: CMSIS-DAP
     info: connect via on-board debugger
-    port: swd
+    protocol: swd
     clock: 20000000   # 20 MHz
 ```
 
@@ -2219,7 +2219,7 @@ debugger:
 debugger:
   - name: ULink
     info: connect via ULink-plus
-    port: jtag
+    protocol: jtag
     clock: 10000000               # 10 MHz
     0dbgconf: MyHardware.dbgconf   
     for-context: +MyHardware      # only for target-type MyHardware
@@ -2227,7 +2227,7 @@ debugger:
   - name: JLink
     info: connect via Segger JLink
     clock: auto
-    port: swd
+    protocol: swd
 ```
 
 Depending on the debugger, a specific debugger connection can be selected using command line options, for example:
@@ -2246,11 +2246,22 @@ This information is used for the [Run and Debug Management](YML-CBuild-Format.md
 `memory:`                                                 |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
 `- name:`                                                 |**Required** | Identifier of the memory.
-&nbsp;&nbsp;&nbsp; `access:`                              |  Optional   | Access permission of the memory (rx, rw, rwx).
-&nbsp;&nbsp;&nbsp; `start:`                               |  Optional   | Base address of the memory.
-&nbsp;&nbsp;&nbsp; `size:`                                |  Optional   | Size of the memory.
-&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Only accessible by a specific processor.
+&nbsp;&nbsp;&nbsp; `access:`                              |**Required** | Access attribute string for the memory (see table below).
+&nbsp;&nbsp;&nbsp; `start:`                               |**Required** | Base address of the memory.
+&nbsp;&nbsp;&nbsp; `size:`                                |**Required** | Size of the memory.
+&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Only accessible by the specified processor.
 &nbsp;&nbsp;&nbsp; `algorithm:`                           |  Optional   | Programming algorithm for download.
+
+The table lists the letters and their meaning for use in the access attribute string.
+
+`access:` | Description
+:--------:|:------------------
+r | Readable
+w | Writable
+x | eXecutable
+s | Secure attribute
+n | Non-secure attribute
+c | non-secure Callable attribute
 
 **Example:**
 
