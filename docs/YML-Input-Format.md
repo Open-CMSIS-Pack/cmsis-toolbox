@@ -2197,11 +2197,13 @@ to overwrite configuration information or to define new debugger setups.
 :---------------------------------------------------------|-------------|:------------------------------------
 `- name:`                                                 |**Required** | Identifier for the debugger configuration.
 &nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the debugger configuration.
-&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Select debug port (jtag or swd).
+&nbsp;&nbsp;&nbsp; `protocol:`                            |  Optional   | Select debug portocol (jtag or swd).
 &nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Select debug clock speed (in Hz) or "auto".
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | Debugger configuration applied for a list of *context* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | Debugger configuration not applied for a list of *context* types.
+
+!!! Note The default values for `clock:` and `protocol:` are provided in the BSP or DFP.
 
 **Examples:**
 
