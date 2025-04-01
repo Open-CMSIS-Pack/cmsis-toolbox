@@ -3927,14 +3927,14 @@ to overwrite configuration information or to define new debugger setups.</p>
 <td style="text-align: left;">Brief description of the debugger configuration.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>protocol:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Select debug port (jtag or swd).</td>
+<td style="text-align: left;">Select debug portocol (jtag or swd).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Select debug clock speed (in Hz) or "auto".</td>
+<td style="text-align: left;">Select debug clock speed (in Hz).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>dbgconf:</code></td>
@@ -3953,17 +3953,18 @@ to overwrite configuration information or to define new debugger setups.</p>
 </tr>
 </tbody>
 </table>
+<p>!!! Note The default values for <code>clock:</code> and <code>protocol:</code> are provided in the BSP or DFP. If no values are defined <code>clock: 10000000</code> and <code>protocol: swd</code> is assumed.</p>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">debugger:
   - name: CMSIS-DAP
     info: connect via on-board debugger
-    port: swd
+    protocol: swd
     clock: 20000000   # 20 MHz
 </code></pre>
 <pre><code class="language-yml">debugger:
   - name: ULink
     info: connect via ULink-plus
-    port: jtag
+    protocol: jtag
     clock: 10000000               # 10 MHz
     0dbgconf: MyHardware.dbgconf   
     for-context: +MyHardware      # only for target-type MyHardware
@@ -3971,7 +3972,7 @@ to overwrite configuration information or to define new debugger setups.</p>
   - name: JLink
     info: connect via Segger JLink
     clock: auto
-    port: swd
+    protocol: swd
 </code></pre>
 <p>Depending on the debugger, a specific debugger connection can be selected using command line options, for example:</p>
 <pre><code class="language-bash">pyOCD MyTarget.cbuild-run.yml --debugger ULink
@@ -3996,28 +3997,63 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>access:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Access permission of the memory (rx, rw, rwx).</td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Access attribute string for the memory (see table below).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>start:</code></td>
-<td>Optional</td>
+<td><strong>Required</strong></td>
 <td style="text-align: left;">Base address of the memory.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>size:</code></td>
-<td>Optional</td>
+<td><strong>Required</strong></td>
 <td style="text-align: left;">Size of the memory.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Only accessible by a specific processor.</td>
+<td style="text-align: left;">Only accessible by the specified processor.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>algorithm:</code></td>
 <td>Optional</td>
 <td style="text-align: left;">Programming algorithm for download.</td>
+</tr>
+</tbody>
+</table>
+<p>The table lists the letters and their meaning for use in the access attribute string.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: center;"><code>access:</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">r</td>
+<td style="text-align: left;">Readable</td>
+</tr>
+<tr>
+<td style="text-align: center;">w</td>
+<td style="text-align: left;">Writable</td>
+</tr>
+<tr>
+<td style="text-align: center;">x</td>
+<td style="text-align: left;">eXecutable</td>
+</tr>
+<tr>
+<td style="text-align: center;">s</td>
+<td style="text-align: left;">Secure attribute</td>
+</tr>
+<tr>
+<td style="text-align: center;">n</td>
+<td style="text-align: left;">Non-secure attribute</td>
+</tr>
+<tr>
+<td style="text-align: center;">c</td>
+<td style="text-align: left;">non-secure Callable attribute</td>
 </tr>
 </tbody>
 </table>
