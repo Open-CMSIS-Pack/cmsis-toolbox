@@ -881,7 +881,7 @@ List of the description files for peripherals and software components used in th
 
 #### `debugger:`
 
-This node contains connection information to one or more debuggers.
+This node contains connection information to one or more debuggers with inital settings coming from the board support pack (BSP) or device family pack (DFP).
 
 `debugger:`                                               |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
@@ -891,7 +891,7 @@ This node contains connection information to one or more debuggers.
 &nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Selected debug clock speed in Hz.
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
 
-The information for the `debugger:` node is provided the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file. If not present the values from BSP are used; if not present DFP values. The values in the `*.csolution.yml` file overwrites values from BSP or DFP as shown in the table below.  
+The information for the debugger configuration node may be adjusted using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file. If not present the values from BSP are used; if not present DFP values. The values in the `*.csolution.yml` file overwrites values from BSP or DFP as shown in the table below.  
 
 `*.cbuild-run.yml`            | `*.csolution.yml`            | BSP                                | DFP 
 :-----------------------------|:-----------------------------|:-----------------------------------|:--------------------------
@@ -899,7 +899,7 @@ The information for the `debugger:` node is provided the [`debugger:`](YML-Input
 &nbsp;&nbsp;&nbsp; `protocol:`|&nbsp;&nbsp;&nbsp; `protocol:`|&nbsp;&nbsp;&nbsp; `debugLink`      |&nbsp;&nbsp;&nbsp; `default`
 &nbsp;&nbsp;&nbsp; `clock:`   |&nbsp;&nbsp;&nbsp; `clock:`   |&nbsp;&nbsp;&nbsp; `debugClock`     |&nbsp;&nbsp;&nbsp; `clock`
 
-If none of the file provide values for `swd:` or `clock:`, the CMSIS-Toolbox uses these default values:
+If no input (`*.csolution.yml`, BSP or DFP) provides values for `swd:` or `clock:`, the CMSIS-Toolbox uses these defaults:
 
 ```yml
   protocol: swd
@@ -912,7 +912,7 @@ If none of the file provide values for `swd:` or `clock:`, the CMSIS-Toolbox use
 debugger:
   name: CMSIS-DAP 
   info: On-Board debugger of MCB4300 
-  portocol: jtag
+  protocol: jtag
   clock: 10000000
   dbgconf: RTE/Device/lpc4300/lpc4300.dbgconf
 ```
@@ -1152,8 +1152,16 @@ _`- punit:`_                                      | **Required** | Specifies a s
 
 ### Usage
 
-The `*.cbuild-run.yml` file can be directly passed to programmers and debug tools, for example, using a command-line option. It contains all information that needs to be passed.
+The `*.cbuild-run.yml` file provides all information about the application project for run and debug. It can be used with tools such as pyOCD as shown below.
+
+Start gdbserver for debug connection:
 
 ```bash
->programmer --csolution MyHardware.cbuild-run.yml
+>pyocd gdbserver --cbuild-run MyProject+TargetHW.cbuild-run.yml
+```
+
+Program flash with application images:
+
+```bash
+>pyocd flash --cbuild-run MyProject+TargetHW.cbuild-run.yml
 ```
