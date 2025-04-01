@@ -14,7 +14,7 @@ File                                  | Description
 [`*.cbuild.yml`](#cbuildyml)          | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file; contains all information for the build step for a specific [context](build-overview.md#context) including references to the content used from software packs.
 [`*.cbuild-pack.yml`](#cbuild-packyml)| Software packs recorded for all input files ([`*.csolution.yml`](YML-Input-Format.md#project-file-structure), `cproject.yml`, and `.clayer.yml`); used as input file to ensure [reproducible builds](build-overview.md#reproducible-builds) that use the same software packs and pack versions.
 [`*.cbuild-set.yml`](#cbuild-setyml)  | [Context selection](build-overview.md#working-with-context-set) for the build process, enabled with option [--context-set:](build-tools.md#use-context-set).
-[`*.cbuild-run.yml`](#cbuild-runyml)  | Contains the information required to [download and debug](#run-and-debug-management) a *csolution project* to a target.
+[`*.cbuild-run.yml`](#run-and-debug-management)  | Contains the information required to [download and debug](#run-and-debug-management) a *csolution project* to a target.
 
 ## Directory Structure
 
@@ -700,28 +700,29 @@ The `*.cgen.yml` file lists the generated *csolution project* part and starts wi
 
 ## Run and Debug Management
 
-The CMSIS-Toolbox build system manages device/board/software components, controls the build output (typically ELF/DWARF files), and has provisions for HEX, BIN and post-processing. It allows to manage different [target-types](build-overview.md#project-setup-for-related-projects) and the [context set](build-overview.md#working-with-context-set) manages the images that belong to a target. This information is directly useful for the debug and run settings of an application.
+The CMSIS-Toolbox build system manages software packs that contain information about device, board, and software components. It controls the build output (typically ELF/DWARF files), and has provisions for HEX, BIN and post-processing. Using the [context set](build-overview.md#working-with-context-set) it manages the application images for different [target-types](build-overview.md#project-setup-for-related-projects).
 
-In addition, the user may specify the following information in the `*.csolution.yml` file for the CMSIS-Toolbox.
-
-- [Additional memory](YML-Input-Format.md#add-memory) with flash algorithms for external memory in custom hardware using the [`memory:`](YML-Input-Format.md#memory) node.
-- [Additional images](YML-Input-Format.md#add-images) that should be programmed or loaded using the [`load:`](YML-Input-Format.md#load) node.
-- [Debugger configuration](YML-Input-Format.md#debugger-configuration) provided by packs can be adjusted using the [`debugger:`](YML-Input-Format.md#debugger) node.
-
-The pack files (`*.PDSC) contain information about device/board parameters and software components which is used as the base settings for debug and run settings:
+The software packs contain information that is the basis for debug and run settings:
 
 - [Flash algorithms](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html) of device memory (in DFP) and board memory (in BSP).
 - On-board debug adapter (a default programming/debug channel) including features.
 - Available memory of device and board.
 - Device parameters such as processor core(s) and clock speed.
 - [Debug Access Sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html) and [System Description Files](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/sdf_pg.html) that support more complex Cortex-A/R/M configurations.
+- Debug Configuration files (`*.dbgconf`) that configure device properties such as trace pins.
 - [CMSIS-SVD System View Description (SVD)](https://open-cmsis-pack.github.io/svd-spec/main/index.html) files for viewing device peripherals.
 - [CMSIS-View Software Component Viewer Description (SCVD)](https://arm-software.github.io/CMSIS-View/latest/SCVD_Format.html) files for analysis of software components (RTOS, Middleware).
 
-!!! Note
-    The information may be defined at various places in the *csolution project*.  The information in the `*.csolution.yml` overrules the information from the BSP. The BSP overrules the information from the DFP.
+The user may add the following information in the `*.csolution.yml` file:
 
-The file `*.cbuild-run.yml` contains for each `target-type` of a *csolution project* collects the relevant information for run and debug. The information is collected by the CMSIS-Toolbox and the file name has the format `<solution-name>+<target-type>.cbuild-run.yml` file. It is generated in the `output` folder and used by programmers and debuggers in command line or IDE workflows. The information is portable, i.e. from a cloud-hosted CI system to a desktop test system.
+- [Additional memory](YML-Input-Format.md#add-memory) with flash algorithms for external memory in custom hardware using the [`memory:`](YML-Input-Format.md#memory) node.
+- [Additional images](YML-Input-Format.md#add-images) that should be programmed or loaded using the [`load:`](YML-Input-Format.md#load) node.
+- [Debugger configuration](YML-Input-Format.md#debugger-configuration) provided by packs can be adjusted using the [`debugger:`](YML-Input-Format.md#debugger) node.
+
+!!! Note
+    The information may be defined at various places. The `*.csolution.yml` file overrules the information from the BSP. The BSP overrules the information from the DFP.
+
+The file `*.cbuild-run.yml` contains for a single `target-type` of a *csolution project* the relevant information for run and debug. The information is collected by the CMSIS-Toolbox and the file name has the format `<solution-name>+<target-type>.cbuild-run.yml` file. It is used by programmers and debuggers in command line or IDE workflows. The information is portable, i.e. from a cloud-hosted CI system to a desktop test system.
 
 ![Run and Debug Information Management](./images/cbuild-run.png "Run and Debug Information Management")
 
@@ -789,10 +790,10 @@ The following describes the overall structure of the `*.cbuild-run.yml` file.  W
 &nbsp;&nbsp;&nbsp; `solution:`                                            |  Optional  | Name of the `*.csolution.yml` file.
 &nbsp;&nbsp;&nbsp; [`target-type:`](YML-Input-Format.md#target-types)     |  Optional  | Name of the target-type that was selected.
 &nbsp;&nbsp;&nbsp; `compiler:`                                            |  Optional  | [Compiler toolchain](YML-Input-Format.md#compiler) used for code generation.
-&nbsp;&nbsp;&nbsp; `board:`                                               |  Optional  | [Board name](YML-Input-Format.md#board) used for this context.
+&nbsp;&nbsp;&nbsp; `board:`                                               |  Optional  | [Board name](YML-Input-Format.md#board) used for this target.
 &nbsp;&nbsp;&nbsp; `board-pack:`                                          |  Optional  | BSP that is defining the [Board name](YML-Input-Format.md#board) used for this target.
-&nbsp;&nbsp;&nbsp; `device:`                                              |  Optional  | [Device name](YML-Input-Format.md#device) with processor core selection used in this  project context.
-&nbsp;&nbsp;&nbsp; `device-pack:`                                         |  Optional  | DFP that is defining the [Device name](YML-Input-Format.md#device) with processor core selection used in this target.
+&nbsp;&nbsp;&nbsp; `device:`                                              |  Optional  | [Device name](YML-Input-Format.md#device) used in this target.
+&nbsp;&nbsp;&nbsp; `device-pack:`                                         |  Optional  | DFP that is defining the [Device](YML-Input-Format.md#device) used in this target.
 &nbsp;&nbsp;&nbsp; [`output:`](#output)                                   |**Required**| List of the image (ELF, HEX, BIN) files generated.
 &nbsp;&nbsp;&nbsp; [`system-resources:`](#system-resources)               |  Optional  | List of the system resources available in target.
 &nbsp;&nbsp;&nbsp; [`system-descriptions:`](#system-descriptions)         |  Optional  | List of description files for peripherals and software components.
@@ -886,7 +887,7 @@ This node contains connection information to one or more debuggers.
 :---------------------------------------------------------|-------------|:------------------------------------
 `- name:`                                                 |**Required** | Identifies the debug configuration.
 &nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the connection.
-&nbsp;&nbsp;&nbsp; `protocol:`                            |**Required** | Selected debug port (jtag or swd).
+&nbsp;&nbsp;&nbsp; `protocol:`                            |**Required** | Selected debug protocol (jtag or swd).
 &nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Selected debug clock speed in Hz.
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
 
@@ -898,7 +899,7 @@ The information for the `debugger:` node is provided the [`debugger:`](YML-Input
 &nbsp;&nbsp;&nbsp; `protocol:`|&nbsp;&nbsp;&nbsp; `protocol:`|&nbsp;&nbsp;&nbsp; `debugLink`      |&nbsp;&nbsp;&nbsp; `default`
 &nbsp;&nbsp;&nbsp; `clock:`   |&nbsp;&nbsp;&nbsp; `clock:`   |&nbsp;&nbsp;&nbsp; `debugClock`     |&nbsp;&nbsp;&nbsp; `clock`
 
-If no file provies values for `swd:` or `clock:`, the CMSIS-Toolbox uses these default values:
+If none of the file provide values for `swd:` or `clock:`, the CMSIS-Toolbox uses these default values:
 
 ```yml
   protocol: swd
@@ -911,7 +912,7 @@ If no file provies values for `swd:` or `clock:`, the CMSIS-Toolbox uses these d
 debugger:
   name: CMSIS-DAP 
   info: On-Board debugger of MCB4300 
-  port: jtag
+  portocol: jtag
   clock: 10000000
   dbgconf: RTE/Device/lpc4300/lpc4300.dbgconf
 ```
@@ -958,9 +959,9 @@ This node contains the [debug sequences](https://open-cmsis-pack.github.io/Open-
 &nbsp;&nbsp;&nbsp; `timeout:`                             |   Optional   | Timeout value (integer) in milliseconds for while loop.
 
 !!! Note
-    - With `atomic:` set, the execution with no interrupts as fast as possible. With [CMSIS-DAP Atomic Commands](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__atomic__gr.html) are used. It has therefore restrictions and cannot be combined with `blocks:`.
+    - When `atomic:` is applied, sequences execute with no interrupts as fast as possible using [CMSIS-DAP Atomic Commands](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__atomic__gr.html). It has therefore restrictions and cannot be combined with `blocks:`.
 
-Example: [debugPortSetup](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#debugPortSetup)
+Example: [DebugPortSetup](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#debugPortSetup)
 
 ```yml
 debug-sequences:
@@ -1132,13 +1133,13 @@ debug-topology:
 &nbsp;&nbsp;&nbsp; _`accessports:`_               |   Optional   | Nested CoreSight access ports (APv2).
 
 !!! Note
-    `index:` and `address:` cannot be specified at the same time
+    `index:` and `address:` cannot be specified at the same time.
 
 `processors:`                                     |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
 `- pname:`                                        | **Required** | Processor identifier  (mandatory for multi-processor devices).
 &nbsp;&nbsp;&nbsp; _`punits:`_                    |   Optional   | Specifies processor units in a symmetric multi-processor core (MPCore) (mandatory when more than one CPU debug block is accessible).
-&nbsp;&nbsp;&nbsp; `apid:`                        | **Required** | Access port ID to use for this processor.
+&nbsp;&nbsp;&nbsp; `apid:`                        |   Optional   | Access port ID to use for this processor.
 &nbsp;&nbsp;&nbsp; `reset-sequence:`              |   Optional   | Name of debug sequence for reset operation (default: `ResetSystem` sequence).
 
 _`punits:`_                                       |              | Content
