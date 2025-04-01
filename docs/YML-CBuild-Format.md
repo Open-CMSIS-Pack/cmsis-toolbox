@@ -700,6 +700,9 @@ The `*.cgen.yml` file lists the generated *csolution project* part and starts wi
 
 ## Run and Debug Management
 
+!!! Note
+    The features described below are under active development and will implemented in CMSIS-Toolbox Version 2.9
+
 The CMSIS-Toolbox build system manages software packs that contain information about device, board, and software components. It controls the build output (typically ELF/DWARF files), and has provisions for HEX, BIN and post-processing. Using the [context set](build-overview.md#working-with-context-set) it manages the application images for different [target-types](build-overview.md#project-setup-for-related-projects).
 
 The software packs contain information that is the basis for debug and run settings:
@@ -888,7 +891,7 @@ This node contains connection information to one or more debuggers with inital s
 
 The information for the debugger configuration node may be adjusted using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file. If not present the values from BSP are used; if not present DFP values. The values in the `*.csolution.yml` file overwrites values from BSP or DFP as shown in the table below.  
 
-`*.cbuild-run.yml`            | `*.csolution.yml`            | BSP                                | DFP 
+`*.cbuild-run.yml`            | `*.csolution.yml`            | BSP                                | DFP
 :-----------------------------|:-----------------------------|:-----------------------------------|:--------------------------
 `debugger:`                   | `debugger:`                  | `<boards><board><debugProbe ...`   | `<device><debugconfig ...`
 &nbsp;&nbsp;&nbsp; `protocol:`|&nbsp;&nbsp;&nbsp; `protocol:`|&nbsp;&nbsp;&nbsp; `debugLink`      |&nbsp;&nbsp;&nbsp; `default`
@@ -1125,7 +1128,7 @@ debug-topology:
 `- apid:`                                         | **Required** | Unique ID of this access port. If only `apid` is provided, access port (APv1) with index `0` will be implicitly used.
 &nbsp;&nbsp;&nbsp; `index:`                       |   Optional   | The index to select this access port (APv1) for a target access.
 &nbsp;&nbsp;&nbsp; `address:`                     |   Optional   | The address to select this access port (APv2) in its parent's address space for a target access.
-&nbsp;&nbsp;&nbsp; _`accessports:`_               |   Optional   | Nested CoreSight access ports (APv2).
+&nbsp;&nbsp;&nbsp; *`accessports:`*               |   Optional   | Nested CoreSight access ports (APv2).
 
 !!! Note
     `index:` and `address:` cannot be specified at the same time.
@@ -1133,17 +1136,17 @@ debug-topology:
 `processors:`                                     |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
 `- pname:`                                        | **Required** | Processor identifier  (mandatory for multi-processor devices).
-&nbsp;&nbsp;&nbsp; _`punits:`_                    |   Optional   | Specifies processor units in a symmetric multi-processor core (MPCore) (mandatory when more than one CPU debug block is accessible).
+&nbsp;&nbsp;&nbsp; *`punits:`*                    |   Optional   | Specifies processor units in a symmetric multi-processor core (MPCore) (mandatory when more than one CPU debug block is accessible).
 &nbsp;&nbsp;&nbsp; `apid:`                        |   Optional   | Access port ID to use for this processor.
 &nbsp;&nbsp;&nbsp; `reset-sequence:`              |   Optional   | Name of debug sequence for reset operation (default: `ResetSystem` sequence).
 
-_`punits:`_                                       |              | Content
+*`punits:`*                                       |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
-_`- punit:`_                                      | **Required** | Specifies a specific processor unit of a symmetric MPCore.
-&nbsp;&nbsp;&nbsp; _`address:`_                   | **Required** | Specifies the base address of the CPU debug block.
+*`- punit:`*                                      | **Required** | Specifies a specific processor unit of a symmetric MPCore.
+&nbsp;&nbsp;&nbsp; *`address:`*                   | **Required** | Specifies the base address of the CPU debug block.
 
 !!! Note
-    The nodes in _italic_ are specified for future expansion, but currently not implemented.
+    The nodes in *italic* are specified for future expansion, but currently not implemented.
 
 ### Usage
 
