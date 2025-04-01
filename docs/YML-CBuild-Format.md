@@ -747,15 +747,7 @@ cbuild-run:
       ram-start: 0x20000000
       ram-size: 0x00008000
     - algorithm: ${CMSIS_PACK_ROOT}/Keil/STM32U5xx_DFP/3.0.0/CMSIS/Flash/STM32U5xx_2M_0C00.FLM
-      start: 0x0C000000
-      size: 0x00200000
-      ram-start: 0x20000000
-      ram-size: 0x00008000
-    - algorithm: ${CMSIS_PACK_ROOT}/Keil/STM32U5xx_DFP/3.0.0/CMSIS/Flash/MX25LM51245G_STM32U575I-EVAL.FLM
-      start: 0x70000000
-      size: 0x04000000
-      ram-start: 0x20000000
-      ram-size: 0x000A0000
+      :
   system-descriptions:
     - file: ${CMSIS_PACK_ROOT}/Keil/STM32U5xx_DFP/3.0.0/CMSIS/SVD/STM32U585.svd
       type: svd
@@ -777,6 +769,9 @@ cbuild-run:
       :
 
   debug-sequences:
+      :
+
+  debug-topology:
       :
 ```
 
