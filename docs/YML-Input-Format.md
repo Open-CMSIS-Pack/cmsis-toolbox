@@ -2203,7 +2203,8 @@ to overwrite configuration information or to define new debugger setups.
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | Debugger configuration applied for a list of *context* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | Debugger configuration not applied for a list of *context* types.
 
-!!! Note The default values for `clock:` and `protocol:` are provided in the BSP or DFP. If no values are defined `clock: 10000000` and `protocol: swd` is assumed.
+!!! Note
+    The default values for `clock:` and `protocol:` are provided in the BSP or DFP. If no values are defined `clock: 10000000` and `protocol: swd` is assumed.
 
 **Examples:**
 
@@ -2221,7 +2222,7 @@ debugger:
     info: connect via ULink-plus
     protocol: jtag
     clock: 10000000               # 10 MHz
-    0dbgconf: MyHardware.dbgconf   
+    dbgconf: MyHardware.dbgconf   
     for-context: +MyHardware      # only for target-type MyHardware
 
   - name: JLink
@@ -2233,7 +2234,7 @@ debugger:
 Depending on the debugger, a specific debugger connection can be selected using command line options, for example:
 
 ```bash
-pyOCD MyTarget.cbuild-run.yml --debugger ULink
+pyOCD gdbserver --cbuild-run MyTarget.cbuild-run.yml --debugger ULink
 ```
 
 ## Add Memory
