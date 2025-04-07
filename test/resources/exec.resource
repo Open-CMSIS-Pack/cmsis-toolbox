@@ -130,14 +130,17 @@ Run Csolution Project
 Convert And Filter Contexts
     [Documentation]    Example test to convert a string to an array, filter it, and join it
     [Arguments]        ${all_contexts}
-    @{lines}=    Split String    ${all_contexts}    \n
 
-    # Filter out items containing '+iar'
+    ${os}=             Get Operating System
+    @{lines}=          Split String    ${all_contexts}    \n
+
+    # Filter out items containing '+IAR'
     @{filtered_lines}=    Create List
     FOR    ${line}    IN    @{lines}
         log    ${line}
-        ${result}=    Run Keyword And Return Status    Should Contain    ${line}    iar
-        Run Keyword If    ${result}==False    Append To List    ${filtered_lines}    ${line}
+        ${result}=    Run Keyword And Return Status    Should Contain    ${line}    IAR
+        Run Keyword If    '${os}' == 'Darwin' and ${result}==True    Continue For Loop
+        Append To List    ${filtered_lines}    ${line}
     END
 
     # Prefix remaining items with '-c ' and join them

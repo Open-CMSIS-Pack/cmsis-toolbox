@@ -384,6 +384,8 @@ jobs:
       - name: Run Test
         shell: bash
         continue-on-error: true
+        env:
+          IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
         run: |
           export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
           robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} \
