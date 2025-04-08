@@ -1126,8 +1126,10 @@ debug-topology:
 `accessports:`                                    |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
 `- apid:`                                         | **Required** | Unique ID of this access port. If only `apid` is provided, access port (APv1) with index `0` will be implicitly used.
-&nbsp;&nbsp;&nbsp; `index:`                       |   Optional   | The index to select this access port (APv1) for a target access.
-&nbsp;&nbsp;&nbsp; `address:`                     |   Optional   | The address to select this access port (APv2) in its parent's address space for a target access.
+&nbsp;&nbsp;&nbsp; `index:`                       |   Optional   | Index to select this access port (APv1) for a target access.
+&nbsp;&nbsp;&nbsp; `address:`                     |   Optional   | Address to select this access port (APv2) in its parent's address space for a target access.
+&nbsp;&nbsp;&nbsp; `HPROT:`                       |   Optional   | Value for HPROT (AHB Protection Control) bits.
+&nbsp;&nbsp;&nbsp; `SPROT:`                       |   Optional   | Value for SPROT (Secure Protection Control) bit.
 &nbsp;&nbsp;&nbsp; *`accessports:`*               |   Optional   | Nested CoreSight access ports (APv2).
 
 !!! Note
