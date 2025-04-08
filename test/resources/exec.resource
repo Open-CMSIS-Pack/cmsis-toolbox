@@ -24,10 +24,17 @@ Run Program
 Run cbuild
     [Documentation]                Execute cbuild command with specified arguments
     [Arguments]                    ${input_file}    ${command}    ${args}=@{EMPTY}
-    Append To List                 ${args}    -p    -r    --update-rte
+    ${contexts}=                   Get Contexts From Project      ${input_file}    ${0}    ${args}
+    ${filecontexts}=               Convert And Filter Contexts    ${contexts}
+
+    @{args_ex}                     Create List    @{args}    @{filecontexts}
+    Append To List                 ${args_ex}    -p    -r    --update-rte
+
     ${is_command_empty}=           Evaluate    '${command}' == '${EMPTY}'
-    ${ret_code}=    Run Keyword If    ${is_command_empty}    Run Program    cbuild    ${input_file}    @{args}
-    ...    ELSE    Run Program    cbuild    ${input_file}    @{args}    ${command}
+    ${ret_code}=                   Run Keyword If    ${is_command_empty}
+    ...    Run Program    cbuild    ${input_file}    @{args_ex}
+    ...    ELSE
+    ...    Run Program    cbuild    ${input_file}    @{args_ex}    ${command}
     RETURN                         ${ret_code}
 
 Build Example With cbuildgen
@@ -97,15 +104,15 @@ Checkout GitHub Repository
     Should Be Equal As Integers     ${result.rc}          ${0}
 
 Run Csolution Project
-    [Arguments]         ${input_file}    ${expect}     ${args}=@{EMPTY}
-    ${contexts}=        Get Contexts From Project      ${input_file}    ${expect}    ${args}
-    ${filcontexts}=     Convert And Filter Contexts    ${contexts}
-    @{args_ex}          Create List                    @{args}    @{filcontexts}
+    [Arguments]                     ${input_file}    ${expect}     ${args}=@{EMPTY}
+    ${contexts}=                    Get Contexts From Project      ${input_file}    ${expect}    ${args}
+    ${filecontexts}=                Convert And Filter Contexts    ${contexts}
+    @{args_ex}                      Create List                    @{args}    @{filecontexts}
     
     ${res_cbuildgen}=       Run Keyword And Ignore Error
-    ...                         Build Example With cbuildgen      ${input_file}    ${expect}    ${args_ex}
+    ...    Build Example With cbuildgen      ${input_file}    ${expect}    ${args_ex}
     ${res_cbuild2cmake}=    Run Keyword And Ignore Error
-    ...                        Build Example with cbuild2cmake    ${input_file}    ${expect}    ${args_ex}
+    ...    Build Example with cbuild2cmake    ${input_file}    ${expect}    ${args_ex}
 
     # Check the result of the first run
     ${success}=    Set Variable    ${res_cbuildgen[0]}
@@ -127,23 +134,27 @@ Run Csolution Project
     ...                    ${parent_path}${/}${Default_Out_Dir}
     Should Be True     ${result}
 
+
 Convert And Filter Contexts
     [Documentation]    Example test to convert a string to an array, filter it, and join it
     [Arguments]        ${all_contexts}
-    @{lines}=    Split String    ${all_contexts}    \n
 
-    # Filter out items containing '+iar'
-    @{filtered_lines}=    Create List
-    FOR    ${line}    IN    @{lines}
-        log    ${line}
-        ${result}=    Run Keyword And Return Status    Should Contain    ${line}    iar
-        Run Keyword If    ${result}==False    Append To List    ${filtered_lines}    ${line}
+    ${os}=             Get Operating System
+    @{contexts}=       Split String    ${all_contexts}    \n
+
+    # Filter out items containing 'iar'
+    @{filtered_contexts}=    Create List
+    FOR    ${context}    IN    @{contexts}
+        log    ${context}
+        ${context_lower}=    Convert To Lower Case    ${context}
+        ${result}=    Run Keyword And Return Status    Should Contain    ${context_lower}    iar
+        Run Keyword If    '${os}' != 'Darwin' and ${result} is ${FALSE}    Append To List    ${filtered_contexts}    ${context}
     END
 
     # Prefix remaining items with '-c ' and join them
     @{context_list_args}=    Create List
-    FOR    ${line}    IN    @{filtered_lines}
-        Append To List    ${context_list_args}    -c    ${line}
+    FOR    ${context}    IN    @{filtered_contexts}
+        Append To List    ${context_list_args}    -c    ${context}
     END
 
     RETURN    ${context_list_args}
