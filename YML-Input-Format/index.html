@@ -3963,7 +3963,10 @@ to overwrite configuration information or to define new debugger setups.</p>
 </tr>
 </tbody>
 </table>
-<p>!!! Note The default values for <code>clock:</code> and <code>protocol:</code> are provided in the BSP or DFP. If no values are defined <code>clock: 10000000</code> and <code>protocol: swd</code> is assumed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The default values for <code>clock:</code> and <code>protocol:</code> are provided in the BSP or DFP. If no values are defined <code>clock: 10000000</code> and <code>protocol: swd</code> is assumed.</p>
+</div>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">debugger:
   - name: CMSIS-DAP
@@ -3976,7 +3979,7 @@ to overwrite configuration information or to define new debugger setups.</p>
     info: connect via ULink-plus
     protocol: jtag
     clock: 10000000               # 10 MHz
-    0dbgconf: MyHardware.dbgconf   
+    dbgconf: MyHardware.dbgconf   
     for-context: +MyHardware      # only for target-type MyHardware
 
   - name: JLink
@@ -3985,7 +3988,7 @@ to overwrite configuration information or to define new debugger setups.</p>
     protocol: swd
 </code></pre>
 <p>Depending on the debugger, a specific debugger connection can be selected using command line options, for example:</p>
-<pre><code class="language-bash">pyOCD MyTarget.cbuild-run.yml --debugger ULink
+<pre><code class="language-bash">pyOCD gdbserver --cbuild-run MyTarget.cbuild-run.yml --debugger ULink
 </code></pre>
 <h2 id="add-memory">Add Memory</h2>
 <p>Hardware targets may have additional off-chip memory. The <code>memory:</code> node that can be added as additional information to a target type.
