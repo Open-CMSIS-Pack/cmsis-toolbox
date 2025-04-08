@@ -2458,6 +2458,16 @@ packs. This information is used to define the <code>device:</code> along with ba
 <p>A <code>device:</code> is derived from the <code>board:</code> setting, but an explicit <code>device:</code> setting overrules the <code>board:</code> device.</p>
 <p>If <code>device:</code> specifies a device with a multi-core processor, and no explicit <code>pname</code> for the processor core selection is specified, the default <code>pname</code> of the device is used.</p>
 <p>At the level of a <code>cproject.yml</code> file, only the <code>pname</code> can be specified as the device itself is selected at the level of a <code>csolution.yml</code> file.</p>
+<p><strong>Example:</strong></p>
+<p>The following assumes that the csolution is based on NXP's <code>K32L3A60VPJ1A</code> which has two <code>pnames</code>: <code>cm4</code> and <code>cm0plus</code>. Here are the corresponding entries in the <code>*.cproject.yml</code> files:</p>
+<p><em>CM4.cproject.yml:</em></p>
+<pre><code class="language-yml">project:
+  device: :cm4
+</code></pre>
+<p><em>CM0Plus.cproject.yml:</em></p>
+<pre><code class="language-yml">project:
+  device: :cm0plus
+</code></pre>
 <h2 id="processor-attributes">Processor Attributes</h2>
 <h3 id="processor"><code>processor:</code></h3>
 <p>The <code>processor:</code> keyword specifies the processor features used in this project.</p>
