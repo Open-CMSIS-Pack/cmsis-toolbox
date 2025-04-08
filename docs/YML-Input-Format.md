@@ -1225,6 +1225,24 @@ If `device:` specifies a device with a multi-core processor, and no explicit `pn
 
 At the level of a `cproject.yml` file, only the `pname` can be specified as the device itself is selected at the level of a `csolution.yml` file.
 
+**Example:**
+
+The following assumes that the csolution is based on NXP's `K32L3A60VPJ1A` which has two `pnames`: `cm4` and `cm0plus`. Here are the corresponding entries in the `*.cproject.yml` files:
+
+*CM4.cproject.yml:*
+
+```yml
+project:
+  device: :cm4
+```
+
+*CM0Plus.cproject.yml:*
+
+```yml
+project:
+  device: :cm0plus
+```
+
 ## Processor Attributes
 
 ### `processor:`
