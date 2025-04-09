@@ -147,8 +147,9 @@ Convert And Filter Contexts
     FOR    ${context}    IN    @{contexts}
         log    ${context}
         ${context_lower}=    Convert To Lower Case    ${context}
-        ${result}=    Run Keyword And Return Status    Should Contain    ${context_lower}    iar
-        Run Keyword If    '${os}' != 'Darwin' and ${result} is ${FALSE}    Append To List    ${filtered_contexts}    ${context}
+        ${contains_iar}=     Run Keyword And Return Status    Should Contain    ${context_lower}    iar
+        ${match_found}=      Evaluate    "'${os}' == 'Darwin' and ${contains_iar}"
+        Run Keyword If    ${match_found} == False    Append To List    ${filtered_contexts}    ${context}
     END
 
     # Prefix remaining items with '-c ' and join them

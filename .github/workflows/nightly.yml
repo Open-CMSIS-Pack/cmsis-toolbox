@@ -83,8 +83,8 @@ jobs:
         with:
           go-version-file: cbuild/go.mod
           cache-dependency-path: |
-            **/go.mod
-            **/go.sum
+            cbuild/go.mod
+            cbuild/go.sum
 
       - name: Build cbuild executable
         working-directory: cbuild
@@ -105,8 +105,8 @@ jobs:
         with:
           go-version-file: cpackget/go.mod
           cache-dependency-path: |
-            **/go.mod
-            **/go.sum
+            cpackget/go.mod
+            cpackget/go.sum
 
       - name: Build cpackget executable
         working-directory: cpackget
@@ -127,8 +127,8 @@ jobs:
         with:
           go-version-file: cbuild2cmake/go.mod
           cache-dependency-path: |
-            **/go.mod
-            **/go.sum
+            cbuild2cmake/go.mod
+            cbuild2cmake/go.sum
 
       - name: Build cbuild2cmake executable
         working-directory: cbuild2cmake
@@ -149,8 +149,8 @@ jobs:
         with:
           go-version-file: vidx2pidx/go.mod
           cache-dependency-path: |
-            **/go.mod
-            **/go.sum
+            vidx2pidx/go.mod
+            vidx2pidx/go.sum
 
       - name: Build vidx2pidx executable
         working-directory: vidx2pidx
@@ -171,8 +171,8 @@ jobs:
         with:
           go-version-file: cbridge/go.mod
           cache-dependency-path: |
-            **/go.mod
-            **/go.sum
+            cbridge/go.mod
+            cbridge/go.sum
 
       - name: Build cbridge executable
         working-directory: cbridge
@@ -377,16 +377,6 @@ jobs:
           cbuild -V
           cbuild2cmake -V
           cbuildgen -V
-
-      - name: Run Test
-        shell: bash
-        continue-on-error: true
-        env:
-          IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
-        run: |
-          export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
-          cbuild --version
-          cbuild ./test/data/build-c/solution.csolution.yml -p -r --update-rte
 
       - name: Run Test
         shell: bash
