@@ -37,15 +37,6 @@ Run cbuild
     ...    Run Program    cbuild    ${input_file}    @{args_ex}    ${command}
     RETURN                         ${ret_code}
 
-# Run cbuild
-#     [Documentation]                Execute cbuild command with specified arguments
-#     [Arguments]                    ${input_file}    ${command}    ${args}=@{EMPTY}
-#     Append To List                 ${args}    -p    -r    --update-rte
-#     ${is_command_empty}=           Evaluate    '${command}' == '${EMPTY}'
-#     ${ret_code}=    Run Keyword If    ${is_command_empty}    Run Program    cbuild    ${input_file}    @{args}
-#     ...    ELSE    Run Program    cbuild    ${input_file}    @{args}    ${command}
-#     RETURN                         ${ret_code}
-
 Build Example With cbuildgen
     [Documentation]     Build csolution example with cbuildgen
     [Arguments]         ${input_file}    ${expect}        ${args}=@{EMPTY}
@@ -139,12 +130,10 @@ Run Csolution Project
     ...    ELSE
     ...    Log    cbuild2cmake failed with message: ${message}
 
-    # Should Be Equal    ${res_cbuildgen[0]}    ${res_cbuild2cmake[0]}    build status doesn't match
     ${build_success}=    Evaluate    '${res_cbuildgen[0]}' == '${res_cbuild2cmake[0]}' == 'PASS'
     IF    '${build_success}' == 'False'
         Return From Keyword    False
     END
-    # Should Be True    ${all_equal}    build status doesn't match
 
     ${parent_path}=    Get Parent Directory Path    ${input_file}
     ${elf_compare_result}=         Run Keyword And Return
@@ -165,7 +154,6 @@ Convert And Filter Contexts
 
     # Filter out items containing 'iar'
     @{filtered_contexts}=    Create List
-    # ${i}=    Set Variable    0
     FOR    ${context}    IN    @{contexts}
         log    ${context}
         ${context_lower}=    Convert To Lower Case    ${context}
