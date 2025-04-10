@@ -1112,7 +1112,7 @@ debug-topology:
 &nbsp;&nbsp;&nbsp; `processors:`                  |   Optional   | Map of `pname` identifiers to access port IDs (mandatory for multi-processor devices).
 &nbsp;&nbsp;&nbsp; `swj:`                         |   Optional   | Device allows switching between Serial Wire Debug (SWD) and JTAG protocols (`true` or `false`).
 &nbsp;&nbsp;&nbsp; `dormant:`                     |   Optional   | Device requires the dormant state to switch debug protocols (`true` or `false`).
-&nbsp;&nbsp;&nbsp; `sdf:`                         |   Optional   | [System Description File (`*.sdf`)](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/sdf_pg.html) specified in the [DFP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugconfig).
+&nbsp;&nbsp;&nbsp; *`sdf:`*                       |   Optional   | [System Description File (`*.sdf`)](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/sdf_pg.html) specified in the [DFP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugconfig).
 
 `debugports:`                                     |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
@@ -1130,6 +1130,7 @@ debug-topology:
 &nbsp;&nbsp;&nbsp; `address:`                     |   Optional   | Address to select this access port (APv2) in its parent's address space for a target access.
 &nbsp;&nbsp;&nbsp; `HPROT:`                       |   Optional   | Value for HPROT (AHB Protection Control) bits.
 &nbsp;&nbsp;&nbsp; `SPROT:`                       |   Optional   | Value for SPROT (Secure Protection Control) bit.
+&nbsp;&nbsp;&nbsp; `datapatch:`                   |   Optional   | [List of patch values](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_dbg_datapatch) a debugger shall apply when reading from the device.
 &nbsp;&nbsp;&nbsp; *`accessports:`*               |   Optional   | Nested CoreSight access ports (APv2).
 
 !!! Note
@@ -1141,6 +1142,23 @@ debug-topology:
 &nbsp;&nbsp;&nbsp; *`punits:`*                    |   Optional   | Specifies processor units in a symmetric multi-processor core (MPCore) (mandatory when more than one CPU debug block is accessible).
 &nbsp;&nbsp;&nbsp; `apid:`                        |   Optional   | Access port ID to use for this processor.
 &nbsp;&nbsp;&nbsp; `reset-sequence:`              |   Optional   | Name of debug sequence for reset operation (default: `ResetSystem` sequence).
+
+`datapatch:`                                      |              | Content
+:-------------------------------------------------|--------------|:------------------------------------
+`- address:`                                      |**Required**  | Address for which to apply the patch.
+&nbsp;&nbsp;&nbsp; `value:`                       |**Required**  | Value to use instead of the ROM table.
+&nbsp;&nbsp;&nbsp; `mask:`                        |   Optional   | The bits to patch. Default: complete value is replaced.
+&nbsp;&nbsp;&nbsp; `type:`                        |   Optional   | Type of data access to patch (see table below). Default is `Mem`.
+&nbsp;&nbsp;&nbsp; `info:`                        |   Optional   | Descriptive text for diagnostics messages.
+
+The table lists the allowed values for data patch access types.
+
+type       | Data patch access type
+:----------|:-----------------------------
+DP         | CoreSight Debug Port register access via the DPACC instruction for CoreSight JTAG-DPs.
+ACCESS_AP  | Top-level Access Port access for a CoreSight ADIv6 DAP.
+AP         | CoreSight Access Port register access.
+Mem        | Memory access (default when type is not specified)
 
 *`punits:`*                                       |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
