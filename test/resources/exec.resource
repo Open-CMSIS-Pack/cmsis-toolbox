@@ -37,6 +37,15 @@ Run cbuild
     ...    Run Program    cbuild    ${input_file}    @{args_ex}    ${command}
     RETURN                         ${ret_code}
 
+# Run cbuild
+#     [Documentation]                Execute cbuild command with specified arguments
+#     [Arguments]                    ${input_file}    ${command}    ${args}=@{EMPTY}
+#     Append To List                 ${args}    -p    -r    --update-rte
+#     ${is_command_empty}=           Evaluate    '${command}' == '${EMPTY}'
+#     ${ret_code}=    Run Keyword If    ${is_command_empty}    Run Program    cbuild    ${input_file}    @{args}
+#     ...    ELSE    Run Program    cbuild    ${input_file}    @{args}    ${command}
+#     RETURN                         ${ret_code}
+
 Build Example With cbuildgen
     [Documentation]     Build csolution example with cbuildgen
     [Arguments]         ${input_file}    ${expect}        ${args}=@{EMPTY}
@@ -117,23 +126,35 @@ Run Csolution Project
     # Check the result of the first run
     ${success}=    Set Variable    ${res_cbuildgen[0]}
     ${message}=    Set Variable    ${res_cbuildgen[1]}
-    Run Keyword If    '${success}' == 'PASS'    Log    cbuildgen ran successfully
-    ...    ELSE    Log    cbuildgen failed with message: ${message}
+    Run Keyword If    '${success}' == 'PASS'
+    ...    Log    cbuildgen build successfully
+    ...    ELSE
+    ...    Log    cbuildgen build failed with message: ${message}
 
     # Check the result of the second run
     ${success}=    Set Variable    ${res_cbuild2cmake[0]}
     ${message}=    Set Variable    ${res_cbuild2cmake[1]}
-    Run Keyword If    '${success}' == 'PASS'    Log    cbuild2cmake ran successfully
-    ...    ELSE    Log    cbuild2cmake failed with message: ${message}
+    Run Keyword If    '${success}' == 'PASS'
+    ...    Log    cbuild2cmake ran successfully
+    ...    ELSE
+    ...    Log    cbuild2cmake failed with message: ${message}
 
-    Should Be Equal    ${res_cbuildgen[0]}    ${res_cbuild2cmake[0]}    build status doesn't match
+    # Should Be Equal    ${res_cbuildgen[0]}    ${res_cbuild2cmake[0]}    build status doesn't match
+    ${build_success}=    Evaluate    '${res_cbuildgen[0]}' == '${res_cbuild2cmake[0]}' == 'PASS'
+    IF    '${build_success}' == 'False'
+        Return From Keyword    False
+    END
+    # Should Be True    ${all_equal}    build status doesn't match
+
     ${parent_path}=    Get Parent Directory Path    ${input_file}
-    ${result}=         Run Keyword And Return
+    ${elf_compare_result}=         Run Keyword And Return
     ...                    Compare Elf Information   ${input_file}
     ...                    ${parent_path}${/}${Out_Dir}${/}${Default_Out_Dir}  
     ...                    ${parent_path}${/}${Default_Out_Dir}
-    Should Be True     ${result}
-
+    IF    '${elf_compare_result}' == 'False'
+        Return From Keyword    False
+    END
+    Return From Keyword    True
 
 Convert And Filter Contexts
     [Documentation]    Example test to convert a string to an array, filter it, and join it
@@ -144,6 +165,7 @@ Convert And Filter Contexts
 
     # Filter out items containing 'iar'
     @{filtered_contexts}=    Create List
+    # ${i}=    Set Variable    0
     FOR    ${context}    IN    @{contexts}
         log    ${context}
         ${context_lower}=    Convert To Lower Case    ${context}
