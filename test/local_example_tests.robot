@@ -73,21 +73,3 @@ Build Local CSolution Example
     ${result}=        Build CSolution Example    ${input_file}      ${cbuildgen_expect}    ${cbuild2cmake_expect}    ${args}
     Should Be True    ${result}
 
-    # ${all_contexts}=           Get Contexts From Project      ${input_file}    ${Pass}
-    # @{contexts}=               Split String    ${all_contexts}    \n
-    # ${mac_iar_match_found}=    Set Variable    False
-    # ${os}=                     Get Operating System
-    # FOR    ${context}    IN    @{contexts}
-    #     Log    Checking context: ${context}
-    #     ${context_lower}=           Convert To Lower Case    ${context}
-    #     ${contains_iar}=            Run Keyword And Return Status    Should Contain    ${context_lower}    iar
-    #     ${mac_iar_match_found}=     Evaluate    "'${os}' == 'Darwin' and ${contains_iar}"
-    #     Exit For Loop If    ${mac_iar_match_found} == ${True}
-    # END
-
-    # # Skip build if macOS and 'iar' toolchain is found
-    # ${result}=    Run Keyword If    ${mac_iar_match_found}
-    # ...    Return From Keyword    True
-    # ...    ELSE
-    # ...    Build CSolution Example    ${input_file}      ${cbuildgen_expect}    ${cbuild2cmake_expect}    ${args}
-    # Should Be True    ${result}

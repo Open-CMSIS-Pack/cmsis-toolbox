@@ -83,8 +83,8 @@ jobs:
         with:
           go-version-file: cbuild/go.mod
           cache-dependency-path: |
-            cbuild/go.mod
-            cbuild/go.sum
+            **/go.mod
+            **/go.sum
 
       - name: Build cbuild executable
         working-directory: cbuild
@@ -105,8 +105,8 @@ jobs:
         with:
           go-version-file: cpackget/go.mod
           cache-dependency-path: |
-            cpackget/go.mod
-            cpackget/go.sum
+            **/go.mod
+            **/go.sum
 
       - name: Build cpackget executable
         working-directory: cpackget
@@ -127,8 +127,8 @@ jobs:
         with:
           go-version-file: cbuild2cmake/go.mod
           cache-dependency-path: |
-            cbuild2cmake/go.mod
-            cbuild2cmake/go.sum
+            **/go.mod
+            **/go.sum
 
       - name: Build cbuild2cmake executable
         working-directory: cbuild2cmake
@@ -149,8 +149,8 @@ jobs:
         with:
           go-version-file: vidx2pidx/go.mod
           cache-dependency-path: |
-            vidx2pidx/go.mod
-            vidx2pidx/go.sum
+            **/go.mod
+            **/go.sum
 
       - name: Build vidx2pidx executable
         working-directory: vidx2pidx
@@ -171,8 +171,8 @@ jobs:
         with:
           go-version-file: cbridge/go.mod
           cache-dependency-path: |
-            cbridge/go.mod
-            cbridge/go.sum
+            **/go.mod
+            **/go.sum
 
       - name: Build cbridge executable
         working-directory: cbridge
