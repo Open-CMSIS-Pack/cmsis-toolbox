@@ -20,8 +20,8 @@ solution:
           - -lm
           - -lc
 
-    # - type: IAR
-    #   compiler: IAR
+    - type: IAR
+      compiler: IAR
 
     - type: CLANG
       compiler: CLANG

@@ -82,6 +82,8 @@ jobs:
       - name: Run Test
         shell: bash
         continue-on-error: true
+        env:
+          IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
         run: |
           robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} \
             --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}.md \

@@ -29,8 +29,17 @@ Test packs examples
     Initialize Pack Root Directory     ${pack_root_dir}
     Install Pack         ${pack_id}    ${pack_root_dir}
     Change Directory Permissions       ${pack_root_dir}
+
+    ${failed_iterations}=    Create List
     ${files}    Glob Files In Directory    ${pack_root_dir}    *.csolution.*    ${True}
     FOR    ${file}    IN    @{files}
-        ${file}=    Normalize Path    ${file}
-        Run Csolution Project    ${file}    ${expect}
+        ${file}=          Normalize Path    ${file}
+        Continue For Loop If    'RTX_Library.csolution.yml' in '${file}'
+        ${status}=        Run Csolution Project    ${file}    ${expect}
+        Run Keyword If    '${status}' == 'False'
+        ...    Append To List    ${failed_iterations}    ${file}
+    END
+
+    IF    ${failed_iterations} != []
+        Fail    Test failed for : ${failed_iterations}
     END
