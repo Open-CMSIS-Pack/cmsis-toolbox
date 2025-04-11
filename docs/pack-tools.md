@@ -215,7 +215,7 @@ The CMSIS-Pack system uses version numbers to track and differentiate various re
 
     - `MAJOR` indicates big updates that break backward compatibility.
     - `MINOR` indicates new features, but still backward-compatible.
-    - `PATCH` indicates bug fixes or minor tweaks. `PATCH` can be omitted and defaults to `0` in this case.
+    - `PATCH` indicates bug fixes or minor tweaks.
   
 2. **Calendar Versioning** ([CalVer](https://calver.org/)) is accepted when higher values indicated newer releases. The format should be therefore `YY.MM.DD`, or `YY.MM.PATCH`. For example:
 
@@ -225,11 +225,14 @@ The CMSIS-Pack system uses version numbers to track and differentiate various re
 Both versioning schemas support `-pre-release` labels that may be used during development and testing. For example:
 
 - `1.0.0-alpha` for early testing.
-- `22.04-rc.1` for a release candidate that is close to final.
+- `22.04.0-rc.1` for a release candidate that is close to final.
 
 Product Lifecycle Management (PLM) and versioning are closely connected. Versioning ensures that each stage of PLM is properly controlled and documented. The CMSIS-Toolbox accepts therefore version numbers and ranges for `packs` and `components` and outputs version details in [build information files](YML-CBuild-Format.md).
 
-**Semantic Versioning** ([SemVer](https://semver.org/)) is recommended as it supports the PLM features of the CMSIS-Toolbox. It enables [PLM of configuration files](build-overview.md#plm-of-configuration-files) and simplifies the software pack updates. For example: `- pack: ARM::CMSIS@^6.1.0` accepts any pack version equal or higher but with the same `MAJOR` version.
+**Semantic Versioning** ([SemVer](https://semver.org/)) is recommended as it supports the PLM features of the CMSIS-Toolbox. It enables [PLM of configuration files](build-overview.md#plm-of-configuration-files) and simplifies the software pack updates. For example: `- pack: ARM::CMSIS@^6.1.0` accepts any release version equal or higher but with the same `MAJOR` version. To accept also pre-release versions, use `- pack: ARM::CMSIS@^6.1.0-0`.
+
+!!! Note
+    - During the development of a pack `+build` information may be used. This `+build` information is ignored by the CMSIS-Toolbox and should be not part of a public released pack.
 
 ## Project Examples
 

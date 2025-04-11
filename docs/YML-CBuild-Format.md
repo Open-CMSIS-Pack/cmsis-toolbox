@@ -958,6 +958,7 @@ This node contains the [debug sequences](https://open-cmsis-pack.github.io/Open-
 
 !!! Note
     - When `atomic:` is applied, sequences execute with no interrupts as fast as possible using [CMSIS-DAP Atomic Commands](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__atomic__gr.html). It has therefore restrictions and cannot be combined with `blocks:`.
+    - When a `blocks:` node contains both `execute:` and `blocks:`, the commands specified under `execute:` are processed first before the `block:` is processed.
 
 Example: [DebugPortSetup](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#debugPortSetup)
 
@@ -1074,6 +1075,8 @@ debug-sequences:
 
 The `programming:` node collects the [flash algorithms](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html) of device memory (specified in DFP) and board memory (specified in BSP), and [`memory:`](YML-Input-Format.md#memory) specified the `*.csolution.yml` file.
 
+The algorithm in the DFP and BSP must have the attribute `default="1"` set. If it specifies a `style`, only the styles "Keil" and "CMSIS" are added. Other algorithms may be add using the [`memory:`](YML-Input-Format.md#memory) node in the `*.csolution.yml` file.
+
 `programming:`                                    |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
 `- algorithm:`                                    | **Required** | Programming algorithm file including the path.
@@ -1146,7 +1149,7 @@ debug-topology:
 `datapatch:`                                      |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
 `- address:`                                      |**Required**  | Address for which to apply the patch.
-&nbsp;&nbsp;&nbsp; `value:`                       |**Required**  | Value to use instead of the ROM table.
+&nbsp;&nbsp;&nbsp; `value:`                       |**Required**  | Value to overwrite from device (for example in a ROM table).
 &nbsp;&nbsp;&nbsp; `mask:`                        |   Optional   | The bits to patch. Default: complete value is replaced.
 &nbsp;&nbsp;&nbsp; `type:`                        |   Optional   | Type of data access to patch (see table below). Default is `Mem`.
 &nbsp;&nbsp;&nbsp; `info:`                        |   Optional   | Descriptive text for diagnostics messages.
@@ -1155,8 +1158,6 @@ The table lists the allowed values for data patch access types.
 
 type       | Data patch access type
 :----------|:-----------------------------
-DP         | CoreSight Debug Port register access via the DPACC instruction for CoreSight JTAG-DPs.
-ACCESS_AP  | Top-level Access Port access for a CoreSight ADIv6 DAP.
 AP         | CoreSight Access Port register access.
 Mem        | Memory access (default when type is not specified)
 
