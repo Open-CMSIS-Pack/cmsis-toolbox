@@ -16,7 +16,7 @@
 |windows-amd64|Validate build-set Example|4.23 s|Local Example Tests|
 |windows-amd64|Validate executes Example|6.11 s|Local Example Tests|
 |windows-amd64|Validate include-define Example|7.85 s|Local Example Tests|
-|windows-amd64|Validate library-rtos Example|11.85 s|Local Example Tests|
+|windows-amd64|Validate language-scope Example|10.17 s|Local Example Tests|
 |windows-amd64|Validate linker-pre-processing Example|7.09 s|Local Example Tests|
 |windows-amd64|Validate pre-include Example|7.22 s|Local Example Tests|
 |windows-amd64|Validate whitespace Example|6.97 s|Local Example Tests|
@@ -32,7 +32,7 @@
 |linux-amd64|Validate build-set Example|1.12 s|Local Example Tests|
 |linux-amd64|Validate executes Example|1.33 s|Local Example Tests|
 |linux-amd64|Validate include-define Example|1.93 s|Local Example Tests|
-|linux-amd64|Validate library-rtos Example|4.01 s|Local Example Tests|
+|linux-amd64|Validate language-scope Example|2.48 s|Local Example Tests|
 |linux-amd64|Validate linker-pre-processing Example|1.69 s|Local Example Tests|
 |linux-amd64|Validate pre-include Example|1.78 s|Local Example Tests|
 |linux-amd64|Validate whitespace Example|1.67 s|Local Example Tests|
@@ -48,7 +48,7 @@
 |darwin-amd64|Validate build-set Example|5.01 s|Local Example Tests|
 |darwin-amd64|Validate executes Example|5.72 s|Local Example Tests|
 |darwin-amd64|Validate include-define Example|7.85 s|Local Example Tests|
-|darwin-amd64|Validate library-rtos Example|10.81 s|Local Example Tests|
+|darwin-amd64|Validate language-scope Example|10.57 s|Local Example Tests|
 |darwin-amd64|Validate linker-pre-processing Example|6.28 s|Local Example Tests|
 |darwin-amd64|Validate pre-include Example|6.12 s|Local Example Tests|
 |darwin-amd64|Validate whitespace Example|5.62 s|Local Example Tests|
