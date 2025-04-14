@@ -871,6 +871,7 @@ List of the description files for peripherals and software components used in th
 `- file:`                                         | string | **Required** | Specifies the file name including the path.
 &nbsp;&nbsp;&nbsp; `type:`                        | string | **Required** | Specifies the file type (see table below).
 &nbsp;&nbsp;&nbsp; `info:`                        | string |   Optional   | Brief description of the file.
+&nbsp;&nbsp;&nbsp; `pname:`                       | string |   Optional   | File is used only for a specific processor; default is for all processors.
 
 `type:` | Description
 :-------|:------------------
