@@ -4,7 +4,7 @@
 
 |:white_check_mark: Passed|:x: Failed|:fast_forward: Skipped|Total|
 |:----:|:----:|:-----:|:---:|
-|54|0|0|54|
+|48|0|0|48|
 
 ## Passed Tests
 
@@ -17,12 +17,10 @@
 |windows-amd64|Validate executes Example|6.11 s|Local Example Tests|
 |windows-amd64|Validate include-define Example|7.85 s|Local Example Tests|
 |windows-amd64|Validate language-scope Example|10.17 s|Local Example Tests|
-|windows-amd64|Validate library-rtos Example|11.85 s|Local Example Tests|
 |windows-amd64|Validate linker-pre-processing Example|7.09 s|Local Example Tests|
 |windows-amd64|Validate pre-include Example|7.22 s|Local Example Tests|
 |windows-amd64|Validate whitespace Example|6.97 s|Local Example Tests|
 |windows-amd64|Validate trustzone Example|48.04 s|Local Example Tests|
-|windows-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|955.02 s|Pack Example Tests|
 |windows-amd64|Hello_FRDM-K32L3A6|35.11 s|Remote Example Tests|
 |windows-amd64|Hello_LPCXpresso55S69|30.37 s|Remote Example Tests|
 |windows-amd64|Csolution-examples|27.52 s|Remote Example Tests|
@@ -35,12 +33,10 @@
 |linux-amd64|Validate executes Example|1.33 s|Local Example Tests|
 |linux-amd64|Validate include-define Example|1.93 s|Local Example Tests|
 |linux-amd64|Validate language-scope Example|2.48 s|Local Example Tests|
-|linux-amd64|Validate library-rtos Example|4.01 s|Local Example Tests|
 |linux-amd64|Validate linker-pre-processing Example|1.69 s|Local Example Tests|
 |linux-amd64|Validate pre-include Example|1.78 s|Local Example Tests|
 |linux-amd64|Validate whitespace Example|1.67 s|Local Example Tests|
 |linux-amd64|Validate trustzone Example|7.48 s|Local Example Tests|
-|linux-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|754.88 s|Pack Example Tests|
 |linux-amd64|Hello_FRDM-K32L3A6|13.17 s|Remote Example Tests|
 |linux-amd64|Hello_LPCXpresso55S69|10.68 s|Remote Example Tests|
 |linux-amd64|Csolution-examples|14.93 s|Remote Example Tests|
@@ -53,12 +49,10 @@
 |darwin-amd64|Validate executes Example|5.72 s|Local Example Tests|
 |darwin-amd64|Validate include-define Example|7.85 s|Local Example Tests|
 |darwin-amd64|Validate language-scope Example|10.57 s|Local Example Tests|
-|darwin-amd64|Validate library-rtos Example|10.81 s|Local Example Tests|
 |darwin-amd64|Validate linker-pre-processing Example|6.28 s|Local Example Tests|
 |darwin-amd64|Validate pre-include Example|6.12 s|Local Example Tests|
 |darwin-amd64|Validate whitespace Example|5.62 s|Local Example Tests|
 |darwin-amd64|Validate trustzone Example|22.82 s|Local Example Tests|
-|darwin-amd64|NXP::LPCXpresso55S69_BSP.18.0.0|1559.94 s|Pack Example Tests|
 |darwin-amd64|Hello_FRDM-K32L3A6|26.55 s|Remote Example Tests|
 |darwin-amd64|Hello_LPCXpresso55S69|22.71 s|Remote Example Tests|
 |darwin-amd64|Csolution-examples|28.29 s|Remote Example Tests|
