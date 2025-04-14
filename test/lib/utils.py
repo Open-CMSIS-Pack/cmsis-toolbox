@@ -4,6 +4,7 @@ import subprocess
 import re
 import os
 import fnmatch
+import platform
 
 def glob_files_in_directory(directory: str, pattern: str, recursive: bool, ignore_dir: str = None):
     matched_files = []
@@ -54,3 +55,6 @@ def write_test_environment(test_env_file:str):
     # Write tool version info
     with open(test_env_file, "w") as file:
         file.write(markdown_content)
+
+def get_operating_system():
+    return platform.system()
