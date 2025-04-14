@@ -1,8 +1,0 @@
-CompileFlags:
-  CompilationDatabase: c:\w\cmsis-toolbox\test\data\build-asm\out\project\ARMCM0\AC6
-  Add:
-    - '-IC:/w/cmsis-toolbox/test/data/build-asm/project/RTE/_AC6_ARMCM0'
-    - >-
-      -IC:/Users/reikei01/AppData/Local/Arm/Packs/ARM/CMSIS/6.1.0/CMSIS/Core/Include
-    - >-
-      -IC:/Users/reikei01/AppData/Local/Arm/Packs/ARM/Cortex_DFP/1.1.0/Device/ARMCM0/Include

@@ -447,7 +447,7 @@ jobs:
 
       - name: Test with pytest
         run: |
-          pytest --base-path=toolbox/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }} test/tests.py -rA --junitxml=test-results-${{ matrix.config.target }}-${{ matrix.config.arch }}.xml
+          pytest --base-path=toolbox/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }} test/packaging/tests.py -rA --junitxml=test-results-${{ matrix.config.target }}-${{ matrix.config.arch }}.xml
 
       - name: Archive test report
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
