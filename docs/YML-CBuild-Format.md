@@ -958,7 +958,7 @@ This node contains the [debug sequences](https://open-cmsis-pack.github.io/Open-
 
 !!! Note
     - When `atomic:` is applied, sequences execute with no interrupts as fast as possible using [CMSIS-DAP Atomic Commands](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__atomic__gr.html). It has therefore restrictions and cannot be combined with `blocks:`.
-    - When a `blocks:` node contains both `execute:` and `blocks:`, the commands specified under `execute:` are processed first before the `block:` is processed.
+    - A `blocks:` node can either contain `execute:` or `blocks:` but not both.
 
 Example: [DebugPortSetup](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#debugPortSetup)
 
