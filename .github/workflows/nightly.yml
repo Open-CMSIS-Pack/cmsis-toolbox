@@ -461,3 +461,167 @@ jobs:
         name: consolidated-reports
         path: artifacts/collective_robot_results
         retention-days: ${{ env.retention-days }}
+
+  performance-check:
+    needs: [ matrix_prep, create-toolbox ]
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout toolbox repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install pip dependencies
+        run: |
+            pip install --upgrade pip
+            pip install -r test/performance/requirements.txt
+
+      - name: Setup vcpkg environment
+        uses: ARM-software/cmsis-actions/vcpkg@f608f32a6d83e90d79e1f2bbb7812fdb94bf1679 # v1
+        with:
+          config: "./test/vcpkg-configuration.json"
+          vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
+          cache: "-"
+
+      - name: Print Ref Binary Versions
+        if: always()
+        shell: bash
+        run: |
+          csolution -V
+          cpackget -V
+          cbuild -V
+          cbuild2cmake -V
+          cbuildgen -V
+
+      - name: Activate Arm tool license
+        run: |
+          armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
+        working-directory: ./test
+
+      - name: Update Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y hyperfine
+
+      - name: Clone TestData Repositories
+        shell: bash
+        working-directory: ./test
+        run: |
+          set -x  # Enable debugging
+          mkdir -p ref_test_dir
+          cat performance/input_example_repos.txt | tr -d '\r' > repos_clean.txt  # Ensure no Windows line endings
+          while IFS= read -r repo || [[ -n "$repo" ]]; do
+            if [[ -n "$repo" ]]; then
+              echo "Cloning $repo..."
+              git clone "$repo" "ref_test_dir/$(basename "$repo" .git)" || echo "Failed to clone $repo"
+            fi
+          done < repos_clean.txt
+
+      - name: Collect Performance Metrics (Reference Toolbox)
+        working-directory: ./test
+        run: |
+          hyperfine --warmup 3 --runs 5 \
+            "cbuild setup ./ref_test_dir/csolution-examples/Hello/Hello.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./ref_test_dir/vscode-get-started/get_started.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./ref_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./ref_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain GCC" \
+            "cbuild setup ./ref_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain CLANG" \
+            --export-markdown ref_benchmark_results.md \
+            --export-json ref_benchmark_results.json \
+            --show-output
+
+      - name: Download cmsis-toolbox
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+        with:
+          name: cmsis-toolbox-linux-amd64
+          path: cmsis-toolbox
+
+      - name: Set Execution Permissions
+        run: |
+          chmod -R +x ./cmsis-toolbox/bin/*
+  
+      - name: Get Toolbox Path
+        if: always()
+        id: toolbox_path
+        shell: bash
+        run: |
+          echo "path=$(echo "$(pwd)/cmsis-toolbox/bin")" >> $GITHUB_OUTPUT
+          
+      - name: Print Curr Binary Versions
+        if: always()
+        shell: bash
+        run: |
+          export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
+          export CMSIS_PACK_ROOT="$(pwd)/local_pack_root"
+          csolution -V
+          cpackget -V
+          cbuild -V
+          cbuild2cmake -V
+          cbuildgen -V
+
+      - name: Clone Repositories
+        shell: bash
+        working-directory: ./test
+        run: |
+          set -x  # Enable debugging
+          mkdir -p curr_test_dir
+          cat performance/input_example_repos.txt | tr -d '\r' > repos_clean.txt  # Ensure no Windows line endings
+          while IFS= read -r repo || [[ -n "$repo" ]]; do
+            if [[ -n "$repo" ]]; then
+              echo "Cloning $repo..."
+              git clone "$repo" "curr_test_dir/$(basename "$repo" .git)" || echo "Failed to clone $repo"
+            fi
+          done < repos_clean.txt
+
+      - name: Collect Performance Metrics (Latest Toolbox)
+        working-directory: ./test
+        run: |
+          export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
+          export CMSIS_PACK_ROOT="$(pwd)/local_pack_root"
+          hyperfine --warmup 3 --runs 5 \
+            "cbuild setup ./curr_test_dir/csolution-examples/Hello/Hello.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./curr_test_dir/vscode-get-started/get_started.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./curr_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./curr_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain GCC" \
+            "cbuild setup ./curr_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain CLANG" \
+            --export-markdown curr_benchmark_results.md \
+            --export-json curr_benchmark_results.json \
+            --show-output
+
+      - name: Generate Comparison Report
+        if: always()
+        working-directory: ./test
+        run: |
+          # Generate Comparison report
+          # Path to the reference benchmark results (from last known release)
+          # Path to the current benchmark results (from the latest run)
+          # --verbose: Verbose output
+          # --output: Path to the output comparison report
+          python ./performance/generate_comparison.py \
+            ref_benchmark_results.md \
+            curr_benchmark_results.md \
+            --verbose \
+            --output comparison_results.md
+          cat comparison_results.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Compare Benchmark Results
+        working-directory: ./test
+        run: |
+          # Run the performance regression check script
+          # -r: Path to the reference benchmark results (from last known release)
+          # -c: Path to the current benchmark results (from the latest run)
+          # -p: Permissible limit multiplier (e.g., 1.10 allows up to 10% permissible degrade)
+          python ./performance/check_perf_regression.py \
+            -r ref_benchmark_results.json \
+            -c curr_benchmark_results.json \
+            -p 1.10
+      
