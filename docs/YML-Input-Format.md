@@ -2310,10 +2310,9 @@ For Debug and Run the `load:` node allows to specify additional files that shoul
 `- file:`                                                 |**Required** | Specifies the file name.
 &nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the file.
 &nbsp;&nbsp;&nbsp; `type:`                                |  Optional   | Specifies an explicit file type. 
-&nbsp;&nbsp;&nbsp; `run:`                                 |  Optional   | Additional command string for download or programming.
-&nbsp;&nbsp;&nbsp; `debug:`                               |  Optional   | Additional command string for debug.
-&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | Debugger configuration applied for a list of *context* types.
-&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | Debugger configuration not applied for a list of *context* types.
+&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | File is applied for a list of *context* types.
+&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | File is not applied for a list of *context* types.
+&nbsp;&nbsp;&nbsp; `load-offset:`                         |  Optional   | Offset applied to the binary content when loading the file.
 
 Using `run:` or `debug:` allows to specify additional command information, for example an offset or load symbols only.
 
