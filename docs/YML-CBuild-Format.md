@@ -932,8 +932,32 @@ These are options for the pyOCD GDB server configuration (could be optionally us
 
 `gdbserver:`                                              |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
-`- port:`                                                 |**Required** | Identifies the GDB port number.
-&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Connects to a specific processor (not required for single-core devices).
+&nbsp;&nbsp;&nbsp; `processors:`                          |**Required** | Lists the processors along with GDB port number.
+&nbsp;&nbsp;&nbsp; `terminal:`                            |  Future     | Terminal port of the GDB server.
+&nbsp;&nbsp;&nbsp; `trace:`                               |  Future     | Trace port of the GDB server.
+
+`processors:`                                             |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- port:`                                                 |**Required** | Port number of processor
+&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Processor name of the processor (only required for multi-core systems)
+&nbsp;&nbsp;&nbsp; `start:`                               |  Optional   | Identifies the start or primary processor. Only one processor can have the `start:` node
+
+**Example:**
+
+```yml
+  debugger:
+    - name: CMSIS-DAP
+      protocol: swd
+      clock: 10000000
+      dbgconf: cm33_core1/RTE/Device/MCXN947VDF_cm33_core1/MCXN9XX.dbgconf
+      gdbserver:
+        processors:
+          - port: 3333
+            pname: cm33_core1
+          - port: 3334
+            pname: cm33_core0
+        terminal: 3335
+```
 
 #### `debug-vars:`
 
