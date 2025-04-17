@@ -2313,8 +2313,13 @@ For Debug and Run the `load:` node allows to specify additional files that shoul
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | File is applied for a list of *context* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | File is not applied for a list of *context* types.
 &nbsp;&nbsp;&nbsp; `load-offset:`                         |  Optional   | Offset applied to the binary content when loading the file.
+&nbsp;&nbsp;&nbsp; `load-mode:`                           |  Optional   | defines the parts of the image that should be loaded (see below).
 
-Using `run:` or `debug:` allows to specify additional command information, for example an offset or load symbols only.
+`load-mode:`                         | Description
+:------------------------------------|:-------------
+&nbsp;&nbsp;&nbsp; `debug+image`     | Load both the binary image and the debug symbol information.
+&nbsp;&nbsp;&nbsp; `debug`           | Load only the debug symbol information.
+&nbsp;&nbsp;&nbsp; `image`           | Load only the binary image.
 
 With `type:` an explicit file type can be specified which is required for unknow file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.
 
