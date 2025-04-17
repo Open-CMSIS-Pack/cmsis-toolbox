@@ -763,7 +763,7 @@ cbuild-run:
       :
 
   debugger:
-    - name: CMSIS-DAP
+    - name: pyOCD: CMSIS-DAP
       :
     - name: JLink
       :
@@ -1202,5 +1202,5 @@ Start gdbserver for debug connection:
 Program flash with application images:
 
 ```bash
->pyocd flash --cbuild-run MyProject+TargetHW.cbuild-run.yml
+>pyocd load --cbuild-run MyProject+TargetHW.cbuild-run.yml
 ```
