@@ -1950,7 +1950,7 @@ The Windows batch file `KeyGen.bat` converts an input file `keyfile.txt` to a C 
 ```yml
 project:                                      # executed as part of a project build
   executes:
-    - execute: Generate Encryption Keys
+    - execute: GenerateEncryptionKeys
       run: $input(1)$ $input(0)$ -o $output$
       always:                                 # always generate the keyfile.c as it has a timestamp
       input:
