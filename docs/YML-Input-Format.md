@@ -1322,6 +1322,7 @@ The `target-types:` node may include [toolchain options](#toolchain-options), [t
 &nbsp;&nbsp;&nbsp; [`context-map:`](#context-map)  |   Optional   | Use different `target-types:` for specific projects.
 &nbsp;&nbsp;&nbsp; [`variables:`](#variables)      |   Optional   | Variables that can be used to define project components.
 &nbsp;&nbsp;&nbsp; [`memory:`](#memory)            |   Optional   | Add additional off-chip memory available in target hardware.
+&nbsp;&nbsp;&nbsp; [`context-set:`](#context-set)  |   Optional   | One or more context-set configurations for projects, images, and debugger.
 
 !!! Note
     Either `device:` or `board:` is required.
@@ -1396,6 +1397,38 @@ target-types:
     board: FRDM-K32L3A6       # NXP board with K32L3A6 device
     device: :cm0plus          # use the Cortex-M0+ processor
 ```
+
+### `context-set:`
+
+The `context-set:` specifies for a `target-type:` the projects and images to include and the debugger configuration. It is possible to specify one or more `set` configurations per `target-type`.
+
+`context-set:`                                        |              | Content
+:-----------------------------------------------------|--------------|:------------------------------------
+`- set:`                                              | **Required** | Start of a configuration, optional with name. The default set is unnamed.
+&nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the configuration.
+&nbsp;&nbsp;&nbsp; [`images:`](#context-set-images)   |   Optional   | List of images that belong to this set.
+&nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)           |   Optional   | Debugger configuration for this set.
+
+### `context-set: images:`
+
+The `images:` node specifies the projects with build-type and optional additional images that belong to this configuration of the target set.
+
+`images:`                                             |              | Content
+:-----------------------------------------------------|--------------|:------------------------------------
+`- project-context:`                                  |   Optional   | Start of a configuration, optional with name. The default set is unnamed.
+&nbsp;&nbsp;&nbsp; `image:`                           |   Optional   | Base name of the image. ToDo or filename with extension?
+&nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode for the image.
+
+### `load:`
+
+Specifies the load mode for the image.
+
+`load:`                              | Description
+:------------------------------------|:-------------
+&nbsp;&nbsp;&nbsp; `image+symbols`   | Load both the binary image and the debug symbol information (default).
+&nbsp;&nbsp;&nbsp; `symbols`         | Load only the debug symbol information.
+&nbsp;&nbsp;&nbsp; `image`           | Load only the binary image.
+&nbsp;&nbsp;&nbsp; `none`            | No content is loaded for this image, however it is part of the build process.
 
 ### `context-map:`
 
@@ -2219,6 +2252,7 @@ to overwrite configuration information or to define new debugger setups.
 &nbsp;&nbsp;&nbsp; `protocol:`                            |  Optional   | Select debug portocol (jtag or swd).
 &nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Select debug clock speed (in Hz).
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
+&nbsp;&nbsp;&nbsp; `start-pname:`                         |  Optional   | Debugger connects at start to this processor.
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | Debugger configuration applied for a list of *context* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | Debugger configuration not applied for a list of *context* types.
 
@@ -2301,11 +2335,11 @@ solution:
 
 ## Add Images
 
-For Debug and Run the `load:` node allows to specify additional files that should be added to the `output:` node of the `*.cbuild-run.yml` file.
+For Debug and Run the `images:` node allows to specify additional files that should be added to the `output:` node of the `*.cbuild-run.yml` file.
 
-### `load:`
+### `images:`
 
-`load:`                                                   |             | Content
+`images:`                                                 |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
 `- file:`                                                 |**Required** | Specifies the file name.
 &nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the file.
@@ -2313,13 +2347,9 @@ For Debug and Run the `load:` node allows to specify additional files that shoul
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | File is applied for a list of *context* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | File is not applied for a list of *context* types.
 &nbsp;&nbsp;&nbsp; `load-offset:`                         |  Optional   | Offset applied to the binary content when loading the file.
-&nbsp;&nbsp;&nbsp; `load-mode:`                           |  Optional   | defines the parts of the image that should be loaded (see below).
+&nbsp;&nbsp;&nbsp; `load:`                                |  Optional   | defines the parts of the image that should be loaded (see below).
 
-`load-mode:`                         | Description
-:------------------------------------|:-------------
-&nbsp;&nbsp;&nbsp; `debug+image`     | Load both the binary image and the debug symbol information.
-&nbsp;&nbsp;&nbsp; `debug`           | Load only the debug symbol information.
-&nbsp;&nbsp;&nbsp; `image`           | Load only the binary image.
+### `type:`
 
 With `type:` an explicit file type can be specified which is required for unknow file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.
 

@@ -60,7 +60,8 @@ solution:
       device: NXP::MCXN947VDF
       context-set:
         - set:                             // without id, <default> set
-          debugger: ST-Link
+          debugger:
+            name: ST-Link
           images:
           - project-context: core1.Debug
           - project-context: core0.Release
@@ -74,7 +75,8 @@ solution:
       device: NXP::MCXN947VDF
       context-set:
         - set:                             // without id, <default> set
-          debugger: ULINKplus
+          debugger: 
+            name: ULINKplus
           images:
           - project-context: core1.Debug
           - project-context: core0.Release
@@ -99,7 +101,7 @@ The active context set is selected using the cbuild/csolution tool with the opti
   -a   --active arg       select active context-set: <target-name>[@<context-set>]
 ```
 
-Note: `-a` option cannot be used in combination with `-s`.  It replaces `-s` over time.
+Note: `-a` option cannot be used in combination with `-S`.  It replaces `-S` over time.
 
 ### Default Values
 
@@ -109,7 +111,10 @@ The default value when `context-set:` is missing is:
 
 ## Manage Solution
 
-The Manage Solution dialog is changed as shown below.  The selection is stored in `csolution.yml`.
+The Manage Solution dialog is changed as shown below.  
+
+- The user selection of Projects, Images, and Debugger for Context Set is stored in `csolution.yml`.
+- The active solution and active context-set in VS Code is stored in Code\User\workspaceStorage.
 
 ![Manage Solution](./images/Manage-Solution.png "Manage Solution")
 
@@ -137,6 +142,8 @@ Allows to choose the projects and images that belong to a context set.
 - **Debug Adapter** is a selection from `adapters.yml` (see below).  If BSP or DFP contains a debugger name, this debugger is the pre-selected (default). Otherwise CMSIS-DAP@pyOCD is the default.
 - **Start Processor** is only shown for projects that contain a `pname` selection. The choosen `pname:` is the primary processor of the system. Default is `pname' of the first project.
 
+When `debugger:` is not specified in `csolution.yml, the Manage Solution dialog uses as default value `debugger:` from cbuild-run.yml.
+
 Over time debug adapter configuration settings may be added.
 
 ## launch.json and tasks.json update process
@@ -147,7 +154,7 @@ The update process only replaces configurations with same `pname` and `target-ty
 
 The `arm.cmsis-csolution-xxx` directory (where the VS Code CMSIS Solution extension is stored) gets a sub-directory with the name `.\adapters`.  This directory contain a file `adapters.yml` along with template files for updating `launch.json` and `tasks.json`.  It defines how to update the configuration for the files `./.vscode/launch.json` and `./.vscode/tasks.json`.\
 
-The file `adapters.yml` is also part of the CMSIS-Toolbox in the `./etc` folder to ensure a consistent list of supported debug adapters.  CMSIS-Toolbox could use fuzzy search for manually created csolution.yml files.
+The file `debug-adapters.yml` is also part of the CMSIS-Toolbox in the `./etc` folder to ensure a consistent list of supported debug adapters.  CMSIS-Toolbox could use fuzzy search to find the right adapter string.
 
 ```json
             "cmsis": {
@@ -156,10 +163,10 @@ The file `adapters.yml` is also part of the CMSIS-Toolbox in the `./etc` folder 
                 "updateConfiguration": auto     // without auto, this section would be not touched.
 ```
 
-**Potential `adapters.yml` content**
+**Potential `debug-adapters.yml` content**
 
 ```yml
-adapters:
+debug-adapters:
   name: "CMSIS-DAP@pyOCD"
   template: CMSIS-DAP-pyOCD.adapter.json    # template file
   default-port: 3333                        # default value of first gdbserver port
@@ -194,7 +201,7 @@ If more than one *.cproject.yml* is assigned, `%image-debug` and `%image-load` r
 
 - The section `singlecore:` is used for systems that do not use `pname:` specifiers in `gdbserver:` nodes.
 - The section `multicore-start:` is used for the `gdbserver:` `start:` node in systems that use `pname:` specifiers.
-- The section `multicore-other:` is used for other `gdbserve:` nodes in systems that use `pname:` specifiers.
+- The section `multicore-other:` is used for other `gdbserver:` nodes in systems that use `pname:` specifiers.
 
 ```json
     "launch:"                 // section for launch.json
@@ -366,19 +373,24 @@ Using "Select Active Solution from Workspace" allows to select the active soluti
 
 The locations for the build information files should change as follows:
 
-- `*.cbuild-run.yml` relocate to `out\$target-type$`
-- `*.cbuild.yml` relocate to `out\$target-type$\$build-type$`
+- `*.cbuild-run.yml` file relocate to `out`  (specified in csolution.yml with `output-dirs:`, but $Project$, $TargetType$, and $BuildType$ are replaced by empty strings).
+- `*.cbuild.yml` file relocate to `out\$Project$\$TargetType$\$BuildType$` (specified in csolution.yml with `output-dirs:`).
 
 ## ToDo's
 
 - How to prevent that tasks.json commands start a GDB server twice?  Executing another Load&Run while the terminal is still running would fail. 
-- How is the active solution and active context-set stored in the VS Code environment.
 - How are the commands mapped to JLink?  We need here examples.
 - How to create launch.json when using CMSIS Run command (with attach instead of launch) - should we just duplicate the sections launch and attach for the time being?
 - Can we simplify the `updateConfigruation: auto` to just the first core?
 - Do we always update tasks.json with commands that start with `CMSIS`?
 - Currently the Linux GDB server must be manually entered.  I believe this is OK, but let's discuss.
+- The active solution and active context-set is stored in workspaceStorage. Is this OK?
 - Discuss if we move debugger: configuration in csolution to context-set: section.
+- Should we use the name `target-set` instead of `context-set`?
+- Should context-set image be a complete filename or just a base name?
+- The file `debug-adapters.yml` could also list the options that are possible for a debugger.
+- Should we remove `debuggers:` under csolution and only allow it under context-set.
+- Should we find a way to add West configurations under images?
 - Finalize workaround for GDB AXF file load with gdb (see below)
 
 pyOCD can use two separate calls for Load and Run. This does not require a LOAD command from GDB init commands and  solves the issue with AC6 axf and gdb! The proposal is to use the "CMSIS Program" task as "preLaunchTask" (see below the launch.json example) - this simplifies also pyOCD implementation.
