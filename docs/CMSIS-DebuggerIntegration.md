@@ -44,9 +44,7 @@ Further commands are available under `...`:
 - **Run**
 
 **Potential implementation:**
-The commands in tasks.json create a terminal that starts GDB servers (one instance per core). Use the **Run and Debug View** to attact to a GDB server instance. All instances can be closed by terminating the terminal (Kill Terminal button or with CTRL-C). 
-
-ToDo: Executing another Load&Run while the terminal is still running would fail. 
+The commands in tasks.json create a terminal that starts GDB servers (one instance per core). Use the **Run and Debug View** to attach to a GDB server instance. All instances can be closed by terminating the terminal (Kill Terminal button or with CTRL-C). 
 
 ## Changes CMSIS-Toolbox
 
@@ -64,13 +62,13 @@ solution:
         - set:                             // without id, <default> set
           debugger: ST-Link
           images:
-          - project-context: core1.debug
-          - project-context: core0.release
+          - project-context: core1.Debug
+          - project-context: core0.Release
             load: symbols
         - set: production
           images:
-          - project-context: core1.release
-          - project-context: core0.release
+          - project-context: core1.Release
+          - project-context: core0.Release
 
     - type: Custom-HW
       device: NXP::MCXN947VDF
@@ -78,8 +76,21 @@ solution:
         - set:                             // without id, <default> set
           debugger: ULINKplus
           images:
-          - project-context: core1.debug
-          - project-context: core0.release
+          - project-context: core1.Debug
+          - project-context: core0.Release
+
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: debug
+
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  projects:
+    - project: ./cm33_core1/core1.cproject.yml
+    - project: ./cm33_core0/core0.cproject.yml
 ```
 
 The active context set is selected using the cbuild/csolution tool with the option:
@@ -87,6 +98,14 @@ The active context set is selected using the cbuild/csolution tool with the opti
 ```txt
   -a   --active arg       select active context-set: <target-name>[@<context-set>]
 ```
+
+Note: `-a` option cannot be used in combination with `-s`.  It replaces `-s` over time.
+
+### Default Values
+
+The default value when `context-set:` is missing is:
+- first project with first build-type. `load:` image & symbols
+- debugger from BSP, if this does not exist CMSIS-DAP@pyOCD
 
 ## Manage Solution
 
@@ -96,7 +115,7 @@ The Manage Solution dialog is changed as shown below.  The selection is stored i
 
 ### Changes
 
-- **Apply** makes the dialog stateful (similar to new Components/Packs dialog). It triggers the update of `launch.json` and `tasks.json`.
+- **Apply** makes the dialog stateful (similar to new Components/Packs dialog). 
 
 ### Projects, Images, and Debugger for Context Set
 
@@ -122,13 +141,13 @@ Over time debug adapter configuration settings may be added.
 
 ## launch.json and tasks.json update process
 
-The `arm.cmsis-csolution-xxx` directory (where the VS Code CMSIS Solution extension is stored) gets a sub-directory with the name `.\adapters`.  This directory contain a file `adapters.yml` along with template files for updating `launch.json` and `tasks.json`.  It defines how to update the configuration for the files `./.vscode/launch.json` and `./.vscode/tasks.json`.\
-
-The file `adapters.yml` is also part of the CMSIS-Toolbox in the `.etc` folder to ensure a consistent list of supported debug adapters.
-
 The update process is triggered when a new solution is loaded or the file `*.cbuild-run.yml` is has a new timestamp as files `./.vscode/launch.json` or `./.vscode/tasks.json`. It uses the information of the file `*.cbuild.run.yml`.
 
 The update process only replaces configurations with same `pname` and `target-type` provided that `updateConfiguration: auto` is present 
+
+The `arm.cmsis-csolution-xxx` directory (where the VS Code CMSIS Solution extension is stored) gets a sub-directory with the name `.\adapters`.  This directory contain a file `adapters.yml` along with template files for updating `launch.json` and `tasks.json`.  It defines how to update the configuration for the files `./.vscode/launch.json` and `./.vscode/tasks.json`.\
+
+The file `adapters.yml` is also part of the CMSIS-Toolbox in the `./etc` folder to ensure a consistent list of supported debug adapters.  CMSIS-Toolbox could use fuzzy search for manually created csolution.yml files.
 
 ```json
             "cmsis": {
@@ -143,9 +162,11 @@ The update process only replaces configurations with same `pname` and `target-ty
 adapters:
   name: "CMSIS-DAP@pyOCD"
   template: CMSIS-DAP-pyOCD.adapter.json    # template file
+  default-port: 3333                        # default value of first gdbserver port
 
   name: "ST-Link@pyOCD"
   template: STLink-pyOCD.adapter.json       # template file
+  default-port: 3333                        # default value of first gdbserver port
 
   name: "JLink Server"
   template: jlink.adapter.json              # template file
@@ -163,10 +184,10 @@ Initially, only the features required for "pyOCD: CMSIS-DAP" could be implemente
 
 `%<symbol>` strings are replaced with values from `*.cbuild-run.yml` when updating `launch.json` or `tasks.json`.
 
-- `%adapter-name` the `debugger:` `name:`
-- `%target-type` is the `target-type:`.
-- `%gdb-port` is the port number for the processor core from `gdbserver:` - `core:`
-- `%gdb-pname` the pname of the processor from `gdbserver:` - `core:`.
+- `%adapter-name` the value of `debugger:` `name:`
+- `%target-type` the value of `target-type:`.
+- `%gdb-port` the value `port:` for the processor core from `gdbserver:` - `core:`
+- `%gdb-pname` the value `pname:` of the processor core from `gdbserver:` - `core:`.
 - `%symbol-file-list` is the image file list with `Load: symbols` attribute for the processor core with name `%gdb-name`.
 
 If more than one *.cproject.yml* is assigned, `%image-debug` and `%image-load` results in a comma-separated file list. For multi-core systems the file list is also `pname:` specific.
@@ -176,8 +197,6 @@ If more than one *.cproject.yml* is assigned, `%image-debug` and `%image-load` r
 - The section `multicore-other:` is used for other `gdbserve:` nodes in systems that use `pname:` specifiers.
 
 ```json
-    "port-default:"  3333     // start value for port (if not specified otherwise)
-
     "launch:"                 // section for launch.json
         {
        "singlecore":          // for single core systems
@@ -339,7 +358,7 @@ Command                               | Description
 ### Test Environment for Multi-Workspace
 
 - Open [NXP_FRDM-MCXN947 DualCore](https://github.com/Open-CMSIS-Pack/NXP_FRDM-MCXN947_BSP/tree/cmsis-debugger/boards/frdmmcxn947/cmsis/examples/DualCore) - branch "cmsis-debugger"
-- Use *File - Add Folder to Workspace() and add https://github.com/Open-CMSIS-Pack/csolution-examples
+- Use *File - Add Folder to Workspace()* and add https://github.com/Open-CMSIS-Pack/csolution-examples
 
 Using "Select Active Solution from Workspace" allows to select the active solution, but unfortunately does not select the right `/.vscode` folder for `launch.json` and `tasks.json`
 
@@ -347,18 +366,19 @@ Using "Select Active Solution from Workspace" allows to select the active soluti
 
 The locations for the build information files should change as follows:
 
-`*.cbuild-run.yml`  -> out\$target-type$
-`*.cbuild.yml` ->  out\$target-type$\$build-type$
+- `*.cbuild-run.yml` relocate to `out\$target-type$`
+- `*.cbuild.yml` relocate to `out\$target-type$\$build-type$`
 
 ## ToDo's
 
-- How to prevent that tasks.json commands start a GDB server twice?
-- How is the active solution and active context-set stored in the VS Code environment
-- How are the commands mapped to JLink
-- How to create launch.json when using CMSIS Run command (with attach instead of launch)
+- How to prevent that tasks.json commands start a GDB server twice?  Executing another Load&Run while the terminal is still running would fail. 
+- How is the active solution and active context-set stored in the VS Code environment.
+- How are the commands mapped to JLink?  We need here examples.
+- How to create launch.json when using CMSIS Run command (with attach instead of launch) - should we just duplicate the sections launch and attach for the time being?
 - Can we simplify the `updateConfigruation: auto` to just the first core?
 - Do we always update tasks.json with commands that start with `CMSIS`?
 - Currently the Linux GDB server must be manually entered.  I believe this is OK, but let's discuss.
+- Discuss if we move debugger: configuration in csolution to context-set: section.
 - Finalize workaround for GDB AXF file load with gdb (see below)
 
 pyOCD can use two separate calls for Load and Run. This does not require a LOAD command from GDB init commands and  solves the issue with AC6 axf and gdb! The proposal is to use the "CMSIS Program" task as "preLaunchTask" (see below the launch.json example) - this simplifies also pyOCD implementation.
