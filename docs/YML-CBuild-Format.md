@@ -932,15 +932,16 @@ These are options for the pyOCD GDB server configuration (could be optionally us
 
 `gdbserver:`                                              |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `processors:`                          |**Required** | Lists the processors along with GDB port number.
+&nbsp;&nbsp;&nbsp; `core:`                                |**Required** | List of the processor cores along with GDB port number.
 &nbsp;&nbsp;&nbsp; `terminal:`                            |  Future     | Terminal port of the GDB server.
 &nbsp;&nbsp;&nbsp; `trace:`                               |  Future     | Trace port of the GDB server.
 
-`processors:`                                             |             | Content
+`core:`                                                   |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
 `- port:`                                                 |**Required** | Port number of processor
 &nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Processor name of the processor (only required for multi-core systems)
 &nbsp;&nbsp;&nbsp; `start:`                               |  Optional   | Identifies the start or primary processor. Only one processor can have the `start:` node
+&nbsp;&nbsp;&nbsp; `punit:`                               |  Future     | Identifies the procssor core in a SMP system.
 
 **Example:**
 
