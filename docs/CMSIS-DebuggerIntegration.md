@@ -139,10 +139,10 @@ Allows to choose the projects and images that belong to a context set.
 
 ### Debug Adapter
 
-- **Debug Adapter** is a selection from `adapters.yml` (see below).  If BSP or DFP contains a debugger name, this debugger is the pre-selected (default). Otherwise CMSIS-DAP@pyOCD is the default.
+- **Debug Adapter** is a selection from `debug-adapters.yml` (see below).  If BSP or DFP contains a debugger name, this debugger is the pre-selected (default). Otherwise CMSIS-DAP@pyOCD is the default.
 - **Start Processor** is only shown for projects that contain a `pname` selection. The choosen `pname:` is the primary processor of the system. Default is `pname' of the first project.
 
-When `debugger:` is not specified in `csolution.yml, the Manage Solution dialog uses as default value `debugger:` from cbuild-run.yml.
+When `debugger:` is not specified in `csolution.yml`, the Manage Solution dialog uses as default value `debugger:` from `*.cbuild-run.yml`.
 
 Over time debug adapter configuration settings may be added.
 
@@ -152,7 +152,7 @@ The update process is triggered when a new solution is loaded or the file `*.cbu
 
 The update process only replaces configurations with same `pname` and `target-type` provided that `updateConfiguration: auto` is present 
 
-The `arm.cmsis-csolution-xxx` directory (where the VS Code CMSIS Solution extension is stored) gets a sub-directory with the name `.\adapters`.  This directory contain a file `adapters.yml` along with template files for updating `launch.json` and `tasks.json`.  It defines how to update the configuration for the files `./.vscode/launch.json` and `./.vscode/tasks.json`.\
+The `arm.cmsis-csolution-xxx` directory (where the VS Code CMSIS Solution extension is stored) gets a sub-directory with the name `.\adapters`.  This directory contain a file `debug-adapters.yml` along with template files for updating `launch.json` and `tasks.json`.  It defines how to update the configuration for the files `./.vscode/launch.json` and `./.vscode/tasks.json`.\
 
 The file `debug-adapters.yml` is also part of the CMSIS-Toolbox in the `./etc` folder to ensure a consistent list of supported debug adapters.  CMSIS-Toolbox could use fuzzy search to find the right adapter string.
 
