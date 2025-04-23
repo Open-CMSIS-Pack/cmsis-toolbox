@@ -37,6 +37,205 @@ The CMSIS View offers for the bare metal targets action buttons to:
 - **Load & Debug** a *csolution* application which downloads the image and starts the debugger.
 - **Manage Solution** configures the solution.  For each target, the context set stores the project and debug adapter selection. Multiple context set configuration can be selected.
 
+The action button:
+- **Load & Run** executes from tasks.json the command `CMSIS Load+Run`.
+- **Load & Debug** executes from launch.json the first `"request": "attach"` with `cmsis:` section. If not present from tasks.json the command `CMSIS Load+Debug`.
+
+Further commands are available under `...`:
+- **Load** executes from tasks.json the command `CMSIS Load`.
+- **Erase** executes from tasks.json the command `CMSIS Erase`.
+- **Run** executes from tasks.json the command `CMSIS Run`.
+
+**Potential implementation:**
+The commands in tasks.json create a terminal that starts GDB servers (one instance per core). Use the **Run and Debug View** to attach to a GDB server instance. All instances can be closed by terminating the terminal (Kill Terminal button or with CTRL-C). 
+
+## Changes CMSIS-Toolbox
+
+Multiple `target-set:` for each target can be stored in `*.csolution.yml`.  The file `*.cbuild-set.yml` is in this case no longer required.
+
+```yml
+solution:
+    :
+
+  target-types:
+    - type: MCXN947
+      board: FRDM-MCXN947
+      device: NXP::MCXN947VDF
+      target-set:
+        - set:                             // without id, <default> set
+          debugger:
+            name: ST-Link
+          images:
+          - project-context: core1.Debug
+          - project-context: core0.Release
+            load: symbols
+        - set: production
+          images:
+          - project-context: core1.Release
+          - project-context: core0.Release
+
+    - type: Custom-HW
+      device: NXP::MCXN947VDF
+      target-set:
+        - set:                             // without id, <default> set
+          debugger: 
+            name: ULINKplus
+            protocol: SWD
+          images:
+          - project-context: core1.Debug
+          - project-context: core0.Release
+          - image: MyZephry.elf
+
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: debug
+
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  projects:
+    - project: ./cm33_core1/core1.cproject.yml
+    - project: ./cm33_core0/core0.cproject.yml
+```
+
+The active target-set is selected using the cbuild/csolution tool with the option:
+
+```txt
+  -a   --active arg       select active target-set: <target-type>[@<set>]
+```
+
+Note: `-a` option cannot be used in combination with `-S`.  It replaces `-S` over time.
+
+### Default Values
+
+The default value when `target-set:` is missing is:
+- first project with first build-type. `load:` image & symbols
+- debugger from BSP (mapping required to the names in `debug-adapters.yml`), if this does not exist `CMSIS-DAP@pyOCD`
+
+## Manage Solution
+
+The Manage Solution dialog is changed as shown below.  
+
+- The user selection of Projects, Images, and Debugger for Context Set is stored in `csolution.yml`.
+- The active solution and active `target-set` in VS Code is stored in Code\User\workspaceStorage.
+
+![Manage Solution](./images/Manage-Solution.png "Manage Solution")
+
+### Changes
+
+- **Apply** makes the dialog stateful (similar to new Components/Packs dialog). 
+
+### Projects, Images, and Debugger for Target-Set
+
+Allows to choose the projects and images that belong to a `target-set`. 
+
+- **Processor:** is only shown for projects that contain a `pname` selection.
+    - `cbuild-idx.yml` and `cbuild.yml` should be extended with `pname:` information.
+  
+- **Load** allows to select how the project is used. The selection is stored as part of `target-set` in `*.csolution.yml`
+    - `Image & Symbols` (default) debug adapter loads debug (DWARF) information and project output image.
+    - `Symbols` debug adapter loads only debug (DWARF) information.
+    - `Image` debug adapter loads only project output image.
+    - `None` debug adapter does not use the output, however the project is included in build.
+    - Offset can be specified in the `cproject.yml` file or for images in the `csolution.yml` file. It is shown when specified (but cannot be modified)
+    - **Additional Images** shows additional image files that are specified in `csolution.yml` using [`images:`](YML-Input-Format.md#images).
+
+### Debug Adapter
+
+- **Debug Adapter** is a selection from `debug-adapters.yml` (see below).  If BSP or DFP contains a debugger name, this debugger is the pre-selected (default). Otherwise `CMSIS-DAP@pyOCD` is the default.
+- **Start Processor** is only shown for projects that contain a `pname` selection. The chosen `pname:` is the primary processor of the system. Default is `pname' of the first project.
+
+When `debugger:` is not specified in `csolution.yml`, the Manage Solution dialog uses as default value `debugger:` from `*.cbuild-run.yml`.
+
+Over time more configuration settings for the debug adapter may be added.
+
+## launch.json and tasks.json update process
+
+The update process is triggered when a new solution is loaded or the file `*.cbuild-run.yml` is has a new timestamp as files `./.vscode/launch.json` or `./.vscode/tasks.json`. It uses the information of the file `*.cbuild.run.yml`.
+
+In `./.vscode/tasks.json` the update process only replaces configurations with `updateConfiguration: auto`. In practice this means all configurations that have `updateConfiguration: auto` are removed and new are inserted. If a configuration with the same `pname` and `target-type` (but without `updateConfiguration: auto`) this is not inserted.
+
+In `./.vscode/launch.json` all entries where "label" starts with "CMSIS" are removed. Then new entries are inserted.
+
+The `arm.cmsis-csolution-xxx` directory (where the VS Code CMSIS Solution extension is stored) gets a sub-directory with the name `.\adapters`.  This directory contain a file `debug-adapters.yml` along with template files for updating `launch.json` and `tasks.json`.  It defines how to update the configuration for the files `./.vscode/launch.json` and `./.vscode/tasks.json`.
+
+The file `debug-adapters.yml` is also part of the CMSIS-Toolbox in the `./etc` folder to ensure a consistent list of supported debug adapters.  CMSIS-Toolbox could use fuzzy search to find the right adapter string.
+
+```json
+            "cmsis": {
+                "pname": cm33_core0
+                "target-type": MCXN947 
+                "updateConfiguration": auto     // without auto, this section would be not touched.
+```
+
+**Potential `debug-adapters.yml` content**
+
+```yml
+debug-adapters:
+  name: "CMSIS-DAP@pyOCD"
+  template: CMSIS-DAP-pyOCD.adapter.json    # template file
+  default-port: 3333                        # default value of first gdbserver port
+
+  name: "ST-Link@pyOCD"
+  template: STLink-pyOCD.adapter.json       # template file
+  default-port: 3333                        # default value of first gdbserver port
+
+  name: "JLink Server"
+  template: jlink.adapter.json              # template file
+
+  name: "AVH-FVP"
+  template: FVP.adapter.json                # template file
+
+  name: "Keil uVision"
+  template: uVision.adapter.json            # template file
+```
+
+Initially, only the features required for "pyOCD: CMSIS-DAP" could be implemented.
+
+**Template file proposal for `pyOCD-CMSIS-DAP.adapter.json`**
+
+`%<symbol>` strings are replaced with values from `*.cbuild-run.yml` when updating `launch.json` or `tasks.json`.
+
+- `%debugger-name` the value of `debugger:` `name:`
+- `%target-type` the value of `target-type:`.
+- `%gdbserver-port` the value `port:` for the processor core from `gdbserver:` - `core:`
+- `%gdbserver-pname` the value `pname:` of the processor core from `gdbserver:` - `core:`.
+- `%symbol-file-list` is the image file list with `Load: symbols` attribute for the processor core with name `%gdbserver-name`.
+- `%device` is the `device:` name.
+- `%debugger-protocol` is the value of `debugger:` `protocol:`
+
+If more than one *.cproject.yml* is assigned, `%image-debug` and `%image-load` results in a comma-separated file list. For multi-core systems the file list is also `pname:` specific.
+
+- The section `singlecore:` is used for systems that do not use `pname:` specifiers in `gdbserver:` nodes.
+- The section `multicore-start:` is used for the `gdbserver:` `start:` node in systems that use `pname:` specifiers.
+- The section `multicore-other:` is used for other `gdbserver:` nodes in systems that use `pname:` specifiers.
+
+```json
+    "launch:"                 // section for launch.json
+        {
+       "singlecore":          // for single core systems
+            {
+                "name": "%debugger-name"
+                "type": "gdbtarget",
+                "request": "launch",
+                "cwd": "${workspaceFolder}",
+                "program": %symbol-file-list
+                "gdb": "arm-none-eabi-gdb",
+                "preLaunchTask": "CMSIS Program",  // Load is executed via the dedicated task
+                "initCommands": [
+                    "tbreak main"
+                ],
+                "target": {
+                    "server": "pyocd",
+                    "port": %gdbserver-port
+                },
+                "cmsis": {
+                    "cbuildRunFile": %{cmsis-csolution.getCbuildRunFile}
+                    "target-type": %target-type
+                    "updateConfiguration": "auto" 
+                }
 
         "multicore-start":        // for start processor in multi-core systems
             {
@@ -89,6 +288,14 @@ The CMSIS View offers for the bare metal targets action buttons to:
             "type": "shell",
             "command": [
                 "pyocd load --no-reset --cbuild-run ${command:cmsis-csolution.getCbuildRunFile}",
+                "pyocd gdbserver --reset-run --cbuild-run ${command:cmsis-csolution.getCbuildRunFile}",
+            ],
+            "problemMatcher": [],
+        },
+        {
+            "label": "CMSIS Run",
+            "type": "shell",
+            "command": [
                 "pyocd gdbserver --reset-run --cbuild-run ${command:cmsis-csolution.getCbuildRunFile}",
             ],
             "problemMatcher": [],
@@ -194,10 +401,6 @@ The locations for the build information files should change as follows:
     - Robi+Omar will work it out.  New %symbols required: device, connection-type.
 - How to create launch.json when using CMSIS Run command (with attach instead of launch) - should we just duplicate the sections launch and attach for the time being?
     - yes; for now we need both
-- Can we simplify the `updateConfigruation: auto` to just the first core?
-    - no, only sections with auto will be removed and replaced. 
-- Do we always update tasks.json with commands that start with `CMSIS`?
-    - yes  
 - The active solution and active target-set is stored in workspaceStorage. Is this OK?
     - yes  
 - Discuss if we move debugger: configuration in csolution to target-set: section.
@@ -207,11 +410,11 @@ The locations for the build information files should change as follows:
 - Should we remove `debuggers:` under csolution and only allow it under target-set.
     - yes
 - Should we find a way to add West configurations under images?
-    - Task for Matthais+Christoper together with John Thomson
+    - Task for Matthais+Christoper together with John T.
 - Should target-set image be a complete filename or just a base name?
     - full filename; potentially make it smarter later
 - Where is the location of the dbgconf files?
-    - introduce a .cmsis folder, same base directory as csolution.yml. All dbgconf files are in this folder. 
+    - introduce a .cmsis folder, same base directory as csolution.yml. All dbgconf files are in this folder. (covered in [#2029](https://github.com/Open-CMSIS-Pack/devtools/issues/2029))
 
 Cortex-A/M systems
 - Currently the Linux GDB server must be manually entered.  I believe this is OK, but let's discuss.
@@ -225,11 +428,4 @@ AC6 work-around
 
 pyOCD can use two separate calls for Load and Run. This does not require a LOAD command from GDB init commands and solves the issue with AC6 axf and gdb! The proposal is to use the "CMSIS Load" task as "preLaunchTask" (see below the launch.json example) - this simplifies also pyOCD implementation.
 
-## Tasks
-
-- Jonatan: 
-    - implement [tasks.json + launch.json](#launchjson-and-tasksjson-update-process) update process.
-    - implement [CMSIS View action buttons](#cmsis-view-action-buttons).
-    - implement [Multi-Workspace](#multi-workspace) solution.
-
-Dialog changes will be implemented later (after release of CMSIS-Toolbox 2.9)
+Note: Dialog changes will be implemented later (after release of CMSIS-Toolbox 2.9)
