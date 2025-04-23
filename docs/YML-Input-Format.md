@@ -1322,7 +1322,7 @@ The `target-types:` node may include [toolchain options](#toolchain-options), [t
 &nbsp;&nbsp;&nbsp; [`context-map:`](#context-map)  |   Optional   | Use different `target-types:` for specific projects.
 &nbsp;&nbsp;&nbsp; [`variables:`](#variables)      |   Optional   | Variables that can be used to define project components.
 &nbsp;&nbsp;&nbsp; [`memory:`](#memory)            |   Optional   | Add additional off-chip memory available in target hardware.
-&nbsp;&nbsp;&nbsp; [`context-set:`](#context-set)  |   Optional   | One or more context-set configurations for projects, images, and debugger.
+&nbsp;&nbsp;&nbsp; [`target-set:`](#target-set)  |   Optional   | One or more context-set configurations for projects, images, and debugger.
 
 !!! Note
     Either `device:` or `board:` is required.
@@ -1398,18 +1398,18 @@ target-types:
     device: :cm0plus          # use the Cortex-M0+ processor
 ```
 
-### `context-set:`
+### `target-set:`
 
-The `context-set:` specifies for a `target-type:` the projects and images to include and the debugger configuration. It is possible to specify one or more `set` configurations per `target-type`.
+The `target-set:` specifies for a `target-type:` the projects and images to include and the debugger configuration. It is possible to specify one or more `set` configurations per `target-type`.
 
-`context-set:`                                        |              | Content
+`target-set:`                                        |              | Content
 :-----------------------------------------------------|--------------|:------------------------------------
 `- set:`                                              | **Required** | Start of a configuration, optional with name. The default set is unnamed.
 &nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the configuration.
-&nbsp;&nbsp;&nbsp; [`images:`](#context-set-images)   |   Optional   | List of images that belong to this set.
+&nbsp;&nbsp;&nbsp; [`images:`](#target-set-images)   |   Optional   | List of images that belong to this set.
 &nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)           |   Optional   | Debugger configuration for this set.
 
-### `context-set: images:`
+### `target-set: images:`
 
 The `images:` node specifies the projects with build-type and optional additional images that belong to this configuration of the target set.
 
