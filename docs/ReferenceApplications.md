@@ -371,6 +371,13 @@ Currently, the following **`connect` names** are used.
 [CMSIS_USB_Host](#cmsis_usb_host)                            | -                      | CMSIS-Driver USB Host connected to physical board connector
 [CMSIS_VIO](#cmsis_vio)                                      | -                      | CMSIS-Driver VIO interface for virtual I/O
 CMSIS-RTOS2                                                  | -                      | CMSIS-RTOS2 compliant RTOS
+.                                                            |.                       | **mikroBUS socket Interface**
+[MIKROBUS_AN](#mikrobus_an)                                  |-                       | CMSIS-Driver GPIO connecting to mikroBUS AN
+[MIKROBUS_INT](#mikrobus_int)                                |-                       | CMSIS-Driver GPIO connecting to mikroBUS INT
+[MIKROBUS_PWM](#mikrobus_pwm)                                |-                       | CMSIS-Driver GPIO connecting to mikroBUS PWM
+[MIKROBUS_I2C](#mikrobus_i2c)                                |-                       | CMSIS-Driver I2C connecting to mikroBUS I2C
+[MIKROBUS_SPI](#mikrobus_spi)                                |-                       | CMSIS-Driver SPI connecting to mikroBUS SPI
+[MIKROBUS_UART](#mikrobus_uart)                              |-                       | CMSIS-Driver USART connecting to mikroBUS UART
 .                                                            |.                       | **I/O Retargeting**
 [STDERR](#stdio)                                             | -                      | Standard Error output
 [STDIN](#stdio)                                              | -                      | Standard Input
@@ -490,6 +497,50 @@ Connects to a [CMSIS-Driver USB Host Interface](https://arm-software.github.io/C
 
 Connects to a [CMSIS-Driver VIO Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__vio__interface__gr.html), a virtual I/O interface that connects on physical boards to LEDs and switches.
 
+### MIKROBUS_AN/_INT/_PWM
+
+The `MIKROBUS_AN, MIKROBUS_INT and MIKROBUS_PWM` connect to a [CMSIS-Driver GPIO Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__gpio__interface__gr.html).
+
+`CMSIS_target_header` contains the pin mapping to the physical driver.
+
+```c
+#define MIKROBUS_AN     GPIO_PORTD(0U)
+#define MIKROBUS_INT    GPIO_PORTD(1U)
+#define MIKROBUS_PWM    GPIO_PORTD(2U)
+```
+
+### MIKROBUS_I2C
+
+Connects to a [CMSIS-Driver I2C Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__i2c__interface__gr.html) configured in controller mode.
+
+`CMSIS_target_header` contains the driver instance number with this definition:
+
+```c
+#define MIKROBUS_I2C        0     // CMSIS-Driver I2C instance number
+```
+
+### MIKROBUS_SPI
+
+Connects to a [CMSIS-Driver SPI Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__spi__interface__gr.html) configured in controller mode and CPOL/CPHA frame format (no TI or Microwire). 
+
+The Chip Select (CS) pin may be handled by CMSIS-Driver SPI interface or driven by the GPIO interface.
+
+`CMSIS_target_header` contains the driver instance number with this definition:
+
+```c
+#define MIKROBUS_SPI        0     // CMSIS-Driver SPI instance number
+```
+
+### MIKROBUS_UART
+
+Connects to a [CMSIS-Driver USART Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__usart__interface__gr.html) configured in asynchronous UART mode with no modem lines.
+
+`CMSIS_target_header` contains the driver instance number with this definition:
+
+```c
+#define MIKROBUS_UART       0     // CMSIS-Driver USART instance number
+```
+
 ### STDIO
 
 The `STDIN`, `STDOUT`, and `STDERR` describe the I/O redirection via the [CMSIS-Compiler](https://arm-software.github.io/CMSIS-Compiler/main/index.html) software component. Typically, the redirect is to a UART dedicated to debugging.
@@ -499,6 +550,10 @@ The `STDIN`, `STDOUT`, and `STDERR` describe the I/O redirection via the [CMSIS-
 The software layers [Board](#board-layer) and [Shield](#shield-layer) are currently based on Arduino UNO connectors. To combine different boards and shields a consistent pin naming is required. The standardized mapping is shown in the diagram below.
 
 ![Arduino Shield Pinout](./images/Arduino-Shield.png "Arduino Shield Pinout")
+
+## mikroBUS Header
+
+![mikroBUS Header Pinout](./images/mikroBUS-header.png "mikroBUS Header Pinout")
 
 ## Header File Example
 
