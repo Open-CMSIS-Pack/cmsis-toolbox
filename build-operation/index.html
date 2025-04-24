@@ -133,6 +133,8 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#debug-adapter-integration">Debug Adapter Integration</a>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -613,6 +615,90 @@ add_custom_command(OUTPUT ${OUTPUT} DEPENDS ${INPUT}
 <li>The generator tool should generate a <a href="https://open-cmsis-pack.github.io/cmsis-toolbox/YML-CBuild-Format/#file-structure-of-cgenyml">*.cgen.yml file and other source files</a> that are included in the project.</li>
 </ol>
 <p>An example project where you can explore this process is <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/CubeMX">CubeMX</a>. It contains an example for a <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/blob/main/CubeMX/STM32CubeMX/MyBoard_ROM/CubeMX.cgen.yml">*.cgen.yml file</a>.</p>
+<h2 id="debug-adapter-integration">Debug Adapter Integration</h2>
+<p>The file <code>debug-adapters.yml</code> in the CMSIS-Toolbox <code>./etc</code> directory contains the list of supported debug adapters. If no debugger is specified for a <em>csolution project</em>, the first debug adapter ("CMSIS-DAP@pyOCD") contained in this file will be used. </p>
+<p>The <code>debug-adapters:</code> node in this YAML file registers the supported debug adapters with the following keys:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>debug-adapters:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;"><code>&lt;generator-id&gt;</code> referred in the <code>*.PDSC</code> file</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>alias-name:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of names (in input node or BSP) that map to this debug adapter.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>template:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Used only by the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">VS Code CMSIS Solution</a> extension for configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>gdbserver:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Add the <a href="../YML-CBuild-Format/#gdbserver"><code>gdbserver:</code></a> node in the <code>cbuild-run.yml</code> file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>defaults:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of default options to use when not specified in the <a href="../YML-Input-Format/#target-set"><code>target-set:</code></a> node.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As the file is shared with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">VS Code CMSIS Solution</a> extension, also template files are references. However these template files are not part of the CMSIS-Toolbox.</p>
+</div>
+<p><strong>Example <code>debug-adapters.yml</code></strong></p>
+<pre><code class="language-yml">debug-adapters:
+  - name: &quot;CMSIS-DAP@pyOCD&quot;
+    alias-name: [&quot;CMSIS-DAP&quot;, &quot;DAP-Link&quot;]     # alternative names that map to this debug adapter
+    template: CMSIS-DAP-pyOCD.adapter.json    # template file
+    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: 10000000
+
+  - name: &quot;ULINKplus&quot;
+    template: CMSIS-DAP-pyOCD.adapter.json    # template file (initally same as CMSIS-DAP@pyOCD)
+    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: 10000000
+
+  - name: &quot;ST-Link@pyOCD&quot;
+    alias-name: [&quot;ST-LINK&quot;]                   # alternative names that map to this debug adapter
+    template: STLink-pyOCD.adapter.json       # template file
+    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: 10000000
+
+  - name: &quot;JLink Server&quot;
+    template: jlink.adapter.json              # template file
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: auto
+
+  - name: &quot;AVH-FVP&quot;
+    template: FVP.adapter.json                # template file
+
+  - name: &quot;Keil uVision&quot;
+    template: uVision.adapter.json            # template file
+</code></pre>
               
             </div>
           </div><footer>

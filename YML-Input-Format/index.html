@@ -185,6 +185,16 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#build-types">build-types:</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#target-set">target-set:</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#target-set-images">target-set: images:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#load">load:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#_1"></a>
+    </li>
+        </ul>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#context-map">context-map:</a>
     </li>
         </ul>
@@ -273,7 +283,9 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#add-images">Add Images</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#load">load:</a>
+    <li class="toctree-l3"><a class="reference internal" href="#images">images:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#type">type:</a>
     </li>
         </ul>
     </li>
@@ -459,6 +471,7 @@
 <ul>
 <li>When no version is specified, the <strong><code>csolution</code> Project Manager</strong> only loads the latest installed version of a software pack. This also applies when wildcards are used in the <code>pack-name</code>. </li>
 <li>Use <a href="../build-tools/#cpackget-invocation"><strong><code>cpackget</code></strong></a> to download and install new pack versions.</li>
+<li>To accept a <a href="../pack-tools/#versioning">pre-release version of a pack</a> specify the <code>-pre-release</code> label. Use for example <code>- pack: Keil::MDK-Middleware@^8.0.0-0</code> to accept any pre-release version that is higher or equal.</li>
 </ul>
 </div>
 <p><strong>Examples:</strong></p>
@@ -831,7 +844,7 @@ can specify a different project and describe, therefore, project dependencies.</
 <p>The <code>project: /application/MQTT_AWS.cproject.yml</code> may use <strong>access sequences</strong> to reference files or directories in other projects that belong to the same <em>csolution project</em>. </p>
 <p>For example, these references are possible in the file <code>MQTT_AWS.cproject.yml</code>.</p>
 <pre><code class="language-yml">    files:
-    - file: $cmse-lib(TFM)$                         # use symbol output file of TFM Project
+      - file: $cmse-lib(TFM)$                         # use symbol output file of TFM Project
 </code></pre>
 <p>The example above uses the <code>build-type</code> and <code>target-type</code> of the processed context for the project <code>TFM</code>. With a <a href="../build-overview/#working-with-context-set">context-set</a> you may mix different <code>build-types</code> for an application. Note that it is important to build both projects using the same build process.</p>
 <pre><code class="language-bash">cbuild iot-product.csolution.yml --context-set --context TFM.Release+Board --context MQTT_AWS.Debug+Board 
@@ -1040,14 +1053,9 @@ the compiler with specific default controls. The search order for this file is:<
 <td style="text-align: left;">Additional pre or post build steps using external tools.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debugger"><code>debugger:</code></a></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#images"><code>images:</code></a></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Defines parameters for a debugger connection.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#load"><code>load:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Add additional images to the <code>*.cbuild-run.yml</code>.</td>
+<td style="text-align: left;">Add additional images that are managed by this <em>csolution project</em>.</td>
 </tr>
 </tbody>
 </table>
@@ -2664,6 +2672,11 @@ explains the overall concept of  <code>target-types</code> and <code>build-types
 <td>Optional</td>
 <td style="text-align: left;">Add additional off-chip memory available in target hardware.</td>
 </tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#target-set"><code>target-set:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">One or more target-set configurations for projects, images, and debugger.</td>
+</tr>
 </tbody>
 </table>
 <div class="admonition note">
@@ -2799,6 +2812,146 @@ settings are processed in the following order:</p>
     board: FRDM-K32L3A6       # NXP board with K32L3A6 device
     device: :cm0plus          # use the Cortex-M0+ processor
 </code></pre>
+<h3 id="target-set"><code>target-set:</code></h3>
+<p>The <code>target-set:</code> specifies for a <code>target-type:</code> the projects and images to include along with the configuration settings for a debug adapter. It is possible to specify one or more <code>set</code> configurations per <code>target-type</code>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>target-set:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- set:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Start of a configuration, optional with name. The default set is unnamed.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Brief description of the configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#target-set-images"><code>images:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">List of images that belong to this set.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debugger"><code>debugger:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Debugger configuration for this set.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="target-set-images"><code>target-set:</code> <code>images:</code></h4>
+<p>The <code>images:</code> node under <code>target-set:</code> specifies the projects with build-type and optional additional <a href="#images">images</a> that belong to this configuration of the target set.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>images:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- project-context:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Start of a configuration, optional with name. The default set is unnamed.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>image:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Base filename of the image (without path).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#load"><code>load:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Load mode for the image.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Either <code>project-context:</code> or <code>image:</code> is required, but these nodes are mutually exclusive.</p>
+</div>
+<h4 id="load"><code>load:</code></h4>
+<p>Specifies the load mode for the project output or image file.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>load:</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>image+symbols</code></td>
+<td style="text-align: left;">Load both the binary image and the debug symbol information (default).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>symbols</code></td>
+<td style="text-align: left;">Load only the debug symbol information.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>image</code></td>
+<td style="text-align: left;">Load only the binary image.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>none</code></td>
+<td style="text-align: left;">No content is loaded for this image, however it is part of the build process.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="_1"></h4>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">solution:
+    :
+
+  target-types:
+    - type: MCXN947
+      board: FRDM-MCXN947
+      device: NXP::MCXN947VDF
+      target-set:
+        - set:                             // without id, &lt;default&gt; set
+          debugger:
+            name: ST-Link
+          images:
+          - project-context: core1.Debug
+          - project-context: core0.Release
+            load: symbols
+        - set: production
+          images:
+          - project-context: core1.Release
+          - project-context: core0.Release
+
+    - type: Custom-HW
+      device: NXP::MCXN947VDF
+      target-set:
+        - set:                             // without id, &lt;default&gt; set
+          debugger: 
+            name: ULINKplus
+            protocol: swd
+          images:
+          - project-context: core1.Debug
+          - project-context: core0.Release
+          - image: MyZephry.elf
+
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: debug
+
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  projects:
+    - project: ./cm33_core1/core1.cproject.yml
+    - project: ./cm33_core0/core0.cproject.yml
+</code></pre>
 <h3 id="context-map"><code>context-map:</code></h3>
 <p>The <code>context-map:</code> node allows for a specific <code>project-name</code> the remapping of <code>target-types:</code> and/or <code>build-types:</code> to a different <code>context:</code> which enables: </p>
 <ul>
@@ -2865,7 +3018,7 @@ settings are processed in the following order:</p>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>for-context</code> and <code>not-for-context</code> are mutually exclusive, only one occurrence can be specified for a <em>list node</em>.</p>
+<p><code>for-context:</code> and <code>not-for-context:</code> are mutually exclusive, only one occurrence can be specified for a <em>list node</em>.</p>
 </div>
 <h3 id="for-compiler"><code>for-compiler:</code></h3>
 <p>Depending on a <a href="#compiler">compiler</a> toolchain it is possible to include <em>list nodes</em> in the build process.</p>
@@ -3651,7 +3804,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p>The Windows batch file <code>KeyGen.bat</code> converts an input file <code>keyfile.txt</code> to a C source file. combines multiple input images. It is called together with the list of <a href="#output">elf files</a> that are created by the various projects. It runs when <code>cbuild</code> executes a solution build (option <code>--context</code> is not used).</p>
 <pre><code class="language-yml">project:                                      # executed as part of a project build
   executes:
-    - execute: Generate Encryption Keys
+    - execute: GenerateEncryptionKeys
       run: $input(1)$ $input(0)$ -o $output$
       always:                                 # always generate the keyfile.c as it has a timestamp
       input:
@@ -3914,7 +4067,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
         - Ardunio_Uno_D3:
 </code></pre>
 <h2 id="debugger-configuration">Debugger Configuration</h2>
-<p>Packs contain information for configuring debugger connection to a device or board. The <code>debugger:</code> node in the <em>csolution project</em> allows 
+<p>Packs contain information for configuring debugger connection to a device or board. The <code>debugger:</code> node that is specified under the <a href="#target-set"><code>target-set:</code></a> in the <em>csolution project</em> allows 
 to overwrite configuration information or to define new debugger setups.</p>
 <h3 id="debugger"><code>debugger:</code></h3>
 <table>
@@ -3927,14 +4080,9 @@ to overwrite configuration information or to define new debugger setups.</p>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>- name:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>name:</code></td>
 <td><strong>Required</strong></td>
-<td style="text-align: left;">Identifier for the debugger configuration.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Brief description of the debugger configuration.</td>
+<td style="text-align: left;">Identifies the debug adapter.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>protocol:</code></td>
@@ -3952,43 +4100,37 @@ to overwrite configuration information or to define new debugger setups.</p>
 <td style="text-align: left;">Debugger configuration file (pinout, trace).</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>start-pname:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Debugger configuration applied for a list of <em>context</em> types.</td>
+<td style="text-align: left;">Debugger connects at start to this processor.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>*:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Debugger configuration not applied for a list of <em>context</em> types.</td>
+<td style="text-align: left;">Other debugger specific options can be used, the section is not schema checked.</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The default values for <code>clock:</code> and <code>protocol:</code> are provided in the BSP or DFP. If no values are defined <code>clock: 10000000</code> and <code>protocol: swd</code> is assumed.</p>
+<p>If values are not specified, the default values from <code>debug-adapter.yml</code> are used.</p>
 </div>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">debugger:
-  - name: CMSIS-DAP
-    info: connect via on-board debugger
-    protocol: swd
-    clock: 20000000   # 20 MHz
+  name: CMSIS-DAP
+  protocol: swd
+  clock: 20000000   # 20 MHz
 </code></pre>
 <pre><code class="language-yml">debugger:
-  - name: ULink
-    info: connect via ULink-plus
-    protocol: jtag
-    clock: 10000000               # 10 MHz
-    dbgconf: MyHardware.dbgconf   
-    for-context: +MyHardware      # only for target-type MyHardware
-
-  - name: JLink
-    info: connect via Segger JLink
-    clock: auto
-    protocol: swd
+  name: ULink
+  protocol: jtag
+  clock: 10000000               # 10 MHz
+  dbgconf: MyHardware.dbgconf   
 </code></pre>
-<p>Depending on the debugger, a specific debugger connection can be selected using command line options, for example:</p>
-<pre><code class="language-bash">pyOCD gdbserver --cbuild-run MyTarget.cbuild-run.yml --debugger ULink
+<pre><code class="language-yml">debugger:
+  name: JLink
+  clock: auto
+  protocol: swd
 </code></pre>
 <h2 id="add-memory">Add Memory</h2>
 <p>Hardware targets may have additional off-chip memory. The <code>memory:</code> node that can be added as additional information to a target type.
@@ -4084,12 +4226,12 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
           algorithm: Flash/Ext-Flash.flm       # Programming algorithm
 </code></pre>
 <h2 id="add-images">Add Images</h2>
-<p>For Debug and Run the <code>load:</code> node allows to specify additional files that should be added to the <code>output:</code> node of the <code>*.cbuild-run.yml</code> file.</p>
-<h3 id="load"><code>load:</code></h3>
+<p>For Debug and Run the <code>images:</code> node allows to specify additional files that should be added to the <code>output:</code> node of the <code>*.cbuild-run.yml</code> file.</p>
+<h3 id="images"><code>images:</code></h3>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;"><code>load:</code></th>
+<th style="text-align: left;"><code>images:</code></th>
 <th></th>
 <th style="text-align: left;">Content</th>
 </tr>
@@ -4111,28 +4253,23 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
 <td style="text-align: left;">Specifies an explicit file type.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>run:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Additional command string for download or programming.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>debug:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Additional command string for debug.</td>
-</tr>
-<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
 <td>Optional</td>
-<td style="text-align: left;">Debugger configuration applied for a list of <em>context</em> types.</td>
+<td style="text-align: left;">File is applied for a list of <em>context</em> types.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
 <td>Optional</td>
-<td style="text-align: left;">Debugger configuration not applied for a list of <em>context</em> types.</td>
+<td style="text-align: left;">File is not applied for a list of <em>context</em> types.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>load-offset:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Offset applied to the binary content when loading the file.</td>
 </tr>
 </tbody>
 </table>
-<p>Using <code>run:</code> or <code>debug:</code> allows to specify additional command information, for example an offset or load symbols only.</p>
+<h3 id="type"><code>type:</code></h3>
 <p>With <code>type:</code> an explicit file type can be specified which is required for unknow file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.</p>
 <table>
 <thead>

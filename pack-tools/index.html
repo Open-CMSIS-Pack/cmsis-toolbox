@@ -448,7 +448,7 @@ packchk &lt;workdir&gt;/BSP-Pack-Handson/ACME.ACME_BSP.pdsc -i &lt;workdir&gt;/D
 <ul>
 <li><code>MAJOR</code> indicates big updates that break backward compatibility.</li>
 <li><code>MINOR</code> indicates new features, but still backward-compatible.</li>
-<li><code>PATCH</code> indicates bug fixes or minor tweaks. <code>PATCH</code> can be omitted and defaults to <code>0</code> in this case.</li>
+<li><code>PATCH</code> indicates bug fixes or minor tweaks.</li>
 </ul>
 </li>
 <li>
@@ -462,10 +462,16 @@ packchk &lt;workdir&gt;/BSP-Pack-Handson/ACME.ACME_BSP.pdsc -i &lt;workdir&gt;/D
 <p>Both versioning schemas support <code>-pre-release</code> labels that may be used during development and testing. For example:</p>
 <ul>
 <li><code>1.0.0-alpha</code> for early testing.</li>
-<li><code>22.04-rc.1</code> for a release candidate that is close to final.</li>
+<li><code>22.04.0-rc.1</code> for a release candidate that is close to final.</li>
 </ul>
 <p>Product Lifecycle Management (PLM) and versioning are closely connected. Versioning ensures that each stage of PLM is properly controlled and documented. The CMSIS-Toolbox accepts therefore version numbers and ranges for <code>packs</code> and <code>components</code> and outputs version details in <a href="../YML-CBuild-Format/">build information files</a>.</p>
-<p><strong>Semantic Versioning</strong> (<a href="https://semver.org/">SemVer</a>) is recommended as it supports the PLM features of the CMSIS-Toolbox. It enables <a href="../build-overview/#plm-of-configuration-files">PLM of configuration files</a> and simplifies the software pack updates. For example: <code>- pack: ARM::CMSIS@^6.1.0</code> accepts any pack version equal or higher but with the same <code>MAJOR</code> version.</p>
+<p><strong>Semantic Versioning</strong> (<a href="https://semver.org/">SemVer</a>) is recommended as it supports the PLM features of the CMSIS-Toolbox. It enables <a href="../build-overview/#plm-of-configuration-files">PLM of configuration files</a> and simplifies the software pack updates. For example: <code>- pack: ARM::CMSIS@^6.1.0</code> accepts any release version equal or higher but with the same <code>MAJOR</code> version. To accept also pre-release versions, use <code>- pack: ARM::CMSIS@^6.1.0-0</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>During the development of a pack <code>+build</code> information may be used. This <code>+build</code> information is ignored by the CMSIS-Toolbox and should be not part of a public released pack.</li>
+</ul>
+</div>
 <h2 id="project-examples">Project Examples</h2>
 <p>Project examples help to get started with new devices, boards, and middleware software components. The CMSIS-Pack format supports, therefore, different types of project examples:</p>
 <ul>
