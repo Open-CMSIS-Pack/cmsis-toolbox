@@ -895,15 +895,15 @@ This node contains connection information to one or more debuggers with inital s
 :---------------------------------------------------------|-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `name:`                                |**Required** | Identifies the debug configuration.
 &nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description from target-set.
-&nbsp;&nbsp;&nbsp; `protocol:`                            |**Required** | Selected debug protocol (jtag or swd).
-&nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Selected debug clock speed in Hz.
+&nbsp;&nbsp;&nbsp; `protocol:`                            |  Optional   | Selected debug protocol (jtag or swd).
+&nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Selected debug clock speed in Hz.
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
 &nbsp;&nbsp;&nbsp; `start-pname:`                         |  Optional   | Debugger connects at start to this processor.
 &nbsp;&nbsp;&nbsp; `gdbserver:`                           |  Optional   | Information for GDB server option of debugger.
 &nbsp;&nbsp;&nbsp; `*:`                                   |  Optional   | Other debugger specific options specified under [target-set](YML-Input-Format.md#target-set).
 
 !!! Note:
-    `protocol:` and `clock:` are required by pyOCD but optional for other debug adapters.
+    `protocol:` and `clock:` are required by pyOCD but optional for other debug adapters. The file [`./etc/debug-adatpers.yml`](build-operation.md#debug-adapter-integration) allows to specify default values for required options.
 
 The information for the `debugger:` node may be configured using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file. If not present the values from BSP are used; if not present DFP values. The values in the `*.csolution.yml` file overwrites values from BSP or DFP as shown in the table below.  
 
