@@ -1321,7 +1321,7 @@ The `target-types:` node may include [toolchain options](#toolchain-options), [t
 &nbsp;&nbsp;&nbsp; [`context-map:`](#context-map)  |   Optional   | Use different `target-types:` for specific projects.
 &nbsp;&nbsp;&nbsp; [`variables:`](#variables)      |   Optional   | Variables that can be used to define project components.
 &nbsp;&nbsp;&nbsp; [`memory:`](#memory)            |   Optional   | Add additional off-chip memory available in target hardware.
-&nbsp;&nbsp;&nbsp; [`target-set:`](#target-set)  |   Optional   | One or more target-set configurations for projects, images, and debugger.
+&nbsp;&nbsp;&nbsp; [`target-set:`](#target-set)    |   Optional   | One or more target-set configurations for projects, images, and debugger.
 
 !!! Note
     Either `device:` or `board:` is required.
