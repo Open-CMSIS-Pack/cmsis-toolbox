@@ -15,7 +15,7 @@ This document summarizes how to integrate the CMSIS-Debugger and pyOCD into the 
 - [launch.json and tasks.json update process](#launchjson-and-tasksjson-update-process) to enable load and run commands.
 - [Multi-Workspace](#multi-workspace) command to access the solution workspace.
 - [Build Information File Locations](#build-information-file-locations)
-- [ToDo's](#todos) is a list of open questions
+- [ToDo's](#todos) is a list of questions with decisions
 
 ## Overview
 
@@ -33,9 +33,9 @@ The integration in VS Code works via:
 ## CMSIS View Action buttons
 
 The CMSIS View offers for the bare metal targets action buttons to:
-- **Load & Run** a *csolution* application which downloads and starts the image in the target.
-- **Load & Debug** a *csolution* application which downloads the image and starts the debugger.
-- **Manage Solution** configures the solution.  For each target, the context set stores the project and debug adapter selection. Multiple context set configuration can be selected.
+- **Load & Run** a *csolution* application which downloads and starts the application images in the target.
+- **Load & Debug** a *csolution* application which downloads the application images and starts the debugger.
+- **Manage Solution** configures the solution.  For each target, the target-set stores the project and debug adapter selection. Multiple target-set configuration can be selected.
 
 The action button:
 - **Load & Run** executes from tasks.json the command `CMSIS Load+Run`.
@@ -112,7 +112,7 @@ Note: `-a` option cannot be used in combination with `-S`.  It replaces `-S` ove
 
 The default value when `target-set:` is missing is:
 - first project with first build-type. `load:` image & symbols
-- debugger from BSP (mapping required to the names in `debug-adapters.yml`), if this does not exist `CMSIS-DAP@pyOCD`
+- debugger from BSP (use `debug-adapters.yml` to map `pdsc-name:` to `name:` ), if this does not exist `CMSIS-DAP@pyOCD` (the first debugger in `debug-adapters.yml`).
 
 ## Manage Solution
 
@@ -161,7 +161,7 @@ In `./.vscode/launch.json` all entries where "label" starts with "CMSIS" are rem
 
 The `arm.cmsis-csolution-xxx` directory (where the VS Code CMSIS Solution extension is stored) gets a sub-directory with the name `.\adapters`.  This directory contain a file `debug-adapters.yml` along with template files for updating `launch.json` and `tasks.json`.  It defines how to update the configuration for the files `./.vscode/launch.json` and `./.vscode/tasks.json`.
 
-The file `debug-adapters.yml` is also part of the CMSIS-Toolbox in the `./etc` folder to ensure a consistent list of supported debug adapters.  CMSIS-Toolbox could use fuzzy search to find the right adapter string.
+The file `debug-adapters.yml` is also part of the CMSIS-Toolbox in the `./etc` folder to ensure a consistent list of supported debug adapters.  The `alias-name:` can be used in DFP, BSP, or YML input files but the `cbuild-run.yml` always contains the name listed in this file.
 
 ```json
             "cmsis": {
@@ -174,22 +174,44 @@ The file `debug-adapters.yml` is also part of the CMSIS-Toolbox in the `./etc` f
 
 ```yml
 debug-adapters:
-  name: "CMSIS-DAP@pyOCD"
-  template: CMSIS-DAP-pyOCD.adapter.json    # template file
-  default-port: 3333                        # default value of first gdbserver port
+  - name: "CMSIS-DAP@pyOCD"
+    alias-name: ["CMSIS-DAP", "DAP-Link"]     # alternative names that map to this debug adapter
+    template: CMSIS-DAP-pyOCD.adapter.json    # template file
+    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: 10000000
+  
+  - name: "ULINKplus"
+    template: CMSIS-DAP-pyOCD.adapter.json    # template file (initally same as CMSIS-DAP@pyOCD)
+    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: 10000000
+ 
+  - name: "ST-Link@pyOCD"
+    alias-name: ["ST-LINK"]                   # alternative names that map to this debug adapter
+    template: STLink-pyOCD.adapter.json       # template file
+    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: 10000000
 
-  name: "ST-Link@pyOCD"
-  template: STLink-pyOCD.adapter.json       # template file
-  default-port: 3333                        # default value of first gdbserver port
+  - name: "JLink Server"
+    template: jlink.adapter.json              # template file
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: auto
 
-  name: "JLink Server"
-  template: jlink.adapter.json              # template file
+  - name: "AVH-FVP"
+    template: FVP.adapter.json                # template file
 
-  name: "AVH-FVP"
-  template: FVP.adapter.json                # template file
-
-  name: "Keil uVision"
-  template: uVision.adapter.json            # template file
+  - name: "Keil uVision"
+    template: uVision.adapter.json            # template file
 ```
 
 Initially, only the features required for "pyOCD: CMSIS-DAP" could be implemented.

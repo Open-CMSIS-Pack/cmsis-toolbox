@@ -893,27 +893,27 @@ This node contains connection information to one or more debuggers with inital s
 
 `debugger:`                                               |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
-`- name:`                                                 |**Required** | Identifies the debug configuration.
-&nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the connection.
+&nbsp;&nbsp;&nbsp; `name:`                                |**Required** | Identifies the debug configuration.
+&nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description from target-set.
 &nbsp;&nbsp;&nbsp; `protocol:`                            |**Required** | Selected debug protocol (jtag or swd).
 &nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Selected debug clock speed in Hz.
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
+&nbsp;&nbsp;&nbsp; `start-pname:`                         |  Optional   | Debugger connects at start to this processor.
 &nbsp;&nbsp;&nbsp; `gdbserver:`                           |  Optional   | Information for GDB server option of debugger.
+&nbsp;&nbsp;&nbsp; `*:`                                   |  Optional   | Other debugger specific options specified under [target-set](YML-Input-Format.md#target-set).
 
-The information for the debugger configuration node may be adjusted using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file. If not present the values from BSP are used; if not present DFP values. The values in the `*.csolution.yml` file overwrites values from BSP or DFP as shown in the table below.  
+!!! Note:
+    `protocol:` and `clock:` are required by pyOCD but optional for other debug adapters.
+
+The information for the `debugger:` node may be configured using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file. If not present the values from BSP are used; if not present DFP values. The values in the `*.csolution.yml` file overwrites values from BSP or DFP as shown in the table below.  
 
 `*.cbuild-run.yml`            | `*.csolution.yml`            | BSP                                | DFP
 :-----------------------------|:-----------------------------|:-----------------------------------|:--------------------------
-`debugger:`                   | `debugger:`                  | `<boards><board><debugProbe ...`   | `<device><debugconfig ...`
+`debugger:`                   | [`debugger:`](YML-Input-Format.md#debugger) | [`<boards><board><debugProbe ...`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_boards_pg.html#element_board_debugProbe) | [`<device><debugconfig ...`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugconfig)
 &nbsp;&nbsp;&nbsp; `protocol:`|&nbsp;&nbsp;&nbsp; `protocol:`|&nbsp;&nbsp;&nbsp; `debugLink`      |&nbsp;&nbsp;&nbsp; `default`
 &nbsp;&nbsp;&nbsp; `clock:`   |&nbsp;&nbsp;&nbsp; `clock:`   |&nbsp;&nbsp;&nbsp; `debugClock`     |&nbsp;&nbsp;&nbsp; `clock`
 
-If no input (`*.csolution.yml`, BSP or DFP) provides values for `swd:` or `clock:`, the CMSIS-Toolbox uses these defaults:
-
-```yml
-  protocol: swd
-  clock: 10000000  # 10MHz
-```
+If no input (`*.csolution.yml`, BSP or DFP) provides debugger option values, the CMSIS-Toolbox uses the values under `defaults:` from the file [`.\ect\debug-adapters.yml`](build-operation.md#debug-adapter-integration).
 
 **Example:**
 
@@ -923,12 +923,15 @@ debugger:
   info: On-Board debugger of MCB4300 
   protocol: jtag
   clock: 10000000
-  dbgconf: RTE/Device/lpc4300/lpc4300.dbgconf
+  dbgconf: /.cmsis/MySolution+lpc4300.dbgconf
 ```
 
 #### `gdbserver:`
 
 These are options for the pyOCD GDB server configuration (could be optionally used by other debuggers as well).
+
+!!! Note
+    The `gdbserver:` node is only generated when the file [`.\ect\debug-adapters.yml`](build-operation.md#debug-adapter-integration) contains `gdbserver:` for the selected debug adatper.
 
 `gdbserver:`                                              |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
@@ -947,18 +950,19 @@ These are options for the pyOCD GDB server configuration (could be optionally us
 
 ```yml
   debugger:
-    - name: CMSIS-DAP
-      protocol: swd
-      clock: 10000000
-      dbgconf: cm33_core1/RTE/Device/MCXN947VDF_cm33_core1/MCXN9XX.dbgconf
-      gdbserver:
-        processors:
-          - port: 3333
-            pname: cm33_core1
-          - port: 3334
-            pname: cm33_core0
-        terminal: 3335
+    name: CMSIS-DAP
+    protocol: swd
+    clock: 10000000
+    dbgconf: /.cmsis/MySolution+MCXN9XX.dbgconf
+    gdbserver:
+      core:
+        - port: 3333
+          pname: cm33_core1
+        - port: 3334
+          pname: cm33_core0
 ```
+
+![GDB Server Port Assignments](./images/GDBServer.png "GDB Server Port Assignments")
 
 #### `debug-vars:`
 
@@ -1221,11 +1225,11 @@ The `*.cbuild-run.yml` file provides all information about the application proje
 Start gdbserver for debug connection:
 
 ```bash
->pyocd gdbserver --cbuild-run MyProject+TargetHW.cbuild-run.yml
+>pyocd gdbserver --cbuild-run out\MyProject+TargetHW.cbuild-run.yml
 ```
 
 Program flash with application images:
 
 ```bash
->pyocd load --cbuild-run MyProject+TargetHW.cbuild-run.yml
+>pyocd load --cbuild-run out\MyProject+TargetHW.cbuild-run.yml
 ```
