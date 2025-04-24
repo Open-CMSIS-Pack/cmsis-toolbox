@@ -131,11 +131,21 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#cmsis_vio">CMSIS_VIO</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mikrobus_an_int_pwm">MIKROBUS_AN/_INT/_PWM</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mikrobus_i2c">MIKROBUS_I2C</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mikrobus_spi">MIKROBUS_SPI</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#mikrobus_uart">MIKROBUS_UART</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#stdio">STDIO</a>
     </li>
         </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#arduino-shield">Arduino Shield</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mikrobus-header">mikroBUS Header</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#header-file-example">Header File Example</a>
     </li>
@@ -568,6 +578,41 @@ int app_main (void)  {
 <tr>
 <td style="text-align: left;">.</td>
 <td style="text-align: left;">.</td>
+<td style="text-align: left;"><strong>mikroBUS socket Interface</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#mikrobus_an">MIKROBUS_AN</a></td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">CMSIS-Driver GPIO connecting to mikroBUS AN</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#mikrobus_int">MIKROBUS_INT</a></td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">CMSIS-Driver GPIO connecting to mikroBUS INT</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#mikrobus_pwm">MIKROBUS_PWM</a></td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">CMSIS-Driver GPIO connecting to mikroBUS PWM</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#mikrobus_i2c">MIKROBUS_I2C</a></td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">CMSIS-Driver I2C connecting to mikroBUS I2C</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#mikrobus_spi">MIKROBUS_SPI</a></td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">CMSIS-Driver SPI connecting to mikroBUS SPI</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#mikrobus_uart">MIKROBUS_UART</a></td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">CMSIS-Driver USART connecting to mikroBUS UART</td>
+</tr>
+<tr>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
 <td style="text-align: left;"><strong>I/O Retargeting</strong></td>
 </tr>
 <tr>
@@ -666,11 +711,36 @@ int app_main (void)  {
 </code></pre>
 <h3 id="cmsis_vio">CMSIS_VIO</h3>
 <p>Connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__vio__interface__gr.html">CMSIS-Driver VIO Interface</a>, a virtual I/O interface that connects on physical boards to LEDs and switches.</p>
+<h3 id="mikrobus_an_int_pwm">MIKROBUS_AN/_INT/_PWM</h3>
+<p>The <code>MIKROBUS_AN, MIKROBUS_INT and MIKROBUS_PWM</code> connect to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__gpio__interface__gr.html">CMSIS-Driver GPIO Interface</a>.</p>
+<p><code>CMSIS_target_header</code> contains the pin mapping to the physical driver.</p>
+<pre><code class="language-c">#define MIKROBUS_AN     GPIO_PORTD(0U)
+#define MIKROBUS_INT    GPIO_PORTD(1U)
+#define MIKROBUS_PWM    GPIO_PORTD(2U)
+</code></pre>
+<h3 id="mikrobus_i2c">MIKROBUS_I2C</h3>
+<p>Connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__i2c__interface__gr.html">CMSIS-Driver I2C Interface</a> configured in controller mode.</p>
+<p><code>CMSIS_target_header</code> contains the driver instance number with this definition:</p>
+<pre><code class="language-c">#define MIKROBUS_I2C        0     // CMSIS-Driver I2C instance number
+</code></pre>
+<h3 id="mikrobus_spi">MIKROBUS_SPI</h3>
+<p>Connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__spi__interface__gr.html">CMSIS-Driver SPI Interface</a> configured in controller mode and CPOL/CPHA frame format (no TI or Microwire). </p>
+<p>The Chip Select (CS) pin may be handled by CMSIS-Driver SPI interface or driven by the GPIO interface.</p>
+<p><code>CMSIS_target_header</code> contains the driver instance number with this definition:</p>
+<pre><code class="language-c">#define MIKROBUS_SPI        0     // CMSIS-Driver SPI instance number
+</code></pre>
+<h3 id="mikrobus_uart">MIKROBUS_UART</h3>
+<p>Connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__usart__interface__gr.html">CMSIS-Driver USART Interface</a> configured in asynchronous UART mode with no modem lines.</p>
+<p><code>CMSIS_target_header</code> contains the driver instance number with this definition:</p>
+<pre><code class="language-c">#define MIKROBUS_UART       0     // CMSIS-Driver USART instance number
+</code></pre>
 <h3 id="stdio">STDIO</h3>
 <p>The <code>STDIN</code>, <code>STDOUT</code>, and <code>STDERR</code> describe the I/O redirection via the <a href="https://arm-software.github.io/CMSIS-Compiler/main/index.html">CMSIS-Compiler</a> software component. Typically, the redirect is to a UART dedicated to debugging.</p>
 <h2 id="arduino-shield">Arduino Shield</h2>
 <p>The software layers <a href="#board-layer">Board</a> and <a href="#shield-layer">Shield</a> are currently based on Arduino UNO connectors. To combine different boards and shields a consistent pin naming is required. The standardized mapping is shown in the diagram below.</p>
 <p><img alt="Arduino Shield Pinout" src="../images/Arduino-Shield.png" title="Arduino Shield Pinout" /></p>
+<h2 id="mikrobus-header">mikroBUS Header</h2>
+<p><img alt="mikroBUS Header Pinout" src="../images/mikroBUS-header.png" title="mikroBUS Header Pinout" /></p>
 <h2 id="header-file-example">Header File Example</h2>
 <p>Two header files contain I/O configuration settings for the application program:</p>
 <ul>
