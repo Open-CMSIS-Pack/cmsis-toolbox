@@ -48,6 +48,7 @@ Element      |              | Description
 !!!Notes
     - When no version is specified, the **`csolution` Project Manager** only loads the latest installed version of a software pack. This also applies when wildcards are used in the `pack-name`. 
     - Use [**`cpackget`**](build-tools.md#cpackget-invocation) to download and install new pack versions.
+    - To accept a [pre-release version of a pack](pack-tools.md#versioning) specify the `-pre-release` label. Use for example `- pack: Keil::MDK-Middleware@^8.0.0-0` to accept any pre-release version that is higher or equal.
 
 **Examples:**
 
@@ -283,7 +284,7 @@ For example, these references are possible in the file `MQTT_AWS.cproject.yml`.
 
 ```yml
     files:
-    - file: $cmse-lib(TFM)$                         # use symbol output file of TFM Project
+      - file: $cmse-lib(TFM)$                         # use symbol output file of TFM Project
 ```
 
 The example above uses the `build-type` and `target-type` of the processed context for the project `TFM`. With a [context-set](build-overview.md#working-with-context-set) you may mix different `build-types` for an application. Note that it is important to build both projects using the same build process.
@@ -427,8 +428,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`build-types:`](#build-types)    |  Optional  | List of build-types (i.e. Release, Debug, Test).
 &nbsp;&nbsp;&nbsp; [`projects:`](#projects)          |**Required**| List of projects that belong to the solution.
 &nbsp;&nbsp;&nbsp; [`executes:`](#executes)          |  Optional  | Additional pre or post build steps using external tools.
-&nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)          |  Optional  | Defines parameters for a debugger connection.
-&nbsp;&nbsp;&nbsp; [`load:`](#load)                  |  Optional  | Add additional images to the `*.cbuild-run.yml`.
+&nbsp;&nbsp;&nbsp; [`images:`](#images)              |  Optional  | Add additional images that are managed by this *csolution project*.
 
 **Example:**
 
@@ -1321,6 +1321,7 @@ The `target-types:` node may include [toolchain options](#toolchain-options), [t
 &nbsp;&nbsp;&nbsp; [`context-map:`](#context-map)  |   Optional   | Use different `target-types:` for specific projects.
 &nbsp;&nbsp;&nbsp; [`variables:`](#variables)      |   Optional   | Variables that can be used to define project components.
 &nbsp;&nbsp;&nbsp; [`memory:`](#memory)            |   Optional   | Add additional off-chip memory available in target hardware.
+&nbsp;&nbsp;&nbsp; [`target-set:`](#target-set)    |   Optional   | One or more target-set configurations for projects, images, and debugger.
 
 !!! Note
     Either `device:` or `board:` is required.
@@ -1396,6 +1397,92 @@ target-types:
     device: :cm0plus          # use the Cortex-M0+ processor
 ```
 
+### `target-set:`
+
+The `target-set:` specifies for a `target-type:` the projects and images to include along with the configuration settings for a debug adapter. It is possible to specify one or more `set` configurations per `target-type`.
+
+`target-set:`                                         |              | Content
+:-----------------------------------------------------|--------------|:------------------------------------
+`- set:`                                              | **Required** | Start of a configuration, optional with name. The default set is unnamed.
+&nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the configuration.
+&nbsp;&nbsp;&nbsp; [`images:`](#target-set-images)    |   Optional   | List of images that belong to this set.
+&nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)           |   Optional   | Debugger configuration for this set.
+
+#### `target-set:` `images:`
+
+The `images:` node under `target-set:` specifies the projects with build-type and optional additional [images](#images) that belong to this configuration of the target set.
+
+`images:`                                             |              | Content
+:-----------------------------------------------------|--------------|:------------------------------------
+`- project-context:`                                  |   Optional   | Start of a configuration, optional with name. The default set is unnamed.
+&nbsp;&nbsp;&nbsp; `image:`                           |   Optional   | Base filename of the image (without path).
+&nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode for the image.
+
+!!! Note
+    Either `project-context:` or `image:` is required, but these nodes are mutually exclusive.
+
+#### `load:`
+
+Specifies the load mode for the project output or image file.
+
+`load:`                              | Description
+:------------------------------------|:-------------
+&nbsp;&nbsp;&nbsp; `image+symbols`   | Load both the binary image and the debug symbol information (default).
+&nbsp;&nbsp;&nbsp; `symbols`         | Load only the debug symbol information.
+&nbsp;&nbsp;&nbsp; `image`           | Load only the binary image.
+&nbsp;&nbsp;&nbsp; `none`            | No content is loaded for this image, however it is part of the build process.
+
+#### 
+
+**Example:**
+
+```yml
+solution:
+    :
+
+  target-types:
+    - type: MCXN947
+      board: FRDM-MCXN947
+      device: NXP::MCXN947VDF
+      target-set:
+        - set:                             // without id, <default> set
+          debugger:
+            name: ST-Link
+          images:
+          - project-context: core1.Debug
+          - project-context: core0.Release
+            load: symbols
+        - set: production
+          images:
+          - project-context: core1.Release
+          - project-context: core0.Release
+
+    - type: Custom-HW
+      device: NXP::MCXN947VDF
+      target-set:
+        - set:                             // without id, <default> set
+          debugger: 
+            name: ULINKplus
+            protocol: swd
+          images:
+          - project-context: core1.Debug
+          - project-context: core0.Release
+          - image: MyZephry.elf
+
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: debug
+
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  projects:
+    - project: ./cm33_core1/core1.cproject.yml
+    - project: ./cm33_core0/core0.cproject.yml
+```
+
 ### `context-map:`
 
 The `context-map:` node allows for a specific `project-name` the remapping of `target-types:` and/or `build-types:` to a different `context:` which enables: 
@@ -1461,7 +1548,7 @@ It is possible to include or exclude *items* of a [*list node*](#order-of-list-n
 - [`not-for-context:`](#not-for-context) excludes *items* for a [*context*](#context-name-conventions) list.
 
 !!! Note
-    `for-context` and `not-for-context` are mutually exclusive, only one occurrence can be specified for a *list node*.
+    `for-context:` and `not-for-context:` are mutually exclusive, only one occurrence can be specified for a *list node*.
 
 ### `for-compiler:`
 
@@ -1949,7 +2036,7 @@ The Windows batch file `KeyGen.bat` converts an input file `keyfile.txt` to a C 
 ```yml
 project:                                      # executed as part of a project build
   executes:
-    - execute: Generate Encryption Keys
+    - execute: GenerateEncryptionKeys
       run: $input(1)$ $input(0)$ -o $output$
       always:                                 # always generate the keyfile.c as it has a timestamp
       input:
@@ -2206,53 +2293,45 @@ This sensor shield layer provides a set of interfaces that are configurable.
 
 ## Debugger Configuration
 
-Packs contain information for configuring debugger connection to a device or board. The `debugger:` node in the *csolution project* allows 
+Packs contain information for configuring debugger connection to a device or board. The `debugger:` node that is specified under the [`target-set:`](#target-set) in the *csolution project* allows 
 to overwrite configuration information or to define new debugger setups.
 
 ### `debugger:`
 
 `debugger:`                                               |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
-`- name:`                                                 |**Required** | Identifier for the debugger configuration.
-&nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the debugger configuration.
+&nbsp;&nbsp;&nbsp; `name:`                                |**Required** | Identifies the debug adapter.
 &nbsp;&nbsp;&nbsp; `protocol:`                            |  Optional   | Select debug portocol (jtag or swd).
 &nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Select debug clock speed (in Hz).
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
-&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | Debugger configuration applied for a list of *context* types.
-&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | Debugger configuration not applied for a list of *context* types.
+&nbsp;&nbsp;&nbsp; `start-pname:`                         |  Optional   | Debugger connects at start to this processor.
+&nbsp;&nbsp;&nbsp; `*:`                                   |  Optional   | Other debugger specific options can be used, the section is not schema checked.
 
 !!! Note
-    The default values for `clock:` and `protocol:` are provided in the BSP or DFP. If no values are defined `clock: 10000000` and `protocol: swd` is assumed.
+    If values are not specified, the default values from `debug-adapter.yml` are used.
 
 **Examples:**
 
 ```yml
 debugger:
-  - name: CMSIS-DAP
-    info: connect via on-board debugger
-    protocol: swd
-    clock: 20000000   # 20 MHz
+  name: CMSIS-DAP
+  protocol: swd
+  clock: 20000000   # 20 MHz
 ```
 
 ```yml
 debugger:
-  - name: ULink
-    info: connect via ULink-plus
-    protocol: jtag
-    clock: 10000000               # 10 MHz
-    dbgconf: MyHardware.dbgconf   
-    for-context: +MyHardware      # only for target-type MyHardware
-
-  - name: JLink
-    info: connect via Segger JLink
-    clock: auto
-    protocol: swd
+  name: ULink
+  protocol: jtag
+  clock: 10000000               # 10 MHz
+  dbgconf: MyHardware.dbgconf   
 ```
 
-Depending on the debugger, a specific debugger connection can be selected using command line options, for example:
-
-```bash
-pyOCD gdbserver --cbuild-run MyTarget.cbuild-run.yml --debugger ULink
+```yml
+debugger:
+  name: JLink
+  clock: auto
+  protocol: swd
 ```
 
 ## Add Memory
@@ -2300,21 +2379,20 @@ solution:
 
 ## Add Images
 
-For Debug and Run the `load:` node allows to specify additional files that should be added to the `output:` node of the `*.cbuild-run.yml` file.
+For Debug and Run the `images:` node allows to specify additional files that should be added to the `output:` node of the `*.cbuild-run.yml` file.
 
-### `load:`
+### `images:`
 
-`load:`                                                   |             | Content
+`images:`                                                 |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
 `- file:`                                                 |**Required** | Specifies the file name.
 &nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the file.
 &nbsp;&nbsp;&nbsp; `type:`                                |  Optional   | Specifies an explicit file type. 
-&nbsp;&nbsp;&nbsp; `run:`                                 |  Optional   | Additional command string for download or programming.
-&nbsp;&nbsp;&nbsp; `debug:`                               |  Optional   | Additional command string for debug.
-&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | Debugger configuration applied for a list of *context* types.
-&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | Debugger configuration not applied for a list of *context* types.
+&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | File is applied for a list of *context* types.
+&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | File is not applied for a list of *context* types.
+&nbsp;&nbsp;&nbsp; `load-offset:`                         |  Optional   | Offset applied to the binary content when loading the file.
 
-Using `run:` or `debug:` allows to specify additional command information, for example an offset or load symbols only.
+### `type:`
 
 With `type:` an explicit file type can be specified which is required for unknow file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.
 
