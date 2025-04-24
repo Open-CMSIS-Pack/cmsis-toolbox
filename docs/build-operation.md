@@ -306,3 +306,64 @@ The following steps add a new generator to the CMSIS-Toolbox:
 4. The generator tool should generate a [*.cgen.yml file and other source files](https://open-cmsis-pack.github.io/cmsis-toolbox/YML-CBuild-Format/#file-structure-of-cgenyml) that are included in the project.
 
 An example project where you can explore this process is [CubeMX](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/CubeMX). It contains an example for a [*.cgen.yml file](https://github.com/Open-CMSIS-Pack/csolution-examples/blob/main/CubeMX/STM32CubeMX/MyBoard_ROM/CubeMX.cgen.yml).
+
+## Debug Adapter Integration
+
+The file `debug-adapters.yml` in the CMSIS-Toolbox `./etc` directory contains the list of supported debug adapters. If no debugger is specified for a *csolution project*, the first debug adapter ("CMSIS-DAP@pyOCD") contained in this file will be used. 
+
+ The `debug-adapters:` node in this YAML file registers the supported debug adapters with the following keys:
+
+`debug-adapters:`                                    |            | Content
+:----------------------------------------------------|:-----------|:------------------------------------
+`- name:`                                            |**Required**| `<generator-id>` referred in the `*.PDSC` file
+&nbsp;&nbsp;&nbsp; `alias-name:`                     |  Optional  | List of names (in input node or BSP) that map to this debug adapter.
+&nbsp;&nbsp;&nbsp; `template:`                       |  Optional  | Used only by the [VS Code CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension for configuration.
+&nbsp;&nbsp;&nbsp; `gdbserver:`                      |  Optional  | Add the [`gdbserver:`](YML-CBuild-Format.md#gdbserver) node in the `cbuild-run.yml` file.
+&nbsp;&nbsp;&nbsp; `defaults:`                       |  Optional  | List of default options to use when not specified in the [`target-set:`](YML-Input-Format.md#target-set) node.
+
+!!! Note
+    As the file is shared with the [VS Code CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension, also template files are references. However these template files are not part of the CMSIS-Toolbox.
+
+**Example `debug-adapters.yml`**
+
+```yml
+debug-adapters:
+  - name: "CMSIS-DAP@pyOCD"
+    alias-name: ["CMSIS-DAP", "DAP-Link"]     # alternative names that map to this debug adapter
+    template: CMSIS-DAP-pyOCD.adapter.json    # template file
+    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: 10000000
+  
+  - name: "ULINKplus"
+    template: CMSIS-DAP-pyOCD.adapter.json    # template file (initally same as CMSIS-DAP@pyOCD)
+    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: 10000000
+ 
+  - name: "ST-Link@pyOCD"
+    alias-name: ["ST-LINK"]                   # alternative names that map to this debug adapter
+    template: STLink-pyOCD.adapter.json       # template file
+    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: 10000000
+
+  - name: "JLink Server"
+    template: jlink.adapter.json              # template file
+    defaults:                                 # default values to use when nowhere specified
+      port: 3333                              # default value of first gdbserver port
+      protocol: swd
+      clock: auto
+
+  - name: "AVH-FVP"
+    template: FVP.adapter.json                # template file
+
+  - name: "Keil uVision"
+    template: uVision.adapter.json            # template file
+```
