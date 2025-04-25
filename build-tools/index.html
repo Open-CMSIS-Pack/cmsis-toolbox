@@ -227,7 +227,7 @@
 </ul>
 <h2 id="cbuild-invocation"><code>cbuild</code> Invocation</h2>
 <p>Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.</p>
-<pre><code class="language-txt">cbuild: Build Invocation 2.8.0 (C) 2022-2025 Arm Ltd. and Contributors
+<pre><code class="language-txt">cbuild: Build Invocation 2.9.0 (C) 2022-2025 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] &lt;name&gt;.csolution.yml [options]
@@ -238,6 +238,7 @@ Commands:
   setup       Generate project data for IDE environment
 
 Options:
+  -a, --active arg         Select active target-set: &lt;target-type&gt;[@&lt;set&gt;]
       --cbuildgen          Generate legacy *.cprj files and use cbuildgen backend
   -C, --clean              Remove intermediate and output directories
   -c, --context arg [...]  Input context names [&lt;project-name&gt;][.&lt;build-type&gt;][+&lt;target-type&gt;]
