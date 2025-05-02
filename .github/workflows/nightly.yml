@@ -492,20 +492,45 @@ jobs:
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
           cache: "-"
 
+      - name: Activate Arm tool license
+        run: |
+          armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
+        working-directory: ./test
+
+      - name: Authenticate with GitHub CLI
+        shell: bash
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
+
+      - name: Download Reference cmsis-toolbox nightly
+        shell: bash
+        run : |
+          # Download the reference toolbox from the last known stable nightly run
+          # https://github.com/Open-CMSIS-Pack/cmsis-toolbox/actions/runs/14789051651
+          # This needed to be updated when positive performance delta is expected
+          gh run download -D cmsis-toolbox-reference 14789051651 -n cmsis-toolbox-linux-amd64 -R Open-CMSIS-Pack/cmsis-toolbox
+
+      - name: Set Execution Permissions
+        run: |
+          chmod -R +x ./cmsis-toolbox-reference/bin/*
+
+      - name: Get Reference Toolbox Path
+        if: always()
+        id: ref_toolbox_path
+        shell: bash
+        run: |
+          echo "path=$(echo "$(pwd)/cmsis-toolbox-reference/bin")" >> $GITHUB_OUTPUT
+
       - name: Print Ref Binary Versions
         if: always()
         shell: bash
         run: |
+          export PATH="${{steps.ref_toolbox_path.outputs.path}}:$PATH"
           csolution -V
           cpackget -V
           cbuild -V
           cbuild2cmake -V
           cbuildgen -V
-
-      - name: Activate Arm tool license
-        run: |
-          armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
-        working-directory: ./test
 
       - name: Update Dependencies
         run: |
@@ -529,6 +554,7 @@ jobs:
       - name: Collect Performance Metrics (Reference Toolbox)
         working-directory: ./test
         run: |
+          export PATH="${{steps.ref_toolbox_path.outputs.path}}:$PATH"
           hyperfine --warmup 3 --runs 5 \
             "cbuild setup ./ref_test_dir/csolution-examples/Hello/Hello.csolution.yml -p -S --update-rte --toolchain AC6" \
             "cbuild setup ./ref_test_dir/vscode-get-started/get_started.csolution.yml -p -S --update-rte --toolchain AC6" \
@@ -538,6 +564,8 @@ jobs:
             --export-markdown ref_benchmark_results.md \
             --export-json ref_benchmark_results.json \
             --show-output
+          # Remove the reference toolbox after the benchmark
+          rm -rf ${{steps.ref_toolbox_path.outputs.path}}
 
       - name: Download cmsis-toolbox
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
@@ -602,7 +630,7 @@ jobs:
         working-directory: ./test
         run: |
           # Generate Comparison report
-          # Path to the reference benchmark results (from last known release)
+          # Path to the reference benchmark results (from last known reference)
           # Path to the current benchmark results (from the latest run)
           # --verbose: Verbose output
           # --output: Path to the output comparison report
@@ -617,7 +645,7 @@ jobs:
         working-directory: ./test
         run: |
           # Run the performance regression check script
-          # -r: Path to the reference benchmark results (from last known release)
+          # -r: Path to the reference benchmark results (from last known reference)
           # -c: Path to the current benchmark results (from the latest run)
           # -p: Permissible limit multiplier (e.g., 1.10 allows up to 10% permissible degrade)
           python ./performance/check_perf_regression.py \
