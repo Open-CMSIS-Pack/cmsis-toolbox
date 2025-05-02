@@ -497,18 +497,26 @@ jobs:
           armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
         working-directory: ./test
 
-      - name: Authenticate with GitHub CLI
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y hyperfine unzip
+
+      # Download the reference toolbox release
+      # This needed to be updated when positive performance delta is expected
+      - name: Download Reference cmsis-toolbox
+        continue-on-error: true
+        uses: robinraju/release-downloader@v1.12
+        with:
+          repository: Open-CMSIS-Pack/cmsis-toolbox
+          tag: "cmsis-toolbox-test-reference"
+          fileName: "cmsis-toolbox-linux-amd64.zip"
+
+      - name: Unzip Reference cmsis-toolbox
         shell: bash
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
-
-      - name: Download Reference cmsis-toolbox nightly
-        shell: bash
-        run : |
-          # Download the reference toolbox from the last known stable nightly run
-          # https://github.com/Open-CMSIS-Pack/cmsis-toolbox/actions/runs/14789051651
-          # This needed to be updated when positive performance delta is expected
-          gh run download -D cmsis-toolbox-reference 14789051651 -n cmsis-toolbox-linux-amd64 -R Open-CMSIS-Pack/cmsis-toolbox
+          mkdir -p cmsis-toolbox-reference
+          unzip cmsis-toolbox-linux-amd64.zip -d cmsis-toolbox-reference
 
       - name: Set Execution Permissions
         run: |
@@ -531,11 +539,6 @@ jobs:
           cbuild -V
           cbuild2cmake -V
           cbuildgen -V
-
-      - name: Update Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y hyperfine
 
       - name: Clone TestData Repositories
         shell: bash
