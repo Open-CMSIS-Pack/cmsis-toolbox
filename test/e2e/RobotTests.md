@@ -17,14 +17,14 @@ Before running Robot Framework tests, ensure you have the following prerequisite
 Install Robot Framework and its dependencies using pip:
 
 ```bash
-cd <root_dir>/test
+cd <root_dir>/test/e2e
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
 ### Install Toolchains using vcpkg
 
-These commands will install all the required toolchains listed [here](./vcpkg-configuration.json):
+These commands will install all the required toolchains listed [here](../vcpkg-configuration.json):
 
 ```bash
 cd <root_dir>/test
@@ -52,7 +52,7 @@ for e.g.
 
 ```bash
 vcpkg activate
-robot -d results ./test
+robot -d results ./test/e2e
 ```
 
 ### Running Specific Tests
@@ -67,7 +67,7 @@ for e.g.
 
 ```bash
 vcpkg activate
-robot --test "Validate build-c Example"  test/test.robot
+robot --test "Validate build-c Example"  test/e2e/test.robot
 ```
 
 ## Adding Tests

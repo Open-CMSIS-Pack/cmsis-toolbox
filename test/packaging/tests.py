@@ -36,6 +36,8 @@ def test_check_archive(base_path):
         "CPRJ.xsd",
         "cproject.schema.json",
         "csolution.schema.json",
+        "debug-adapters.schema.json",
+        "debug-adapters.yml",
         "GCC.10.3.1.cmake",
         "gcc_linker_script.ld.src",
         "generator.schema.json",
