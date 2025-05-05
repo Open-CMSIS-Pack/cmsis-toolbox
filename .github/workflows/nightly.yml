@@ -16,6 +16,7 @@ on:
       - '.github/matrix_includes.json'
       - 'debian/**'
       - 'test/e2e/**'
+      - 'test/vcpkg-configuration.json'
       - '!**/*.md'
 env:
   retention-days: 7
