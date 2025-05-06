@@ -15,8 +15,8 @@ on:
       - '.github/workflows/nightly.yml'
       - '.github/matrix_includes.json'
       - 'debian/**'
-      - 'test/**'
-      - '!test/tests.py'
+      - 'test/e2e/**'
+      - 'test/vcpkg-configuration.json'
       - '!**/*.md'
 env:
   retention-days: 7
@@ -32,7 +32,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
         with:
           egress-policy: audit
 
@@ -52,7 +52,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
         with:
           egress-policy: audit
 
@@ -249,7 +249,7 @@ jobs:
             sed -i '/set(EXT/c\  set(EXT .exe)' ./cmsis-toolbox/etc/CLANG_TI.4.0.1.cmake
 
       - name: Set up Python
-        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -323,7 +323,7 @@ jobs:
 
     steps:     
       - name: Harden Runner
-        uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
         with:
           egress-policy: audit
 
@@ -331,7 +331,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
     
       - name: Set up Python
-        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -339,7 +339,7 @@ jobs:
       - name: Install pip dependencies
         run: |
             pip install --upgrade pip
-            pip install -r test/requirements.txt
+            pip install -r test/e2e/requirements.txt
 
       - name: Setup vcpkg environment
         uses: ARM-software/cmsis-actions/vcpkg@f608f32a6d83e90d79e1f2bbb7812fdb94bf1679 # v1
@@ -354,7 +354,7 @@ jobs:
         working-directory: ./test
 
       - name: Download cmsis toolbox ${{ matrix.target }} ${{ matrix.arch }}
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: cmsis-toolbox
@@ -384,20 +384,23 @@ jobs:
       - name: Run Test
         shell: bash
         continue-on-error: true
+        working-directory: ./test
+        env:
+          IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
         run: |
           export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
           robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} \
             --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}.md \
             --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }} \
             --name ${{ matrix.target }}-${{ matrix.arch }} \
-            ./test
+            ./e2e
 
       - name: Archieve test results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: reports-${{ matrix.target }}-${{ matrix.arch }}
-          path: reports-${{ matrix.target }}-${{ matrix.arch }}
+          path: ./test/reports-${{ matrix.target }}-${{ matrix.arch }}
           retention-days: ${{ env.retention-days }}
 
   consolidate-report:
@@ -408,14 +411,14 @@ jobs:
 
     steps:
     - name: Harden Runner
-      uses: step-security/harden-runner@c6295a65d1254861815972266d5933fd6e532bdf # v2.11.1
+      uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
       with:
         egress-policy: audit
 
     - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: Set up Python
-      uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
       with:
         python-version: '3.11'
         cache: 'pip'
@@ -423,10 +426,10 @@ jobs:
     - name: Install pip dependencies
       run: |
           pip install --upgrade pip
-          pip install -r test/requirements.txt
+          pip install -r test/e2e/requirements.txt
 
     - name: Download reports
-      uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       with:
         path: artifacts
         pattern: reports-*
@@ -443,8 +446,8 @@ jobs:
     - name: Generate Summary report
       if: always()
       run: |
-        python ./test/lib/execution_summary.py artifacts \
-          -r ./test/reference.md \
+        python ./test/e2e/lib/execution_summary.py artifacts \
+          -r ./test/e2e/reference.md \
           -o artifacts/collective_robot_results/output.xml \
           -m summary_report.md
 
@@ -459,3 +462,198 @@ jobs:
         name: consolidated-reports
         path: artifacts/collective_robot_results
         retention-days: ${{ env.retention-days }}
+
+  performance-check:
+    needs: [ matrix_prep, create-toolbox ]
+    runs-on: [ ubuntu-latest ]
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout toolbox repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install pip dependencies
+        run: |
+            pip install --upgrade pip
+            pip install -r test/performance/requirements.txt
+
+      - name: Setup vcpkg environment
+        uses: ARM-software/cmsis-actions/vcpkg@f608f32a6d83e90d79e1f2bbb7812fdb94bf1679 # v1
+        with:
+          config: "./test/vcpkg-configuration.json"
+          vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
+          cache: "-"
+
+      - name: Activate Arm tool license
+        run: |
+          armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
+        working-directory: ./test
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y hyperfine unzip
+
+      # Download the reference toolbox release
+      # This needed to be updated when positive performance delta is expected
+      - name: Download Reference cmsis-toolbox
+        continue-on-error: true
+        uses: robinraju/release-downloader@v1.12
+        with:
+          repository: Open-CMSIS-Pack/cmsis-toolbox
+          tag: "cmsis-toolbox-test-reference"
+          fileName: "cmsis-toolbox-linux-amd64.zip"
+
+      - name: Unzip Reference cmsis-toolbox
+        shell: bash
+        run: |
+          mkdir -p cmsis-toolbox-reference
+          unzip cmsis-toolbox-linux-amd64.zip -d cmsis-toolbox-reference
+
+      - name: Set Execution Permissions
+        run: |
+          chmod -R +x ./cmsis-toolbox-reference/bin/*
+
+      - name: Get Reference Toolbox Path
+        if: always()
+        id: ref_toolbox_path
+        shell: bash
+        run: |
+          echo "path=$(echo "$(pwd)/cmsis-toolbox-reference/bin")" >> $GITHUB_OUTPUT
+
+      - name: Print Ref Binary Versions
+        if: always()
+        shell: bash
+        run: |
+          export PATH="${{steps.ref_toolbox_path.outputs.path}}:$PATH"
+          csolution -V
+          cpackget -V
+          cbuild -V
+          cbuild2cmake -V
+          cbuildgen -V
+
+      - name: Clone TestData Repositories
+        shell: bash
+        working-directory: ./test
+        run: |
+          set -x  # Enable debugging
+          mkdir -p ref_test_dir
+          cat performance/input_example_repos.txt | tr -d '\r' > repos_clean.txt  # Ensure no Windows line endings
+          while IFS= read -r repo || [[ -n "$repo" ]]; do
+            if [[ -n "$repo" ]]; then
+              echo "Cloning $repo..."
+              git clone "$repo" "ref_test_dir/$(basename "$repo" .git)" || echo "Failed to clone $repo"
+            fi
+          done < repos_clean.txt
+
+      - name: Collect Performance Metrics (Reference Toolbox)
+        working-directory: ./test
+        run: |
+          export PATH="${{steps.ref_toolbox_path.outputs.path}}:$PATH"
+          hyperfine --warmup 3 --runs 5 \
+            "cbuild setup ./ref_test_dir/csolution-examples/Hello/Hello.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./ref_test_dir/vscode-get-started/get_started.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./ref_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./ref_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain GCC" \
+            "cbuild setup ./ref_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain CLANG" \
+            --export-markdown ref_benchmark_results.md \
+            --export-json ref_benchmark_results.json \
+            --show-output
+          # Remove the reference toolbox after the benchmark
+          rm -rf ${{steps.ref_toolbox_path.outputs.path}}
+
+      - name: Download cmsis-toolbox
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: cmsis-toolbox-linux-amd64
+          path: cmsis-toolbox
+
+      - name: Set Execution Permissions
+        run: |
+          chmod -R +x ./cmsis-toolbox/bin/*
+  
+      - name: Get Toolbox Path
+        if: always()
+        id: toolbox_path
+        shell: bash
+        run: |
+          echo "path=$(echo "$(pwd)/cmsis-toolbox/bin")" >> $GITHUB_OUTPUT
+          
+      - name: Print Curr Binary Versions
+        if: always()
+        shell: bash
+        run: |
+          export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
+          export CMSIS_PACK_ROOT="$(pwd)/local_pack_root"
+          csolution -V
+          cpackget -V
+          cbuild -V
+          cbuild2cmake -V
+          cbuildgen -V
+
+      - name: Clone Repositories
+        shell: bash
+        working-directory: ./test
+        run: |
+          set -x  # Enable debugging
+          mkdir -p curr_test_dir
+          cat performance/input_example_repos.txt | tr -d '\r' > repos_clean.txt  # Ensure no Windows line endings
+          while IFS= read -r repo || [[ -n "$repo" ]]; do
+            if [[ -n "$repo" ]]; then
+              echo "Cloning $repo..."
+              git clone "$repo" "curr_test_dir/$(basename "$repo" .git)" || echo "Failed to clone $repo"
+            fi
+          done < repos_clean.txt
+
+      - name: Collect Performance Metrics (Latest Toolbox)
+        working-directory: ./test
+        run: |
+          export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
+          export CMSIS_PACK_ROOT="$(pwd)/local_pack_root"
+          hyperfine --warmup 3 --runs 5 \
+            "cbuild setup ./curr_test_dir/csolution-examples/Hello/Hello.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./curr_test_dir/vscode-get-started/get_started.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./curr_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain AC6" \
+            "cbuild setup ./curr_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain GCC" \
+            "cbuild setup ./curr_test_dir/CMSIS-RTX/Examples/Blinky/Blinky.csolution.yml -p -S --update-rte --toolchain CLANG" \
+            --export-markdown curr_benchmark_results.md \
+            --export-json curr_benchmark_results.json \
+            --show-output
+
+      - name: Generate Comparison Report
+        if: always()
+        working-directory: ./test
+        run: |
+          # Generate Comparison report
+          # Path to the reference benchmark results (from last known reference)
+          # Path to the current benchmark results (from the latest run)
+          # --verbose: Verbose output
+          # --output: Path to the output comparison report
+          python ./performance/generate_comparison.py \
+            ref_benchmark_results.md \
+            curr_benchmark_results.md \
+            --verbose \
+            --output comparison_results.md
+          cat comparison_results.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Compare Benchmark Results
+        working-directory: ./test
+        run: |
+          # Run the performance regression check script
+          # -r: Path to the reference benchmark results (from last known reference)
+          # -c: Path to the current benchmark results (from the latest run)
+          # -p: Permissible limit multiplier (e.g., 1.10 allows up to 10% permissible degrade)
+          python ./performance/check_perf_regression.py \
+            -r ref_benchmark_results.json \
+            -c curr_benchmark_results.json \
+            -p 1.10
+      

@@ -22,7 +22,7 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.8.0 (C) 2022-2025 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.9.0 (C) 2022-2025 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -33,6 +33,7 @@ Commands:
   setup       Generate project data for IDE environment
 
 Options:
+  -a, --active arg         Select active target-set: <target-type>[@<set>]
       --cbuildgen          Generate legacy *.cprj files and use cbuildgen backend
   -C, --clean              Remove intermediate and output directories
   -c, --context arg [...]  Input context names [<project-name>][.<build-type>][+<target-type>]
