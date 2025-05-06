@@ -49,8 +49,13 @@ jobs:
     continue-on-error: true
     strategy:
       matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
-
+    env:
+      retention-days: 7
+      GOMODCACHE: ${{ github.workspace }}/.gocache
     steps:
+      - name: Clean Go mod cache
+        run: rm -rf ${{ env.GOMODCACHE }}
+      
       - name: Harden Runner
         uses: step-security/harden-runner@0634a2670c59f64b4a01f0f96f84700a4088b9f0 # v2.12.0
         with:
