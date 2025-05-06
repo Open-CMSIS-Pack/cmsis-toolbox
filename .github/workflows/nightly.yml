@@ -85,7 +85,7 @@ jobs:
         uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5.4.0
         with:
           go-version-file: cbuild/go.mod
-          cache-dependency-path: cbuild/go.sum
+          cache-dependency-path: 'cbuild/go.sum'
 
       - name: Build cbuild executable
         working-directory: cbuild
@@ -105,7 +105,7 @@ jobs:
         uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5.4.0
         with:
           go-version-file: cpackget/go.mod
-          cache-dependency-path: cpackget/go.sum
+          cache: false
 
       - name: Build cpackget executable
         working-directory: cpackget
@@ -125,7 +125,7 @@ jobs:
         uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5.4.0
         with:
           go-version-file: cbuild2cmake/go.mod
-          cache-dependency-path: cbuild2cmake/go.sum
+          cache: false
 
       - name: Build cbuild2cmake executable
         working-directory: cbuild2cmake
@@ -145,7 +145,7 @@ jobs:
         uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # v5.4.0
         with:
           go-version-file: vidx2pidx/go.mod
-          cache-dependency-path: vidx2pidx/go.sum
+          cache: false
 
       - name: Build vidx2pidx executable
         working-directory: vidx2pidx
