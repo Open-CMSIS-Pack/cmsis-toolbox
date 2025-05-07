@@ -187,11 +187,11 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#target-set">target-set:</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#target-set-images">target-set: images:</a>
+    <li class="toctree-l4"><a class="reference internal" href="#images">images:</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#load">load:</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#_1"></a>
+    <li class="toctree-l4"><a class="reference internal" href="#type">type:</a>
     </li>
         </ul>
     </li>
@@ -278,14 +278,6 @@
     <li class="toctree-l2"><a class="reference internal" href="#add-memory">Add Memory</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#memory">memory:</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#add-images">Add Images</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#images">images:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#type">type:</a>
     </li>
         </ul>
     </li>
@@ -1051,11 +1043,6 @@ the compiler with specific default controls. The search order for this file is:<
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#executes"><code>executes:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Additional pre or post build steps using external tools.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#images"><code>images:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Add additional images that are managed by this <em>csolution project</em>.</td>
 </tr>
 </tbody>
 </table>
@@ -2834,7 +2821,7 @@ settings are processed in the following order:</p>
 <td style="text-align: left;">Brief description of the configuration.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#target-set-images"><code>images:</code></a></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#images"><code>images:</code></a></td>
 <td>Optional</td>
 <td style="text-align: left;">List of images that belong to this set.</td>
 </tr>
@@ -2845,7 +2832,7 @@ settings are processed in the following order:</p>
 </tr>
 </tbody>
 </table>
-<h4 id="target-set-images"><code>target-set:</code> <code>images:</code></h4>
+<h4 id="images"><code>images:</code></h4>
 <p>The <code>images:</code> node under <code>target-set:</code> specifies the projects with build-type and optional additional <a href="#images">images</a> that belong to this configuration of the target set.</p>
 <table>
 <thead>
@@ -2859,26 +2846,42 @@ settings are processed in the following order:</p>
 <tr>
 <td style="text-align: left;"><code>- project-context:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Start of a configuration, optional with name. The default set is unnamed.</td>
+<td style="text-align: left;">Project output with optional build-type to use. Format: <code>&lt;project_name&gt;[.buid_type]</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>image:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Base filename of the image (without path).</td>
+<td style="text-align: left;">Additional image file to load.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#load"><code>load:</code></a></td>
 <td>Optional</td>
-<td style="text-align: left;">Load mode for the image.</td>
+<td style="text-align: left;">Load mode of the image file for programmers and debug tools.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Brief description of the image file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#type"><code>type:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies an explicit file of the image type.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>load-offset:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Offset applied to the binary content when loading the image file.</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Either <code>project-context:</code> or <code>image:</code> is required, but these nodes are mutually exclusive.</p>
+<p>Either <code>project-context:</code> or <code>image:</code> is required, but these nodes are mutually exclusive.
+The <code>load:</code> and <code>type:</code> specification is only accepted for an <code>image:</code> file.</p>
 </div>
 <h4 id="load"><code>load:</code></h4>
-<p>Specifies the load mode for the project output or image file.</p>
+<p>Specifies the load mode for an image file. This information is used by programmers and debug tools.</p>
 <table>
 <thead>
 <tr>
@@ -2889,7 +2892,7 @@ settings are processed in the following order:</p>
 <tbody>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>image+symbols</code></td>
-<td style="text-align: left;">Load both the binary image and the debug symbol information (default).</td>
+<td style="text-align: left;">Load both the binary image and the debug symbol information (default for file <code>type: elf</code>).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>symbols</code></td>
@@ -2897,7 +2900,7 @@ settings are processed in the following order:</p>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>image</code></td>
-<td style="text-align: left;">Load only the binary image.</td>
+<td style="text-align: left;">Load only the binary image (default for other file types).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>none</code></td>
@@ -2905,7 +2908,39 @@ settings are processed in the following order:</p>
 </tr>
 </tbody>
 </table>
-<h4 id="_1"></h4>
+<h4 id="type"><code>type:</code></h4>
+<p>With <code>type:</code> an explicit file type can be specified which is required for unknown file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>type:</code></th>
+<th style="text-align: left;">Auto-detected Extension</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- lib</code></td>
+<td style="text-align: left;"><code>.lib</code>, <code>.a</code></td>
+<td style="text-align: left;">Library or archive.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>- elf</code></td>
+<td style="text-align: left;"><code>.axf</code>, <code>.elf</code></td>
+<td style="text-align: left;">Executable in ELF format.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>- hex</code></td>
+<td style="text-align: left;"><code>.h386</code>, <code>.hex</code></td>
+<td style="text-align: left;">Intel HEX file in HEX-386 format.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>- bin</code></td>
+<td style="text-align: left;"><code>.bin</code></td>
+<td style="text-align: left;">Binary image.</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">solution:
     :
@@ -2921,7 +2956,6 @@ settings are processed in the following order:</p>
           images:
           - project-context: core1.Debug
           - project-context: core0.Release
-            load: symbols
         - set: production
           images:
           - project-context: core1.Release
@@ -2937,7 +2971,8 @@ settings are processed in the following order:</p>
           images:
           - project-context: core1.Debug
           - project-context: core0.Release
-          - image: MyZephry.elf
+          - image: Zephry.elf
+            load: image
 
   build-types:
     - type: Debug
@@ -4225,83 +4260,6 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
           size: 0x200000
           algorithm: Flash/Ext-Flash.flm       # Programming algorithm
 </code></pre>
-<h2 id="add-images">Add Images</h2>
-<p>For Debug and Run the <code>images:</code> node allows to specify additional files that should be added to the <code>output:</code> node of the <code>*.cbuild-run.yml</code> file.</p>
-<h3 id="images"><code>images:</code></h3>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>images:</code></th>
-<th></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>- file:</code></td>
-<td><strong>Required</strong></td>
-<td style="text-align: left;">Specifies the file name.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Brief description of the file.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Specifies an explicit file type.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
-<td>Optional</td>
-<td style="text-align: left;">File is applied for a list of <em>context</em> types.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#not-for-context"><code>not-for-context:</code></a></td>
-<td>Optional</td>
-<td style="text-align: left;">File is not applied for a list of <em>context</em> types.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>load-offset:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Offset applied to the binary content when loading the file.</td>
-</tr>
-</tbody>
-</table>
-<h3 id="type"><code>type:</code></h3>
-<p>With <code>type:</code> an explicit file type can be specified which is required for unknow file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>type:</code></th>
-<th style="text-align: left;">Auto-detected Extension</th>
-<th style="text-align: left;">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>- lib</code></td>
-<td style="text-align: left;"><code>.lib</code>, <code>.a</code></td>
-<td style="text-align: left;">Library or archive.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>- elf</code></td>
-<td style="text-align: left;"><code>.axf</code>, <code>.elf</code></td>
-<td style="text-align: left;">Executable in ELF format.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>- hex</code></td>
-<td style="text-align: left;"><code>.h386</code></td>
-<td style="text-align: left;">Intel HEX file in HEX-386 format.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>- bin</code></td>
-<td style="text-align: left;"><code>.bin</code></td>
-<td style="text-align: left;">Binary image.</td>
-</tr>
-</tbody>
-</table>
               
             </div>
           </div><footer>
