@@ -428,7 +428,6 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`build-types:`](#build-types)    |  Optional  | List of build-types (i.e. Release, Debug, Test).
 &nbsp;&nbsp;&nbsp; [`projects:`](#projects)          |**Required**| List of projects that belong to the solution.
 &nbsp;&nbsp;&nbsp; [`executes:`](#executes)          |  Optional  | Additional pre or post build steps using external tools.
-&nbsp;&nbsp;&nbsp; [`images:`](#images)              |  Optional  | Add additional images that are managed by this *csolution project*.
 
 **Example:**
 
@@ -1414,8 +1413,8 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 
 `images:`                                             |              | Content
 :-----------------------------------------------------|--------------|:------------------------------------
-`- project-context:`                                  |   Optional   | Start of a configuration, optional with name. The default set is unnamed.
-&nbsp;&nbsp;&nbsp; `image:`(#image)                   |   Optional   | Additional image file to load.
+`- project-context:`                                  |   Optional   | Project output with optional build-type to use. Format: `<project_name>[.buid_type]`
+&nbsp;&nbsp;&nbsp; `image:`                           |   Optional   | Additional image file to load.
 &nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode of the image file for programmers and debug tools.
 &nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the image file.
 &nbsp;&nbsp;&nbsp; [`type:`](#type)                   |   Optional   | Specifies an explicit file of the image type. 
@@ -1423,7 +1422,7 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 
 !!! Note
     Either `project-context:` or `image:` is required, but these nodes are mutually exclusive.
-    The `load:` mode specification is only accepted for an `image:` file.
+    The `load:` and `type:` specification is only accepted for an `image:` file.
 
 #### `load:`
 
@@ -1438,13 +1437,13 @@ Specifies the load mode for an image file. This information is used by programme
 
 #### `type:`
 
-With `type:` an explicit file type can be specified which is required for unknow file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.
+With `type:` an explicit file type can be specified which is required for unknown file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.
 
 `type:`           | Auto-detected Extension | Description
 :-----------------|:------------------------|:-------------
 `- lib`           | `.lib`, `.a`            | Library or archive. 
 `- elf`           | `.axf`, `.elf`          | Executable in ELF format. 
-`- hex`           | `.h386`                 | Intel HEX file in HEX-386 format.
+`- hex`           | `.h386`, `.hex`         | Intel HEX file in HEX-386 format.
 `- bin`           | `.bin`                  | Binary image.
 
 **Example:**
@@ -1464,7 +1463,6 @@ solution:
           images:
           - project-context: core1.Debug
           - project-context: core0.Release
-            load: symbols
         - set: production
           images:
           - project-context: core1.Release
@@ -1480,7 +1478,8 @@ solution:
           images:
           - project-context: core1.Debug
           - project-context: core0.Release
-          - image: MyZephry.elf
+          - image: Zephry.elf
+            load: image
 
   build-types:
     - type: Debug

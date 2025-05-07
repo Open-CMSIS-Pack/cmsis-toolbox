@@ -813,7 +813,7 @@ Use the [`images:`](YML-Input-Format.md#images) node in the `*.csolution.yml` fi
 &nbsp;&nbsp;&nbsp; [`type:`](YML-Input-Format.md#type)    |**Required** | Specifies the file type.
 &nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the file.
 &nbsp;&nbsp;&nbsp; [`load:`](YML-Input-Format.md#load)    |**Required** | Load mode of the image file for programmers and debug tools.
-&nbsp;&nbsp;&nbsp; `load-offset:`                         |  Optional   | Offset applied to the binary content when loading the image file.
+&nbsp;&nbsp;&nbsp; `load-offset:`                         |  Optional   | Offset applied in `*.csolution.yml` when loading the image file.
 &nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Image belongs to processor in a multi-core system.
 
 **`load:` mode**
@@ -821,6 +821,7 @@ Use the [`images:`](YML-Input-Format.md#images) node in the `*.csolution.yml` fi
 For `image:` files that are added using the [`images:`](YML-Input-Format.md#images) node of the `*.csolution.yml` file but have no `load:` mode specified, the CMSIS-Toolbox adds an `load:` mode depending on the file type.
 
 - Files with `type: elf` get `load: image+symbols`.
+- Files with `type: lib` get `load: none`.
 - All other file types get `load: image`.
 
 For files that are the output of a `cproject.yml` project, the `output:` node lists all files that are generated. The CMSIS-Toolbox adds an `load:` mode depending on the compiler used and the file types that are generated to indicate how these files should be used by programmers and debug tools.
@@ -903,7 +904,7 @@ List of the description files for peripherals and software components used in th
 
 #### `debugger:`
 
-This node contains connection information to one or more debuggers with inital settings coming from the board support pack (BSP) or device family pack (DFP).
+This node contains connection information for a debugger with inital settings coming from the board support pack (BSP) or device family pack (DFP).
 
 `debugger:`                                               |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
