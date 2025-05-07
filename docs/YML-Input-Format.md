@@ -1405,34 +1405,47 @@ The `target-set:` specifies for a `target-type:` the projects and images to incl
 :-----------------------------------------------------|--------------|:------------------------------------
 `- set:`                                              | **Required** | Start of a configuration, optional with name. The default set is unnamed.
 &nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the configuration.
-&nbsp;&nbsp;&nbsp; [`images:`](#target-set-images)    |   Optional   | List of images that belong to this set.
+&nbsp;&nbsp;&nbsp; [`images:`](#images)               |   Optional   | List of images that belong to this set.
 &nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)           |   Optional   | Debugger configuration for this set.
 
-#### `target-set:` `images:`
+#### `images:`
 
 The `images:` node under `target-set:` specifies the projects with build-type and optional additional [images](#images) that belong to this configuration of the target set.
 
 `images:`                                             |              | Content
 :-----------------------------------------------------|--------------|:------------------------------------
 `- project-context:`                                  |   Optional   | Start of a configuration, optional with name. The default set is unnamed.
-&nbsp;&nbsp;&nbsp; `image:`                           |   Optional   | Base filename of the image (without path).
-&nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode for the image.
+&nbsp;&nbsp;&nbsp; `image:`(#image)                   |   Optional   | Additional image file to load.
+&nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode of the image file for programmers and debug tools.
+&nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the image file.
+&nbsp;&nbsp;&nbsp; [`type:`](#type)                   |   Optional   | Specifies an explicit file of the image type. 
+&nbsp;&nbsp;&nbsp; `load-offset:`                     |   Optional   | Offset applied to the binary content when loading the image file.
 
 !!! Note
     Either `project-context:` or `image:` is required, but these nodes are mutually exclusive.
+    The `load:` mode specification is only accepted for an `image:` file.
 
 #### `load:`
 
-Specifies the load mode for the project output or image file.
+Specifies the load mode for an image file. This information is used by programmers and debug tools.
 
 `load:`                              | Description
 :------------------------------------|:-------------
-&nbsp;&nbsp;&nbsp; `image+symbols`   | Load both the binary image and the debug symbol information (default).
+&nbsp;&nbsp;&nbsp; `image+symbols`   | Load both the binary image and the debug symbol information (default for file `type: elf`).
 &nbsp;&nbsp;&nbsp; `symbols`         | Load only the debug symbol information.
-&nbsp;&nbsp;&nbsp; `image`           | Load only the binary image.
+&nbsp;&nbsp;&nbsp; `image`           | Load only the binary image (default for other file types).
 &nbsp;&nbsp;&nbsp; `none`            | No content is loaded for this image, however it is part of the build process.
 
-#### 
+#### `type:`
+
+With `type:` an explicit file type can be specified which is required for unknow file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.
+
+`type:`           | Auto-detected Extension | Description
+:-----------------|:------------------------|:-------------
+`- lib`           | `.lib`, `.a`            | Library or archive. 
+`- elf`           | `.axf`, `.elf`          | Executable in ELF format. 
+`- hex`           | `.h386`                 | Intel HEX file in HEX-386 format.
+`- bin`           | `.bin`                  | Binary image.
 
 **Example:**
 
@@ -2376,29 +2389,3 @@ solution:
           size: 0x200000
           algorithm: Flash/Ext-Flash.flm       # Programming algorithm
 ```
-
-## Add Images
-
-For Debug and Run the `images:` node allows to specify additional files that should be added to the `output:` node of the `*.cbuild-run.yml` file.
-
-### `images:`
-
-`images:`                                                 |             | Content
-:---------------------------------------------------------|-------------|:------------------------------------
-`- file:`                                                 |**Required** | Specifies the file name.
-&nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the file.
-&nbsp;&nbsp;&nbsp; `type:`                                |  Optional   | Specifies an explicit file type. 
-&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |  Optional   | File is applied for a list of *context* types.
-&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |  Optional   | File is not applied for a list of *context* types.
-&nbsp;&nbsp;&nbsp; `load-offset:`                         |  Optional   | Offset applied to the binary content when loading the file.
-
-### `type:`
-
-With `type:` an explicit file type can be specified which is required for unknow file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.
-
-`type:`           | Auto-detected Extension | Description
-:-----------------|:------------------------|:-------------
-`- lib`           | `.lib`, `.a`            | Library or archive. 
-`- elf`           | `.axf`, `.elf`          | Executable in ELF format. 
-`- hex`           | `.h386`                 | Intel HEX file in HEX-386 format.
-`- bin`           | `.bin`                  | Binary image.

@@ -372,9 +372,9 @@ Currently, the following **`connect` names** are used.
 [CMSIS_VIO](#cmsis_vio)                                      | -                      | CMSIS-Driver VIO interface for virtual I/O
 CMSIS-RTOS2                                                  | -                      | CMSIS-RTOS2 compliant RTOS
 .                                                            |.                       | **mikroBUS socket Interface**
-[MIKROBUS_AN](#mikrobus_an)                                  |-                       | CMSIS-Driver GPIO connecting to mikroBUS AN
-[MIKROBUS_INT](#mikrobus_int)                                |-                       | CMSIS-Driver GPIO connecting to mikroBUS INT
-[MIKROBUS_PWM](#mikrobus_pwm)                                |-                       | CMSIS-Driver GPIO connecting to mikroBUS PWM
+[MIKROBUS_AN](#mikrobus_an_int_pwm)                          |-                       | CMSIS-Driver GPIO connecting to mikroBUS AN
+[MIKROBUS_INT](#mikrobus_an_int_pwm)                         |-                       | CMSIS-Driver GPIO connecting to mikroBUS INT
+[MIKROBUS_PWM](#mikrobus_an_int_pwm)                         |-                       | CMSIS-Driver GPIO connecting to mikroBUS PWM
 [MIKROBUS_I2C](#mikrobus_i2c)                                |-                       | CMSIS-Driver I2C connecting to mikroBUS I2C
 [MIKROBUS_SPI](#mikrobus_spi)                                |-                       | CMSIS-Driver SPI connecting to mikroBUS SPI
 [MIKROBUS_UART](#mikrobus_uart)                              |-                       | CMSIS-Driver USART connecting to mikroBUS UART
