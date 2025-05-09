@@ -534,7 +534,7 @@ jobs:
         uses: robinraju/release-downloader@v1.12
         with:
           repository: Open-CMSIS-Pack/cmsis-toolbox
-          tag: "cmsis-toolbox-test-reference"
+          tag: "2.8.0-test-reference"
           fileName: "cmsis-toolbox-linux-amd64.zip"
 
       - name: Unzip Reference cmsis-toolbox
