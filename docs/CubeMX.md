@@ -105,16 +105,16 @@ CubeMX generates the following content in the generator output directory of the 
 Directory `STM32CubeMX/MyBoard`     | Content
 :-----------------------------------|:---------------
 `CubeMX.cgen.yml`                   | Generator import file that adds the CubeMX generated files to  the *csolution project*.
-`MX_Device/CubeMX/MX_Device.h`      | Header file with configuration settings for CMSIS software components.
+`MX_Device/MX_Device.h`             | Header file with configuration settings for CMSIS software components.
 `STM32CubeMX/STM32CubeMX.ioc`       | CubeMX native project file that includes settings.
 `STM32CubeMX/Src`                   | CubeMX generated application code: `main.c` and STM32 setup code.
 `STM32CubeMX/Inc`                   | Header files for CubeMX generated application code.
 `STM32CubeMX/EWARM`                 | Project files for IAR; only startup code and linker scripts are used for *csolution projects*.
-`STM32CubeMX/GCC`                   | Project files for GCC; only startup code and linker scripts are used for *csolution projects*.
+`STM32CubeMX/STM32CubeIDE           | Project files for STM32CubeIDE (GCC); only startup code and linker scripts are used for *csolution projects*.
 `STM32CubeMX/MDK-ARM`               | Project files for MDK version 5; only startup code and linker scripts are used for *csolution projects*.
 
 !!! Note
-    CubeMX generates only the directory for the selected toolchain, which is either `STM32CubeMX/EWARM`, `STM32CubeMX/GCC`, or `STM32CubeMX/MDK-ARM`.
+    CubeMX generates only the directory for the selected toolchain, which is either `STM32CubeMX/EWARM`, `STM32CubeMX/STM32CubeIDE`, or `STM32CubeMX/MDK-ARM`.
 
 **Content of Generator Import File: `CubeMX.cgen.yml`**
 
@@ -199,18 +199,26 @@ Then click the button `GENERATE CODE` to update the generated files in the direc
 
 ## Linker Script
 
-Depending on the project type and toolchain, CubeMX provides a linker script.
+STM32CubeMX generates a linker script files that are tightly coupled with the generated startup and system initialization code. To ensure proper memory layout and application behavior, the generated linker script must be used for all toolchains. These scripts serve as a reliable baseline and can be further tailored by the user to meet specific application requirements.
 
-For `compiler: AC6`:
+`For compiler: AC6` (toolchain in CubeMX - MDK-ARM):
+- A linker scripts are only generated for advanced configurations (e.g., when using the CubeMX Memory Manager). If generated, it must be used, as it aligns with the CubeMX-generated startup/system code.
+- For simpler projects where no linker script is generated, the default CMSIS-Toolbox linker script can be used, but it requires manual modification to remove ARM_LIB_HEAP and ARM_LIB_STACK, which are already defined in the startup file.
 
-- no linker script is generated for a simple memory. In this case, the default linker script from the CMSIS-Toolbox is used but needs a modification: remove `ARM_LIB_HEAP` and `ARM_LIB_STACK` as they are defined in the STM32 startup file.
+`For compiler: GCC` (toolchain in CubeMX - STM32CubeIDE):
+- Linker scripts are always generated and typically located at `./STM32CubeMX/STM32CubeIDE/<device_name>_FLASH.ld`
 
-- a linker script is provided for more complex projects (typically when using the CubeMX Memory Manager).
-  
-For `compiler: GCC` or `compiler: IAR`, a linker script is always provided.
+`For compiler: IAR` (toolchain in CubeMX - EWARM):
+- Linker scripts are always generated and typically located at `./STM32CubeMX/EWARM/<device_name>.icf`
 
 !!! Note 
-    The linker script that is provided by CubeMX is defined in the `*.cgen.yml` and imported into the *csolution project*.
+    User must always reference the CubeMX-generated linker script in *.cproject.yml or *.clayer.yml file using the linker node as shown bellow.
+
+```yml
+    linker:
+      - script: ./STM32CubeMX/B-U585I-IOT02A/STM32CubeMX/STM32CubeIDE/STM32U585AIIX_FLASH.ld
+        for-compiler: GCC
+```
 
 ## Use CubeMX with Board Layer
 
