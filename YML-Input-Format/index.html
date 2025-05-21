@@ -131,6 +131,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#optimize">optimize:</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#link-time-optimize">link-time-optimize:</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#debug">debug:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#warnings">warnings:</a>
@@ -1132,6 +1134,11 @@ the compiler with specific default controls. The search order for this file is:<
 <td style="text-align: left;">Optimize level for code generation.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#link-time-optimize"><code>link-time-optimize:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Enable optimization at linker level.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#linker"><code>linker:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Instructions for the linker.</td>
@@ -1266,6 +1273,11 @@ the compiler with specific default controls. The search order for this file is:<
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#link-time-optimize"><code>link-time-optimize:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Enable optimization at linker level.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
@@ -1912,11 +1924,11 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 </tr>
 <tr>
 <td style="text-align: left;"><code>size</code></td>
-<td style="text-align: left;">Optimized for code size</td>
+<td style="text-align: left;">Optimize for code size</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>speed</code></td>
-<td style="text-align: left;">Optimized for execution speed</td>
+<td style="text-align: left;">Optimize for execution speed</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>debug</code></td>
@@ -1940,6 +1952,21 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
       - file: file1a.c
       - file: file1b.c
 </code></pre>
+<h3 id="link-time-optimize"><code>link-time-optimize:</code></h3>
+<p>When applied, the link-time optimization is enabled. It enables global optimizations across multiple translation units at the linker stage which typically further improves performance and reduces code size.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">groups:
+  - group:  &quot;Main File Group&quot;
+    optimize: speed                  # optimize for execution speed
+    link-time-optimize:              # enable link-time optimization for this file group
+    files:
+      - file: file1a.c
+      - file: file1b.c
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This feature is not available with the IAR compiler.</p>
+</div>
 <h3 id="debug"><code>debug:</code></h3>
 <p>Control the generation of debug information.</p>
 <table>
@@ -2298,6 +2325,11 @@ project. It is, however, possible to change that <code>setup:</code> settings on
 <td style="text-align: left;">Optimize level for code generation.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#link-time-optimize"><code>link-time-optimize:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Enable optimization at linker level.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Generation of debug information.</td>
@@ -2590,6 +2622,11 @@ explains the overall concept of  <code>target-types</code> and <code>build-types
 <td style="text-align: left;">Optimize level for code generation.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#link-time-optimize"><code>link-time-optimize:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Enable optimization at linker level.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
 <td>Optional</td>
 <td style="text-align: left;">Generation of debug information.</td>
@@ -2710,6 +2747,11 @@ explains the overall concept of  <code>target-types</code> and <code>build-types
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
 <td>Optional</td>
 <td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#link-time-optimize"><code>link-time-optimize:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Enable optimization at linker level.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
@@ -3287,6 +3329,11 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 <td style="text-align: left;">Optimize level for code generation.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#link-time-optimize"><code>link-time-optimize:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Enable optimization at linker level.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
 <td>Optional</td>
 <td style="text-align: left;">Generation of debug information.</td>
@@ -3395,6 +3442,11 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
 <td>Optional</td>
 <td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#link-time-optimize"><code>link-time-optimize:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Enable optimization at linker level.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
@@ -3624,6 +3676,11 @@ target-type and/or build-type using <a href="#for-context"><code>for-context:</c
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#optimize"><code>optimize:</code></a></td>
 <td>Optional</td>
 <td style="text-align: left;">Optimize level for code generation.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#link-time-optimize"><code>link-time-optimize:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Enable optimization at linker level.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
@@ -4137,7 +4194,7 @@ to overwrite configuration information or to define new debugger setups.</p>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>dbgconf:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Debugger configuration file (pinout, trace).</td>
+<td style="text-align: left;">Configuration file for device settings such as trace pins and option bytes.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>start-pname:</code></td>

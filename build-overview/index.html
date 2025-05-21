@@ -165,6 +165,16 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run-and-debug-configuration">Run and Debug Configuration</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#using-pyocd">Using pyOCD</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#using-vs-code">Using VS Code</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#device-configuration">Device Configuration</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -243,6 +253,7 @@
 <li><a href="#directory-structure">Directory Structure</a> describes the overall directory structure of projects.</li>
 <li><a href="#linker-script-management">Linker Script Management</a> defines the  available memory and controls the linker operation.</li>
 <li><a href="#generator-support">Generator Support</a> integrates configuration tools such as STM32CubeMX or MCUXpresso Config.</li>
+<li><a href="#run-and-debug-configuration">Run and Debug Configuration</a> explains how to configure debug adapters such as CMSIS-DAP or JLink.</li>
 </ul>
 <h2 id="overview-of-operation">Overview of Operation</h2>
 <p>The diagram below outlines the operation of the <code>csolution</code> command <code>convert</code> that processes the <em>csolution project</em> with one or more <a href="../YML-Input-Format/#context"><code>context</code></a> configurations for an application.</p>
@@ -325,6 +336,10 @@
 <tr>
 <td style="text-align: left;"><a href="../YML-CBuild-Format/#cbuild-idxyml">*.cbuild.yml</a></td>
 <td style="text-align: left;">Build description of a single <a href="../YML-Input-Format/#project-file-structure"><code>*.cproject.yml</code></a> input file for each context.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="../YML-CBuild-Format/#run-and-debug-management">*.cbuild-run.yml</a></td>
+<td style="text-align: left;">Configuration file of a <em>csolution project</em> to run and debug an application on a target.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="#rte-directory-structure">Run-Time Environment (RTE)</a></td>
@@ -1168,6 +1183,53 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
 <li><a href="../CubeMX/"><strong>Configure STM32 Devices with CubeMX</strong></a></li>
 <li><a href="../MCUXpressoConfig/"><strong>Configure NXP Devices with MCUXpresso Config Tools</strong></a></li>
 </ul>
+<h2 id="run-and-debug-configuration">Run and Debug Configuration</h2>
+<p>The CMSIS-Toolbox uses the information from the DFP and BSP to simplify the debugger configuration.  It generates the file <code>&lt;solution-name&gt;+&lt;target-type&gt;.cbuild-run.yml</code> that contains for one target of a <em>csolution project</em> all information for run and debug. This file is used by <a href="https://pyocd.io/">pyOCD</a> and the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">CMSIS Solution extension for VS Code</a> to configure debug and programming features of the <a href="../build-operation/#debug-adapter-integration">supported debug adapters</a>.</p>
+<p>An application can be composed of <a href="../YML-Input-Format/#images">various project contexts and additional images</a>. In addition the <a href="../YML-Input-Format/#debugger">debugger</a> along with parameters are specified in the <code>*.csolution.yml</code> file using the <a href="../YML-Input-Format/#target-set"><code>target-set:</code></a> node.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Refer to <a href="../YML-CBuild-Format/#run-and-debug-management">Run and Debug Management</a> for further details.</p>
+</div>
+<p><strong>Examples:</strong></p>
+<p>The following example configures the ST-LINK debugger for the project  <code>MyProject</code> with build-type <code>Debug</code>:</p>
+<pre><code class="language-yml">  target-types:
+    - type: MyBoard
+      board: B-U585I-IOT02A                   # Board name
+      target-set:
+        - set:
+          debugger:
+            name: ST-LINK
+          images:
+            -  project-context: MyProject.Debug
+</code></pre>
+<p>The following example uses a CMSIS-DAP debugger with JTAG protocol and configures a multi-core application with two projects. The project <code>core0</code> uses the build-type <code>Debug</code>. The project <code>core1</code> uses the build-type <code>Release</code>.</p>
+<pre><code class="language-yml">  target-types:
+    - type: Alif_AppKitE7
+      board: Alif Semiconductor::AppKit-E7
+      target-set:
+        - set: 
+          debugger:
+            name: CMSIS-DAP
+            protocol: jtag
+
+          images:
+            - project-context: core0.Debug
+            - project-context: core1.Release
+</code></pre>
+<h3 id="using-pyocd">Using pyOCD</h3>
+<p>A <em>csolution project</em> that uses <code>target-set:</code> to configure the debugger should be build using the option <code>--active</code> to select the target-type.  The <code>cbuild</code> command creates then a corresponding <code>*.build-run.yml</code> file that can be used with <a href="https://pyocd.io/">pyOCD version (todo)</a> or higher. This <code>*.build-run.yml</code> file contains all information to <a href="../YML-CBuild-Format/#run-and-debug-management">program and debug the application</a>.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-shell">cbuild MyApplication.csolution.yml --active MyBoard                       # build application
+pyOCD load --cbuild-run MyApplication+MyBoard.cbuild-run.yml              # download image to target
+pyOCD gdbserver --cbuild-run MyApplication+MyBoard.cbuild-run.yml         # start GDB remote server
+</code></pre>
+<h3 id="using-vs-code">Using VS Code</h3>
+<p>With the VS Code extension <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">CMSIS Solution</a> version 1.54 or higher use the <strong>Manage Solution</strong> view to configure the debugger. You may then use the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger">CMSIS Debugger</a> extension for interactive debug or <a href="https://pyocd.io">pyOCD</a> in command line mode.</p>
+<h3 id="device-configuration">Device Configuration</h3>
+<p>Several DFP contain <code>*.dbgconf</code> files that configure device-specific debug and trace parameters. The CMSIS-Toolbox provides this configuration information in the <code>*.build-run.yml</code> file for <a href="../YML-CBuild-Format/#run-and-debug-management">debuggers with Debug Access Sequence support</a>.</p>
+<p>The <code>.cmsis</code> directory in the <em>csolution project</em> directory contains for each target a default <code>*.dbgconf</code> configuration file. For example: <code>.\.cmsis\MyApplication+MyBoard</code>.
+This file can be configured to reflect user settings.</p>
+<p>An explict <code>*.dbgconf</code> configuration file can be specified using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code> node</a> in the <code>*.csolution.yml</code> file.</p>
               
             </div>
           </div><footer>

@@ -283,7 +283,7 @@ The <em>Reference Application</em> does not specify a target hardware. For execu
     - type: MyHardware
       device: STM32U585AIIx      # custom hardware uses only a device definition
       variables:
-        - Board-Layer:  %SolutionDir$/MyTarget/MyHardware.clayer.yml
+        - Board-Layer:  $SolutionDir()$/MyTarget/MyHardware.clayer.yml
 </code></pre>
 <p><strong>Example MyHardware.clayer.yml</strong></p>
 <p>You may use a <code>*.clayer.yml</code> file for implementing the HAL drivers for the application and define the <code>CMSIS_target_header</code> as shown below:  </p>

@@ -481,6 +481,10 @@
 <td style="text-align: left;">Generic <a href="../YML-Input-Format/#optimize">optimize</a> level for code generation.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>link-time-optimize:</code></td>
+<td style="text-align: left;">Enable <a href="../YML-Input-Format/#link-time-optimize">optimization at linker level</a>.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>debug:</code></td>
 <td style="text-align: left;">Global control the generation of <a href="../YML-Input-Format/#debug">debug</a> information.</td>
 </tr>
@@ -822,31 +826,31 @@
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- cbuild:</code></td>
-<td style="text-align: left;">Build description file of a single context for a *.cproject.yml input file;</td>
+<td style="text-align: left;">Build description file of a single context for a *.cproject.yml input file.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>project:</code></td>
-<td style="text-align: left;">Project name</td>
+<td style="text-align: left;">Project name.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>configuration:</code></td>
-<td style="text-align: left;">Context configuration for this build description file</td>
+<td style="text-align: left;">Context configuration for this build description file.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>errors:</code></td>
-<td style="text-align: left;">Error indication</td>
+<td style="text-align: left;">Error indication.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>packs-missing:</code></td>
-<td style="text-align: left;">List of missing packs</td>
+<td style="text-align: left;">List of missing packs.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>packs-unused:</code></td>
-<td style="text-align: left;">List of unused packs</td>
+<td style="text-align: left;">List of unused packs.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>messages:</code></td>
-<td style="text-align: left;">List of <code>errors:</code>, <code>warnings:</code>, or <code>info:</code> messages</td>
+<td style="text-align: left;">List of <code>errors:</code>, <code>warnings:</code>, or <code>info:</code> messages.</td>
 </tr>
 </tbody>
 </table>
@@ -1265,7 +1269,7 @@
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum"><code>category:</code></a></td>
-<td style="text-align: left;">File category according Open-CMSIS-Pack specification</td>
+<td style="text-align: left;">File category according Open-CMSIS-Pack specification.</td>
 </tr>
 </tbody>
 </table>
@@ -1360,7 +1364,7 @@
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>generators:</code></td>
-<td style="text-align: left;">List of generators that are called with the <code>run</code> command</td>
+<td style="text-align: left;">List of generators that are called with the <code>run</code> command.</td>
 </tr>
 </tbody>
 </table>
@@ -1378,23 +1382,23 @@
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>output:</code></td>
-<td style="text-align: left;">Specifies the directory for generated files</td>
+<td style="text-align: left;">Specifies the directory for generated files.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>board:</code></td>
-<td style="text-align: left;"><a href="../YML-Input-Format/#board">Board name</a> used for the generator</td>
+<td style="text-align: left;"><a href="../YML-Input-Format/#board">Board name</a> used for the generator.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device:</code></td>
-<td style="text-align: left;"><a href="../YML-Input-Format/#device">Device name</a> used for the generator</td>
+<td style="text-align: left;"><a href="../YML-Input-Format/#device">Device name</a> used for the generator.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>project-type:</code></td>
-<td style="text-align: left;">Describes the project type "single-core", "multi-core", "trustzone"</td>
+<td style="text-align: left;">Describes the project type "single-core", "multi-core", "trustzone".</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>cbuild-gens:</code></td>
-<td style="text-align: left;">List of <code>*.cbuild-gen.yml</code> files with options that are generated for the generator run</td>
+<td style="text-align: left;">List of <code>*.cbuild-gen.yml</code> files with options that are generated for the generator run.</td>
 </tr>
 </tbody>
 </table>
@@ -1412,7 +1416,7 @@
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>project:</code></td>
-<td style="text-align: left;">Project name (used as a name for <code>*.cgen.yml</code> when <code>name:</code> is not specified)</td>
+<td style="text-align: left;">Project name (used as a name for <code>*.cgen.yml</code> when <code>name:</code> is not specified).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>configuration:</code></td>
@@ -1498,11 +1502,7 @@
 </tbody>
 </table>
 <h2 id="run-and-debug-management">Run and Debug Management</h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The features described below are under active development and will implemented in CMSIS-Toolbox Version 2.9</p>
-</div>
-<p>The CMSIS-Toolbox build system manages software packs that contain information about device, board, and software components. It controls the build output (typically ELF/DWARF files), and has provisions for HEX, BIN and post-processing. Using the <a href="../build-overview/#working-with-context-set">context set</a> it manages the application images for different <a href="../build-overview/#project-setup-for-related-projects">target-types</a>.</p>
+<p>The CMSIS-Toolbox build system manages software packs that contain information about device, board, and software components. It controls the build output (typically ELF/DWARF files), and has provisions for HEX, BIN and post-processing. The <a href="../build-overview/#run-and-debug-configuration"><code>target-set:</code></a> node configures the application images and the debugger for a <a href="../build-overview/#project-setup-for-related-projects">target-type</a>.</p>
 <p>The software packs contain information that is the basis for debug and run settings:</p>
 <ul>
 <li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html">Flash algorithms</a> of device memory (in DFP) and board memory (in BSP).</li>
@@ -1600,7 +1600,7 @@
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../YML-Input-Format/#target-set"><code>target-set:</code></a></td>
 <td style="text-align: left;">Optional</td>
-<td>Name of the target-set that was selected (format <target-type>[@<set>])</td>
+<td>Name of the target-set that was selected (format <code>&lt;target-type&gt;[@&lt;set&gt;]</code>).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>compiler:</code></td>

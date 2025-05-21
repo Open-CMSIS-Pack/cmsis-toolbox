@@ -234,7 +234,7 @@ Usage:
 
 Commands:
   help        Help about any command
-  list        List information about environment, toolchains, and contexts
+  list        List information about contexts, environment, target-sets and toolchains
   setup       Generate project data for IDE environment
 
 Options:
@@ -255,7 +255,6 @@ Options:
   -p, --packs              Download missing software packs with cpackget
   -q, --quiet              Suppress output messages except build invocations
   -r, --rebuild            Remove intermediate and output directories and rebuild
-  -s, --schema             Validate project input file(s) against schema [deprecated]
   -t, --target arg         Optional CMake target name
       --toolchain arg      Input toolchain to be used
       --update-rte         Update the RTE directory and files
@@ -270,7 +269,7 @@ Use &quot;cbuild [command] --help&quot; for more information about a command.
 </div>
 <h2 id="csolution-invocation"><code>csolution</code> Invocation</h2>
 <p>Create build information for embedded applications that consist of one or more related projects.</p>
-<pre><code class="language-text">csolution: Project Manager 2.8.0 (C) 2022-2025 Arm Ltd. and Contributors
+<pre><code class="language-text">csolution: Project Manager 2.9.0 (C) 2022-2025 Arm Ltd. and Contributors
 
 Usage:
   csolution &lt;command&gt; [&lt;name&gt;.csolution.yml] [options]
@@ -287,11 +286,13 @@ Commands:
   list generators               Print list of code generators of a given context
   list layers                   Print list of available, referenced and compatible layers
   list packs                    Print list of used packs from the pack repository
+  list target-sets              Print list of target-sets in a &lt;name&gt;.csolution.yml
   list toolchains               Print list of supported toolchains
   run                           Run code generator
   update-rte                    Create/update configuration files and validate solution
 
 Options:
+  -a, --active arg              Select active target-set: &lt;target-type&gt;[@&lt;set&gt;]
   -c, --context arg [...]       Input context names [&lt;project-name&gt;][.&lt;build-type&gt;][+&lt;target-type&gt;]
   -d, --debug                   Enable debug messages
   -D, --dry-run                 Enable dry-run
@@ -315,7 +316,7 @@ Use 'csolution &lt;command&gt; -h' for more information about a command.
 </code></pre>
 <h2 id="cpackget-invocation"><code>cpackget</code> Invocation</h2>
 <p>Manage the installation of <em>software packs</em> on the host computer.</p>
-<pre><code class="language-txt">cpackget version 2.1.6 (C) 2021-2023 Linaro, 2024-2025 Arm Ltd.
+<pre><code class="language-txt">cpackget version 2.1.7 (C) 2021-2023 Linaro, 2024-2025 Arm Ltd.
 
 Usage:
   cpackget [command] [flags]
@@ -338,7 +339,7 @@ Available Commands:
 Flags:
   -C, --concurrent-downloads uint   Number of concurrent batch downloads. Set to 0 to disable concurrency (default 20)
   -h, --help                        help for cpackget
-  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable
+  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable.
   -q, --quiet                       Run cpackget silently, printing only error messages
   -T, --timeout uint                Set maximum duration (in seconds) of a download. Disabled by default
   -v, --verbose                     Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging). Specify &quot;-q&quot; for no messages
@@ -358,6 +359,9 @@ Use &quot;cpackget [command] --help&quot; for more information about a command a
 <h3 id="build-a-project">Build a Project</h3>
 <p>This command builds a project that is defined in the file <code>example.csolution.yml</code>:</p>
 <pre><code class="language-shell">cbuild example.csolution.yml
+</code></pre>
+<p>A <em>csolution project</em> that defines a <a href="../build-overview/#run-and-debug-configuration">debugger</a> using <code>target-set:</code> should be build using the option <code>--active</code> that selects the target-type.</p>
+<pre><code class="language-shell">cbuild example.csolution.yml --active MyBoard
 </code></pre>
 <p>Options allow to rebuild and download missing software packs or to select specific context settings:</p>
 <pre><code class="language-shell">cbuild example.csolution.yml --rebuild --packs --context .Release
@@ -448,10 +452,6 @@ csolution list boards --filter NXP
 <p>In an IDE environment, this command downloads missing packs creates <a href="../YML-CBuild-Format/">build information files</a>, and generates the file <code>compile_commands.json</code> for IntelliSense. Refer to <a href="../build-operation/#details-of-the-setup-mode">cbuild setup command</a> for more information.</p>
 <pre><code class="language-shell">cbuild setup example.csolution.yml --context-set --packs
 </code></pre>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code>cbuild setup</code> always enables the option <code>--schema</code> to validate the correct YML syntax in the <em>csolution project</em> files.</p>
-</div>
 <h3 id="specify-cmsis-pack-root-directory">Specify CMSIS-Pack root directory</h3>
 <p><code>cpackget</code> is compatible with other CMSIS-Pack management tools, such as the Pack Installer, available in MDK or Eclipse
 variants. There are two ways to specify the CMSIS-PACK root directory:</p>

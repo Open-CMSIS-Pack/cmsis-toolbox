@@ -186,52 +186,48 @@
 </li>
 </ul>
 <h2 id="revision-history">Revision History</h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>CMSIS-Toolbox Version 2.9 is schedule for release in May 2025.</p>
-</div>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Version</th>
+<th style="text-align: center;">Version</th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">2.9.0</td>
-<td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.9.0">2.9.0</a>. Added the input node <a href="YML-Input-Format/#target-set"><code>target-set:</code></a> to configure application scope and <a href="YML-Input-Format/#debugger"><code>debugger:</code></a>. The <a href="YML-Input-Format/#images"><code>images:</code></a> node (previously <code>load:</code>) adds ELF files generated with other systems. The file <a href="YML-CBuild-Format/#gdbserver"><code>cbuild-run.yml</code></a> is extended for multi-core systems and the file <a href="build-operation/#debug-adapter-integration"><code>debug-adapters.yml</code></a> registers  supported debuggers. See here for <a href="https://github.com/orgs/Open-CMSIS-Pack/projects/19">more details</a>.</td>
+<td style="text-align: center;">2.9.0</td>
+<td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.9.0">2.9.0</a>. Added the input nodes <a href="YML-Input-Format/#link-time-optimize"><code>link-time-optimize:</code></a> and <a href="YML-Input-Format/#target-set"><code>target-set:</code></a> to configure application scope and <a href="YML-Input-Format/#debugger"><code>debugger:</code></a>. The <a href="YML-Input-Format/#images"><code>images:</code></a> node (previously <code>load:</code>) adds ELF files generated with other systems. The <a href="build-overview/#run-and-debug-configuration">Run and Debug Configuration</a> using the <a href="YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code></a> file is extended for multi-core systems and a range of supported <a href="build-operation/#debug-adapter-integration">Debug Adapters</a>. See here for <a href="https://github.com/orgs/Open-CMSIS-Pack/projects/19">more details</a>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">2.8.0</td>
+<td style="text-align: center;">2.8.0</td>
 <td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.8.0">2.8.0</a>. New YML input nodes to add <a href="YML-Input-Format/#memory"><code>memory:</code></a>, configure <a href="YML-Input-Format/#debugger"><code>debugger:</code></a>, and <a href="YML-Input-Format/#images"><code>load:</code></a> to add image files. The <a href="YML-CBuild-Format/#run-and-debug-management"><code>*.cbuild-run.yml</code></a> file contains run and debug information for a target. See here for <a href="https://github.com/orgs/Open-CMSIS-Pack/projects/17">more details</a>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">2.7.0</td>
+<td style="text-align: center;">2.7.0</td>
 <td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.7.0">2.7.0</a>. Adds <a href="YML-Input-Format/#language-cpp">C++ language</a>: <code>c++23</code>, <code>gnu++23</code>; <a href="YML-Input-Format/#output">output</a> linker MAP file control; <a href="MCUXpressoConfig/">MCUXpresso Config Tool</a>; <a href="Experimental-Features/">experimental features</a> for multi-project linker scripts, debug, and run. Fixed: <code>components:</code> now require <a href="YML-Input-Format/#component-name-conventions">Csub</a> specifier; LLVM/Clang 19 compatibility; handling of <a href="YML-Input-Format/#groups">group options</a>. See here for <a href="https://github.com/orgs/Open-CMSIS-Pack/projects/14">more details</a>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">2.6.0</td>
+<td style="text-align: center;">2.6.0</td>
 <td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.6.0">2.6.0</a>; extends <a href="YML-Input-Format/#pack-name-conventions">pack:</a> version specifier and <a href="YML-Input-Format/#language-c">C language</a> support to C17 and C23. Improved is <a href="CreateApplications/#regions-header-file">regions header file generation</a> for linker scripts. It adds <a href="YML-Input-Format/#processor">trustzone: secure-only</a> for projects without secure entries, <a href="YML-CBuild-Format/#apis">apis</a>, <a href="YML-CBuild-Format/#cbuilds">messages</a>, and <a href="YML-CBuild-Format/#files-of-a-component">PLM status for config files</a> to cbuild.yml information, and fixes several minor issues. It is no longer possible to specify <a href="YML-Input-Format/#compiler">compiler</a> in the <a href="YML-Input-Format/#cdefault"><code>cdefault.yml</code></a> file.  See here for <a href="https://github.com/orgs/Open-CMSIS-Pack/projects/13">more details</a>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">2.5.0</td>
+<td style="text-align: center;">2.5.0</td>
 <td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.5.0">2.5.0</a>; direct CMake interface is now default, <a href="YML-Input-Format/#output-dirs"><code>tmpdir:</code></a> controls location of interim files, adds <a href="YML-Input-Format/#add-path-asm"><code>add-path-asm:</code></a>, adds <a href="YML-Input-Format/#define-asm"><code>define-asm</code></a>, adds <a href="YML-Input-Format/#regular-expressions">regular expression</a> search to <code>for-context:</code>/<code>not-for-context</code>, and contains several corrections.</td>
 </tr>
 <tr>
-<td style="text-align: left;">2.4.0</td>
+<td style="text-align: center;">2.4.0</td>
 <td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.4.0">2.4.0</a>; adds <a href="CubeMX/">CubeMX integration</a>, <a href="YML-Input-Format/#prepost-build-steps">pre/post-build steps</a>, simplifies the <a href="build-operation/#generator-integration">generator integration</a>, and contains several corrections.</td>
 </tr>
 <tr>
-<td style="text-align: left;">2.3.0</td>
+<td style="text-align: center;">2.3.0</td>
 <td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0">2.3.0</a> adds in the csolution project files <a href="YML-Input-Format/#instances">component instances</a> and <a href="YML-Input-Format/#optimize">optimize: debug</a>. Tools are extended with <a href="build-operation/#details-of-the-setup-mode">cbuild setup command</a>, <a href="build-overview/#reproducible-builds">--frozen-pack option</a>. Refer to <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.3.0">release information</a> for more details.</td>
 </tr>
 <tr>
-<td style="text-align: left;">2.2.0</td>
+<td style="text-align: center;">2.2.0</td>
 <td style="text-align: left;">CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.2.0">2.2.0</a> adds <a href="build-operation/#generator-integration">generator integration</a>, extends <a href="YML-Input-Format/#translation-control">translation controls</a>, adds <a href="build-overview/#working-with-context-set">context set</a>, adds <a href="YML-CBuild-Format/#lock-pack-versions">pack locking</a>, and improves <a href="build-overview/#linker-script-management">linker script management</a>. Refer to <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.2.0">release information</a> for more details.</td>
 </tr>
 <tr>
-<td style="text-align: left;">2.0.0</td>
+<td style="text-align: center;">2.0.0</td>
 <td style="text-align: left;">Initial release for CMSIS-Toolbox <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.0.0">2.0.0</a></td>
 </tr>
 </tbody>
@@ -288,5 +284,5 @@
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-05-21 12:23:29.933150+00:00
+Build Date UTC : 2025-05-21 15:35:42.519264+00:00
 -->
