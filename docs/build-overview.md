@@ -10,6 +10,7 @@ This chapter outlines the structure of *csolution project files* that contain th
 - [Directory Structure](#directory-structure) describes the overall directory structure of projects.
 - [Linker Script Management](#linker-script-management) defines the  available memory and controls the linker operation.
 - [Generator Support](#generator-support) integrates configuration tools such as STM32CubeMX or MCUXpresso Config.
+- [Run and Debug Configuration](#run-and-debug-configuration) explains how to configure debug adapters such as CMSIS-DAP or JLink.
 
 ## Overview of Operation
 
@@ -40,6 +41,7 @@ Output Files             | Description
 :------------------------|:---------------------------------
 [*.cbuild-idx.yml](YML-CBuild-Format.md#cbuild-idxyml)  | Index file of all `*.cbuild.yml` build descriptions; contains also overall information for the application.
 [*.cbuild.yml](YML-CBuild-Format.md#cbuild-idxyml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file for each context.
+[*.cbuild-run.yml](YML-CBuild-Format.md#run-and-debug-management)      | Configuration file of a *csolution project* to run and debug an application on a target.
 [Run-Time Environment (RTE)](#rte-directory-structure) | Contains the user-configured files of a project along with the `RTE_Components.h` inventory file.
 [Linker Script Files](#automatic-linker-script-generation) | Header file that describes the memory resources.
 
@@ -861,3 +863,70 @@ These chapters explain how to manage device and board configuration in more deta
 
 - [**Configure STM32 Devices with CubeMX**](CubeMX.md)
 - [**Configure NXP Devices with MCUXpresso Config Tools**](MCUXpressoConfig.md)
+
+## Run and Debug Configuration
+
+The CMSIS-Toolbox uses the information from the DFP and BSP to simplify the debugger configuration.  It generates the file `<solution-name>+<target-type>.cbuild-run.yml` that contains for one target of a *csolution project* all information for run and debug. This file is used by [pyOCD](https://pyocd.io/) and the [CMSIS Solution extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) to configure debug and programming features of the [supported debug adapters](build-operation.md#debug-adapter-integration).
+
+An application can be composed of [various project contexts and additional images](YML-Input-Format.md#images). In addition the [debugger](YML-Input-Format.md#debugger) along with parameters are specified in the `*.csolution.yml` file using the [`target-set:`](YML-Input-Format.md#target-set) node.
+
+!!! Note
+    Refer to [Run and Debug Management](YML-CBuild-Format.md#run-and-debug-management) for further details.
+
+**Examples:**
+
+The following example configures the ST-LINK debugger for the project  `MyProject` with build-type `Debug`:
+
+```yml
+  target-types:
+    - type: MyBoard
+      board: B-U585I-IOT02A                   # Board name
+      target-set:
+        - set:
+          debugger:
+            name: ST-LINK
+          images:
+            -  project-context: MyProject.Debug
+```
+
+The following example uses a CMSIS-DAP debugger with JTAG protocol and configures a multi-core application with two projects. The project `core0` uses the build-type `Debug`. The project `core1` uses the build-type `Release`.
+
+```yml
+  target-types:
+    - type: Alif_AppKitE7
+      board: Alif Semiconductor::AppKit-E7
+      target-set:
+        - set: 
+          debugger:
+            name: CMSIS-DAP
+            protocol: jtag
+
+          images:
+            - project-context: core0.Debug
+            - project-context: core1.Release
+```
+
+### Using pyOCD
+
+A *csolution project* that uses `target-set:` to configure the debugger should be build using the option `--active` to select the target-type.  The `cbuild` command creates then a corresponding `*.build-run.yml` file that can be used with [pyOCD version (todo)](https://pyocd.io/) or higher. This `*.build-run.yml` file contains all information to [program and debug the application](YML-CBuild-Format.md#run-and-debug-management).
+
+**Example:**
+
+```shell
+cbuild MyApplication.csolution.yml --active MyBoard                       # build application
+pyOCD load --cbuild-run MyApplication+MyBoard.cbuild-run.yml              # download image to target
+pyOCD gdbserver --cbuild-run MyApplication+MyBoard.cbuild-run.yml         # start GDB remote server
+```
+
+### Using VS Code
+
+With the VS Code extension [CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) version 1.54 or higher use the **Manage Solution** view to configure the debugger. You may then use the [CMSIS Debugger](https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger) extension for interactive debug or [pyOCD](https://pyocd.io) in command line mode.
+
+### Device Configuration
+
+Several DFP contain `*.dbgconf` files that configure device-specific debug and trace parameters. The CMSIS-Toolbox provides this configuration information in the `*.build-run.yml` file for [debuggers with Debug Access Sequence support](YML-CBuild-Format.md#run-and-debug-management).
+
+The `.cmsis` directory in the *csolution project* directory contains for each target a default `*.dbgconf` configuration file. For example: `.\.cmsis\MyApplication+MyBoard`.
+This file can be configured to reflect user settings.
+
+An explict `*.dbgconf` configuration file can be specified using the [`debugger:` node](YML-Input-Format.md#debugger) in the `*.csolution.yml` file.
