@@ -76,6 +76,8 @@ The overall benefits of the CMSIS-Toolbox are:
 
 - [Linker Script Management](build-overview.md#linker-script-management) utilizes device and board information of *software packs* to define available memory and allows flexible control of linker operation.
 
+- The [Run and Debug Configuration](build-overview.md#run-and-debug-configuration) collects all information to program and debug an application in a target system.
+
 - [Product lifecycle management (PLM)](build-overview.md#plm-of-configuration-files) with versioned *software packs* that ease update and management for configuration files.
 
 - Provides a [list of software licenses](YML-CBuild-Format.md#nodes-for-license-information) used by the various software packs and software components.

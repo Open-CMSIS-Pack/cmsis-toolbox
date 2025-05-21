@@ -99,7 +99,7 @@ solution:
     - type: MyHardware
       device: STM32U585AIIx      # custom hardware uses only a device definition
       variables:
-        - Board-Layer:  %SolutionDir$/MyTarget/MyHardware.clayer.yml
+        - Board-Layer:  $SolutionDir()$/MyTarget/MyHardware.clayer.yml
 ```
 
 **Example MyHardware.clayer.yml**

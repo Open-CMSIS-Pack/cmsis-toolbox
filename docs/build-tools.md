@@ -29,7 +29,7 @@ Usage:
 
 Commands:
   help        Help about any command
-  list        List information about environment, toolchains, and contexts
+  list        List information about contexts, environment, target-sets and toolchains
   setup       Generate project data for IDE environment
 
 Options:
@@ -50,7 +50,6 @@ Options:
   -p, --packs              Download missing software packs with cpackget
   -q, --quiet              Suppress output messages except build invocations
   -r, --rebuild            Remove intermediate and output directories and rebuild
-  -s, --schema             Validate project input file(s) against schema [deprecated]
   -t, --target arg         Optional CMake target name
       --toolchain arg      Input toolchain to be used
       --update-rte         Update the RTE directory and files
@@ -68,7 +67,7 @@ Use "cbuild [command] --help" for more information about a command.
 Create build information for embedded applications that consist of one or more related projects.
 
 ```text
-csolution: Project Manager 2.8.0 (C) 2022-2025 Arm Ltd. and Contributors
+csolution: Project Manager 2.9.0 (C) 2022-2025 Arm Ltd. and Contributors
 
 Usage:
   csolution <command> [<name>.csolution.yml] [options]
@@ -85,11 +84,13 @@ Commands:
   list generators               Print list of code generators of a given context
   list layers                   Print list of available, referenced and compatible layers
   list packs                    Print list of used packs from the pack repository
+  list target-sets              Print list of target-sets in a <name>.csolution.yml
   list toolchains               Print list of supported toolchains
   run                           Run code generator
   update-rte                    Create/update configuration files and validate solution
 
 Options:
+  -a, --active arg              Select active target-set: <target-type>[@<set>]
   -c, --context arg [...]       Input context names [<project-name>][.<build-type>][+<target-type>]
   -d, --debug                   Enable debug messages
   -D, --dry-run                 Enable dry-run
@@ -117,7 +118,7 @@ Use 'csolution <command> -h' for more information about a command.
 Manage the installation of *software packs* on the host computer.
 
 ``` txt
-cpackget version 2.1.6 (C) 2021-2023 Linaro, 2024-2025 Arm Ltd.
+cpackget version 2.1.7 (C) 2021-2023 Linaro, 2024-2025 Arm Ltd.
 
 Usage:
   cpackget [command] [flags]
@@ -140,7 +141,7 @@ Available Commands:
 Flags:
   -C, --concurrent-downloads uint   Number of concurrent batch downloads. Set to 0 to disable concurrency (default 20)
   -h, --help                        help for cpackget
-  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable
+  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable.
   -q, --quiet                       Run cpackget silently, printing only error messages
   -T, --timeout uint                Set maximum duration (in seconds) of a download. Disabled by default
   -v, --verbose                     Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging). Specify "-q" for no messages
@@ -173,6 +174,12 @@ This command builds a project that is defined in the file `example.csolution.yml
 
 ```shell
 cbuild example.csolution.yml
+```
+
+A *csolution project* that defines a [debugger](build-overview.md#run-and-debug-configuration) using `target-set:` should be build using the option `--active` that selects the target-type.
+
+```shell
+cbuild example.csolution.yml --active MyBoard
 ```
 
 Options allow to rebuild and download missing software packs or to select specific context settings:
@@ -336,9 +343,6 @@ In an IDE environment, this command downloads missing packs creates [build infor
 ```shell
 cbuild setup example.csolution.yml --context-set --packs
 ```
-
-!!! Note
-    `cbuild setup` always enables the option `--schema` to validate the correct YML syntax in the *csolution project* files.
 
 ### Specify CMSIS-Pack root directory
 
