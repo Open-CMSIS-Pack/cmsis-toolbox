@@ -25,7 +25,7 @@ An example project created with CubeMX can be found in [**csolution-examples/Cub
 
 Below is a simple project that just adds the CubeMX-generated components.
 
-!!! Tip  
+!!! Tip
     The packs required for boards and devices are listed on [www.keil.arm.com/boards](https://www.keil.arm.com/boards/) and [www.keil.arm.com/devices](https://www.keil.arm.com/devices/).
 
 **File: `CubeMX.csolution.yml`**
@@ -42,7 +42,7 @@ solution:
     - pack: ARM::CMSIS                        # CMSIS pack is required for most projects
     - pack: Keil::B-U585I-IOT02A_BSP
     - pack: Keil::STM32U5xx_DFP@>=3.0.0-0
-    
+
   target-types:
     - type: MyBoard                           # My evaluation kit
       board: B-U585I-IOT02A                   # Board name as defined by the pack
@@ -66,19 +66,19 @@ solution:
 project:
   components:
     - component: CMSIS:CORE                   # CMSIS-Core component is required
-    - component: Device:CubeMX                # Component that connects to CubeMX    
+    - component: Device:CubeMX                # Component that connects to CubeMX
 ```
 
 Such a project cannot be directly built, as initially, the `*.cgen.yml` file is missing. It requires to run the CubeMX generator.  Before you start, you may need to [`install missing packs`](build-tools.md#install-missing-packs).
 
 - Identify the required generator and the directory where the generated files are stored with:
-   
+
 ```bash
 csolution CubeMX.csolution.yml list generators --verbose
 CubeMX (Global Registered Generator)    # generator name
   base-dir: STM32CubeMX/MyBoard         # directory for generated files
     context: CubeMX.Debug+MyBoard       # list of context that uses this directory
-    context: CubeMX.Release+MyBoard 
+    context: CubeMX.Release+MyBoard
 ```
 
 - Use the information above to run the generator:
@@ -90,7 +90,7 @@ csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyB
    This starts CubeMX and passes the information about the selected board, device, and select toolchain. For a project that selects a board, CubeMX imports the default configuration for it. In CubeMX, review and adjust configuration options as required for your application, then just click the button `GENERATE CODE`. The generated files will be stored in the directory `STM32CubeMX/MyBoard`.
 
 - Build the project using this command:
- 
+
 ```bash
 cbuild CubeMX.csolution.yml --update-rte
 ```
@@ -110,7 +110,7 @@ Directory `STM32CubeMX/MyBoard`     | Content
 `STM32CubeMX/Src`                   | CubeMX generated application code: `main.c` and STM32 setup code.
 `STM32CubeMX/Inc`                   | Header files for CubeMX generated application code.
 `STM32CubeMX/EWARM`                 | Project files for IAR; only startup code and linker scripts are used for *csolution projects*.
-`STM32CubeMX/STM32CubeIDE           | Project files for STM32CubeIDE (GCC); only startup code and linker scripts are used for *csolution projects*.
+`STM32CubeMX/STM32CubeIDE`          | Project files for STM32CubeIDE (GCC); only startup code and linker scripts are used for *csolution projects*.
 `STM32CubeMX/MDK-ARM`               | Project files for MDK version 5; only startup code and linker scripts are used for *csolution projects*.
 
 !!! Note
@@ -153,7 +153,7 @@ generator-import:
 
 ## Adding an RTOS
 
-Many applications require an RTOS kernel. By default, CubeMX implements interrupt functions for all Cortex-M exception handlers. However, some exception handlers are typically required for the RTOS kernel execution. 
+Many applications require an RTOS kernel. By default, CubeMX implements interrupt functions for all Cortex-M exception handlers. However, some exception handlers are typically required for the RTOS kernel execution.
 
 Adding an RTOS kernel requires these steps:
 
@@ -162,22 +162,22 @@ Adding an RTOS kernel requires these steps:
 The example below adds the [CMSIS-RTX](https://github.com/ARM-software/CMSIS-RTX) RTOS kernel to a project.
 Other kernels require different components and packs, but the concept is similar.
 
-   **File: `CubeMX.cproject.yml`**    
+   **File: `CubeMX.cproject.yml`**
 
 ```yml
 project:
   packs:
-    - pack: ARM::CMSIS-RTX                    # RTOS Software Pack    
+    - pack: ARM::CMSIS-RTX                    # RTOS Software Pack
   groups:
     - group: MyApp
       files:
-        - file: MyMain.c    
+        - file: MyMain.c
   components:
     - component: CMSIS:CORE                   # CMSIS-Core component is required
-    - component: Device:CubeMX                # Component that connects to CubeMX    
+    - component: Device:CubeMX                # Component that connects to CubeMX
     - component: CMSIS:RTOS2:Keil RTX5&Source # RTOS component
     - component: CMSIS:OS Tick:SysTick        # OS Tick implementation for RTOS
-```    
+```
 
 ### Step 2: Configure interrupt handlers
 
@@ -202,17 +202,20 @@ Then click the button `GENERATE CODE` to update the generated files in the direc
 STM32CubeMX generates a linker script files that are tightly coupled with the generated startup and system initialization code. To ensure proper memory layout and application behavior, the generated linker script must be used for all toolchains. These scripts serve as a reliable baseline and can be further tailored by the user to meet specific application requirements.
 
 `For compiler: AC6` (toolchain in CubeMX - MDK-ARM):
-- A linker scripts are only generated for advanced configurations (e.g., when using the CubeMX Memory Manager). If generated, it must be used, as it aligns with the CubeMX-generated startup/system code.
+
+- Linker scripts are only generated for advanced configurations (e.g., when using the CubeMX Memory Manager). If generated, they must be used, as they align with the CubeMX-generated startup/system code.
 - For simpler projects where no linker script is generated, the default CMSIS-Toolbox linker script can be used, but it requires manual modification to remove ARM_LIB_HEAP and ARM_LIB_STACK, which are already defined in the startup file.
 
 `For compiler: GCC` (toolchain in CubeMX - STM32CubeIDE):
+
 - Linker scripts are always generated and typically located at `./STM32CubeMX/STM32CubeIDE/<device_name>_FLASH.ld`
 
 `For compiler: IAR` (toolchain in CubeMX - EWARM):
+
 - Linker scripts are always generated and typically located at `./STM32CubeMX/EWARM/<device_name>.icf`
 
-!!! Note 
-    User must always reference the CubeMX-generated linker script in *.cproject.yml or *.clayer.yml file using the linker node as shown bellow.
+!!! Note
+    User must always reference the CubeMX-generated linker script in *.cproject.yml or *.clayer.yml file using the `linker:` node as shown bellow.
 
 ```yml
     linker:
@@ -222,7 +225,7 @@ STM32CubeMX generates a linker script files that are tightly coupled with the ge
 
 ## Use CubeMX with Board Layer
 
-A [software layer](build-overview.md#software-layers) is a set of pre-configured software components and source files that can be reused in multiple projects. A board layer typically contains basic I/O drivers and related device and board configuration. 
+A [software layer](build-overview.md#software-layers) is a set of pre-configured software components and source files that can be reused in multiple projects. A board layer typically contains basic I/O drivers and related device and board configuration.
 
 For a board layer, CubeMX can be used to generate device configuration and peripheral drivers. As a board layer uses a separate directory that is independent of a specific *csolution project*, the location of the  STM32CubeMX generated files should be specified using the [`generators:`](YML-Input-Format.md#generators) node in the `<board>.clayer.yml` file. This locates the CubeMX-generated files in the directory structure of the [software layer](build-overview.md#software-layers). As a board layer is used by several projects, the name of the generator import file should also be explicitly specified, as shown below:
 
@@ -298,7 +301,7 @@ To migrate existing projects that were using the previous STM32CubeMX integratio
 
 ### uVision - Update STM32 DFP Packs
 
-The [Generator Integration](build-operation.md#generator-integration) of the CMSIS-Toolbox is also available with uVision version 5.40 or higher. 
+The [Generator Integration](build-operation.md#generator-integration) of the CMSIS-Toolbox is also available with uVision version 5.40 or higher.
 
 New `STM32*_DFP` software packs containing release information **Updated for new CMSIS-Toolbox CubeMX integration** require migration. The steps below describe the migration process of a previous CubeMX configuration.
 
@@ -317,7 +320,7 @@ New `STM32*_DFP` software packs containing release information **Updated for new
 
 1. In uVision use *Project - New uVision Project* and select the STM32 device that you want to use.
    - Optional: *Project - Manage - Project items* tab *Project Info / Layer* allows to select an evaluation board under `Board`.
-  
+
 2. Open the dialog *Manage - Run-Time Environment*.
 3. Select the component `Device:CubeMX` and start STM32CubeMX with the `play` button.
 4. Create a new device configuration in STM32CubeMX:
