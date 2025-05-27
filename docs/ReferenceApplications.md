@@ -370,6 +370,10 @@ Currently, the following **`connect` names** are used.
 [CMSIS_USB_Device](#cmsis_usb_device)                        | -                      | CMSIS-Driver USB Device connected to physical board connector
 [CMSIS_USB_Host](#cmsis_usb_host)                            | -                      | CMSIS-Driver USB Host connected to physical board connector
 [CMSIS_VIO](#cmsis_vio)                                      | -                      | CMSIS-Driver VIO interface for virtual I/O
+[CMSIS_VSTREAM_AUDIO_IN](#cmsis_vstream_audio_in)            | -                      | CMSIS-Driver vStream interface for Audio Input
+[CMSIS_VSTREAM_AUDIO_OUT](#cmsis_vstream_audio_out)          | -                      | CMSIS-Driver vStream interface for Audio Output
+[CMSIS_VSTREAM_VIDEO_IN](#cmsis_vstream_video_in)            | -                      | CMSIS-Driver vStream interface for Video Input
+[CMSIS_VSTREAM_VIDEO_OUT](#cmsis_vstream_video_out)          | -                      | CMSIS-Driver vStream interface for Video Output
 CMSIS-RTOS2                                                  | -                      | CMSIS-RTOS2 compliant RTOS
 .                                                            |.                       | **mikroBUS socket Interface**
 [MIKROBUS_AN](#mikrobus_an_int_pwm)                          |-                       | CMSIS-Driver GPIO connecting to mikroBUS AN
@@ -496,6 +500,22 @@ Connects to a [CMSIS-Driver USB Host Interface](https://arm-software.github.io/C
 ### CMSIS_VIO
 
 Connects to a [CMSIS-Driver VIO Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__vio__interface__gr.html), a virtual I/O interface that connects on physical boards to LEDs and switches.
+
+### CMSIS_VSTREAM_AUDIO_IN
+
+Connects to a [CMSIS-Driver vStream Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__vstream__interface__gr.html) that streams audio from an audio input such as microphone.
+
+### CMSIS_VSTREAM_AUDIO_OUT
+
+Connects to a [CMSIS-Driver vStream Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__vstream__interface__gr.html) that streams audio to an audio output such as headphones.
+
+### CMSIS_VSTREAM_VIDEO_IN
+
+Connects to a [CMSIS-Driver vStream Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__vstream__interface__gr.html) that streams video from an video input such as camera.
+
+### CMSIS_VSTREAM_VIDEO_OUT
+
+Connects to a [CMSIS-Driver vStream Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__vstream__interface__gr.html) that streams video to an video output such as display.
 
 ### MIKROBUS_AN/_INT/_PWM
 
