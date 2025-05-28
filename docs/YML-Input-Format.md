@@ -42,11 +42,11 @@ Element      |              | Description
 `pack-name`  | **Required** | Name of the software pack; wildcards (\*, ?) can be used.
 `@version`   | Optional     | Software pack version number must exactly match, i.e. `@1.2.3`
 `@>=version` | Optional     | Automatically update to any version higher or equal.
-`@^version`  | Optional     | Automatically update minor/patch version, i.e. `@^1.2.3` uses releases from `1.2.3` to `< 2.0.0`. 
-`@~version`  | Optional     | Automatically update patch version, i.e. `@^1.2.3` uses releases from `1.2.3` to `< 1.3.0`. 
+`@^version`  | Optional     | Automatically update minor/patch version, i.e. `@^1.2.3` uses releases from `1.2.3` to `< 2.0.0`.
+`@~version`  | Optional     | Automatically update patch version, i.e. `@^1.2.3` uses releases from `1.2.3` to `< 1.3.0`.
 
 !!!Notes
-    - When no version is specified, the **`csolution` Project Manager** only loads the latest installed version of a software pack. This also applies when wildcards are used in the `pack-name`. 
+    - When no version is specified, the **`csolution` Project Manager** only loads the latest installed version of a software pack. This also applies when wildcards are used in the `pack-name`.
     - Use [**`cpackget`**](build-tools.md#cpackget-invocation) to download and install new pack versions.
     - To accept a [pre-release version of a pack](pack-tools.md#versioning) specify the `-pre-release` label. Use for example `- pack: Keil::MDK-Middleware@^8.0.0-0` to accept any pre-release version that is higher or equal.
 
@@ -54,7 +54,7 @@ Element      |              | Description
 
 ```yml
 - pack:   ARM::CMSIS@5.9.0           # 'CMSIS' Pack with version 5.5.0
-- pack:   MDK-Middleware@>=7.13.0    # latest version 7.13.0 or higher 
+- pack:   MDK-Middleware@>=7.13.0    # latest version 7.13.0 or higher
 - pack:   MDK-Middleware@^7.13.0     # latest version 7.13.0 or higher, but lower than 8.0.0
 - pack:   Keil::TFM                  # 'TFM' Pack from vendor Keil, latest installed version
 - pack:   AWS                        # All Software Packs from vendor 'AWS', latest version
@@ -87,7 +87,7 @@ Element    |              | Description
 A component can be partly defined in *csolution project files* (`*.cproject.yml`, `*.clayer.yml`, `*.genlayer.yml`) by omitting `Cvendor`, `Cvariant`, and `Cversion`, even when this are part of the `components` element of the software pack. The component select algorithm resolves this to a fully defined component by:
 
 - when a partly specified component resolves to several possible choices, the tool selects:
-    - (a) the default `Cvariant` of the component as defined in the PDSC file. 
+    - (a) the default `Cvariant` of the component as defined in the PDSC file.
     - (b) the component with the higher `Cversion` value.
     - (c) an error message is issued when two identical components are defined by multiple vendors and `Cvendor` is not specified.
 - the partly specified component is extended by:
@@ -157,7 +157,7 @@ Evaluation Boards define a device indirectly via the related BSP. The following 
 value in the `*.yml` files.
 
 ```yml
-[vendor::] board_name [:revision] 
+[vendor::] board_name [:revision]
 ```
 
 Element      |              | Description
@@ -172,7 +172,7 @@ Element      |              | Description
 **Examples:**
 
 ```yml
-board: Keil::MCB54110                             # The Keil MCB54110 board (with device NXP::LPC54114J256BD64) 
+board: Keil::MCB54110                             # The Keil MCB54110 board (with device NXP::LPC54114J256BD64)
 board: LPCXpresso55S28                            # The LPCXpresso55S28 board
 board: STMicroelectronics::NUCLEO-L476RG:Rev.C    # A board with revision specification
 ```
@@ -219,7 +219,7 @@ The `context` name is also used in [`for-context:`](#for-context) and [`not-for-
 
 ## Access Sequences
 
-The **access sequences** export values from the CMSIS Project Manager for the 
+The **access sequences** export values from the CMSIS Project Manager for the
 `*.yml` file nodes `define:`, `define-asm:`, `add-path:`, `misc:`, `files:`, and `executes:`. The **access sequences**
 can specify a different project and describe, therefore, project dependencies.
 
@@ -232,7 +232,7 @@ Access Sequence                                | Description
 `$BuildType$`                                  | [Build-type](#build-types) name of the currently processed project.
 `$TargetType$`                                 | [Target-type](#target-types) name of the currently processed project.
 `$Compiler$`                                   | [Compiler](#compiler) name of the compiler used in this project context as specified in the [`compiler:`](#compiler) node.
-**YML Input**                                  | **Access to YML Input Directories and Files**       
+**YML Input**                                  | **Access to YML Input Directories and Files**
 `$Solution$`                                   | Solution name (base name of the *.csolution.yml file).
 `$SolutionDir()$`                              | Path to the directory of the current processed `csolution.yml` file.
 `$Project$`                                    | Project name of the current processed `cproject.yml` file.
@@ -249,7 +249,7 @@ Access Sequence                                | Description
 `$Dpack$`                                      | Path to the pack that defines the selected device (DFP).
 `$Pack(vendor::name)$`                         | Path to a specific pack. Example: `$Pack(NXP::K32L3A60_DFP)$`.
 
-For a [`context`](#context-name-conventions), the `project-name`, `.build-type`, and `+target-type` are optional. An **access sequence** that specifies only `project-name` uses the context that is currently processed. It is important that the `project` is part of the [context-set](build-overview.md#working-with-context-set) in the build process. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file. 
+For a [`context`](#context-name-conventions), the `project-name`, `.build-type`, and `+target-type` are optional. An **access sequence** that specifies only `project-name` uses the context that is currently processed. It is important that the `project` is part of the [context-set](build-overview.md#working-with-context-set) in the build process. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file.
 
 **Example:**
 
@@ -263,7 +263,7 @@ solution:
 
     - type: Production-HW       # target-type: Production-HW
       device: STM32L5X          # specifies device
-      
+
   build-types:
     - type: Debug               # build-type: Debug
       optimize: none
@@ -278,7 +278,7 @@ solution:
     - project: ./application/MQTT_AWS.cproject.yml            # relative path
 ```
 
-The `project: /application/MQTT_AWS.cproject.yml` may use **access sequences** to reference files or directories in other projects that belong to the same *csolution project*. 
+The `project: /application/MQTT_AWS.cproject.yml` may use **access sequences** to reference files or directories in other projects that belong to the same *csolution project*.
 
 For example, these references are possible in the file `MQTT_AWS.cproject.yml`.
 
@@ -290,7 +290,7 @@ For example, these references are possible in the file `MQTT_AWS.cproject.yml`.
 The example above uses the `build-type` and `target-type` of the processed context for the project `TFM`. With a [context-set](build-overview.md#working-with-context-set) you may mix different `build-types` for an application. Note that it is important to build both projects using the same build process.
 
 ```bash
-cbuild iot-product.csolution.yml --context-set --context TFM.Release+Board --context MQTT_AWS.Debug+Board 
+cbuild iot-product.csolution.yml --context-set --context TFM.Release+Board --context MQTT_AWS.Debug+Board
 ```
 
 The example below uses from the TFM project always `build-type: Debug` and the `target-type: Production-HW`.
@@ -329,9 +329,9 @@ The `variables:` node defines are *key/value* pairs that can be used to refer to
 Using variables that are defined in the `*.csolution.yml` file, a `*.cproject.yml` file requires no modifications when new `target-types:` are introduced.  The required `layers:` could be instead specified in the `*.csolution.yml` file using a new node `variables:`.
 
 **Example:**
-   
+
 *Example.csolution.yml*
-   
+
 ```yml
 solution:
   target-types:
@@ -340,21 +340,21 @@ solution:
       variables:
         - Socket-Layer: ./Socket/FreeRTOS+TCP/Socket.clayer.yml
         - Board-Layer:  ./Board/IMXRT1050-EVKB/Board.clayer.yml
-  
+
     - type: ST Board
       board: B-U585I-IOT02A
       variables:
         - Socket-Layer: ./Socket/WiFi/Socket.clayer.yml
         - Board-Layer:  ./Board/B-U585I-IOT02A/Board.clayer.yml
 ```
-   
+
 *Example.cproject.yml*
-   
+
 ```yml
   layers:
     - layer: $Socket-Layer$
       type: Socket
-   
+
     - layer: $Board-Layer$      # no `*.clayer.yml` specified. Compatible layers are listed
       type: Board               # layer of type `Board` is expected
 ```
@@ -391,10 +391,10 @@ Keyword                          | Description
 
 ### `cdefault:`
 
-When [`cdefault:`](#solution) is specified in the `*.csolution.yml` file, the **`csolution` Project Manager** uses a file with the name [`cdefault.yml`](build-overview.md#cdefaultyml) to setup 
+When [`cdefault:`](#solution) is specified in the `*.csolution.yml` file, the **`csolution` Project Manager** uses a file with the name [`cdefault.yml`](build-overview.md#cdefaultyml) to setup
 the compiler with specific default controls. The search order for this file is:
 
-- A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the same directory as the `<solution-name>.csolution.yml` file. 
+- A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the same directory as the `<solution-name>.csolution.yml` file.
 - A [`cdefault.yml`](build-overview.md#cdefaultyml) file in the directory [`<cmsis-toolbox-installation-dir>/etc`](installation.md#environment-variables).
 
 The `default:` node is the start of a [`cdefault.yml`](build-overview.md#cdefaultyml) file and contains the following.
@@ -416,8 +416,8 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; `created-by:`                     |  Optional  | Identifies the tool that created this solution.
 &nbsp;&nbsp;&nbsp; `created-for:`                    |  Optional  | Specifies the tool for building this solution, i.e. **CMSIS-Toolbox@2.5.0**
 &nbsp;&nbsp;&nbsp; `description:`                    |  Optional  | Brief description text of this solution.
-&nbsp;&nbsp;&nbsp; [`select-compiler:`](#select-compiler) |  Optional  | Lists the possible compiler selection that this project is tested with. 
-&nbsp;&nbsp;&nbsp; [`cdefault:`](#cdefault)          |  Optional  | When specified, the [`cdefault.yml`](build-overview.md#cdefaultyml) file is used to setup compiler specific controls. 
+&nbsp;&nbsp;&nbsp; [`select-compiler:`](#select-compiler) |  Optional  | Lists the possible compiler selection that this project is tested with.
+&nbsp;&nbsp;&nbsp; [`cdefault:`](#cdefault)          |  Optional  | When specified, the [`cdefault.yml`](build-overview.md#cdefaultyml) file is used to setup compiler specific controls.
 &nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)          |  Optional  | Overall toolchain selection for this solution.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)      |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)  |  Optional  | Set the language standard for C++ source file compilation.
@@ -438,7 +438,7 @@ solution:
   cdefault:                       # use default setup of toolchain-specific controls.
   compiler: GCC                   # overwrite compiler definition in 'cdefaults.yml'
 
-  packs: 
+  packs:
     - pack: ST                    # add ST packs in 'cdefaults.yml'
 
   build-types:                    # additional build types
@@ -447,7 +447,7 @@ solution:
       debug: on
       packs:                      # with explicit pack specification
         - pack: ST::TestSW
-          path: ./MyDev/TestSW    
+          path: ./MyDev/TestSW
 
   target-types:
     - type: Board                 # target-type: Board
@@ -455,7 +455,7 @@ solution:
 
     - type: Production-HW         # target-type: Production-HW
       device: STM32U5X            # specifies device
-      
+
   projects:
     - project: ./blinky/Bootloader.cproject.yml
     - project: /security/TFM.cproject.yml
@@ -509,7 +509,7 @@ project:
     - component: Keil RTX5 Library_NS
   groups:
     - group: Non-secure Code                 # Create group
-      files: 
+      files:
         - file: main_ns.c                    # Add files to group
         - file: $Source(Secure)$interface.h
         - file: $Output(Secure)$_CMSE_Lib.o
@@ -531,7 +531,7 @@ The `layer:` node is the start of a `*.clayer.yml` file and defines a [Software 
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)                  |  Optional  | Control generation of compiler diagnostics.
 &nbsp;&nbsp;&nbsp; [`define:`](#define)                      |  Optional  | Define symbol settings for C/C++ code generation.
 &nbsp;&nbsp;&nbsp; [`define-asm:`](#define-asm)              |  Optional  | Define symbol settings for Assembler code generation.
-&nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)                  |  Optional  | Remove define symbol settings for code generation.     
+&nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)                  |  Optional  | Remove define symbol settings for code generation.
 &nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)                  |  Optional  | Additional include file paths.
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)                  |  Optional  | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                          |  Optional  | Literal tool-specific controls.
@@ -558,10 +558,10 @@ layer:
     - component: CMSIS CORE
   groups:
     - group: Secure Code
-      files: 
+      files:
         - file: main_s.c
     - group: CMSE
-      files: 
+      files:
         - file: interface.c
         - file: interface.h
         - file: tz_context.c
@@ -573,7 +573,7 @@ The following nodes control the application's directory structure.
 
 ### `output-dirs:`
 
-Allows control of the directory structure for building output files and temporary files.  
+Allows control of the directory structure for building output files and temporary files.
 
 !!! Notes
     - This control is only possible at `csolution.yml` level.
@@ -603,12 +603,12 @@ cbuild <name>.csolution.yml --output MyOut
 ```yml
 output-dirs:
   tmpdir: ./tmp2                         # relative path to csolution.yml file
-  outdir: ./out/$Project$/$TargetType$   # $BuildType$ no longer part of the outdir    
+  outdir: ./out/$Project$/$TargetType$   # $BuildType$ no longer part of the outdir
 ```
 
 ### `generators:`
 
-Allows control of the directory structure for generator output files.  
+Allows control of the directory structure for generator output files.
 
 When no explicit `generators:` is specified, the **`csolution` Project Manager** uses as path:
 
@@ -657,10 +657,10 @@ generators:
 
 ### `rte:`
 
-Allows to control the directory structure for [RTE (run-time environment)](build-overview.md#rte-directory-structure) files.  
+Allows to control the directory structure for [RTE (run-time environment)](build-overview.md#rte-directory-structure) files.
 
 !!! Notes
-    - This control is only possible at `*.cproject.yml` level.  
+    - This control is only possible at `*.cproject.yml` level.
     - Only relative paths are permitted to support the portability of projects.
     - The location of the `*.cproject.yml` file is the reference for relative paths.
 
@@ -682,7 +682,7 @@ Toolchain options may be used at various places, such as:
 
 ### `select-compiler:`
 
-Lists the compilers that this *csolution project* is tested with. This information is used by the [`cbuild setup` command](build-operation.md#details-of-the-setup-mode) to determine possible compiler choices. The actual compiler to be used is selected with the [`compiler:`](#compiler) node. 
+Lists the compilers that this *csolution project* is tested with. This information is used by the [`cbuild setup` command](build-operation.md#details-of-the-setup-mode) to determine possible compiler choices. The actual compiler to be used is selected with the [`compiler:`](#compiler) node.
 
 !!! Notes
     - [`select-compiler:`](#select-compiler) is only supported in the [`*.csolution.yml`](#solution) project file.
@@ -761,7 +761,7 @@ linker:
 ```yml
 linker:
   - script:   MyLinker.scf.src   # linker script file, not pre-processed
-    for-compiler: AC6            # for Arm Compiler 6 
+    for-compiler: AC6            # for Arm Compiler 6
 
   - script:   MyLinker.ld        # linker script file, not pre-processed
     for-compiler: CLANG          # for CLANG LLVM-based compiler
@@ -776,7 +776,7 @@ linker:
   - script:   MyLinker.ld.src    # linker script file
     for-compiler: CLANG          # for CLANG LLVM-based compiler
     regions:  MyRegions.h        # pre-processed using header file
-    define:                      # with define setting 
+    define:                      # with define setting
       - Setup: 1                 # define with value
 ```
 
@@ -809,7 +809,7 @@ output:
 
 ```yml
 output:
-  type: 
+  type:
   - elf                  # Generate executable file.
   - map                  # Generate Linker MAP file.
 ```
@@ -840,7 +840,7 @@ The following translation control options may be used at various places such as:
 - [`files:`](#files) level to specify options for a specify source file
 
 !!! Note
-    - The keys `define:`, `define-asm:`, `add-path:`, `add-path-asm:`, `del-path:`, and `misc:` are additive. 
+    - The keys `define:`, `define-asm:`, `add-path:`, `add-path-asm:`, `del-path:`, and `misc:` are additive.
     - All other keys can only be defined once at the level of `solution:`, `project:`, `setup:`, `layer:`and `build-types:`. or `target-types:`. However, it is possible to overwrite these keys at the level of `group:`, `file:`, or `component:`; for example it is possible to translate a file group with a different optimize level.
 
 ### `language-C:`
@@ -855,7 +855,7 @@ Value                                                 | Select C Language Standa
 `gnu99`                                               | same as `c99` but with additional GNU extensions.
 `c11`                                                 | compile C source files as defined in C11 standard (ISO/IEC 9899:2011).
 `gnu11`                                               | same as `c11` but with additional GNU extensions.
-`c17`                                                 | compile C source files as defined in C17 standard (ISO/IEC 9899:2017). Experimental compiler feature new in CMSIS-Toolbox 2.6.0. 
+`c17`                                                 | compile C source files as defined in C17 standard (ISO/IEC 9899:2017). Experimental compiler feature new in CMSIS-Toolbox 2.6.0.
 `c23`                                                 | compile C source files as defined in C23 standard (ISO/IEC 9899:2023). Experimental compiler feature new in CMSIS-Toolbox 2.6.0.
 
 ### `language-CPP:`
@@ -888,7 +888,7 @@ Value                                                 | Code Generation
 `balanced`                                            | Balanced optimization
 `size`                                                | Optimize for code size
 `speed`                                               | Optimize for execution speed
-`debug`                                               | Optimize for debug experience 
+`debug`                                               | Optimize for debug experience
 `none`                                                | No optimization
 
 !!! Note
@@ -1005,7 +1005,7 @@ groups:
   - group:  "Main File Group"
     undefine:
       - TestValue           # remove define symbol `TestValue` for this file group
-    files: 
+    files:
       - file: file1a.c
         undefine:
          - TestMode         # remove define symbol `TestMode` for this file
@@ -1175,7 +1175,7 @@ project:
 ## Pack Selection
 
 The `packs:` node can be specified in the `*.csolution.yml` file allows you to:
-  
+
 - Reduce the scope of software packs that are available for projects.
 - Add specific software packs that are optional with version specifications.
 - Provide a path to a local installation of a software pack that is, for example, project-specific or under development.
@@ -1197,7 +1197,7 @@ The `packs:` node is the start of a pack selection.
 
 ### `pack:`
 
-The `pack:` list allows to add [specific software packs](#pack-name-conventions), optional with a version specification. 
+The `pack:` list allows to add [specific software packs](#pack-name-conventions), optional with a version specification.
 
 `pack:`                                                     | Content
 :-----------------------------------------------------------|:------------------------------------
@@ -1221,7 +1221,7 @@ packs:                                  # start section that specifics software 
   - pack: ARM::CMSIS-FreeRTOS@~10.4.0   # add CMSIS-FreeRTOS with version 10.4.x or higher but lower than 10.5.0
   - pack: ARM::CMSIS-FreeRTOS@^10.4.0   # add CMSIS-FreeRTOS with version 10.4.x or higher but lower than 11.0.0
 
-  - pack: NXP::K32L3A60_DFP             # add pack for NXP device 
+  - pack: NXP::K32L3A60_DFP             # add pack for NXP device
     path: ./local/NXP/K32L3A60_DFP      # with path to the pack (local copy, repo, etc.)
 
   - pack: AWS::coreHTTP                 # add pack
@@ -1279,7 +1279,7 @@ The `processor:` keyword specifies the processor features used in this project.
 &nbsp;&nbsp;&nbsp; `trustzone:`         | Select TrustZone mode: `secure` \| `secure-only` \| `non-secure` \| `off`.
 &nbsp;&nbsp;&nbsp; `branch-protection:` | Select Branch Protection mode: `bti` (branch target identification) \| `bti-signret` (branch target identification and pointer authentication) \| `off` (disabled).
 
-The default setting enables the available features of the device. For example `fpu: dp` is selected for devices that offer double precision floating point hardware.  
+The default setting enables the available features of the device. For example `fpu: dp` is selected for devices that offer double precision floating point hardware.
 
 For `trustzone:` the possible settings are:
 
@@ -1297,12 +1297,12 @@ project:
   processor:
     trustzone: secure
     fpu: off             # do not use FPU instructions
-    mve: off             # do not use vector instructions.  
+    mve: off             # do not use vector instructions.
 ```
 
 ## Context
 
-A [`context`](#context-name-conventions) is an environment setup for a project that is composed of: 
+A [`context`](#context-name-conventions) is an environment setup for a project that is composed of:
 
 - `project-name` that is the base name of the `*.cproject.yml` file.
 - `.build-type` that defines typically build-specific settings such as for debug, release, or test.
@@ -1310,7 +1310,7 @@ A [`context`](#context-name-conventions) is an environment setup for a project t
 
 !!! Note
     - The [`context`](#context-name-conventions) name is used throughout the build process and is reflected in directory names. Even when there is not a fixed limit, keep identifiers short. Recommended is less than 32 characters for the [`context`](#context-name-conventions) name.
-    - Blank characters (' ') in the context name are not permitted by CMake.  
+    - Blank characters (' ') in the context name are not permitted by CMake.
 
 The section [project setup for related projects](build-overview.md#project-setup-for-related-projects)
 explains the overall concept of  `target-types` and `build-types`. These `target-types` and `build-types` are defined in the `*.csolution.yml` that defines the overall application for a system.
@@ -1381,7 +1381,7 @@ target-types:
 
   - type: Production-HW          # target-type name, used in context with: +Production-HW
     device: STM32L552RC          # specifies device
-      
+
 build-types:
   - type: Debug                  # build-type name, used in context with: .Debug
     optimize: none               # specifies code optimization level
@@ -1410,7 +1410,7 @@ target-types:
   - type: Production-HW
     board: NUCLEO-L552ZE-Q    # hardware is similar to a board (to use related software layers)
     device: STM32L552RC       # but uses a slightly different device
-    processor: 
+    processor:
       trustzone: off          # TrustZone disabled for this project
 ```
 
@@ -1442,7 +1442,7 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 &nbsp;&nbsp;&nbsp; `image:`                           |   Optional   | Additional image file to load.
 &nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode of the image file for programmers and debug tools.
 &nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the image file.
-&nbsp;&nbsp;&nbsp; [`type:`](#type)                   |   Optional   | Specifies an explicit file of the image type. 
+&nbsp;&nbsp;&nbsp; [`type:`](#type)                   |   Optional   | Specifies an explicit file of the image type.
 &nbsp;&nbsp;&nbsp; `load-offset:`                     |   Optional   | Offset applied to the binary content when loading the image file.
 
 !!! Note
@@ -1466,8 +1466,8 @@ With `type:` an explicit file type can be specified which is required for unknow
 
 `type:`           | Auto-detected Extension | Description
 :-----------------|:------------------------|:-------------
-`- lib`           | `.lib`, `.a`            | Library or archive. 
-`- elf`           | `.axf`, `.elf`          | Executable in ELF format. 
+`- lib`           | `.lib`, `.a`            | Library or archive.
+`- elf`           | `.axf`, `.elf`          | Executable in ELF format.
 `- hex`           | `.h386`, `.hex`         | Intel HEX file in HEX-386 format.
 `- bin`           | `.bin`                  | Binary image.
 
@@ -1497,7 +1497,7 @@ solution:
       device: NXP::MCXN947VDF
       target-set:
         - set:                             // without id, <default> set
-          debugger: 
+          debugger:
             name: ULINKplus
             protocol: swd
           images:
@@ -1522,7 +1522,7 @@ solution:
 
 ### `context-map:`
 
-The `context-map:` node allows for a specific `project-name` the remapping of `target-types:` and/or `build-types:` to a different `context:` which enables: 
+The `context-map:` node allows for a specific `project-name` the remapping of `target-types:` and/or `build-types:` to a different `context:` which enables:
 
 - Integrating an existing `*.cproject.yml` file in a different `*.csolution.yml` file that uses different `build-types:` and/or `target-types:` for the overall application.
 - Defines how different `*.cproject.yml` files of a `*.csolution.yml` are to the binary image of the final target (needs reflection in cbuild-idx.yml).
@@ -1538,7 +1538,7 @@ For the `context-map:` it is required to specify the `<project-name>` as part of
 **Example 1:**
 
 This application combines two projects for a multi-processor device, but the project `HelloCM7` requires a different setting for the build-type name `Release` as this enables different settings within the `*.cproject.yml` file.
- 
+
 ```yml
   target-types:
     - type: DualCore
@@ -1548,7 +1548,7 @@ This application combines two projects for a multi-processor device, but the pro
     - type: Release                        # When applying build-type name 'release':
       context-map:
         - HelloCM7.flex_release            # project HelloCM7 uses build-type name "flex_release" instead of "release"
-     
+
   projects:
     - project: ./CM7/HelloCM7.cproject.yml
     - project: ./CM4/HelloCM4.cproject.yml
@@ -1594,7 +1594,7 @@ Depending on a [compiler](#compiler) toolchain it is possible to include *list n
 **Examples:**
 
 ```yml
-for-compiler: AC6@6.16               # add item for Arm Compiler version 6.16 only      
+for-compiler: AC6@6.16               # add item for Arm Compiler version 6.16 only
 
 for-compiler: GCC                    # for GCC Compiler (any version)
 ```
@@ -1619,11 +1619,11 @@ It is also possible to provide a [`context`](#context-name-conventions) list wit
 **Examples:**
 
 ```yml
-for-context:      
+for-context:
   - .Test                            # add item for build-type: Test (any target-type)
 
 for-context:                         # add item
-  - .Debug                           # for build-type: Debug and 
+  - .Debug                           # for build-type: Debug and
   - .Release+Production-HW           # build-type: Release / target-type: Production-HW
 
 not-for-context:  +Virtual           # remove item for target-type: Virtual (any build-type)
@@ -1667,15 +1667,15 @@ The following project is only included when the `build-type:` of a context conta
 
 ```yml
   build-types:
-    - Debug-Test:         # Debug build with Test functionality 
+    - Debug-Test:         # Debug build with Test functionality
        :
-    - Test-Release:       # Release build with Test functionality 
+    - Test-Release:       # Release build with Test functionality
        :
     - Debug:
        :
     - Release:
-       : 
-    
+       :
+
   project: Test.cproject.yml
     - for-context: \.*Test*`
 ```
@@ -1780,16 +1780,16 @@ Add source files to a project.
 &nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)               |   Optional   | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`link-time-optimize:`](#link-time-optimize) |   Optional   | Enable optimization at linker level.
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)                     |   Optional   | Generation of debug information.
-&nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)               |   Optional   | Control generation of compiler diagnostics.     
+&nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)               |   Optional   | Control generation of compiler diagnostics.
 &nbsp;&nbsp;&nbsp; [`define:`](#define)                   |   Optional   | Define symbol settings for C/C++ code generation.
 &nbsp;&nbsp;&nbsp; [`define-asm:`](#define-asm)           |   Optional   | Define symbol settings for Assembler code generation.
-&nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)               |   Optional   | Remove define symbol settings for code generation.     
+&nbsp;&nbsp;&nbsp; [`undefine:`](#undefine)               |   Optional   | Remove define symbol settings for code generation.
 &nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)               |   Optional   | Additional include file paths for C/C++ source files.
 &nbsp;&nbsp;&nbsp; [`add-path-asm:`](#add-path-asm)       |   Optional   | Additional include file paths for assembly source files.
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)               |   Optional   | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                       |   Optional   | Literal tool-specific controls.
 
-!!! Note 
+!!! Note
     It is also possible to specify a [Linker Script](build-overview.md#linker-script-management). Files with the extension `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
 
 **Example:**
@@ -1799,11 +1799,11 @@ Add source files to a project or a software layer. Used in `*.cproject.yml` and 
 ```yml
 groups:
   - group:  "Main File Group"
-    not-for-context:                     # includes this group not for the following: 
+    not-for-context:                     # includes this group not for the following:
       - .Release+Virtual                 # build-type 'Release' and target-type 'Virtual'
       - .Test-DSP+Virtual                # build-type 'Test-DSP' and target-type 'Virtual'
       - +Board                           # target-type 'Board'
-    files: 
+    files:
       - file: file1a.c
       - file: file1b.c
         define:
@@ -1816,7 +1816,7 @@ groups:
     files:
       - file: file2a.c
         for-context: +Virtual               # include this file only for target-type 'Virtual'
-        define: 
+        define:
           - test: 2
       - file: file2a.c
         not-for-context: +Virtual           # include this file not for target-type 'Virtual'
@@ -1841,13 +1841,13 @@ target-type and/or build-type using [`for-context:`](#for-context) or [`not-for-
 groups:
   - group:  "Main File Group"
     for-compiler: AC6                    # includes this group only for Arm Compiler 6
-    files: 
+    files:
       - file: file1a.c
       - file: file2a.c
 
   - group:  "Main File Group"
     for-compiler: GCC                    # includes this group only for GCC Compiler
-    files: 
+    files:
       - file: file1b.c
       - file: file2b.c
 ```
@@ -1861,16 +1861,16 @@ Using `category:` allows to specify pre-include files that are project-wide or r
    files:
      - file: SystemDefinitions.h
        category: preIncludeGlobal
-``` 
+```
 
 - A local pre-include file is added to the compiler command line for all modules of a group (locally).
- 
+
 ```yml
  - group:  "Group 2"
    files:
      - file: MyDefinitions.h
        category: preIncludeLocal
-``` 
+```
 
 ### `layers:`
 
@@ -1900,14 +1900,14 @@ Add a software layer to a project. Used in `*.cproject.yml` files.
 
     # Board
     - layer: ./Board/IMXRT1050-EVKB/Board.clayer.yml
-      for-context: 
+      for-context:
         - +IP-Stack
         # - +WiFi
     - layer: ./Board/B-U585I-IOT02A/Board.clayer.yml
-      for-context: 
+      for-context:
         - +WiFi
     - layer: ./Board/AVH_MPS3_Corstone-300/Board.clayer.yml
-      for-context: 
+      for-context:
         - +AVH
 ```
 
@@ -1933,7 +1933,7 @@ Add software components to a project or a software layer. Used in `*.cproject.ym
 `components:`                                             |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
 `- component:`                                            | **Required** | Name of the software component.
-&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |   Optional   | Include component for a list of *build* and *target* types. 
+&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |   Optional   | Include component for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude component for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)           |   Optional   | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)       |   Optional   | Set the language standard for C++ source file compilation.
@@ -1974,7 +1974,7 @@ Add software components to a project or a software layer. Used in `*.cproject.ym
         - MBEDTLS_CONFIG_FILE: "aws_mbedtls_config.h"
 ```
 
-!!! Note 
+!!! Note
     The name format for a software component is described under  [Name Conventions - Component Name Conventions](#component-name-conventions).
 
 ### `instances:`
@@ -1997,7 +1997,7 @@ will be copied multiple times to the project. The name of the component (for exa
 - Instance 0: `config_usb_device_0.h`
 - Instance 1: `config_usb_device_1.h`
 
-The availability of instances in a project can be made public in the `RTE_Components.h` file. The existing way to extend 
+The availability of instances in a project can be made public in the `RTE_Components.h` file. The existing way to extend
 the `%Instance%` with the instance number `n`.
 
 ## Pre/Post build steps
@@ -2023,9 +2023,9 @@ The structure of the `executes:` node is:
 `- execute:`                                | **Required** | The identifier is used as a CMake target name and must not contain spaces and special characters; recommended is less than 32 characters.
 &nbsp;&nbsp;&nbsp; `run:`                   | **Required** | Command string with the name of the program or script (optionally with path) along with argument string.
 &nbsp;&nbsp;&nbsp; `always:`                |  Optional    | When present, the build step always runs and bypasses check for outdated `output:` files.
-&nbsp;&nbsp;&nbsp; `input:`                 |  Optional    | A list of input files (may contain [Access Sequences](#access-sequences)). 
+&nbsp;&nbsp;&nbsp; `input:`                 |  Optional    | A list of input files (may contain [Access Sequences](#access-sequences)).
 &nbsp;&nbsp;&nbsp; `output:`                |  Optional    | A list of output files (may contain [Access Sequences](#access-sequences)).
-&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |   Optional   | Run command for a list of *build* and *target* types (only supported in `*.cproject.yml`). 
+&nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |   Optional   | Run command for a list of *build* and *target* types (only supported in `*.cproject.yml`).
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude run command for a list of *build* and *target* types  (only supported in `*.cproject.yml`).
 
 The `run:` command string uses these sequences to access input files and output files:
@@ -2047,7 +2047,7 @@ Consider the following:
 
 - CMake uses Linux-style path names with `/` characters; it does not accept the Windows-style `\` characters in the `run:` node to specify the location of an executable tool.
 
-- [CMake provides several builtin command-line tools](https://cmake.org/cmake/help/latest/manual/cmake.1.html#run-a-command-line-tool) (copy, checksum, etc.) that run on every Host OS. Consider using these command-line tools instead of Windows or Linux-specific commands. Use `CMake -E help` to list the available commands. 
+- [CMake provides several builtin command-line tools](https://cmake.org/cmake/help/latest/manual/cmake.1.html#run-a-command-line-tool) (copy, checksum, etc.) that run on every Host OS. Consider using these command-line tools instead of Windows or Linux-specific commands. Use `CMake -E help` to list the available commands.
 
 - The base directory for execution is not controlled by the CMSIS-Toolbox and is typically the `tmp` directory. The commands specified by `run:` should be in the path of the Host OS or the path/tool should be passed using an `$input(<n>)$` argument.
 
@@ -2093,9 +2093,9 @@ project:                       # executed as part of a project build
   executes:
     - execute: copy-elf
       run: ${CMAKE_COMMAND} -E copy $input$ $output$
-      input:  
+      input:
         - $elf()$
-      output: 
+      output:
         - $OutDir()$/Project.out
       for-context: .Release
 ```
@@ -2113,17 +2113,17 @@ To find compatible layers in software packs, projects and layers can be annotate
 Example projects that use `connections:` for layer selection:
 
 - [MDK-Middleware examples](https://arm-software.github.io/MDK-Middleware/latest/General/working_with_examples.html) use board layers to run on different hardware boards.
- 
+
 - [Sensor SDK Example](https://github.com/Open-CMSIS-Pack/Sensor-SDK-Example) shows how board layers and shield layers may be used to run different sensor shields on many boards.
 
 - [AWS_MQTT_Demo}(https://github.com/Arm-Examples/AWS_MQTT_Demo) combines the board layer and communication socket layer. Optionally a shield layer can be used to connect WiFi drivers.
- 
+
 ### `connections:`
 
 The `connections:` node contains meta-data that describes the compatibility of the `*.cproject.yml` and `*.clayer.yml` project parts.  The `connections:` node lists functionality (drivers, pins, and other software or hardware resources). The node `consumes:` lists required functionality; the node `provides:` is the implemented functionality of that project part.
 
 This works across multiple levels, which means that a `*.clayer.yml` file could also require other functionality using `consumes:`.
-  
+
 The `connections:` node is used to identify compatible software layers. These software layers could be stored in CMSIS software packs using the following structure:
 
 - A reference application described in a `*.cproject.yml` file could be provided in a git repository. This reference application uses software layers that are provided in CMSIS software packs.
@@ -2135,7 +2135,7 @@ A CMSIS Board Support Pack (BSP) contains a configured board layer described in 
 This `connections:` node enables therefore software reuse in multiple ways:
 
 - The board layer can be used by many different reference applications, as the `provided:` functionality enables a wide range of use cases.
-  
+
 The sensor hardware shield and middleware can be used across many different boards that provide an Ardunio shield connector and board layer support.
 
 The structure of the `connections:` node is:
@@ -2153,7 +2153,7 @@ The `connect:` node describes one or more functionalities that belong together.
 [`set:`](#set)                       |   Optional   | Specifies a *config-id*.*select* value that identifies a configuration option
 `info:`                              |   Optional   | Verbal description displayed when this connect is selected
 [`provides:`](#provides)             |   Optional   | List of functionality (*key*/*value* pairs) that are provided
-[`consumes:`](#consumes)             |   Optional   | List of functionality (*key*/*value* pairs) that are required 
+[`consumes:`](#consumes)             |   Optional   | List of functionality (*key*/*value* pairs) that are required
 
 The behaviour of the `connect:` node depends on the usage in *csolution project* files.
 
@@ -2164,8 +2164,8 @@ The behaviour of the `connect:` node depends on the usage in *csolution project*
 
 In the example below the `connect` for:
 
-- `Sensor Communication Interface` is only active when the `SENSOR_I2C` is in the `consumes:` list of other active `connect` nodes.  
-- `Sensor Interrupt` is only active when the `SENSOR_INT` is in the `consumes:` list of other active `connect` nodes.  
+- `Sensor Communication Interface` is only active when the `SENSOR_I2C` is in the `consumes:` list of other active `connect` nodes.
+- `Sensor Interrupt` is only active when the `SENSOR_INT` is in the `consumes:` list of other active `connect` nodes.
 - `Core Functionality` is always active as it does not have a `provides:` list.
 
 ```yml
@@ -2200,7 +2200,7 @@ Refer to [Example: Sensor Shield](#example-sensor-shield) for a usage example.
 
 #### `provides:`
 
-A user-defined *key*/*value* pair list of functionality that is implemented or provided by a `project:` or `layer:`. 
+A user-defined *key*/*value* pair list of functionality that is implemented or provided by a `project:` or `layer:`.
 
 The **`csolution` Project Manager** combines all the *key*/*value* pairs that are listed under `provides:` and matches them with the *key*/*value* pairs that are listed under `consumes:`. For *key*/*value* pairs listed under `provides:` the following rules exist for a match with `consumes:` *key*/*value* pair:
 
@@ -2211,14 +2211,14 @@ The **`csolution` Project Manager** combines all the *key*/*value* pairs that ar
 
 #### `consumes:`
 
-A user-defined *key*/*value* pair list of functionality that is required or consumed by a `project:` or `layer:`. 
+A user-defined *key*/*value* pair list of functionality that is required or consumed by a `project:` or `layer:`.
 
 For *key*/*value* pairs listed under `consumed:` the following rules exist:
 
 - When no *value* is specified, it matches with any *value* of an identical *key* listed under `provides:`.
 - A *value* is interpreted as a number. This number must be identical in the `provides:` value pair.
 - A *value* that is prefixed with `+` is interpreted as a number that is added together in case that the same *key* is listed multiple times under `consumes:`. The sum of this value must be lower or equal to the *value* upper limit of the `provides:` *key*.
- 
+
 ### Example: Board
 
 This `connections:` node of a board layer describes the available interfaces.  The WiFi interface requires a CMSIS-RTOS2 function.
@@ -2256,7 +2256,7 @@ This shows the `connections:` node of a complete application project composed of
   layers:
     - layer: MySocket.clayer.yml
     - layer: MyBoard.clayer.yml
-```      
+```
 
 *MySocket.clayer.yml*
 
@@ -2333,7 +2333,7 @@ This sensor shield layer provides a set of interfaces that are configurable.
 
 ## Debugger Configuration
 
-Packs contain information for configuring debugger connection to a device or board. The `debugger:` node that is specified under the [`target-set:`](#target-set) in the *csolution project* allows 
+Packs contain information for configuring debugger connection to a device or board. The `debugger:` node that is specified under the [`target-set:`](#target-set) in the *csolution project* allows
 to overwrite configuration information or to define new debugger setups.
 
 ### `debugger:`
@@ -2364,7 +2364,7 @@ debugger:
   name: ULink
   protocol: jtag
   clock: 10000000               # 10 MHz
-  dbgconf: MyHardware.dbgconf   
+  dbgconf: MyHardware.dbgconf
 ```
 
 ```yml
@@ -2380,7 +2380,7 @@ Hardware targets may have additional off-chip memory. The `memory:` node that ca
 This information is used for the [Run and Debug Management](YML-CBuild-Format.md#run-and-debug-management) and the [Automatic Linker Script generation](build-overview.md#automatic-linker-script-generation).
 
 ### `memory:`
- 
+
 `memory:`                                                 |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
 `- name:`                                                 |**Required** | Identifier of the memory.
@@ -2411,8 +2411,8 @@ solution:
       device: STMicroelectronics::STM32F746NGHx
       memory:                                  # Additional memory available in MyHardware
         - name: Ext-Flash                      # Identifier
-          access: rx                           # access permission 
-          start: 0x40000000        
+          access: rx                           # access permission
+          start: 0x40000000
           size: 0x200000
           algorithm: Flash/Ext-Flash.flm       # Programming algorithm
 ```

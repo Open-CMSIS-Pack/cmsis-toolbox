@@ -79,7 +79,7 @@ def get_version(binary_path: str) -> str:
     except Exception as e:
         logging.error(f"Unexpected error retrieving version for {binary_path}: {e}")
 
-    return "unknown"    
+    return "unknown"
 
 def generate_manifest(args):
     """Generate the manifest with checksums and versions for binaries."""

@@ -11,7 +11,7 @@ project:
       files:
         - file: ./source0.c
         - file: ./source1.c
-  
+
   executes:
     - execute: Sign_Artifact
       run: ${CMAKE_COMMAND} -DINPUT=$input$ -DOUTPUT=$output$ -P $input(0)$

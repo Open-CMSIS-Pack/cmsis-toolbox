@@ -13,7 +13,7 @@ The CMSIS-Pack format supports different types of project examples:
 - *Template Projects* are [stub projects](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) that help getting started. Some software packs may contain device-specific templates.
 - *Examples* are created for a specific hardware or evaluation board. These are typically complete projects that directly interface with board and device peripherals.
 - *Reference Applications* use defined interfaces (APIs) and are therefore hardware agnostic. These project examples show the usage of middleware components and require additional [software layers](build-overview.md#software-layers) with API drivers for the specific target hardware, typically an evaluation board.
- 
+
 The following sections explain the usage, structure, and creation of *Reference Applications* that can target many different evaluation boards.
 
 Refer to [Pack Creation s&raquo; Project Examples](pack-tools.md#project-examples) for information on how to publish project examples as part of software packs.
@@ -24,9 +24,9 @@ Refer to [Pack Creation s&raquo; Project Examples](pack-tools.md#project-example
 
 ### MDK-Middleware Reference Applications
 
-The [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) provides software components for IPv4/IPv6 networking, USB Host/Device communication, and a variety of file systems for data storage. 
+The [MDK-Middleware](https://www.keil.arm.com/packs/mdk-middleware-keil) provides software components for IPv4/IPv6 networking, USB Host/Device communication, and a variety of file systems for data storage.
 
-The MDK-Middleware software pack contains Reference Applications that show how to use these software components. These examples are hardware agnostic; adding a board layer that provides the required APIs allows running the example project on specific target hardware. 
+The MDK-Middleware software pack contains Reference Applications that show how to use these software components. These examples are hardware agnostic; adding a board layer that provides the required APIs allows running the example project on specific target hardware.
 
 ![MDK-Middleware Example](./images/MDK-MW-Example.png "MDK-Middleware Example")
 
@@ -77,7 +77,7 @@ The overall structure of a sensor example project is shown in the picture below.
 
 ### Targeting Custom Hardware
 
-A *Reference Application* may serve as a starting point for user applications that target custom hardware. 
+A *Reference Application* may serve as a starting point for user applications that target custom hardware.
 
 It is required to provide:
 
@@ -104,7 +104,7 @@ solution:
 
 **Example MyHardware.clayer.yml**
 
-You may use a `*.clayer.yml` file for implementing the HAL drivers for the application and define the `CMSIS_target_header` as shown below:  
+You may use a `*.clayer.yml` file for implementing the HAL drivers for the application and define the `CMSIS_target_header` as shown below:
 
 ```yml
 layer:
@@ -156,7 +156,7 @@ build-idx:
   configurations:
     - target-type: B-U585I-IOT02A
       target-configurations:
-        - configuration: 
+        - configuration:
           variables:
             - Board-Layer: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/Layers/IoT/Board.clayer.yml
               description: B-U585I-IOT02A Board setup for IoT
@@ -232,7 +232,7 @@ solution:
       board: B-U585I-IOT02A
       variables:
         - Board-Layer: $SolutionDir()$\Board\B-U585I-IOT02A\Board.clayer.yml
- 
+
     - type: LPC55S69-EVK            # type name identical with board name?
       board: LPC55S69-EVK
       variables:
@@ -277,7 +277,7 @@ To access target hardware, these header files are used by the *Reference Applica
 
 - Standardized `Driver API header files` are used for communication with device peripherals. Header files of CMSIS-Drivers are provided by the [CMSIS base software pack](https://arm-software.github.io/CMSIS_6/latest/General/index.html).
 - The configuration of the driver interfaces is defined by the `CMSIS_target_header`. This header therefore specifies the available resources of the target hardware that can be used by the *Reference Application*. The [Header File Example](#header-file-example) shows a typical structure of the `CMSIS_target_header`.
-- When a shield is applied to an evaluation board, the `CMSIS_shield_header` extends the resource configuration of the `CMSIS_target_header`. 
+- When a shield is applied to an evaluation board, the `CMSIS_shield_header` extends the resource configuration of the `CMSIS_target_header`.
 
 !!! Note
     The driver implementation of the hardware abstraction might use *shim layer* as shown on the right side of above diagram. For example, the [driver implementation for STM32 devices](https://github.com/Open-CMSIS-Pack/CMSIS-Driver_STM32) uses the STM32 HAL.
@@ -287,7 +287,7 @@ To access target hardware, these header files are used by the *Reference Applica
 A *Reference Application* starts with the C function `app_main` as shown below.
 
 ```c
-#include CMSIS_target_header    // board resource definitions 
+#include CMSIS_target_header    // board resource definitions
 
 // reference application of a middleware component
 int app_main (void)  {
@@ -320,11 +320,11 @@ The board layer provides system startup, board/device hardware initialization, a
 - Files that relate to the device and/or board configuration (i.e. generated by MCUXpresso or STM32CubeMX)
 - Linker script definition for boards that require specific memory configurations.
 
-The configuration parameters of the available APIs are defined in `CMSIS_target_header`.  
+The configuration parameters of the available APIs are defined in `CMSIS_target_header`.
 
 **Generator Usage:**
 
-The board-specific software layer is used in many different projects. When a board configuration is generated by tools, such as MCUXpresso or STM32CubeMX, for example, [configure the generator output directory](build-overview.md#configure-generator-output) and import file using the [`generators:`](YML-Input-Format.md#generators) node in the `*.clayer.yml` file as shown below: 
+The board-specific software layer is used in many different projects. When a board configuration is generated by tools, such as MCUXpresso or STM32CubeMX, for example, [configure the generator output directory](build-overview.md#configure-generator-output) and import file using the [`generators:`](YML-Input-Format.md#generators) node in the `*.clayer.yml` file as shown below:
 
 ```yml
 layer:
@@ -410,11 +410,11 @@ Connects to a [CMSIS-Driver USART Interface](https://arm-software.github.io/CMSI
 #define ARDUINO_UNO_I2C    0     // CMSIS-Driver I2C instance number
 ```
 
-### ARDUINO_UNO_SPI 
+### ARDUINO_UNO_SPI
 
-Connects to a [CMSIS-Driver SPI Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__spi__interface__gr.html) configured in controller mode and CPOL/CPHA frame format (no TI or Microwire). 
+Connects to a [CMSIS-Driver SPI Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__spi__interface__gr.html) configured in controller mode and CPOL/CPHA frame format (no TI or Microwire).
 
-The Target Select (SS) pin (typically on ARDUINO_UNO_D10) is not handled by CMSIS-Driver SPI interface; it is driven by the GPIO interface. 
+The Target Select (SS) pin (typically on ARDUINO_UNO_D10) is not handled by CMSIS-Driver SPI interface; it is driven by the GPIO interface.
 
 `CMSIS_target_header` contains the driver instance number with this definition:
 
@@ -521,7 +521,7 @@ Connects to a [CMSIS-Driver I2C Interface](https://arm-software.github.io/CMSIS_
 
 ### MIKROBUS_SPI
 
-Connects to a [CMSIS-Driver SPI Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__spi__interface__gr.html) configured in controller mode and CPOL/CPHA frame format (no TI or Microwire). 
+Connects to a [CMSIS-Driver SPI Interface](https://arm-software.github.io/CMSIS_6/latest/Driver/group__spi__interface__gr.html) configured in controller mode and CPOL/CPHA frame format (no TI or Microwire).
 
 The Chip Select (CS) pin may be handled by CMSIS-Driver SPI interface or driven by the GPIO interface.
 
