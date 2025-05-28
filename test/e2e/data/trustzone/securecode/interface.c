@@ -6,8 +6,8 @@
 typedef funcptr funcptr_NS __attribute__((cmse_nonsecure_call));
 
 /* Non-secure callable (entry) function */
-int function_1(int x) __attribute__((cmse_nonsecure_entry)) { 
-  return x+5; 
+int function_1(int x) __attribute__((cmse_nonsecure_entry)) {
+  return x+5;
 }
 
 /* Non-secure callable (entry) function, calling a non-secure callback function */
@@ -21,4 +21,3 @@ int function_2(funcptr callback, int x, int y)  __attribute__((cmse_nonsecure_en
 
   return (res*10);
 }
-

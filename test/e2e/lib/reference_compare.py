@@ -57,7 +57,7 @@ class MarkdownReader:
         )
 
         # Find the passed tests section
-        passed_tests_section = passed_tests_pattern.search(self.content)  
+        passed_tests_section = passed_tests_pattern.search(self.content)
         # Extract the passed tests table if it exists
         if not passed_tests_section:
             return []
@@ -100,7 +100,7 @@ def compare_lists(actual_list, ref_list):
         expect = extended_ref_list[i]
         if actual != expect:
             difference.append((actual, expect))
-    
+
     return difference
 
 def compare_test_results(markdown_file: str, reference_file: str):
@@ -121,7 +121,7 @@ def compare_test_results(markdown_file: str, reference_file: str):
           f"  Actual: Passed: {md_summary.passed}, Failed: {md_summary.failed}, Skipped: {md_summary.skipped}, Total: {md_summary.total}")
        error = 1 # failure
 
-    # Compare passed tests    
+    # Compare passed tests
     md_passed_tests = md_file.extract_passed_tests()
     ref_passed_tests = ref_file.extract_passed_tests()
     results = compare_lists(md_passed_tests, ref_passed_tests)

@@ -119,7 +119,7 @@ The `<solution-name>.cbuild-idx.yml` file is generated for the *csolution projec
 
 **Example:**
 
-```yml  
+```yml
 build-idx:
   generated-by: csolution version 2.3.0
   description: USB application examples sharing board layers.
@@ -146,7 +146,7 @@ build-idx:
       project: MassStorage
       configuration: .Release+B-U585I-IOT02A
   errors: true                  # indicates error
-  packs-missing:                # lists missing packs 
+  packs-missing:                # lists missing packs
     - pack: ARM::CMSIS-RTX      # with unspecified version
     - pack: ARM::CMSIS@6.0.0    # with specified version
 ```
@@ -880,7 +880,7 @@ system-resources:
       from-pack: Keil::STM32U5xx_DFP@3.0.0
     - name: Ext-Flash
       access: rx
-      start: 0x40000000        
+      start: 0x40000000
       size: 0x200000
 ```
 
@@ -921,7 +921,7 @@ This node contains connection information for a debugger with inital settings co
     - `protocol:` and `clock:` are required by pyOCD but optional for other debug adapters. The file [`./etc/debug-adatpers.yml`](build-operation.md#debug-adapter-integration) allows to specify default values for required options.
     - `start-pname:` is mandatory for multi-processor targets. If `start-pname:` is not configured using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file, the `pname:` of the first `*.cproject.yml` file is used.
 
-The information for the `debugger:` node may be configured using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file. If not present the values from BSP are used; if not present DFP values. The values in the `*.csolution.yml` file overwrites values from BSP or DFP as shown in the table below.  
+The information for the `debugger:` node may be configured using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file. If not present the values from BSP are used; if not present DFP values. The values in the `*.csolution.yml` file overwrites values from BSP or DFP as shown in the table below.
 
 `*.cbuild-run.yml`            | `*.csolution.yml`            | BSP                                | DFP
 :-----------------------------|:-----------------------------|:-----------------------------------|:--------------------------
@@ -935,8 +935,8 @@ If no input (`*.csolution.yml`, BSP or DFP) provides debugger option values, the
 
 ```yml
 debugger:
-  name: CMSIS-DAP 
-  info: On-Board debugger of MCB4300 
+  name: CMSIS-DAP
+  info: On-Board debugger of MCB4300
   protocol: jtag
   clock: 10000000
   dbgconf: /.cmsis/MySolution+lpc4300.dbgconf
@@ -1025,11 +1025,11 @@ debug-sequences:
 
     blocks:
     - execute:  |
-        __var isSWJ      = ((__protocol &amp; 0x00010000) != 0); 
+        __var isSWJ      = ((__protocol &amp; 0x00010000) != 0);
         __var hasDormant = __protocol &amp; 0x00020000;
         __var protType   = __protocol &amp; 0x0000FFFF;
 
-    - if: protType == 1 
+    - if: protType == 1
       blocks:
       - if: isSWJ
         blocks:
@@ -1038,22 +1038,22 @@ debug-sequences:
           execute:  |
             // Ensure current debug interface is in reset state
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
-          
+
             // Select Dormant State (from SWD)
             DAP_SWJ_Sequence(16, 0xE3BC);
-          
+
             // At least 8 cycles SWDIO/TMS HIGH
             DAP_SWJ_Sequence(8, 0xFF);
-          
+
             // Alert Sequence Bits  0.. 63
             DAP_SWJ_Sequence(64, 0x86852D956209F392);
-        
+
             // Alert Sequence Bits 64..127
             DAP_SWJ_Sequence(64, 0x19BC0EA2E3DDAFE9);
-  
-            // 4 cycles SWDIO/TMS LOW + 8-Bit JTAG Activation Code (0x0A)            
+
+            // 4 cycles SWDIO/TMS LOW + 8-Bit JTAG Activation Code (0x0A)
             DAP_SWJ_Sequence(12, 0x0A0);
-         
+
             // Ensure JTAG interface is reset
             DAP_SWJ_Sequence(6, 0x3F);
 
@@ -1062,11 +1062,11 @@ debug-sequences:
           execute:   |
             // Ensure current debug interface is in reset state
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
-          
+
             // Execute SWJ-DP Switch Sequence SWD to JTAG (0xE73C)
             // Change if SWJ-DP uses deprecated switch code (0xAEAE)
             DAP_SWJ_Sequence(16, 0xE73C);
-          
+
             // Ensure JTAG interface is reset
             DAP_SWJ_Sequence(6, 0x3F);
 
@@ -1085,22 +1085,22 @@ debug-sequences:
           execute:  |
             // Ensure current debug interface is in reset state
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
-          
+
             // Select Dormant State (from JTAG)
             DAP_SWJ_Sequence(31, 0x33BBBBBA);
-          
+
             // At least 8 cycles SWDIO/TMS HIGH
             DAP_SWJ_Sequence(8, 0xFF);
-          
+
             // Alert Sequence Bits  0.. 63
             DAP_SWJ_Sequence(64, 0x86852D956209F392);
-        
+
             // Alert Sequence Bits 64..127
             DAP_SWJ_Sequence(64, 0x19BC0EA2E3DDAFE9);
-  
-            // 4 cycles SWDIO/TMS LOW + 8-Bit SWD Activation Code (0x1A)            
+
+            // 4 cycles SWDIO/TMS LOW + 8-Bit SWD Activation Code (0x1A)
             DAP_SWJ_Sequence(12, 0x1A0);
-         
+
             // Enter SWD Line Reset State
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &gt; 50 cycles SWDIO/TMS High
             DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
@@ -1110,11 +1110,11 @@ debug-sequences:
           execute:  |
             // Ensure current debug interface is in reset state
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);
-          
+
             // Execute SWJ-DP Switch Sequence JTAG to SWD (0xE79E)
             // Change if SWJ-DP uses deprecated switch code (0xEDB6)
             DAP_SWJ_Sequence(16, 0xE79E);
-          
+
             // Enter SWD Line Reset State
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &gt; 50 cycles SWDIO/TMS High
             DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)

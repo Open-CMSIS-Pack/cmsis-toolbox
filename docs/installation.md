@@ -193,10 +193,10 @@ iex (iwr -useb https://aka.ms/vcpkg-init.ps1)
 . <(curl https://aka.ms/vcpkg-init.sh -L)
 . ~/.vcpkg/vcpkg-init
 ```
-  
+
 !!! Note
-    vcpkg is currently not working on  
-    - MSYS Bash (such as Git Bash) on Windows.  
+    vcpkg is currently not working on
+    - MSYS Bash (such as Git Bash) on Windows.
     - Linux (aarch64)
 
 ### Activate tools
@@ -208,7 +208,7 @@ vcpkg-shell activate
 ```
 
 !!! Note
-    In case that activate fails, update registries to access the latest versions of the tools artifacts:  
+    In case that activate fails, update registries to access the latest versions of the tools artifacts:
     `vcpkg-shell x-update-registry --all`
 
 ### Deactivate tools
@@ -230,7 +230,7 @@ vcpkg-shell add artifact arm:cmake
 vcpkg-shell add artifact arm:ninja
 vcpkg-shell add artifact arm:arm-none-eabi-gcc
 vcpkg-shell activate
-```  
+```
 
 Alternatively, you may use an existing repository, for example [github.com/Open-CMSIS-Pack/vscode-get-started](
 https://github.com/Open-CMSIS-Pack/vscode-get-started) with a `vcpkg-configuration.json` file.

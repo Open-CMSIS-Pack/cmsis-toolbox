@@ -7,16 +7,16 @@ import platform
 
 def glob_files_in_directory(directory: str, pattern: str, recursive: bool, ignore_dir: str = None):
     matched_files = []
-    
+
     # Use os.walk to iterate over the directory
     for root, dirs, files in os.walk(directory):
         # If ignore_dir is specified, filter out directories to ignore
         if ignore_dir:
             dirs[:] = [d for d in dirs if d != ignore_dir]
-        
+
         # Use glob to match files in the current root directory
         matched_files.extend(glob.glob(os.path.join(root, pattern)))
-        
+
         # If not recursive, break after the first iteration (top-level)
         if not recursive:
             break

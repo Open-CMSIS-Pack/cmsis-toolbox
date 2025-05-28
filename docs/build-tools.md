@@ -416,21 +416,21 @@ The commands below install software packs from a public web service. The availab
 Check if a pack is installed. If not, install the latest version of a public software pack:
 
 ```shell
-cpackget add Vendor.PackName                   # or 
+cpackget add Vendor.PackName                   # or
 cpackget add Vendor::PackName
 ```
 
 Update an installed pack to the latest version of a public software pack:
 
 ```shell
-cpackget add Vendor.PackName@latest           # or 
+cpackget add Vendor.PackName@latest           # or
 cpackget add Vendor::PackName@latest
 ```
 
 Install a specific version of a public software pack:
 
 ```shell
-cpackget add Vendor.PackName.x.y.z            # or 
+cpackget add Vendor.PackName.x.y.z            # or
 cpackget add Vendor::PackName@x.y.z
 cpackget add Vendor::PackName@>=x.y.z         # check if there is any version greater  or equal to x.y.z, install latest
 ```
@@ -509,7 +509,7 @@ Then **all** HTTP/HTTPS requests will be going through the specified proxy.
 
 #### Install a private software pack
 
-A software pack can be distributed via different methods, such as file exchange systems.  
+A software pack can be distributed via different methods, such as file exchange systems.
 
 Once the software pack is available on the local computer, it can be installed by referring to the `*.pack` file
 itself:
@@ -619,7 +619,7 @@ Packs that are not public are installed using `cpackget`.  The following command
       run: |
         cpackget init https://www.keil.com/pack/index.pidx
         cpackget update-index
-        cpackget add ./MDK-Middleware/Keil.MDK-Middleware.pdsc        
+        cpackget add ./MDK-Middleware/Keil.MDK-Middleware.pdsc
 ```
 
 ### Examples
@@ -646,7 +646,7 @@ cbuild setup example.csolution.yml --context-set [--packs] [--update-rte]
 
 The command above is used when the IDE starts:
 
-- The option `--context-set` uses one `target-type` and optionally multiple related projects that are selected by a user in the file `*.cbuild-set.yml`. If this file is missing, it is created with the first `target-type` and the first `build-type` which are defined in the `*.csolution.yml` file.  
+- The option `--context-set` uses one `target-type` and optionally multiple related projects that are selected by a user in the file `*.cbuild-set.yml`. If this file is missing, it is created with the first `target-type` and the first `build-type` which are defined in the `*.csolution.yml` file.
 - The option `--packs` can enable the download of missing software packs that are public.
 - The option `--update-rte` is used when the IDE changes `device:`, `board:` or `component:` settings.
 
@@ -670,7 +670,7 @@ The `cbuild-idx.yml` file provides the exact location of all `*.cbuild.<context>
 An IDE may use the following `cbuild` command to build the overall application.
 
 ```shell
-cbuild example.csolution.yml --context-set [--packs] [--quite] [--rebuild] 
+cbuild example.csolution.yml --context-set [--packs] [--quite] [--rebuild]
 ```
 
 - The option `--context-set` selects the projects along with `target-type` and `build-type` for the application.

@@ -15,8 +15,8 @@ An application is based on a *device* and/or *board* supported by a Device Famil
 
 - Use [Device search](https://www.keil.arm.com/devices/) or [Board search](https://www.keil.arm.com/boards/) available on web portals to identify the software packs required for your target.
 
-- Download the Device Family Pack (DFP) and optionally the Board Support Pack (BSP) with [`cpackget`](build-tools.md#install-public-packs). Note that a BSP is only required if you want to work with a specific board. For custom hardware, typically the DFP is sufficient. 
-   
+- Download the Device Family Pack (DFP) and optionally the Board Support Pack (BSP) with [`cpackget`](build-tools.md#install-public-packs). Note that a BSP is only required if you want to work with a specific board. For custom hardware, typically the DFP is sufficient.
+
 ### Step 2: Use a Template Project and add DFP and BSP
 
 - Select a suitable generic [Template Project](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) or refer to the DFP documentation as some devices have specific template projects.
@@ -31,7 +31,7 @@ An application is based on a *device* and/or *board* supported by a Device Famil
     - pack: AnalogDevices::ADuCM320_DFP
   :
 ```
-   
+
 ### Step 3: Use `csolution list` to identify the device or board
 
 - Use `csolution list devices <name>.csolution.yml` or `csolution list boards <name>.csolution.yml` to get the device or board name.
@@ -52,7 +52,7 @@ An application is based on a *device* and/or *board* supported by a Device Famil
 - Most projects at least require the `CMSIS:CORE` and `Device:Startup` (or a variant) [software components](#software-components) to be present. Use `csolution list components <name>.csolution.yml` to identify the name of the startup component and add it to the file `*.cproject.yml` of your project.
 
 - Use `csolution list components  <name>.csolution.yml` to identify additional software components from the selected packs. Use the [`components:`](YML-Input-Format.md#components) in the `<name>.cproject.yml` file to add new components and refer to related documentation for usage instructions. Note that you may omit vendor and version information for components as this is defined already by the packs that are selected.
-   
+
 ```yml
   :
   components:                  # List components to use for your application
@@ -64,7 +64,7 @@ An application is based on a *device* and/or *board* supported by a Device Famil
 
 - Refer to [Using Components](#using-components) for more information.
 
-- Now, the project should already compile with the command `cbuild <name>.csolution.yml --update-rte --packs --context .Debug`. Note that this step downloads missing packs and copies configuration files to the [RTE directory](build-overview.md#rte-directory-structure). 
+- Now, the project should already compile with the command `cbuild <name>.csolution.yml --update-rte --packs --context .Debug`. Note that this step downloads missing packs and copies configuration files to the [RTE directory](build-overview.md#rte-directory-structure).
 
 ### Step 5: Review and configure RTE files
 
@@ -75,7 +75,7 @@ An application is based on a *device* and/or *board* supported by a Device Famil
 - For simple projects, the default settings should be sufficient.
 
 - The [build information file](YML-CBuild-Format.md) `<name>.cbuild.Debug+<target-name>.yml` lists configuration files of components and other useful information such as links to documentation of the component.
-  
+
 ### Step 6: Add application functionality
 
 - Implement the application code in C/C++ source files. Use the [`groups:`](YML-Input-Format.md#groups) section in `<name>.cproject.yml` to add new source files.
@@ -84,7 +84,7 @@ An application is based on a *device* and/or *board* supported by a Device Famil
   :
   groups:
     - group: Source Files
-      files: 
+      files:
         - file: main.c
         - file: MyFile1.c
   :
@@ -104,7 +104,7 @@ The following section describes the usage of a *linker script template* and a *r
 The overall process to configure linker scripts for independent projects is:
 
 1. Step: Review and adjust the physical memory layout in the *regions header file*.
-2. Step: Optionally add specific program sections to the *linker script template* or change the default behaviour of that file. 
+2. Step: Optionally add specific program sections to the *linker script template* or change the default behaviour of that file.
 
 ### Regions Header File
 
@@ -113,7 +113,7 @@ An initial *regions header file* is generated based on the memory information co
 For memory with the [*default* attribute set](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory) in DFP or BSP, the following region settings are generated:
 
 - The region \_\_ROM0 is the startup region and contains memory with the [*startup* attribute set](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory).
-- The region \_\_RAM0 contains uninitialized memory, STACK and HEAP. 
+- The region \_\_RAM0 contains uninitialized memory, STACK and HEAP.
     - STACK default is 0x200.
     - HEAP default is 0xC00 for devices with more than 6KB RAM (otherwise, HEAP is set to 0).
 - Contiguous memory with the same access (rw, rwx, rx) is combined into one region.
@@ -256,7 +256,7 @@ A [template *linker script file*](build-overview.md#linker-script-templates) is 
 #endif
 ```
 
-!!! Note 
+!!! Note
     It is recommended to add a note to the *regions header file* about such user modifications as shown below:
 
 ```c
@@ -288,7 +288,7 @@ For example, the lwIP network stack:
 
 ### Required Interfaces
 
-There are two ways to describe required interfaces, as shown in the diagram below. 
+There are two ways to describe required interfaces, as shown in the diagram below.
 
 - Dependency reference to a component (a selection list is supported).
 - Dependency reference to an API definition. Components that implement this API fulfil then the required interface.
@@ -313,9 +313,9 @@ The steps to create an application based on software components are:
 2. Step: **Configure software components**
     - Run `csolution *.csolution.yml update-rte` to copy configuration files into the [RTE directory](./build-overview.md#rte-directory-structure).
     - Set the parameters in the configuration files for your application.
-  
+
 3. Step: **Use software components in application program**
-    - User code templates provide a starting point for your application. 
+    - User code templates provide a starting point for your application.
     - Copy these template files to your project directory and add them to your `*.cproject.yml` file.
     - Adjust the code in the user template files as required.
 
@@ -371,5 +371,5 @@ csolution list configs Hello.csolution.yml --context-set
 ../RTE/Device/SSE-300-MPS3/system_SSE300MPS3.c@1.1.1 (up to date) from ARM::Device:Startup&C Startup@2.0.0
 ```
 
-!!! Note 
+!!! Note
     The text `update@version` indicates that a new configuration file is available. Use a merge utility to identify and merge configuration settings from a previous version. Refer to [PLM of configuration files](build-overview.md#plm-of-configuration-files) for more information.

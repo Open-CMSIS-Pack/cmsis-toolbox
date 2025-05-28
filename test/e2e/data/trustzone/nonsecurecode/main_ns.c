@@ -69,6 +69,3 @@ int main (void) {
 
   for(;;);
 }
-
-
-

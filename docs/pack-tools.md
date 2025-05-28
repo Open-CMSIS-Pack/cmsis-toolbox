@@ -16,7 +16,7 @@ The picture below shows the structure of the different packs and how boards, dev
     - A [**Blinky example**](#board-support-pack-bsp-content) in the BSP simplifies the bring up of an development environment in multiple ways.
     - The VS Code extension [CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) gets examples via a web service. All required packs are automatically installed.
     - It verifies compile, download, and hardware setup. The LED blinks with 1Hz which validates clock settings.
-  
+
 ## Device Family Pack (DFP) Content
 
 The DFP provides foundation support for a device or device family and is used by:
@@ -152,7 +152,7 @@ The following section is based on the repositories [DFP-Pack-HandsOn](https://gi
     Verify the setup with the commands `cbuild list environment` and `cbuild list toolchains`.
 
 **Step 2:** Register packs for development using these commands:
-  
+
 ```txt
 cpackget add <workdir>/DFP-Pack-Handson/ACME.ACMECM4_DFP.pdsc
 cpackget add <workdir>/BSP-Pack-Handson/ACME.ACME_BSP.pdsc
@@ -216,7 +216,7 @@ The CMSIS-Pack system uses version numbers to track and differentiate various re
     - `MAJOR` indicates big updates that break backward compatibility.
     - `MINOR` indicates new features, but still backward-compatible.
     - `PATCH` indicates bug fixes or minor tweaks.
-  
+
 2. **Calendar Versioning** ([CalVer](https://calver.org/)) is accepted when higher values indicated newer releases. The format should be therefore `YY.MM.DD`, or `YY.MM.PATCH`. For example:
 
     - `22.04.1` indicates April 2022 release, patch version 1.
@@ -340,7 +340,7 @@ solution:
       :
   target-types:
     - type: ${Name}_ROM
-      variables: 
+      variables:
         - RegionsHeader: <path>/memory_flash.h
 
     - type: ${Name}_RAM
@@ -381,7 +381,7 @@ solution:
 *Templates* are published using the [`<csolution>` element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_csolution_pg.html) in the PDSC file. Device-specific *Templates* should be part of the DFP. Board-specific *templates* should be part of the BSP.
 
 ```xml
-  <csolution> 
+  <csolution>
     <template name="Simple Device project" path="/device/Simple" file="Simple.csolution.yml" condition="Device_Spec">
       <description>Single-core project with empty main function configured for device</description>
     </template>
@@ -483,7 +483,7 @@ solution:
     - compiler: GCC
     - compiler: IAR
     - compiler: CLANG
- 
+
   target-types:
     - type: Name
 #     board:           # added during creation of solution

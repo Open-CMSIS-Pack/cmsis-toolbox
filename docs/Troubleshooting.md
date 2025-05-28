@@ -45,7 +45,7 @@ This problem can be solved by:
 
 **Using RAM1 .. RAM3 Areas**
 
-Currently, there is a problem with the default AC6 linker script template. It does not use, by default, the RAM1 .. RAM3 area.  
+Currently, there is a problem with the default AC6 linker script template. It does not use, by default, the RAM1 .. RAM3 area.
 
 A potential solution is discussed [here](https://github.com/Open-CMSIS-Pack/devtools/issues/1778#issuecomment-2356071535).  The investigation is currently ongoing.
 

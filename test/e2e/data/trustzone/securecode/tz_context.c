@@ -31,4 +31,3 @@ uint32_t TZ_StoreContext_S(TZ_MemoryId_t id) {
   (void)id;
   return 2U;
 }
-

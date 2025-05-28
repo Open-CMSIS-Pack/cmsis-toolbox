@@ -13,11 +13,11 @@ project:
 
   groups:
     - group: Secure Code
-      files: 
+      files:
         - file: main_s.c
 
     - group: CMSE
-      files: 
+      files:
         - file: interface.c
         - file: interface.h
         - file: tz_context.c

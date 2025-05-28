@@ -44,7 +44,7 @@ The build steps are:
 4. **CMake/Ninja** call the C/C++ compiler toolchain to translate the source files into the application image.
 
 !!! Note
-    The CMSIS-Toolbox build system does not use the CMake compiler and linker flags specified by environment variables [CFLAGS, LDFLAGS](https://cmake.org/cmake/help/latest/envvar/CFLAGS.html).  
+    The CMSIS-Toolbox build system does not use the CMake compiler and linker flags specified by environment variables [CFLAGS, LDFLAGS](https://cmake.org/cmake/help/latest/envvar/CFLAGS.html).
     Refer to the chapter [Build Operation](build-operation.md) for further details of the build process.
 
 ## Command Line and IDE Usage

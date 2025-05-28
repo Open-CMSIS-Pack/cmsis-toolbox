@@ -228,7 +228,7 @@ SECTIONS
     . = ALIGN(4);
     __data2_end__ = .;
 
-  } > RAM1 AT > ROM0 
+  } > RAM1 AT > ROM0
 */
 
   .bss :

@@ -29,7 +29,7 @@ class Context:
                 self.target = parts[1]
         else:
             print("Invalid context format. Expected format: 'project.build+target'")
-        
+
 class Utils:
     @staticmethod
     def run_command(exe_path, args):
@@ -58,7 +58,7 @@ class CompareELF:
         context_list = self.get_contexts()
         if len(context_list) == 0:
             return False
-    
+
         success = True
         for context in context_list:
             logger.info('Processing context: %s.%s+%s' % (context.project, context.build, context.target))
@@ -73,19 +73,19 @@ class CompareELF:
                     logger.info('Path Exist: %s' % cbuildgenPath)
                 else:
                     logger.info('Path doesnot Exist: %s' % cbuildgenPath)
-                
+
                 if cbuild2cmakePath.exists():
                     logger.info('Path Exist: %s' % cbuild2cmakePath)
                 else:
                     logger.info('Path doesnot Exist: %s' % cbuild2cmakePath)
-                
+
                 res1, stdout1 = self.get_elf_info(cbuildgen_elf_file)
                 res2, stdout2 = self.get_elf_info(cbuild2cmake_elf_file)
                 logger.info('Object Info %s' % stdout1)
                 logger.info('Object Info %s' % stdout2)
                 success &= (res1 == res2)
         return success
-      
+
     def get_elf_file_path(self, basePath, context: Context):
         file_extns = [".axf", ".elf"]
         logger.info('basePath: %s' % basePath)
@@ -99,7 +99,7 @@ class CompareELF:
     def get_elf_info(self, elf_file):
         args = [elf_file, "-z"]
         return Utils.run_command("fromelf", args)
-    
+
     def get_contexts(self):
         args = ["list", "contexts", self.input_file]
         success, output = Utils.run_command("cbuild", args)

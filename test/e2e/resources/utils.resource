@@ -31,7 +31,7 @@ Copy Test Data
     ${output_file_path}=              Get Output File Path
     ${parent_path}=                   Get Parent Directory Path    ${output_file_path}
     ${test_env_file}=    Join Paths    ${parent_path}    ${TEST_ENV_FILE}
-    Write Test Environment            ${test_env_file} 
+    Write Test Environment            ${test_env_file}
 
 Global Teardown
     # Remove test data after test execution
