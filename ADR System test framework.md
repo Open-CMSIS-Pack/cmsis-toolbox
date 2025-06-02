@@ -40,7 +40,7 @@ The end-to-end (E2E) tests developed using decided framework aim to validate the
 
 ## Considerations
 
-- cbuildgen has toochain related tests (AC6, GCC, IAR) 
+- cbuildgen has toochain related tests (AC6, GCC, IAR)
   - Are we running all toolchains tests on cmsis-toolbox?
 - cpackget test should be migrated
 

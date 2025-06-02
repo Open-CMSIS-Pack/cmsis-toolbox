@@ -149,7 +149,7 @@ SECTIONS
     } >ROM0 AT>ROM0 :text
 
     /* additional sections when compiling with C++ exception support */
-    
+
     .except_ordered : {
         *(.gcc_except_table *.gcc_except_table.*)
         KEEP (*(.eh_frame .eh_frame.*))
@@ -163,7 +163,7 @@ SECTIONS
         *(.ARM.exidx*)
         PROVIDE(__exidx_end = .);
     } >ROM0 AT>ROM0 :text
-    
+
 
     /*
      * Data values which are preserved across reset
