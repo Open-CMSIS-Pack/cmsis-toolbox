@@ -222,8 +222,8 @@
 <h2 id="types-of-reference-applications">Types of Reference Applications</h2>
 <p><em>Reference Applications</em> may show the usage of middleware, software libraries, and custom code that can run on many different target hardware boards. Such software uses <a href="https://en.wikipedia.org/wiki/API">application programming interfaces (APIs)</a> to interface with hardware interfaces or other software components.</p>
 <h3 id="mdk-middleware-reference-applications">MDK-Middleware Reference Applications</h3>
-<p>The <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> provides software components for IPv4/IPv6 networking, USB Host/Device communication, and a variety of file systems for data storage. </p>
-<p>The MDK-Middleware software pack contains Reference Applications that show how to use these software components. These examples are hardware agnostic; adding a board layer that provides the required APIs allows running the example project on specific target hardware. </p>
+<p>The <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> provides software components for IPv4/IPv6 networking, USB Host/Device communication, and a variety of file systems for data storage.</p>
+<p>The MDK-Middleware software pack contains Reference Applications that show how to use these software components. These examples are hardware agnostic; adding a board layer that provides the required APIs allows running the example project on specific target hardware.</p>
 <p><img alt="MDK-Middleware Example" src="../images/MDK-MW-Example.png" title="MDK-Middleware Example" /></p>
 <p>The picture above shows how a USB HID example connects to a board-specific software layer.
 The <em>Reference Application</em> does not specify a target hardware. For execution on target hardware, a software layer is required that provides the hardware-specific APIs. These board-specific layers are provided in BSP packs, which allows the example to run on many different hardware targets.</p>
@@ -262,7 +262,7 @@ The <em>Reference Application</em> does not specify a target hardware. For execu
 <p>As the <code>connections:</code> for the MEMS sensor are specific to the sensor itself, the same <em>Reference Application</em> also works with an evaluation board that integrates the MEMS sensor (and, therefore, requires no Shield layer). In this case, the board-specific software layer adds the sensor-specific <code>connections:</code>.</p>
 </div>
 <h3 id="targeting-custom-hardware">Targeting Custom Hardware</h3>
-<p>A <em>Reference Application</em> may serve as a starting point for user applications that target custom hardware. </p>
+<p>A <em>Reference Application</em> may serve as a starting point for user applications that target custom hardware.</p>
 <p>It is required to provide:</p>
 <ul>
 <li>A software layer with a compatible set of APIs (<code>connections:</code>) consumed by the <em>Reference Application</em>. This software layer can be added along with the target type (in the <code>*.csolution.yml</code> file) that defines the custom hardware.</li>
@@ -286,7 +286,7 @@ The <em>Reference Application</em> does not specify a target hardware. For execu
         - Board-Layer:  $SolutionDir()$/MyTarget/MyHardware.clayer.yml
 </code></pre>
 <p><strong>Example MyHardware.clayer.yml</strong></p>
-<p>You may use a <code>*.clayer.yml</code> file for implementing the HAL drivers for the application and define the <code>CMSIS_target_header</code> as shown below:  </p>
+<p>You may use a <code>*.clayer.yml</code> file for implementing the HAL drivers for the application and define the <code>CMSIS_target_header</code> as shown below:</p>
 <pre><code class="language-yml">layer:
   :
   define:
@@ -322,7 +322,7 @@ To resolve undefined variables, copy the settings from cbuild-idx.yml to csoluti
   configurations:
     - target-type: B-U585I-IOT02A
       target-configurations:
-        - configuration: 
+        - configuration:
           variables:
             - Board-Layer: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/Layers/IoT/Board.clayer.yml
               description: B-U585I-IOT02A Board setup for IoT
@@ -443,7 +443,7 @@ To resolve undefined variables, copy the settings from cbuild-idx.yml to csoluti
 <ul>
 <li>Standardized <code>Driver API header files</code> are used for communication with device peripherals. Header files of CMSIS-Drivers are provided by the <a href="https://arm-software.github.io/CMSIS_6/latest/General/index.html">CMSIS base software pack</a>.</li>
 <li>The configuration of the driver interfaces is defined by the <code>CMSIS_target_header</code>. This header therefore specifies the available resources of the target hardware that can be used by the <em>Reference Application</em>. The <a href="#header-file-example">Header File Example</a> shows a typical structure of the <code>CMSIS_target_header</code>.</li>
-<li>When a shield is applied to an evaluation board, the <code>CMSIS_shield_header</code> extends the resource configuration of the <code>CMSIS_target_header</code>. </li>
+<li>When a shield is applied to an evaluation board, the <code>CMSIS_shield_header</code> extends the resource configuration of the <code>CMSIS_target_header</code>.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -451,7 +451,7 @@ To resolve undefined variables, copy the settings from cbuild-idx.yml to csoluti
 </div>
 <h3 id="application-program-start">Application Program Start</h3>
 <p>A <em>Reference Application</em> starts with the C function <code>app_main</code> as shown below.</p>
-<pre><code class="language-c">#include CMSIS_target_header    // board resource definitions 
+<pre><code class="language-c">#include CMSIS_target_header    // board resource definitions
 
 // reference application of a middleware component
 int app_main (void)  {
@@ -480,9 +480,9 @@ int app_main (void)  {
 <li>Files that relate to the device and/or board configuration (i.e. generated by MCUXpresso or STM32CubeMX)</li>
 <li>Linker script definition for boards that require specific memory configurations.</li>
 </ul>
-<p>The configuration parameters of the available APIs are defined in <code>CMSIS_target_header</code>.  </p>
+<p>The configuration parameters of the available APIs are defined in <code>CMSIS_target_header</code>.</p>
 <p><strong>Generator Usage:</strong></p>
-<p>The board-specific software layer is used in many different projects. When a board configuration is generated by tools, such as MCUXpresso or STM32CubeMX, for example, <a href="../build-overview/#configure-generator-output">configure the generator output directory</a> and import file using the <a href="../YML-Input-Format/#generators"><code>generators:</code></a> node in the <code>*.clayer.yml</code> file as shown below: </p>
+<p>The board-specific software layer is used in many different projects. When a board configuration is generated by tools, such as MCUXpresso or STM32CubeMX, for example, <a href="../build-overview/#configure-generator-output">configure the generator output directory</a> and import file using the <a href="../YML-Input-Format/#generators"><code>generators:</code></a> node in the <code>*.clayer.yml</code> file as shown below:</p>
 <pre><code class="language-yml">layer:
 
   generators:
@@ -658,8 +658,8 @@ int app_main (void)  {
 <pre><code class="language-c">#define ARDUINO_UNO_I2C    0     // CMSIS-Driver I2C instance number
 </code></pre>
 <h3 id="arduino_uno_spi">ARDUINO_UNO_SPI</h3>
-<p>Connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__spi__interface__gr.html">CMSIS-Driver SPI Interface</a> configured in controller mode and CPOL/CPHA frame format (no TI or Microwire). </p>
-<p>The Target Select (SS) pin (typically on ARDUINO_UNO_D10) is not handled by CMSIS-Driver SPI interface; it is driven by the GPIO interface. </p>
+<p>Connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__spi__interface__gr.html">CMSIS-Driver SPI Interface</a> configured in controller mode and CPOL/CPHA frame format (no TI or Microwire).</p>
+<p>The Target Select (SS) pin (typically on ARDUINO_UNO_D10) is not handled by CMSIS-Driver SPI interface; it is driven by the GPIO interface.</p>
 <p><code>CMSIS_target_header</code> contains the driver instance number with this definition:</p>
 <pre><code class="language-c">#define ARDUINO_UNO_SPI    1     // CMSIS-Driver SPI instance number
 </code></pre>
@@ -724,7 +724,7 @@ int app_main (void)  {
 <pre><code class="language-c">#define MIKROBUS_I2C        0     // CMSIS-Driver I2C instance number
 </code></pre>
 <h3 id="mikrobus_spi">MIKROBUS_SPI</h3>
-<p>Connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__spi__interface__gr.html">CMSIS-Driver SPI Interface</a> configured in controller mode and CPOL/CPHA frame format (no TI or Microwire). </p>
+<p>Connects to a <a href="https://arm-software.github.io/CMSIS_6/latest/Driver/group__spi__interface__gr.html">CMSIS-Driver SPI Interface</a> configured in controller mode and CPOL/CPHA frame format (no TI or Microwire).</p>
 <p>The Chip Select (CS) pin may be handled by CMSIS-Driver SPI interface or driven by the GPIO interface.</p>
 <p><code>CMSIS_target_header</code> contains the driver instance number with this definition:</p>
 <pre><code class="language-c">#define MIKROBUS_SPI        0     // CMSIS-Driver SPI instance number

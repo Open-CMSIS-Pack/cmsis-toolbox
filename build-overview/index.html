@@ -455,7 +455,7 @@
 
   packs:                                      # explicit pack selection may be omitted
     - pack: NXP::K32L3A60_DFP@16.0.0          # specify DFP
-    - pack: NXP::FRDM-K32L3A6_BSP@16.0.0 
+    - pack: NXP::FRDM-K32L3A6_BSP@16.0.0
 
   target-types:
     - type: FRDM-K32L3A6
@@ -551,7 +551,7 @@
         - -Wl,--gc-sections
 
     - for-compiler: IAR
-      C-CPP: 
+      C-CPP:
         - --dlib_config DLib_Config_Full.h
       Link:
         - --map=$elf()$.map
@@ -1011,7 +1011,7 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
 <p><strong>Example:</strong> after updating the configuration file <code>ConfigFile.h</code> to version <code>1.3.0</code>, the directory contains these files:</p>
 <pre><code class="language-c">./RTE/component_class/ConfigFile.h                  // user editable configuration file (based on the current version)
 ./RTE/component_class/ConfigFile.h.update@1.3.0     // new configuration file; used to start a 3-way merge
-./RTE/component_class/ConfigFile.h.base@1.2.0       // current unmodified configuration file with version 
+./RTE/component_class/ConfigFile.h.base@1.2.0       // current unmodified configuration file with version
                                                     // information; used as a base for version comparison
 </code></pre>
 <p><code>csolution</code> displays a user notification to indicate that configuration files have changed:</p>
@@ -1022,7 +1022,7 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
 <p>The user now has several options (outside of <code>csolution</code>) to merge the configuration file information. A potential way could be to use a 3-way merge utility. After merging the configuration file, the original <code>base@version</code> file should be deleted, and the new unmodified version should become the new <code>base@version</code>. The previous configuration file may be stored as a backup, as shown below.</p>
 <pre><code class="language-c">./RTE/component_class/ConfigFile.h                  // new configuration file with merge configuration
 ./RTE/component_class/ConfigFile.h.bak              // previous configuration file stored as backup
-./RTE/component_class/ConfigFile.h.base@1.3.0       // current unmodified configuration file with version 
+./RTE/component_class/ConfigFile.h.base@1.3.0       // current unmodified configuration file with version
                                                     // information; used as a base for version comparison
 </code></pre>
 <h4 id="multiple-instances-of-configuration-files">Multiple Instances of Configuration files</h4>
@@ -1064,7 +1064,7 @@ second copy is an unmodified  backup file with the format <code>&lt;configfile&g
 <pre><code class="language-c">#ifdef _RTE_                           // Is a CMSIS build system used?
 #include &quot;RTE_Components.h&quot;            // Include Run-Time-Environment symbols
 #else                                  // Otherwise, use different ways to supply required symbols
-#define CMSIS_device_header &quot;stm32f10x.h&quot;     
+#define CMSIS_device_header &quot;stm32f10x.h&quot;
 #endif
 </code></pre>
 <h2 id="linker-script-management">Linker Script Management</h2>
@@ -1207,7 +1207,7 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
     - type: Alif_AppKitE7
       board: Alif Semiconductor::AppKit-E7
       target-set:
-        - set: 
+        - set:
           debugger:
             name: CMSIS-DAP
             protocol: jtag

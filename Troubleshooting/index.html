@@ -167,7 +167,7 @@ In this example the file <code>image.bin</code> is included using assembler synt
   }
 </code></pre>
 <p><strong>Using RAM1 .. RAM3 Areas</strong></p>
-<p>Currently, there is a problem with the default AC6 linker script template. It does not use, by default, the RAM1 .. RAM3 area.  </p>
+<p>Currently, there is a problem with the default AC6 linker script template. It does not use, by default, the RAM1 .. RAM3 area.</p>
 <p>A potential solution is discussed <a href="https://github.com/Open-CMSIS-Pack/devtools/issues/1778#issuecomment-2356071535">here</a>.  The investigation is currently ongoing.</p>
 <p><strong>Duplicate Heap definition in Assembler startup file</strong></p>
 <p>When using memory allocation functions (i.e. <code>malloc</code>), the application ends in a hard fault handler. This is typically caused by different methods of stack and heap definitions.</p>

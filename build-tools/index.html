@@ -517,15 +517,15 @@ of available software packs. To initialize the CMSIS-Pack root directory, run th
 <h4 id="install-public-packs">Install public packs</h4>
 <p>The commands below install software packs from a public web service. The available packs along with download URL and version information are listed in the <strong>Pack Index File</strong>.</p>
 <p>Check if a pack is installed. If not, install the latest version of a public software pack:</p>
-<pre><code class="language-shell">cpackget add Vendor.PackName                   # or 
+<pre><code class="language-shell">cpackget add Vendor.PackName                   # or
 cpackget add Vendor::PackName
 </code></pre>
 <p>Update an installed pack to the latest version of a public software pack:</p>
-<pre><code class="language-shell">cpackget add Vendor.PackName@latest           # or 
+<pre><code class="language-shell">cpackget add Vendor.PackName@latest           # or
 cpackget add Vendor::PackName@latest
 </code></pre>
 <p>Install a specific version of a public software pack:</p>
-<pre><code class="language-shell">cpackget add Vendor.PackName.x.y.z            # or 
+<pre><code class="language-shell">cpackget add Vendor.PackName.x.y.z            # or
 cpackget add Vendor::PackName@x.y.z
 cpackget add Vendor::PackName@&gt;=x.y.z         # check if there is any version greater  or equal to x.y.z, install latest
 </code></pre>
@@ -576,7 +576,7 @@ export HTTPS_PROXY=https://my-https-proxy # proxy used for HTTPS requests
 </code></pre>
 <p>Then <strong>all</strong> HTTP/HTTPS requests will be going through the specified proxy.</p>
 <h4 id="install-a-private-software-pack">Install a private software pack</h4>
-<p>A software pack can be distributed via different methods, such as file exchange systems.  </p>
+<p>A software pack can be distributed via different methods, such as file exchange systems.</p>
 <p>Once the software pack is available on the local computer, it can be installed by referring to the <code>*.pack</code> file
 itself:</p>
 <pre><code class="language-shell">cpackget add &lt;path&gt;/Vendor.PackName.x.y.z.pack
@@ -641,7 +641,7 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
       run: |
         cpackget init https://www.keil.com/pack/index.pidx
         cpackget update-index
-        cpackget add ./MDK-Middleware/Keil.MDK-Middleware.pdsc        
+        cpackget add ./MDK-Middleware/Keil.MDK-Middleware.pdsc
 </code></pre>
 <h3 id="examples">Examples</h3>
 <p>Several examples show CI workflows using the CMSIS-Toolbox.</p>
@@ -689,7 +689,7 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
 </code></pre>
 <p>The command above is used when the IDE starts:</p>
 <ul>
-<li>The option <code>--context-set</code> uses one <code>target-type</code> and optionally multiple related projects that are selected by a user in the file <code>*.cbuild-set.yml</code>. If this file is missing, it is created with the first <code>target-type</code> and the first <code>build-type</code> which are defined in the <code>*.csolution.yml</code> file.  </li>
+<li>The option <code>--context-set</code> uses one <code>target-type</code> and optionally multiple related projects that are selected by a user in the file <code>*.cbuild-set.yml</code>. If this file is missing, it is created with the first <code>target-type</code> and the first <code>build-type</code> which are defined in the <code>*.csolution.yml</code> file.</li>
 <li>The option <code>--packs</code> can enable the download of missing software packs that are public.</li>
 <li>The option <code>--update-rte</code> is used when the IDE changes <code>device:</code>, <code>board:</code> or <code>component:</code> settings.</li>
 </ul>
@@ -706,7 +706,7 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
 <p>The <code>cbuild-idx.yml</code> file provides the exact location of all <code>*.cbuild.&lt;context&gt;.yml</code> files that are used in this context-set. The <code>*.cbuild.&lt;context&gt;.yml</code> files contain for the components source files, configuration file information, API header files, user code templates, generator information, and links to documentation. The project outline view may provide access to this information.</p>
 <h3 id="build-process">Build Process</h3>
 <p>An IDE may use the following <code>cbuild</code> command to build the overall application.</p>
-<pre><code class="language-shell">cbuild example.csolution.yml --context-set [--packs] [--quite] [--rebuild] 
+<pre><code class="language-shell">cbuild example.csolution.yml --context-set [--packs] [--quite] [--rebuild]
 </code></pre>
 <ul>
 <li>The option <code>--context-set</code> selects the projects along with <code>target-type</code> and <code>build-type</code> for the application.</li>

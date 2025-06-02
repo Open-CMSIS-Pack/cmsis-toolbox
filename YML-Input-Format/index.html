@@ -463,14 +463,14 @@
 <div class="admonition notes">
 <p class="admonition-title">Notes</p>
 <ul>
-<li>When no version is specified, the <strong><code>csolution</code> Project Manager</strong> only loads the latest installed version of a software pack. This also applies when wildcards are used in the <code>pack-name</code>. </li>
+<li>When no version is specified, the <strong><code>csolution</code> Project Manager</strong> only loads the latest installed version of a software pack. This also applies when wildcards are used in the <code>pack-name</code>.</li>
 <li>Use <a href="../build-tools/#cpackget-invocation"><strong><code>cpackget</code></strong></a> to download and install new pack versions.</li>
 <li>To accept a <a href="../pack-tools/#versioning">pre-release version of a pack</a> specify the <code>-pre-release</code> label. Use for example <code>- pack: Keil::MDK-Middleware@^8.0.0-0</code> to accept any pre-release version that is higher or equal.</li>
 </ul>
 </div>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">- pack:   ARM::CMSIS@5.9.0           # 'CMSIS' Pack with version 5.5.0
-- pack:   MDK-Middleware@&gt;=7.13.0    # latest version 7.13.0 or higher 
+- pack:   MDK-Middleware@&gt;=7.13.0    # latest version 7.13.0 or higher
 - pack:   MDK-Middleware@^7.13.0     # latest version 7.13.0 or higher, but lower than 8.0.0
 - pack:   Keil::TFM                  # 'TFM' Pack from vendor Keil, latest installed version
 - pack:   AWS                        # All Software Packs from vendor 'AWS', latest version
@@ -532,7 +532,7 @@
 <p>A component can be partly defined in <em>csolution project files</em> (<code>*.cproject.yml</code>, <code>*.clayer.yml</code>, <code>*.genlayer.yml</code>) by omitting <code>Cvendor</code>, <code>Cvariant</code>, and <code>Cversion</code>, even when this are part of the <code>components</code> element of the software pack. The component select algorithm resolves this to a fully defined component by:</p>
 <ul>
 <li>when a partly specified component resolves to several possible choices, the tool selects:<ul>
-<li>(a) the default <code>Cvariant</code> of the component as defined in the PDSC file. </li>
+<li>(a) the default <code>Cvariant</code> of the component as defined in the PDSC file.</li>
 <li>(b) the component with the higher <code>Cversion</code> value.</li>
 <li>(c) an error message is issued when two identical components are defined by multiple vendors and <code>Cvendor</code> is not specified.</li>
 </ul>
@@ -616,7 +616,7 @@ device: :cm33_core0                        # Pname added to a previously defined
 <h3 id="board-name-conventions"><code>board:</code> Name Conventions</h3>
 <p>Evaluation Boards define a device indirectly via the related BSP. The following syntax is used to specify a <code>board:</code>
 value in the <code>*.yml</code> files.</p>
-<pre><code class="language-yml">[vendor::] board_name [:revision] 
+<pre><code class="language-yml">[vendor::] board_name [:revision]
 </code></pre>
 <table>
 <thead>
@@ -649,7 +649,7 @@ value in the <code>*.yml</code> files.</p>
 <p>When a <code>board:</code> is specified, the <code>device:</code> specification can be omitted, however it is possible to overwrite the device setting in the BSP with an explicit <code>device:</code> setting.</p>
 </div>
 <p><strong>Examples:</strong></p>
-<pre><code class="language-yml">board: Keil::MCB54110                             # The Keil MCB54110 board (with device NXP::LPC54114J256BD64) 
+<pre><code class="language-yml">board: Keil::MCB54110                             # The Keil MCB54110 board (with device NXP::LPC54114J256BD64)
 board: LPCXpresso55S28                            # The LPCXpresso55S28 board
 board: STMicroelectronics::NUCLEO-L476RG:Rev.C    # A board with revision specification
 </code></pre>
@@ -706,7 +706,7 @@ Demo.Release+WiFi
 </code></pre>
 <p>The <code>context</code> name is also used in <a href="#for-context"><code>for-context:</code></a> and <a href="#not-for-context"><code>not-for-context:</code></a> nodes that allow to include or exclude items depending on the <code>context</code>. In many cases, the <code>project-name</code> can be omitted as the <code>context</code> name is within a specific <code>*.cproject.yml</code> file or applied to a specific <code>*.cproject.yml</code> file.</p>
 <h2 id="access-sequences">Access Sequences</h2>
-<p>The <strong>access sequences</strong> export values from the CMSIS Project Manager for the 
+<p>The <strong>access sequences</strong> export values from the CMSIS Project Manager for the
 <code>*.yml</code> file nodes <code>define:</code>, <code>define-asm:</code>, <code>add-path:</code>, <code>misc:</code>, <code>files:</code>, and <code>executes:</code>. The <strong>access sequences</strong>
 can specify a different project and describe, therefore, project dependencies.</p>
 <table>
@@ -811,7 +811,7 @@ can specify a different project and describe, therefore, project dependencies.</
 </tr>
 </tbody>
 </table>
-<p>For a <a href="#context-name-conventions"><code>context</code></a>, the <code>project-name</code>, <code>.build-type</code>, and <code>+target-type</code> are optional. An <strong>access sequence</strong> that specifies only <code>project-name</code> uses the context that is currently processed. It is important that the <code>project</code> is part of the <a href="../build-overview/#working-with-context-set">context-set</a> in the build process. Example: <code>$ProjectDir()$</code> is the directory of the current processed <code>cproject.yml</code> file. </p>
+<p>For a <a href="#context-name-conventions"><code>context</code></a>, the <code>project-name</code>, <code>.build-type</code>, and <code>+target-type</code> are optional. An <strong>access sequence</strong> that specifies only <code>project-name</code> uses the context that is currently processed. It is important that the <code>project</code> is part of the <a href="../build-overview/#working-with-context-set">context-set</a> in the build process. Example: <code>$ProjectDir()$</code> is the directory of the current processed <code>cproject.yml</code> file.</p>
 <p><strong>Example:</strong></p>
 <p>This example uses the following <code>build-type</code>, <code>target-type</code>, and <code>projects</code> definitions.</p>
 <pre><code class="language-yml">solution:
@@ -835,13 +835,13 @@ can specify a different project and describe, therefore, project dependencies.</
     - project: /MyDevelopmentTree/security/TFM.cproject.yml   # absolute path
     - project: ./application/MQTT_AWS.cproject.yml            # relative path
 </code></pre>
-<p>The <code>project: /application/MQTT_AWS.cproject.yml</code> may use <strong>access sequences</strong> to reference files or directories in other projects that belong to the same <em>csolution project</em>. </p>
+<p>The <code>project: /application/MQTT_AWS.cproject.yml</code> may use <strong>access sequences</strong> to reference files or directories in other projects that belong to the same <em>csolution project</em>.</p>
 <p>For example, these references are possible in the file <code>MQTT_AWS.cproject.yml</code>.</p>
 <pre><code class="language-yml">    files:
       - file: $cmse-lib(TFM)$                         # use symbol output file of TFM Project
 </code></pre>
 <p>The example above uses the <code>build-type</code> and <code>target-type</code> of the processed context for the project <code>TFM</code>. With a <a href="../build-overview/#working-with-context-set">context-set</a> you may mix different <code>build-types</code> for an application. Note that it is important to build both projects using the same build process.</p>
-<pre><code class="language-bash">cbuild iot-product.csolution.yml --context-set --context TFM.Release+Board --context MQTT_AWS.Debug+Board 
+<pre><code class="language-bash">cbuild iot-product.csolution.yml --context-set --context TFM.Release+Board --context MQTT_AWS.Debug+Board
 </code></pre>
 <p>The example below uses from the TFM project always <code>build-type: Debug</code> and the <code>target-type: Production-HW</code>.</p>
 <pre><code class="language-yml">    files:
@@ -932,10 +932,10 @@ might be confusing for <code>yml</code> files that are generated by an IDE.</p>
 </tbody>
 </table>
 <h3 id="cdefault"><code>cdefault:</code></h3>
-<p>When <a href="#solution"><code>cdefault:</code></a> is specified in the <code>*.csolution.yml</code> file, the <strong><code>csolution</code> Project Manager</strong> uses a file with the name <a href="../build-overview/#cdefaultyml"><code>cdefault.yml</code></a> to setup 
+<p>When <a href="#solution"><code>cdefault:</code></a> is specified in the <code>*.csolution.yml</code> file, the <strong><code>csolution</code> Project Manager</strong> uses a file with the name <a href="../build-overview/#cdefaultyml"><code>cdefault.yml</code></a> to setup
 the compiler with specific default controls. The search order for this file is:</p>
 <ul>
-<li>A <a href="../build-overview/#cdefaultyml"><code>cdefault.yml</code></a> file in the same directory as the <code>&lt;solution-name&gt;.csolution.yml</code> file. </li>
+<li>A <a href="../build-overview/#cdefaultyml"><code>cdefault.yml</code></a> file in the same directory as the <code>&lt;solution-name&gt;.csolution.yml</code> file.</li>
 <li>A <a href="../build-overview/#cdefaultyml"><code>cdefault.yml</code></a> file in the directory <a href="../installation/#environment-variables"><code>&lt;cmsis-toolbox-installation-dir&gt;/etc</code></a>.</li>
 </ul>
 <p>The <code>default:</code> node is the start of a <a href="../build-overview/#cdefaultyml"><code>cdefault.yml</code></a> file and contains the following.</p>
@@ -1059,7 +1059,7 @@ the compiler with specific default controls. The search order for this file is:<
   cdefault:                       # use default setup of toolchain-specific controls.
   compiler: GCC                   # overwrite compiler definition in 'cdefaults.yml'
 
-  packs: 
+  packs:
     - pack: ST                    # add ST packs in 'cdefaults.yml'
 
   build-types:                    # additional build types
@@ -1068,7 +1068,7 @@ the compiler with specific default controls. The search order for this file is:<
       debug: on
       packs:                      # with explicit pack specification
         - pack: ST::TestSW
-          path: ./MyDev/TestSW    
+          path: ./MyDev/TestSW
 
   target-types:
     - type: Board                 # target-type: Board
@@ -1233,7 +1233,7 @@ the compiler with specific default controls. The search order for this file is:<
     - component: Keil RTX5 Library_NS
   groups:
     - group: Non-secure Code                 # Create group
-      files: 
+      files:
         - file: main_ns.c                    # Add files to group
         - file: $Source(Secure)$interface.h
         - file: $Output(Secure)$_CMSE_Lib.o
@@ -1377,10 +1377,10 @@ the compiler with specific default controls. The search order for this file is:<
     - component: CMSIS CORE
   groups:
     - group: Secure Code
-      files: 
+      files:
         - file: main_s.c
     - group: CMSE
-      files: 
+      files:
         - file: interface.c
         - file: interface.h
         - file: tz_context.c
@@ -1388,7 +1388,7 @@ the compiler with specific default controls. The search order for this file is:<
 <h2 id="directory-control">Directory Control</h2>
 <p>The following nodes control the application's directory structure.</p>
 <h3 id="output-dirs"><code>output-dirs:</code></h3>
-<p>Allows control of the directory structure for building output files and temporary files.  </p>
+<p>Allows control of the directory structure for building output files and temporary files.</p>
 <div class="admonition notes">
 <p class="admonition-title">Notes</p>
 <ul>
@@ -1432,10 +1432,10 @@ the compiler with specific default controls. The search order for this file is:<
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">output-dirs:
   tmpdir: ./tmp2                         # relative path to csolution.yml file
-  outdir: ./out/$Project$/$TargetType$   # $BuildType$ no longer part of the outdir    
+  outdir: ./out/$Project$/$TargetType$   # $BuildType$ no longer part of the outdir
 </code></pre>
 <h3 id="generators"><code>generators:</code></h3>
-<p>Allows control of the directory structure for generator output files.  </p>
+<p>Allows control of the directory structure for generator output files.</p>
 <p>When no explicit <code>generators:</code> is specified, the <strong><code>csolution</code> Project Manager</strong> uses as path:</p>
 <ul>
 <li>The <code>workingDir</code> defined in the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_generators_pg.html#element_generator">generators element</a> of the PDSC file.</li>
@@ -1522,11 +1522,11 @@ the compiler with specific default controls. The search order for this file is:<
     map: Boot                                 # Map this project part to the CubeMX run-time context Boot
 </code></pre>
 <h3 id="rte"><code>rte:</code></h3>
-<p>Allows to control the directory structure for <a href="../build-overview/#rte-directory-structure">RTE (run-time environment)</a> files.  </p>
+<p>Allows to control the directory structure for <a href="../build-overview/#rte-directory-structure">RTE (run-time environment)</a> files.</p>
 <div class="admonition notes">
 <p class="admonition-title">Notes</p>
 <ul>
-<li>This control is only possible at <code>*.cproject.yml</code> level.  </li>
+<li>This control is only possible at <code>*.cproject.yml</code> level.</li>
 <li>Only relative paths are permitted to support the portability of projects.</li>
 <li>The location of the <code>*.cproject.yml</code> file is the reference for relative paths.</li>
 </ul>
@@ -1557,7 +1557,7 @@ the compiler with specific default controls. The search order for this file is:<
 <li><a href="#projects"><code>project:</code></a> level to specify options for a project.</li>
 </ul>
 <h3 id="select-compiler"><code>select-compiler:</code></h3>
-<p>Lists the compilers that this <em>csolution project</em> is tested with. This information is used by the <a href="../build-operation/#details-of-the-setup-mode"><code>cbuild setup</code> command</a> to determine possible compiler choices. The actual compiler to be used is selected with the <a href="#compiler"><code>compiler:</code></a> node. </p>
+<p>Lists the compilers that this <em>csolution project</em> is tested with. This information is used by the <a href="../build-operation/#details-of-the-setup-mode"><code>cbuild setup</code> command</a> to determine possible compiler choices. The actual compiler to be used is selected with the <a href="#compiler"><code>compiler:</code></a> node.</p>
 <div class="admonition notes">
 <p class="admonition-title">Notes</p>
 <ul>
@@ -1690,7 +1690,7 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 </code></pre>
 <pre><code class="language-yml">linker:
   - script:   MyLinker.scf.src   # linker script file, not pre-processed
-    for-compiler: AC6            # for Arm Compiler 6 
+    for-compiler: AC6            # for Arm Compiler 6
 
   - script:   MyLinker.ld        # linker script file, not pre-processed
     for-compiler: CLANG          # for CLANG LLVM-based compiler
@@ -1703,7 +1703,7 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
   - script:   MyLinker.ld.src    # linker script file
     for-compiler: CLANG          # for CLANG LLVM-based compiler
     regions:  MyRegions.h        # pre-processed using header file
-    define:                      # with define setting 
+    define:                      # with define setting
       - Setup: 1                 # define with value
 </code></pre>
 <h3 id="output"><code>output:</code></h3>
@@ -1766,7 +1766,7 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 </code></pre>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">output:
-  type: 
+  type:
   - elf                  # Generate executable file.
   - map                  # Generate Linker MAP file.
 </code></pre>
@@ -1792,7 +1792,7 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>The keys <code>define:</code>, <code>define-asm:</code>, <code>add-path:</code>, <code>add-path-asm:</code>, <code>del-path:</code>, and <code>misc:</code> are additive. </li>
+<li>The keys <code>define:</code>, <code>define-asm:</code>, <code>add-path:</code>, <code>add-path-asm:</code>, <code>del-path:</code>, and <code>misc:</code> are additive.</li>
 <li>All other keys can only be defined once at the level of <code>solution:</code>, <code>project:</code>, <code>setup:</code>, <code>layer:</code>and <code>build-types:</code>. or <code>target-types:</code>. However, it is possible to overwrite these keys at the level of <code>group:</code>, <code>file:</code>, or <code>component:</code>; for example it is possible to translate a file group with a different optimize level.</li>
 </ul>
 </div>
@@ -2099,7 +2099,7 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
   - group:  &quot;Main File Group&quot;
     undefine:
       - TestValue           # remove define symbol `TestValue` for this file group
-    files: 
+    files:
       - file: file1a.c
         undefine:
          - TestMode         # remove define symbol `TestMode` for this file
@@ -2435,7 +2435,7 @@ The <code>pack:</code> definition may be specific to a <a href="#context"><code>
 </tbody>
 </table>
 <h3 id="pack"><code>pack:</code></h3>
-<p>The <code>pack:</code> list allows to add <a href="#pack-name-conventions">specific software packs</a>, optional with a version specification. </p>
+<p>The <code>pack:</code> list allows to add <a href="#pack-name-conventions">specific software packs</a>, optional with a version specification.</p>
 <table>
 <thead>
 <tr>
@@ -2473,7 +2473,7 @@ The <code>pack:</code> definition may be specific to a <a href="#context"><code>
   - pack: ARM::CMSIS-FreeRTOS@~10.4.0   # add CMSIS-FreeRTOS with version 10.4.x or higher but lower than 10.5.0
   - pack: ARM::CMSIS-FreeRTOS@^10.4.0   # add CMSIS-FreeRTOS with version 10.4.x or higher but lower than 11.0.0
 
-  - pack: NXP::K32L3A60_DFP             # add pack for NXP device 
+  - pack: NXP::K32L3A60_DFP             # add pack for NXP device
     path: ./local/NXP/K32L3A60_DFP      # with path to the pack (local copy, repo, etc.)
 
   - pack: AWS::coreHTTP                 # add pack
@@ -2533,7 +2533,7 @@ packs. This information is used to define the <code>device:</code> along with ba
 </tr>
 </tbody>
 </table>
-<p>The default setting enables the available features of the device. For example <code>fpu: dp</code> is selected for devices that offer double precision floating point hardware.  </p>
+<p>The default setting enables the available features of the device. For example <code>fpu: dp</code> is selected for devices that offer double precision floating point hardware.</p>
 <p>For <code>trustzone:</code> the possible settings are:</p>
 <table>
 <thead>
@@ -2566,10 +2566,10 @@ packs. This information is used to define the <code>device:</code> along with ba
   processor:
     trustzone: secure
     fpu: off             # do not use FPU instructions
-    mve: off             # do not use vector instructions.  
+    mve: off             # do not use vector instructions.
 </code></pre>
 <h2 id="context">Context</h2>
-<p>A <a href="#context-name-conventions"><code>context</code></a> is an environment setup for a project that is composed of: </p>
+<p>A <a href="#context-name-conventions"><code>context</code></a> is an environment setup for a project that is composed of:</p>
 <ul>
 <li><code>project-name</code> that is the base name of the <code>*.cproject.yml</code> file.</li>
 <li><code>.build-type</code> that defines typically build-specific settings such as for debug, release, or test.</li>
@@ -2579,7 +2579,7 @@ packs. This information is used to define the <code>device:</code> along with ba
 <p class="admonition-title">Note</p>
 <ul>
 <li>The <a href="#context-name-conventions"><code>context</code></a> name is used throughout the build process and is reflected in directory names. Even when there is not a fixed limit, keep identifiers short. Recommended is less than 32 characters for the <a href="#context-name-conventions"><code>context</code></a> name.</li>
-<li>Blank characters (' ') in the context name are not permitted by CMake.  </li>
+<li>Blank characters (' ') in the context name are not permitted by CMake.</li>
 </ul>
 </div>
 <p>The section <a href="../build-overview/#project-setup-for-related-projects">project setup for related projects</a>
@@ -2838,7 +2838,7 @@ settings are processed in the following order:</p>
   - type: Production-HW
     board: NUCLEO-L552ZE-Q    # hardware is similar to a board (to use related software layers)
     device: STM32L552RC       # but uses a slightly different device
-    processor: 
+    processor:
       trustzone: off          # TrustZone disabled for this project
 </code></pre>
 <pre><code class="language-yml">target-types:
@@ -3012,7 +3012,7 @@ The <code>load:</code> and <code>type:</code> specification is only accepted for
       device: NXP::MCXN947VDF
       target-set:
         - set:                             // without id, &lt;default&gt; set
-          debugger: 
+          debugger:
             name: ULINKplus
             protocol: swd
           images:
@@ -3035,7 +3035,7 @@ The <code>load:</code> and <code>type:</code> specification is only accepted for
     - project: ./cm33_core0/core0.cproject.yml
 </code></pre>
 <h3 id="context-map"><code>context-map:</code></h3>
-<p>The <code>context-map:</code> node allows for a specific <code>project-name</code> the remapping of <code>target-types:</code> and/or <code>build-types:</code> to a different <code>context:</code> which enables: </p>
+<p>The <code>context-map:</code> node allows for a specific <code>project-name</code> the remapping of <code>target-types:</code> and/or <code>build-types:</code> to a different <code>context:</code> which enables:</p>
 <ul>
 <li>Integrating an existing <code>*.cproject.yml</code> file in a different <code>*.csolution.yml</code> file that uses different <code>build-types:</code> and/or <code>target-types:</code> for the overall application.</li>
 <li>Defines how different <code>*.cproject.yml</code> files of a <code>*.csolution.yml</code> are to the binary image of the final target (needs reflection in cbuild-idx.yml).</li>
@@ -3105,7 +3105,7 @@ The <code>load:</code> and <code>type:</code> specification is only accepted for
 <h3 id="for-compiler"><code>for-compiler:</code></h3>
 <p>Depending on a <a href="#compiler">compiler</a> toolchain it is possible to include <em>list nodes</em> in the build process.</p>
 <p><strong>Examples:</strong></p>
-<pre><code class="language-yml">for-compiler: AC6@6.16               # add item for Arm Compiler version 6.16 only      
+<pre><code class="language-yml">for-compiler: AC6@6.16               # add item for Arm Compiler version 6.16 only
 
 for-compiler: GCC                    # for GCC Compiler (any version)
 </code></pre>
@@ -3119,11 +3119,11 @@ for-compiler: GCC                    # for GCC Compiler (any version)
   - [.build-type][+target-type]
 </code></pre>
 <p><strong>Examples:</strong></p>
-<pre><code class="language-yml">for-context:      
+<pre><code class="language-yml">for-context:
   - .Test                            # add item for build-type: Test (any target-type)
 
 for-context:                         # add item
-  - .Debug                           # for build-type: Debug and 
+  - .Debug                           # for build-type: Debug and
   - .Release+Production-HW           # build-type: Release / target-type: Production-HW
 
 not-for-context:  +Virtual           # remove item for target-type: Virtual (any build-type)
@@ -3188,14 +3188,14 @@ not-for-context:  .Release+Virtual   # remove item for build-type: Release with 
 <p><strong>Example:</strong></p>
 <p>The following project is only included when the <code>build-type:</code> of a context contains <code>Test</code>.</p>
 <pre><code class="language-yml">  build-types:
-    - Debug-Test:         # Debug build with Test functionality 
+    - Debug-Test:         # Debug build with Test functionality
        :
-    - Test-Release:       # Release build with Test functionality 
+    - Test-Release:       # Release build with Test functionality
        :
     - Debug:
        :
     - Release:
-       : 
+       :
 
   project: Test.cproject.yml
     - for-context: \.*Test*`
@@ -3503,11 +3503,11 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 <p>Add source files to a project or a software layer. Used in <code>*.cproject.yml</code> and <code>*.clayer.yml</code> files.</p>
 <pre><code class="language-yml">groups:
   - group:  &quot;Main File Group&quot;
-    not-for-context:                     # includes this group not for the following: 
+    not-for-context:                     # includes this group not for the following:
       - .Release+Virtual                 # build-type 'Release' and target-type 'Virtual'
       - .Test-DSP+Virtual                # build-type 'Test-DSP' and target-type 'Virtual'
       - +Board                           # target-type 'Board'
-    files: 
+    files:
       - file: file1a.c
       - file: file1b.c
         define:
@@ -3520,7 +3520,7 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
     files:
       - file: file2a.c
         for-context: +Virtual               # include this file only for target-type 'Virtual'
-        define: 
+        define:
           - test: 2
       - file: file2a.c
         not-for-context: +Virtual           # include this file not for target-type 'Virtual'
@@ -3542,13 +3542,13 @@ target-type and/or build-type using <a href="#for-context"><code>for-context:</c
 <pre><code class="language-yml">groups:
   - group:  &quot;Main File Group&quot;
     for-compiler: AC6                    # includes this group only for Arm Compiler 6
-    files: 
+    files:
       - file: file1a.c
       - file: file2a.c
 
   - group:  &quot;Main File Group&quot;
     for-compiler: GCC                    # includes this group only for GCC Compiler
-    files: 
+    files:
       - file: file1b.c
       - file: file2b.c
 </code></pre>
@@ -3617,14 +3617,14 @@ target-type and/or build-type using <a href="#for-context"><code>for-context:</c
 
     # Board
     - layer: ./Board/IMXRT1050-EVKB/Board.clayer.yml
-      for-context: 
+      for-context:
         - +IP-Stack
         # - +WiFi
     - layer: ./Board/B-U585I-IOT02A/Board.clayer.yml
-      for-context: 
+      for-context:
         - +WiFi
     - layer: ./Board/AVH_MPS3_Corstone-300/Board.clayer.yml
-      for-context: 
+      for-context:
         - +AVH
 </code></pre>
 <h4 id="layer-type"><code>layer:</code> <code>type:</code></h4>
@@ -3774,7 +3774,7 @@ will be copied multiple times to the project. The name of the component (for exa
 <li>Instance 0: <code>config_usb_device_0.h</code></li>
 <li>Instance 1: <code>config_usb_device_1.h</code></li>
 </ul>
-<p>The availability of instances in a project can be made public in the <code>RTE_Components.h</code> file. The existing way to extend 
+<p>The availability of instances in a project can be made public in the <code>RTE_Components.h</code> file. The existing way to extend
 the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <h2 id="prepost-build-steps">Pre/Post build steps</h2>
 <p>The CMSIS-Toolbox supports pre-build and post-build steps that utilize external tools or scripts. Such external commands can be used for various tasks such as:</p>
@@ -3875,7 +3875,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p>CMake uses Linux-style path names with <code>/</code> characters; it does not accept the Windows-style <code>\</code> characters in the <code>run:</code> node to specify the location of an executable tool.</p>
 </li>
 <li>
-<p><a href="https://cmake.org/cmake/help/latest/manual/cmake.1.html#run-a-command-line-tool">CMake provides several builtin command-line tools</a> (copy, checksum, etc.) that run on every Host OS. Consider using these command-line tools instead of Windows or Linux-specific commands. Use <code>CMake -E help</code> to list the available commands. </p>
+<p><a href="https://cmake.org/cmake/help/latest/manual/cmake.1.html#run-a-command-line-tool">CMake provides several builtin command-line tools</a> (copy, checksum, etc.) that run on every Host OS. Consider using these command-line tools instead of Windows or Linux-specific commands. Use <code>CMake -E help</code> to list the available commands.</p>
 </li>
 <li>
 <p>The base directory for execution is not controlled by the CMSIS-Toolbox and is typically the <code>tmp</code> directory. The commands specified by <code>run:</code> should be in the path of the Host OS or the path/tool should be passed using an <code>$input(&lt;n&gt;)$</code> argument.</p>
@@ -3915,9 +3915,9 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
   executes:
     - execute: copy-elf
       run: ${CMAKE_COMMAND} -E copy $input$ $output$
-      input:  
+      input:
         - $elf()$
-      output: 
+      output:
         - $OutDir()$/Project.out
       for-context: .Release
 </code></pre>
@@ -4018,8 +4018,8 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p><strong>Example:</strong></p>
 <p>In the example below the <code>connect</code> for:</p>
 <ul>
-<li><code>Sensor Communication Interface</code> is only active when the <code>SENSOR_I2C</code> is in the <code>consumes:</code> list of other active <code>connect</code> nodes.  </li>
-<li><code>Sensor Interrupt</code> is only active when the <code>SENSOR_INT</code> is in the <code>consumes:</code> list of other active <code>connect</code> nodes.  </li>
+<li><code>Sensor Communication Interface</code> is only active when the <code>SENSOR_I2C</code> is in the <code>consumes:</code> list of other active <code>connect</code> nodes.</li>
+<li><code>Sensor Interrupt</code> is only active when the <code>SENSOR_INT</code> is in the <code>consumes:</code> list of other active <code>connect</code> nodes.</li>
 <li><code>Core Functionality</code> is always active as it does not have a <code>provides:</code> list.</li>
 </ul>
 <pre><code class="language-yml">layer:
@@ -4052,7 +4052,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </ul>
 <p>Refer to <a href="#example-sensor-shield">Example: Sensor Shield</a> for a usage example.</p>
 <h4 id="provides"><code>provides:</code></h4>
-<p>A user-defined <em>key</em>/<em>value</em> pair list of functionality that is implemented or provided by a <code>project:</code> or <code>layer:</code>. </p>
+<p>A user-defined <em>key</em>/<em>value</em> pair list of functionality that is implemented or provided by a <code>project:</code> or <code>layer:</code>.</p>
 <p>The <strong><code>csolution</code> Project Manager</strong> combines all the <em>key</em>/<em>value</em> pairs that are listed under <code>provides:</code> and matches them with the <em>key</em>/<em>value</em> pairs that are listed under <code>consumes:</code>. For <em>key</em>/<em>value</em> pairs listed under <code>provides:</code> the following rules exist for a match with <code>consumes:</code> <em>key</em>/<em>value</em> pair:</p>
 <ul>
 <li>It is possible to omit the <em>value</em>. It matches with an identical <em>key</em> listed in <code>consumes:</code></li>
@@ -4063,7 +4063,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </li>
 </ul>
 <h4 id="consumes"><code>consumes:</code></h4>
-<p>A user-defined <em>key</em>/<em>value</em> pair list of functionality that is required or consumed by a <code>project:</code> or <code>layer:</code>. </p>
+<p>A user-defined <em>key</em>/<em>value</em> pair list of functionality that is required or consumed by a <code>project:</code> or <code>layer:</code>.</p>
 <p>For <em>key</em>/<em>value</em> pairs listed under <code>consumed:</code> the following rules exist:</p>
 <ul>
 <li>When no <em>value</em> is specified, it matches with any <em>value</em> of an identical <em>key</em> listed under <code>provides:</code>.</li>
@@ -4164,7 +4164,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
         - Ardunio_Uno_D3:
 </code></pre>
 <h2 id="debugger-configuration">Debugger Configuration</h2>
-<p>Packs contain information for configuring debugger connection to a device or board. The <code>debugger:</code> node that is specified under the <a href="#target-set"><code>target-set:</code></a> in the <em>csolution project</em> allows 
+<p>Packs contain information for configuring debugger connection to a device or board. The <code>debugger:</code> node that is specified under the <a href="#target-set"><code>target-set:</code></a> in the <em>csolution project</em> allows
 to overwrite configuration information or to define new debugger setups.</p>
 <h3 id="debugger"><code>debugger:</code></h3>
 <table>
@@ -4222,7 +4222,7 @@ to overwrite configuration information or to define new debugger setups.</p>
   name: ULink
   protocol: jtag
   clock: 10000000               # 10 MHz
-  dbgconf: MyHardware.dbgconf   
+  dbgconf: MyHardware.dbgconf
 </code></pre>
 <pre><code class="language-yml">debugger:
   name: JLink
@@ -4317,8 +4317,8 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
       device: STMicroelectronics::STM32F746NGHx
       memory:                                  # Additional memory available in MyHardware
         - name: Ext-Flash                      # Identifier
-          access: rx                           # access permission 
-          start: 0x40000000        
+          access: rx                           # access permission
+          start: 0x40000000
           size: 0x200000
           algorithm: Flash/Ext-Flash.flm       # Programming algorithm
 </code></pre>

@@ -558,7 +558,7 @@ solution:
       :
   target-types:
     - type: ${Name}_ROM
-      variables: 
+      variables:
         - RegionsHeader: &lt;path&gt;/memory_flash.h
 
     - type: ${Name}_RAM
@@ -588,7 +588,7 @@ solution:
 </code></pre>
 <p><strong>Register Template in PDSC File:</strong></p>
 <p><em>Templates</em> are published using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_csolution_pg.html"><code>&lt;csolution&gt;</code> element</a> in the PDSC file. Device-specific <em>Templates</em> should be part of the DFP. Board-specific <em>templates</em> should be part of the BSP.</p>
-<pre><code class="language-xml">  &lt;csolution&gt; 
+<pre><code class="language-xml">  &lt;csolution&gt;
     &lt;template name=&quot;Simple Device project&quot; path=&quot;/device/Simple&quot; file=&quot;Simple.csolution.yml&quot; condition=&quot;Device_Spec&quot;&gt;
       &lt;description&gt;Single-core project with empty main function configured for device&lt;/description&gt;
     &lt;/template&gt;

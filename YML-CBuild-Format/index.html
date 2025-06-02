@@ -418,7 +418,7 @@
       project: MassStorage
       configuration: .Release+B-U585I-IOT02A
   errors: true                  # indicates error
-  packs-missing:                # lists missing packs 
+  packs-missing:                # lists missing packs
     - pack: ARM::CMSIS-RTX      # with unspecified version
     - pack: ARM::CMSIS@6.0.0    # with specified version
 </code></pre>
@@ -1844,7 +1844,7 @@ Use the <a href="../YML-Input-Format/#images"><code>images:</code></a> node in t
       from-pack: Keil::STM32U5xx_DFP@3.0.0
     - name: Ext-Flash
       access: rx
-      start: 0x40000000        
+      start: 0x40000000
       size: 0x200000
 </code></pre>
 <h4 id="system-descriptions"><code>system-descriptions:</code></h4>
@@ -1969,7 +1969,7 @@ Use the <a href="../YML-Input-Format/#images"><code>images:</code></a> node in t
 <p>!!! Note:
     - <code>protocol:</code> and <code>clock:</code> are required by pyOCD but optional for other debug adapters. The file <a href="../build-operation/#debug-adapter-integration"><code>./etc/debug-adatpers.yml</code></a> allows to specify default values for required options.
     - <code>start-pname:</code> is mandatory for multi-processor targets. If <code>start-pname:</code> is not configured using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file, the <code>pname:</code> of the first <code>*.cproject.yml</code> file is used.</p>
-<p>The information for the <code>debugger:</code> node may be configured using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file. If not present the values from BSP are used; if not present DFP values. The values in the <code>*.csolution.yml</code> file overwrites values from BSP or DFP as shown in the table below.  </p>
+<p>The information for the <code>debugger:</code> node may be configured using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file. If not present the values from BSP are used; if not present DFP values. The values in the <code>*.csolution.yml</code> file overwrites values from BSP or DFP as shown in the table below.</p>
 <table>
 <thead>
 <tr>
@@ -2003,8 +2003,8 @@ Use the <a href="../YML-Input-Format/#images"><code>images:</code></a> node in t
 <p>If no input (<code>*.csolution.yml</code>, BSP or DFP) provides debugger option values, the CMSIS-Toolbox uses the values under <code>defaults:</code> from the file <a href="../build-operation/#debug-adapter-integration"><code>.\ect\debug-adapters.yml</code></a>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">debugger:
-  name: CMSIS-DAP 
-  info: On-Board debugger of MCB4300 
+  name: CMSIS-DAP
+  info: On-Board debugger of MCB4300
   protocol: jtag
   clock: 10000000
   dbgconf: /.cmsis/MySolution+lpc4300.dbgconf
@@ -2173,11 +2173,11 @@ This initial values are overwritten by explicit settings in the <code>*.dbgconf<
 
     blocks:
     - execute:  |
-        __var isSWJ      = ((__protocol &amp;amp; 0x00010000) != 0); 
+        __var isSWJ      = ((__protocol &amp;amp; 0x00010000) != 0);
         __var hasDormant = __protocol &amp;amp; 0x00020000;
         __var protType   = __protocol &amp;amp; 0x0000FFFF;
 
-    - if: protType == 1 
+    - if: protType == 1
       blocks:
       - if: isSWJ
         blocks:
@@ -2199,7 +2199,7 @@ This initial values are overwritten by explicit settings in the <code>*.dbgconf<
             // Alert Sequence Bits 64..127
             DAP_SWJ_Sequence(64, 0x19BC0EA2E3DDAFE9);
 
-            // 4 cycles SWDIO/TMS LOW + 8-Bit JTAG Activation Code (0x0A)            
+            // 4 cycles SWDIO/TMS LOW + 8-Bit JTAG Activation Code (0x0A)
             DAP_SWJ_Sequence(12, 0x0A0);
 
             // Ensure JTAG interface is reset
@@ -2246,7 +2246,7 @@ This initial values are overwritten by explicit settings in the <code>*.dbgconf<
             // Alert Sequence Bits 64..127
             DAP_SWJ_Sequence(64, 0x19BC0EA2E3DDAFE9);
 
-            // 4 cycles SWDIO/TMS LOW + 8-Bit SWD Activation Code (0x1A)            
+            // 4 cycles SWDIO/TMS LOW + 8-Bit SWD Activation Code (0x1A)
             DAP_SWJ_Sequence(12, 0x1A0);
 
             // Enter SWD Line Reset State

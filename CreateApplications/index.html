@@ -177,7 +177,7 @@
 <p>Use <a href="https://www.keil.arm.com/devices/">Device search</a> or <a href="https://www.keil.arm.com/boards/">Board search</a> available on web portals to identify the software packs required for your target.</p>
 </li>
 <li>
-<p>Download the Device Family Pack (DFP) and optionally the Board Support Pack (BSP) with <a href="../build-tools/#install-public-packs"><code>cpackget</code></a>. Note that a BSP is only required if you want to work with a specific board. For custom hardware, typically the DFP is sufficient. </p>
+<p>Download the Device Family Pack (DFP) and optionally the Board Support Pack (BSP) with <a href="../build-tools/#install-public-packs"><code>cpackget</code></a>. Note that a BSP is only required if you want to work with a specific board. For custom hardware, typically the DFP is sufficient.</p>
 </li>
 </ul>
 <h3 id="step-2-use-a-template-project-and-add-dfp-and-bsp">Step 2: Use a Template Project and add DFP and BSP</h3>
@@ -233,7 +233,7 @@
 <p>Refer to <a href="#using-components">Using Components</a> for more information.</p>
 </li>
 <li>
-<p>Now, the project should already compile with the command <code>cbuild &lt;name&gt;.csolution.yml --update-rte --packs --context .Debug</code>. Note that this step downloads missing packs and copies configuration files to the <a href="../build-overview/#rte-directory-structure">RTE directory</a>. </p>
+<p>Now, the project should already compile with the command <code>cbuild &lt;name&gt;.csolution.yml --update-rte --packs --context .Debug</code>. Note that this step downloads missing packs and copies configuration files to the <a href="../build-overview/#rte-directory-structure">RTE directory</a>.</p>
 </li>
 </ul>
 <h3 id="step-5-review-and-configure-rte-files">Step 5: Review and configure RTE files</h3>
@@ -258,7 +258,7 @@
 <pre><code class="language-yml">  :
   groups:
     - group: Source Files
-      files: 
+      files:
         - file: main.c
         - file: MyFile1.c
   :
@@ -276,14 +276,14 @@
 <p>The overall process to configure linker scripts for independent projects is:</p>
 <ol>
 <li>Step: Review and adjust the physical memory layout in the <em>regions header file</em>.</li>
-<li>Step: Optionally add specific program sections to the <em>linker script template</em> or change the default behaviour of that file. </li>
+<li>Step: Optionally add specific program sections to the <em>linker script template</em> or change the default behaviour of that file.</li>
 </ol>
 <h3 id="regions-header-file">Regions Header File</h3>
 <p>An initial <em>regions header file</em> is generated based on the memory information coming from the used software packs (DFP and BSP). This file has the name <code>regions_&lt;device_or_board&gt;.h</code> and is located in the directory <a href="../build-overview/#rte-directory-structure"><code>./RTE/Device/&lt;device&gt;</code></a>.</p>
 <p>For memory with the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory"><em>default</em> attribute set</a> in DFP or BSP, the following region settings are generated:</p>
 <ul>
 <li>The region __ROM0 is the startup region and contains memory with the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_memory"><em>startup</em> attribute set</a>.</li>
-<li>The region __RAM0 contains uninitialized memory, STACK and HEAP. <ul>
+<li>The region __RAM0 contains uninitialized memory, STACK and HEAP.<ul>
 <li>STACK default is 0x200.</li>
 <li>HEAP default is 0xC00 for devices with more than 6KB RAM (otherwise, HEAP is set to 0).</li>
 </ul>
@@ -446,7 +446,7 @@
 <li>List API header files for their interfaces.</li>
 </ul>
 <h3 id="required-interfaces">Required Interfaces</h3>
-<p>There are two ways to describe required interfaces, as shown in the diagram below. </p>
+<p>There are two ways to describe required interfaces, as shown in the diagram below.</p>
 <ul>
 <li>Dependency reference to a component (a selection list is supported).</li>
 <li>Dependency reference to an API definition. Components that implement this API fulfil then the required interface.</li>
@@ -477,7 +477,7 @@
 <li>
 <p>Step: <strong>Use software components in application program</strong></p>
 <ul>
-<li>User code templates provide a starting point for your application. </li>
+<li>User code templates provide a starting point for your application.</li>
 <li>Copy these template files to your project directory and add them to your <code>*.cproject.yml</code> file.</li>
 <li>Adjust the code in the user template files as required.</li>
 </ul>
