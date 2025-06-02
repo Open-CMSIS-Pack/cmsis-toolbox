@@ -66,6 +66,9 @@ jobs:
           cache: "-"
 
       - name: Inspect IAR Toolchain
+        shell: bash
+        env:
+          IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
         run: |
           iccarm --version
           ilinkarm --version
