@@ -65,14 +65,14 @@ jobs:
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
           cache: "-"
 
-      - name: Inspect IAR Toolchain
-        shell: bash
-        env:
-          IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
-        run: |
-          iccarm --version
-          ilinkarm --version
-          iarchive --version
+      #- name: Inspect IAR Toolchain
+      #  shell: bash
+      #  env:
+      #    IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
+      #  run: |
+      #    iccarm --version
+      #    ilinkarm --version
+      #    iarchive --version
   
       - name: Activate Arm tool license
         run: |
