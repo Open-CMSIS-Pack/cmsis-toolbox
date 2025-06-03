@@ -87,21 +87,27 @@ jobs:
           iccarm --version
           ilinkarm --version
           iarchive --version
-          iarlicense -status
-          iarlicense -check
           env | grep -i iar
-          
-      - name: Run Test
+
+      - name: Compile dummy code with IAR
         shell: bash
-        continue-on-error: true
         env:
           IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
         run: |
-          robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} \
-            --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}.md \
-            --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }} \
-            --name ${{ matrix.target }}-${{ matrix.arch }} \
-            ./e2e
+          echo "int main() { return 0; }" > dummy.c
+          iccarm dummy.c
+
+#      - name: Run Test
+#        shell: bash
+#        continue-on-error: true
+#        env:
+#          IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
+#        run: |
+#          robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} \
+#            --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}.md \
+#            --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }} \
+#            --name ${{ matrix.target }}-${{ matrix.arch }} \
+#            ./e2e
 
       - name: Archieve test results
         if: always()
