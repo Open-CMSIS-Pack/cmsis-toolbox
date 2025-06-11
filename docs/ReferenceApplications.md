@@ -137,7 +137,7 @@ solution:
 
 ### Step 2: Run `cbuild setup`
 
-Run `cbuild setup` with the `*.csolution.yml` file. This identifies compatible layers with an output similar to:
+Run `cbuild setup` with the `*.csolution.yml` file. This identifies compatible layers that are part of the software packs listed in the `*.csolution.yml` file with an output similar to:
 
 ```txt
 >cbuild setup xxx.csolution.yml
