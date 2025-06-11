@@ -220,8 +220,11 @@ The `context` name is also used in [`for-context:`](#for-context) and [`not-for-
 ## Access Sequences
 
 The **access sequences** export values from the CMSIS Project Manager for the
-`*.yml` file nodes `define:`, `define-asm:`, `add-path:`, `misc:`, `files:`, and `executes:`. The **access sequences**
+`*.yml` file nodes [`define:`](#define), [`define-asm:`](#define-asm), [`add-path:`](#add-path), [`misc:`](#misc), [`files:`](#files), [`executes:`](#executes), and [`variables:`](#variables). The **access sequences**
 can specify a different project and describe, therefore, project dependencies.
+
+!!! Note
+    - [`variables:`](#variables) that are defined in the `*.csolution.yml` file can be accessed also using the `$<key>$` notation.
 
 Access Sequence                                | Description
 :----------------------------------------------|:--------------------------------------
@@ -320,43 +323,6 @@ groups:
   - group:  "Main File Group"
     define:
       - $Dname$                           # Generate a #define 'device-name' for this file group
-```
-
-## Variables
-
-The `variables:` node defines are *key/value* pairs that can be used to refer to `*.clayer.yml` files.  The *key* is the name of the *variable* and can be used  in the following nodes: [`layers:`](#layers), [`define:`](#define), [`define-asm:`](#define-asm), [`add-path:`](#add-path), [`add-path-asm:`](#add-path-asm), [`misc:`](#misc), [`files:`](#files), and [`executes:`](#executes)
-
-Using variables that are defined in the `*.csolution.yml` file, a `*.cproject.yml` file requires no modifications when new `target-types:` are introduced.  The required `layers:` could be instead specified in the `*.csolution.yml` file using a new node `variables:`.
-
-**Example:**
-
-*Example.csolution.yml*
-
-```yml
-solution:
-  target-types:
-    - type: NXP Board
-      board: IMXRT1050-EVKB
-      variables:
-        - Socket-Layer: ./Socket/FreeRTOS+TCP/Socket.clayer.yml
-        - Board-Layer:  ./Board/IMXRT1050-EVKB/Board.clayer.yml
-
-    - type: ST Board
-      board: B-U585I-IOT02A
-      variables:
-        - Socket-Layer: ./Socket/WiFi/Socket.clayer.yml
-        - Board-Layer:  ./Board/B-U585I-IOT02A/Board.clayer.yml
-```
-
-*Example.cproject.yml*
-
-```yml
-  layers:
-    - layer: $Socket-Layer$
-      type: Socket
-
-    - layer: $Board-Layer$      # no `*.clayer.yml` specified. Compatible layers are listed
-      type: Board               # layer of type `Board` is expected
 ```
 
 ## Order of List Nodes
@@ -521,7 +487,7 @@ The `layer:` node is the start of a `*.clayer.yml` file and defines a [Software 
 
 `layer:`                                                     |            | Content
 :------------------------------------------------------------|:-----------|:------------------------------------
-&nbsp;&nbsp;&nbsp; [`type:`](#layer-type)                  |  Optional  | Layer type for combining layers; used to identify [compatible layers](ReferenceApplications.md#usage).
+&nbsp;&nbsp;&nbsp; [`type:`](#layer-type)                    |  Optional  | Layer type for combining layers; used to identify [compatible layers](ReferenceApplications.md#usage).
 &nbsp;&nbsp;&nbsp; `description:`                            |  Optional  | Brief description text of the layer.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)              |  Optional  | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)          |  Optional  | Set the language standard for C++ source file compilation.
@@ -535,6 +501,7 @@ The `layer:` node is the start of a `*.clayer.yml` file and defines a [Software 
 &nbsp;&nbsp;&nbsp; [`add-path:`](#add-path)                  |  Optional  | Additional include file paths.
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)                  |  Optional  | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                          |  Optional  | Literal tool-specific controls.
+&nbsp;&nbsp;&nbsp; [`device:`](#device)                      |  Optional  | Specify processor core.
 &nbsp;&nbsp;&nbsp; [`generators:`](#generators)              |  Optional  | Control the directory structure for generator output.
 &nbsp;&nbsp;&nbsp; [`packs:`](#packs)                        |  Optional  | Defines packs that are required for this layer.
 &nbsp;&nbsp;&nbsp; [`for-device:`](#device-name-conventions) |  Optional  | Device information, used for consistency check (device selection is in `*.csolution.yml`).
@@ -1222,7 +1189,7 @@ packs:                                  # start section that specifics software 
   - pack: ARM::CMSIS-FreeRTOS@^10.4.0   # add CMSIS-FreeRTOS with version 10.4.x or higher but lower than 11.0.0
 
   - pack: NXP::K32L3A60_DFP             # add pack for NXP device
-    path: ./local/NXP/K32L3A60_DFP      # with path to the pack (local copy, repo, etc.)
+ftar    path: ./local/NXP/K32L3A60_DFP      # with path to the pack (local copy, repo, etc.)
 
   - pack: AWS::coreHTTP                 # add pack
     path: ./development/AWS/coreHTTP    # with path to development source directory
@@ -1447,7 +1414,7 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 
 !!! Note
     Either `project-context:` or `image:` is required, but these nodes are mutually exclusive.
-    The `load:` and `type:` specification is only accepted for an `image:` file.
+    The `type:` specification is only accepted for an `image:` file.
 
 #### `load:`
 
@@ -1518,6 +1485,49 @@ solution:
   projects:
     - project: ./cm33_core1/core1.cproject.yml
     - project: ./cm33_core0/core0.cproject.yml
+```
+
+### `variables:`
+
+The `variables:` node defines *key/value* pairs in the `*.csolution.yml` file. Using `$<key>$` in `*.cproject.yml` and `*.clayer.yml` files expands to the *value* of the variable. The variable `$<key>$` can be used in the following nodes: [`layers:`](#layers), [`define:`](#define), [`define-asm:`](#define-asm), [`add-path:`](#add-path), [`add-path-asm:`](#add-path-asm), [`misc:`](#misc), [`files:`](#files), and [`executes:`](#executes). The `<key>:` name format `<type>-Layer` is a convention that references [layer-type](#layer-type). In this case the `copied-from:` can be used to describe the orginal source of a layer (typically a path in a software pack).
+
+`load:`                              | Description
+:------------------------------------|:-------------
+&nbsp;&nbsp;&nbsp; `<key>:`          | `<key>:` specifies a variable name with value.
+&nbsp;&nbsp;&nbsp; `copied-from:`    | Descriptive text that documents the source of a layer. 
+
+**Example:**
+
+With variables that are defined in the `*.csolution.yml` file, a `*.cproject.yml` file requires no modifications when new `target-types:` are introduced.  The required `layers:` could be instead specified in the `*.csolution.yml` file using a new node `variables:`.
+
+*Example.csolution.yml*
+
+```yml
+solution:
+  target-types:
+    - type: NXP Board
+      board: IMXRT1050-EVKB
+      variables:
+        - Socket-Layer: $SolutionDir()$/Socket/FreeRTOS+TCP/Socket.clayer.yml
+        - Board-Layer:  $SolutionDir()$/Board/IMXRT1050-EVKB/Board.clayer.yml
+
+    - type: ST Board
+      board: B-U585I-IOT02A
+      variables:
+        - Socket-Layer: $SolutionDir()$/Socket/WiFi/Socket.clayer.yml
+        - Board-Layer: $SolutionDir()$/Board/B-U585I-IOT02A/Board.clayer.yml
+          copied-from: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/CMSIS/Board/
+```
+
+*Example.cproject.yml*
+
+```yml
+  layers:
+    - layer: $Socket-Layer$
+      type: Socket
+
+    - layer: $Board-Layer$      # no `*.clayer.yml` specified. Compatible layers are listed
+      type: Board               # layer of type `Board` is expected
 ```
 
 ### `context-map:`
