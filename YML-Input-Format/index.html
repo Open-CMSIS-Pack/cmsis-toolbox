@@ -81,8 +81,6 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#access-sequences">Access Sequences</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#variables">Variables</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#order-of-list-nodes">Order of List Nodes</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#project-file-structure">Project File Structure</a>
@@ -196,6 +194,8 @@
     <li class="toctree-l4"><a class="reference internal" href="#type">type:</a>
     </li>
         </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#variables">variables:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#context-map">context-map:</a>
     </li>
@@ -707,8 +707,14 @@ Demo.Release+WiFi
 <p>The <code>context</code> name is also used in <a href="#for-context"><code>for-context:</code></a> and <a href="#not-for-context"><code>not-for-context:</code></a> nodes that allow to include or exclude items depending on the <code>context</code>. In many cases, the <code>project-name</code> can be omitted as the <code>context</code> name is within a specific <code>*.cproject.yml</code> file or applied to a specific <code>*.cproject.yml</code> file.</p>
 <h2 id="access-sequences">Access Sequences</h2>
 <p>The <strong>access sequences</strong> export values from the CMSIS Project Manager for the
-<code>*.yml</code> file nodes <code>define:</code>, <code>define-asm:</code>, <code>add-path:</code>, <code>misc:</code>, <code>files:</code>, and <code>executes:</code>. The <strong>access sequences</strong>
+<code>*.yml</code> file nodes <a href="#define"><code>define:</code></a>, <a href="#define-asm"><code>define-asm:</code></a>, <a href="#add-path"><code>add-path:</code></a>, <a href="#misc"><code>misc:</code></a>, <a href="#files"><code>files:</code></a>, <a href="#executes"><code>executes:</code></a>, and <a href="#variables"><code>variables:</code></a>. The <strong>access sequences</strong>
 can specify a different project and describe, therefore, project dependencies.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li><a href="#variables"><code>variables:</code></a> that are defined in the <code>*.csolution.yml</code> file can be accessed also using the <code>$&lt;key&gt;$</code> notation.</li>
+</ul>
+</div>
 <table>
 <thead>
 <tr>
@@ -862,33 +868,6 @@ can specify a different project and describe, therefore, project dependencies.</
   - group:  &quot;Main File Group&quot;
     define:
       - $Dname$                           # Generate a #define 'device-name' for this file group
-</code></pre>
-<h2 id="variables">Variables</h2>
-<p>The <code>variables:</code> node defines are <em>key/value</em> pairs that can be used to refer to <code>*.clayer.yml</code> files.  The <em>key</em> is the name of the <em>variable</em> and can be used  in the following nodes: <a href="#layers"><code>layers:</code></a>, <a href="#define"><code>define:</code></a>, <a href="#define-asm"><code>define-asm:</code></a>, <a href="#add-path"><code>add-path:</code></a>, <a href="#add-path-asm"><code>add-path-asm:</code></a>, <a href="#misc"><code>misc:</code></a>, <a href="#files"><code>files:</code></a>, and <a href="#executes"><code>executes:</code></a></p>
-<p>Using variables that are defined in the <code>*.csolution.yml</code> file, a <code>*.cproject.yml</code> file requires no modifications when new <code>target-types:</code> are introduced.  The required <code>layers:</code> could be instead specified in the <code>*.csolution.yml</code> file using a new node <code>variables:</code>.</p>
-<p><strong>Example:</strong></p>
-<p><em>Example.csolution.yml</em></p>
-<pre><code class="language-yml">solution:
-  target-types:
-    - type: NXP Board
-      board: IMXRT1050-EVKB
-      variables:
-        - Socket-Layer: ./Socket/FreeRTOS+TCP/Socket.clayer.yml
-        - Board-Layer:  ./Board/IMXRT1050-EVKB/Board.clayer.yml
-
-    - type: ST Board
-      board: B-U585I-IOT02A
-      variables:
-        - Socket-Layer: ./Socket/WiFi/Socket.clayer.yml
-        - Board-Layer:  ./Board/B-U585I-IOT02A/Board.clayer.yml
-</code></pre>
-<p><em>Example.cproject.yml</em></p>
-<pre><code class="language-yml">  layers:
-    - layer: $Socket-Layer$
-      type: Socket
-
-    - layer: $Board-Layer$      # no `*.clayer.yml` specified. Compatible layers are listed
-      type: Board               # layer of type `Board` is expected
 </code></pre>
 <h2 id="order-of-list-nodes">Order of List Nodes</h2>
 <p>The <em>key</em>/<em>value</em> pairs in a list node can be in any order.  The two following list nodes are logically identical. This
@@ -1318,6 +1297,11 @@ the compiler with specific default controls. The search order for this file is:<
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#misc"><code>misc:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Literal tool-specific controls.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#device"><code>device:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Specify processor core.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#generators"><code>generators:</code></a></td>
@@ -2474,7 +2458,7 @@ The <code>pack:</code> definition may be specific to a <a href="#context"><code>
   - pack: ARM::CMSIS-FreeRTOS@^10.4.0   # add CMSIS-FreeRTOS with version 10.4.x or higher but lower than 11.0.0
 
   - pack: NXP::K32L3A60_DFP             # add pack for NXP device
-    path: ./local/NXP/K32L3A60_DFP      # with path to the pack (local copy, repo, etc.)
+ftar    path: ./local/NXP/K32L3A60_DFP      # with path to the pack (local copy, repo, etc.)
 
   - pack: AWS::coreHTTP                 # add pack
     path: ./development/AWS/coreHTTP    # with path to development source directory
@@ -2925,7 +2909,7 @@ settings are processed in the following order:</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Either <code>project-context:</code> or <code>image:</code> is required, but these nodes are mutually exclusive.
-The <code>load:</code> and <code>type:</code> specification is only accepted for an <code>image:</code> file.</p>
+The <code>type:</code> specification is only accepted for an <code>image:</code> file.</p>
 </div>
 <h4 id="load"><code>load:</code></h4>
 <p>Specifies the load mode for an image file. This information is used by programmers and debug tools.</p>
@@ -3033,6 +3017,52 @@ The <code>load:</code> and <code>type:</code> specification is only accepted for
   projects:
     - project: ./cm33_core1/core1.cproject.yml
     - project: ./cm33_core0/core0.cproject.yml
+</code></pre>
+<h3 id="variables"><code>variables:</code></h3>
+<p>The <code>variables:</code> node defines <em>key/value</em> pairs in the <code>*.csolution.yml</code> file. Using <code>$&lt;key&gt;$</code> in <code>*.cproject.yml</code> and <code>*.clayer.yml</code> files expands to the <em>value</em> of the variable. The variable <code>$&lt;key&gt;$</code> can be used in the following nodes: <a href="#layers"><code>layers:</code></a>, <a href="#define"><code>define:</code></a>, <a href="#define-asm"><code>define-asm:</code></a>, <a href="#add-path"><code>add-path:</code></a>, <a href="#add-path-asm"><code>add-path-asm:</code></a>, <a href="#misc"><code>misc:</code></a>, <a href="#files"><code>files:</code></a>, and <a href="#executes"><code>executes:</code></a>. The <code>&lt;key&gt;:</code> name format <code>&lt;type&gt;-Layer</code> is a convention that references <a href="#layer-type">layer-type</a>. In this case the <code>copied-from:</code> can be used to describe the orginal source of a layer (typically a path in a software pack).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>load:</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>&lt;key&gt;:</code></td>
+<td style="text-align: left;"><code>&lt;key&gt;:</code> specifies a variable name with value.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>copied-from:</code></td>
+<td style="text-align: left;">Descriptive text that documents the source of a layer.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<p>With variables that are defined in the <code>*.csolution.yml</code> file, a <code>*.cproject.yml</code> file requires no modifications when new <code>target-types:</code> are introduced.  The required <code>layers:</code> could be instead specified in the <code>*.csolution.yml</code> file using a new node <code>variables:</code>.</p>
+<p><em>Example.csolution.yml</em></p>
+<pre><code class="language-yml">solution:
+  target-types:
+    - type: NXP Board
+      board: IMXRT1050-EVKB
+      variables:
+        - Socket-Layer: $SolutionDir()$/Socket/FreeRTOS+TCP/Socket.clayer.yml
+        - Board-Layer:  $SolutionDir()$/Board/IMXRT1050-EVKB/Board.clayer.yml
+
+    - type: ST Board
+      board: B-U585I-IOT02A
+      variables:
+        - Socket-Layer: $SolutionDir()$/Socket/WiFi/Socket.clayer.yml
+        - Board-Layer: $SolutionDir()$/Board/B-U585I-IOT02A/Board.clayer.yml
+          copied-from: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.0.0/CMSIS/Board/
+</code></pre>
+<p><em>Example.cproject.yml</em></p>
+<pre><code class="language-yml">  layers:
+    - layer: $Socket-Layer$
+      type: Socket
+
+    - layer: $Board-Layer$      # no `*.clayer.yml` specified. Compatible layers are listed
+      type: Board               # layer of type `Board` is expected
 </code></pre>
 <h3 id="context-map"><code>context-map:</code></h3>
 <p>The <code>context-map:</code> node allows for a specific <code>project-name</code> the remapping of <code>target-types:</code> and/or <code>build-types:</code> to a different <code>context:</code> which enables:</p>

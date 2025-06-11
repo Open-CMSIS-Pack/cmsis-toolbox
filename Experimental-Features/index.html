@@ -109,6 +109,8 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#server-mode">Server Mode</a>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -245,6 +247,9 @@
 <ul>
 <li>Should the <code>&lt;solution-name&gt;+&lt;target-name&gt;.regions.h</code> file contain also <code>#define</code> symbols for the overall available memory, i.e. for a boot loader?</li>
 </ul>
+<h2 id="server-mode">Server Mode</h2>
+<p>The <code>csolution</code> tool supports the command line argument <code>rpc</code> to initiate a server mode. With this mode <a href="https://github.com/Open-CMSIS-Pack/csolution-rpc/blob/main/api/csolution-openapi.yml">rpc commands</a> can be initiated. The first set of commands will be used by the VS Code CMSIS Solution extension to select components and packs for projects and layers.</p>
+<p>Refer to <a href="https://github.com/Open-CMSIS-Pack/csolution-rpc">github.com/Open-CMSIS-Pack/csolution-rpc</a> for more information.</p>
               
             </div>
           </div><footer>

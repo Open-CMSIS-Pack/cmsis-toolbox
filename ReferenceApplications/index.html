@@ -308,7 +308,7 @@ The <em>Reference Application</em> does not specify a target hardware. For execu
       board: B-U585I-IOT02A         # name of a target board
 </code></pre>
 <h3 id="step-2-run-cbuild-setup">Step 2: Run <code>cbuild setup</code></h3>
-<p>Run <code>cbuild setup</code> with the <code>*.csolution.yml</code> file. This identifies compatible layers with an output similar to:</p>
+<p>Run <code>cbuild setup</code> with the <code>*.csolution.yml</code> file. This identifies compatible layers that are part of the software packs listed in the <code>*.csolution.yml</code> file with an output similar to:</p>
 <pre><code class="language-txt">&gt;cbuild setup xxx.csolution.yml
 error csolution: undefined variables in xxx.csolution.yml:
   - $Board-Layer$
