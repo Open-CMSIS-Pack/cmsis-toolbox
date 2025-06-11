@@ -8,7 +8,7 @@ Library                 DataDriver
 Library                 OperatingSystem
 Library                 String
 Library                 lib${/}elf_compare.py
-Library                 lib${/}utils.py 
+Library                 lib${/}utils.py
 Resource                resources${/}global.resource
 Resource                resources${/}utils.resource
 Resource                resources${/}exec.resource

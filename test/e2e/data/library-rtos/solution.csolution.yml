@@ -16,7 +16,7 @@ solution:
 
     - type: GCC
       compiler: GCC
-      misc: 
+      misc:
         - Library:
           - -lm
           - -lc

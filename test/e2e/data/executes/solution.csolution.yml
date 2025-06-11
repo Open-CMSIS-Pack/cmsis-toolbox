@@ -6,7 +6,7 @@ solution:
   packs:
     - pack: ARM::Cortex_DFP
     - pack: ARM::CMSIS
-      
+
   target-types:
     - type: ARMCM0
       device: ARMCM0
@@ -42,7 +42,7 @@ solution:
     - execute: Run_Always2
       run: ${CMAKE_COMMAND} -E echo "Execute Run Always2"
       always:
-    - execute: Run_After_Archiving 
+    - execute: Run_After_Archiving
       run: ${CMAKE_COMMAND} -E echo "Archive has been updated"
       input:
         - $SolutionDir()$/artifacts.zip

@@ -101,7 +101,7 @@ Refer to [CMSIS-Toolbox Templates](https://github.com/Open-CMSIS-Pack/csolution-
 A minimal application requires two files:
 
 - `Sample.csolution.yml` that defines a [target type](YML-Input-Format.md#target-types) with [board](YML-Input-Format.md#board) or [device](YML-Input-Format.md#device). It includes a [project](YML-Input-Format.md#projects) and selects a [compiler](YML-Input-Format.md#compiler).
-  
+
 - `Sample.cproject.yml` defines the files and software components that are translated into an image or library archive.
 
 !!! Note
@@ -113,10 +113,10 @@ A minimal application requires two files:
 solution:
   cdefault:                                   # use default setup for toolchains
   compiler: AC6                               # select the compiler to use
-  
+
   packs:                                      # explicit pack selection may be omitted
     - pack: NXP::K32L3A60_DFP@16.0.0          # specify DFP
-    - pack: NXP::FRDM-K32L3A6_BSP@16.0.0 
+    - pack: NXP::FRDM-K32L3A6_BSP@16.0.0
 
   target-types:
     - type: FRDM-K32L3A6
@@ -228,7 +228,7 @@ default:
         - -Wl,--gc-sections
 
     - for-compiler: IAR
-      C-CPP: 
+      C-CPP:
         - --dlib_config DLib_Config_Full.h
       Link:
         - --map=$elf()$.map
@@ -319,7 +319,7 @@ solution:
 
     - type: Production-HW
       device: STM32U5X          # specifies device
-      
+
   build-types:
     - type: Debug
       optimize: none
@@ -332,7 +332,7 @@ solution:
     - type: Test
       optimize: size
       debug: on
-    
+
   projects:
     - project: ./security/TFM.cproject.yml           # Project D: Only generated for build type: Release
       for-context: .Release
@@ -668,7 +668,7 @@ When upgrading (or downgrading) a software component, the version information of
 ```c
 ./RTE/component_class/ConfigFile.h                  // user editable configuration file (based on the current version)
 ./RTE/component_class/ConfigFile.h.update@1.3.0     // new configuration file; used to start a 3-way merge
-./RTE/component_class/ConfigFile.h.base@1.2.0       // current unmodified configuration file with version 
+./RTE/component_class/ConfigFile.h.base@1.2.0       // current unmodified configuration file with version
                                                     // information; used as a base for version comparison
 ```
 
@@ -686,7 +686,7 @@ The user now has several options (outside of `csolution`) to merge the configura
 ```c
 ./RTE/component_class/ConfigFile.h                  // new configuration file with merge configuration
 ./RTE/component_class/ConfigFile.h.bak              // previous configuration file stored as backup
-./RTE/component_class/ConfigFile.h.base@1.3.0       // current unmodified configuration file with version 
+./RTE/component_class/ConfigFile.h.base@1.3.0       // current unmodified configuration file with version
                                                     // information; used as a base for version comparison
 ```
 
@@ -745,7 +745,7 @@ The preprocessor symbol `_RTE_` is added to the compiler invocation when a CMSIS
 #ifdef _RTE_                           // Is a CMSIS build system used?
 #include "RTE_Components.h"            // Include Run-Time-Environment symbols
 #else                                  // Otherwise, use different ways to supply required symbols
-#define CMSIS_device_header "stm32f10x.h"     
+#define CMSIS_device_header "stm32f10x.h"
 #endif
 ```
 
@@ -758,7 +758,7 @@ This section describes the Linker Script management of the **`csolution` Project
 1. The [`linker:`](YML-Input-Format.md#linker) node specifies an explicit Linker Script and/or memory regions header file. This overrules Linker Scripts that are part of software components or specified using the `file:` notation.
 
 2. The [`linker:`](YML-Input-Format.md#linker) `auto:` enables the [automatic Linker Script generation](#automatic-linker-script-generation).
-  
+
 3. If no [`linker:`](YML-Input-Format.md#linker) node is used, a Linker Script file can be provided as part of software components. The extensions `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
 
 4. If no Linker Script is found, the [automatic Linker Script generation](#automatic-linker-script-generation) is used.
@@ -785,7 +785,7 @@ Both files, the Linker Script template and the `<regions>.h` are located in the 
 
 - `Bname` when the project context uses a [`board:`](YML-Input-Format.md#board-name-conventions) specification, i.e. `regions_IMXRT1050-EVKB.h`
 - `Dname` when the project context only uses a [`device:`](YML-Input-Format.md#device-name-conventions) specification, i.e. `regions_stm32u585xx.h`.
-  
+
 Both files, the Linker Script template and the `<regions>.h` can be modified by the user as it might be required to adjust the memory regions or give additional attributes (such as `noinit`).
 
 !!! Note
@@ -896,7 +896,7 @@ The following example uses a CMSIS-DAP debugger with JTAG protocol and configure
     - type: Alif_AppKitE7
       board: Alif Semiconductor::AppKit-E7
       target-set:
-        - set: 
+        - set:
           debugger:
             name: CMSIS-DAP
             protocol: jtag

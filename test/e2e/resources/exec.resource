@@ -59,7 +59,7 @@ Initialize Pack Root Directory
     [Arguments]         ${pack_root_dir}
     Run Program         cpackget    init    https://www.keil.com/pack/index.pidx    -R    ${pack_root_dir}
 
-Install Pack 
+Install Pack
     [Documentation]     Install pack to pack root directory
     [Arguments]         ${pack_id}    ${pack_root_dir}
     ${ret_code}=        Run Program         cpackget    add    ${pack_id}
@@ -83,7 +83,7 @@ Build CSolution Example
     Build Example With cbuild2cmake    ${input_file}    ${cbuild2cmake_expect}     ${args}
     Build Example With cbuildgen       ${input_file}    ${cbuildgen_expect}        ${args}
 
-    # If any of the expectations is failure, there's no need to compare ELF information 
+    # If any of the expectations is failure, there's no need to compare ELF information
     IF    '${cbuildgen_expect}' == '1' or '${cbuild2cmake_expect}' == '1'
         RETURN    ${True}
     END
@@ -108,7 +108,7 @@ Run Csolution Project
     ${contexts}=                    Get Contexts From Project      ${input_file}    ${expect}    ${args}
     ${filecontexts}=                Convert And Filter Contexts    ${contexts}
     @{args_ex}                      Create List                    @{args}    @{filecontexts}
-    
+
     ${res_cbuildgen}=       Run Keyword And Ignore Error
     ...    Build Example With cbuildgen      ${input_file}    ${expect}    ${args_ex}
     ${res_cbuild2cmake}=    Run Keyword And Ignore Error
@@ -138,7 +138,7 @@ Run Csolution Project
     ${parent_path}=    Get Parent Directory Path    ${input_file}
     ${elf_compare_result}=         Run Keyword And Return
     ...                    Compare Elf Information   ${input_file}
-    ...                    ${parent_path}${/}${Out_Dir}${/}${Default_Out_Dir}  
+    ...                    ${parent_path}${/}${Out_Dir}${/}${Default_Out_Dir}
     ...                    ${parent_path}${/}${Default_Out_Dir}
     IF    '${elf_compare_result}' == 'False'
         Return From Keyword    False

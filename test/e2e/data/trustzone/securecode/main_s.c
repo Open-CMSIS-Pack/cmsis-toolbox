@@ -1,15 +1,15 @@
 /* Use CMSE intrinsics */
 #include <arm_cmse.h>
- 
+
 #include "RTE_Components.h"
 #include CMSIS_device_header
- 
+
 #ifndef START_NS
 #define START_NS (0x200000U)
 #endif
- 
+
 typedef void (*funcptr) (void) __attribute__((cmse_nonsecure_call));
- 
+
 int main(void) {
   funcptr ResetHandler;
 
@@ -21,4 +21,3 @@ int main(void) {
     __NOP();
   }
 }
-

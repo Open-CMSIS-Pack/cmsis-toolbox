@@ -1,4 +1,4 @@
-The software is provided under Apache 2.0 license (below). 
+The software is provided under Apache 2.0 license (below).
 No contributions to cmsis-build are accepted at this point.
 
                                  Apache License
@@ -205,16 +205,16 @@ No contributions to cmsis-build are accepted at this point.
 
 Other Projects:
 ================
-The installer redistributes and installs GNU Make v4.2 for Windows 64-bit 
+The installer redistributes and installs GNU Make v4.2 for Windows 64-bit
 when installed on Windows (.../bin/make.exe)
 Name:         GNU Make v4.2
-Summary:      GNU Make is a tool which controls the generation of executables 
-              and other non-source files of a program from the program's source 
-              files. 
+Summary:      GNU Make is a tool which controls the generation of executables
+              and other non-source files of a program from the program's source
+              files.
 Home-page:    https://www.gnu.org/software/make/
-License(s):   GNU General Public License v3.0 only (GPL-3.0-only). See later 
+License(s):   GNU General Public License v3.0 only (GPL-3.0-only). See later
               section for a copy of license text.
-Copyright(s): Refer to Source(s): https://ftp.gnu.org/gnu/make/ 
+Copyright(s): Refer to Source(s): https://ftp.gnu.org/gnu/make/
 
 License text (GPL-3.0-only) for 'GNU Make'
 

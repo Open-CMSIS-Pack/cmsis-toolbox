@@ -25,7 +25,7 @@
 |windows-amd64|Hello_LPCXpresso55S69|30.37 s|Remote Example Tests|
 |windows-amd64|Csolution-examples|27.52 s|Remote Example Tests|
 |windows-amd64|keil-studio-get-started|8.24 s|Remote Example Tests|
-|windows-amd64|Hello_AVH|65.48 s|Remote Example Tests|
+|windows-amd64|AVH-VSI|65.48 s|Remote Example Tests|
 |linux-amd64|Validate build-asm Example|8.28 s|Local Example Tests|
 |linux-amd64|Validate build-c Example|1.67 s|Local Example Tests|
 |linux-amd64|Validate build-cpp Example|2.66 s|Local Example Tests|
@@ -41,7 +41,7 @@
 |linux-amd64|Hello_LPCXpresso55S69|10.68 s|Remote Example Tests|
 |linux-amd64|Csolution-examples|14.93 s|Remote Example Tests|
 |linux-amd64|keil-studio-get-started|3.92 s|Remote Example Tests|
-|linux-amd64|Hello_AVH|27.26 s|Remote Example Tests|
+|linux-amd64|AVH-VSI|27.26 s|Remote Example Tests|
 |darwin-amd64|Validate build-asm Example|10.46 s|Local Example Tests|
 |darwin-amd64|Validate build-c Example|7.23 s|Local Example Tests|
 |darwin-amd64|Validate build-cpp Example|10.51 s|Local Example Tests|
@@ -57,4 +57,4 @@
 |darwin-amd64|Hello_LPCXpresso55S69|22.71 s|Remote Example Tests|
 |darwin-amd64|Csolution-examples|28.29 s|Remote Example Tests|
 |darwin-amd64|keil-studio-get-started|9.56 s|Remote Example Tests|
-|darwin-amd64|Hello_AVH|61.67 s|Remote Example Tests|
+|darwin-amd64|AVH-VSI|61.67 s|Remote Example Tests|
