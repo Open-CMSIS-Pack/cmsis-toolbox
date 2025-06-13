@@ -270,6 +270,7 @@ jobs:
         run: |
           curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.49/schema/PACK.xsd --output distribution/etc/PACK.xsd
           curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.49/schema/PackIndex.xsd --output distribution/etc/PackIndex.xsd
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/debug-adapter-registry/refs/heads/main/registry/debug-adapters.yml --output distribution/etc/debug-adapters.yml
           cp ./buildmgr/bin/cbuildgen${{ matrix.temp_extension }}-${{ matrix.arch }}                        ./distribution/bin/cbuildgen${{ matrix.binary_extension }}
           cp -r ./buildmgr/etc/*                                                                            ./distribution/etc
           rm ./distribution/etc/setup
