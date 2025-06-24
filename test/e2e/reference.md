@@ -4,7 +4,7 @@
 
 |:white_check_mark: Passed|:x: Failed|:fast_forward: Skipped|Total|
 |:----:|:----:|:-----:|:---:|
-|48|0|0|48|
+|64|0|0|64|
 
 ## Passed Tests
 
@@ -58,3 +58,19 @@
 |darwin-amd64|Csolution-examples|28.29 s|Remote Example Tests|
 |darwin-amd64|keil-studio-get-started|9.56 s|Remote Example Tests|
 |darwin-amd64|AVH-VSI|61.67 s|Remote Example Tests|
+|linux-arm64|Validate build-asm Example|8.28 s|Local Example Tests|
+|linux-arm64|Validate build-c Example|1.67 s|Local Example Tests|
+|linux-arm64|Validate build-cpp Example|2.66 s|Local Example Tests|
+|linux-arm64|Validate build-set Example|1.12 s|Local Example Tests|
+|linux-arm64|Validate executes Example|1.33 s|Local Example Tests|
+|linux-arm64|Validate include-define Example|1.93 s|Local Example Tests|
+|linux-arm64|Validate language-scope Example|2.48 s|Local Example Tests|
+|linux-arm64|Validate linker-pre-processing Example|1.69 s|Local Example Tests|
+|linux-arm64|Validate pre-include Example|1.78 s|Local Example Tests|
+|linux-arm64|Validate whitespace Example|1.67 s|Local Example Tests|
+|linux-arm64|Validate trustzone Example|7.48 s|Local Example Tests|
+|linux-arm64|Hello_FRDM-K32L3A6|13.17 s|Remote Example Tests|
+|linux-arm64|Hello_LPCXpresso55S69|10.68 s|Remote Example Tests|
+|linux-arm64|Csolution-examples|14.93 s|Remote Example Tests|
+|linux-arm64|keil-studio-get-started|3.92 s|Remote Example Tests|
+|linux-arm64|AVH-VSI|27.26 s|Remote Example Tests|
