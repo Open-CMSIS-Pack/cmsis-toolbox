@@ -395,8 +395,26 @@ jobs:
         run: |
           echo "path=$(echo "$(pwd)/cmsis-toolbox/bin")" >> $GITHUB_OUTPUT
 
+      - name: Binary version linux-arm64
+        if: ${{ startsWith(matrix.runs_on, 'ubuntu') && matrix.arch == 'arm64' }}
+        uses: uraimo/run-on-arch-action@v2
+        with:
+          arch: aarch64
+          distro: ubuntu22.04
+          run: |
+            # Re-expose the toolbox directory and make sure it is executable
+            chmod -R +x ./cmsis-toolbox/bin/*
+            export PATH="$(pwd)/cmsis-toolbox/bin:$PATH"
+
+            echo "CMSIS-Toolbox binary versions (arm64):"
+            csolution    -V
+            cpackget     -V
+            cbuild       -V
+            cbuild2cmake -V
+            cbuildgen    -V
+
       - name: Binary version info
-        if: always()
+        if: ${{ matrix.arch != 'arm64' }}
         shell: bash
         run: |
           export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
@@ -466,7 +484,8 @@ jobs:
         python -m robot.rebot --name Collective_Robot_Results --outputdir collective_robot_results --output output.xml \
           ./reports-windows-amd64/output.xml \
           ./reports-linux-amd64/output.xml \
-          ./reports-darwin-amd64/output.xml
+          ./reports-darwin-amd64/output.xml \
+          ./reports-linux-arm64/output.xml
 
     - name: Generate Summary report
       if: always()

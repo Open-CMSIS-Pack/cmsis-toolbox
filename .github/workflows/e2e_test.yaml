@@ -136,7 +136,8 @@ jobs:
         python -m robot.rebot --name Collective_Robot_Results --outputdir collective_robot_results --output output.xml \
           ./reports-windows-amd64/output.xml \
           ./reports-linux-amd64/output.xml \
-          ./reports-darwin-amd64/output.xml
+          ./reports-darwin-amd64/output.xml \
+          ./reports-linux-arm64/output.xml \
 
     - name: Generate Summary report
       if: always()
