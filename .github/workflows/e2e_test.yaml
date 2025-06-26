@@ -138,6 +138,8 @@ jobs:
           ./reports-linux-amd64/output.xml \
           ./reports-darwin-amd64/output.xml \
           ./reports-linux-arm64/output.xml \
+          ./reports-windows-arm64/output.xml \
+          ./reports-darwin-arm64/output.xml
 
     - name: Generate Summary report
       if: always()
