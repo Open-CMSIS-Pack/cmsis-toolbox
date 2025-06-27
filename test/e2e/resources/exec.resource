@@ -75,6 +75,7 @@ Get Contexts From Project
     ${result}    Run Process    csolution     list    contexts    --yml-order    ${input_File}
     ...                     -q    shell=True    stdout=${CURDIR}/stdout.txt
     ${ret_code}=        Set Variable If    ${result.rc} == ${0}    ${result.rc}    ${1}
+    Log Many            StdOut: ${result.stdout}
     Should Be Equal     ${ret_code}      ${expect}        msg=Unexpected status returned by list context command
     RETURN              ${result.stdout}
 

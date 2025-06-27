@@ -4,41 +4,47 @@
         "target":"darwin",
         "arch": "amd64",
         "binary_extension": "",
-        "runOnBranch":"always"
+        "runOnBranch":"always",
+        "runTests": false
     },
     {
         "runs_on":"macos-13",
         "target":"darwin",
         "arch": "arm64",
         "binary_extension": "",
-        "runOnBranch":"always"
+        "runOnBranch":"always",
+        "runTests": false
     },
     {
         "runs_on":"ubuntu-22.04",
         "target":"linux",
         "arch": "amd64",
         "binary_extension":"",
-        "runOnBranch":"always"
+        "runOnBranch":"always",
+        "runTests": true
     },
     {
-        "runs_on":"ubuntu-22.04",
+        "runs_on":"ubuntu-22.04-arm",
         "target":"linux",
         "arch": "arm64",
         "binary_extension":"",
-        "runOnBranch":"always"
+        "runOnBranch":"always",
+        "runTests": true
     },
     {
         "runs_on":"windows-2022",
         "target":"windows",
         "arch": "amd64",
         "binary_extension":".exe",
-        "runOnBranch":"always"
+        "runOnBranch":"always",
+        "runTests": true
     },
-        {
+    {
         "runs_on":"windows-2022",
         "target":"windows",
         "arch": "arm64",
         "binary_extension":".exe",
-        "runOnBranch":"always"
+        "runOnBranch":"always",
+        "runTests": false
     }
 ]
