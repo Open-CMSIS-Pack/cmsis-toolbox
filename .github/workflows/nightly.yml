@@ -28,7 +28,7 @@ concurrency:
 jobs:
   matrix_prep:
     runs-on: ubuntu-latest
-    if: github.repository == 'open-cmsis-pack/cmsis-toolbox'
+    if: github.repository == 'Open-CMSIS-Pack/cmsis-toolbox'
     outputs:
       build: ${{ steps.build-matrix.outputs.matrix }}
       test: ${{ steps.test-matrix.outputs.matrix }}
