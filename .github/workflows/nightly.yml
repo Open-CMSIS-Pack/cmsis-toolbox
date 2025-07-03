@@ -406,6 +406,17 @@ jobs:
         run: |
           echo "path=$(echo "$(pwd)/cmsis-toolbox/bin")" >> $GITHUB_OUTPUT
 
+      - name: Binary version info
+        if: ${{ matrix.arch != 'arm64' }}
+        shell: bash
+        run: |
+          export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
+          csolution -V
+          cpackget -V
+          cbuild -V
+          cbuild2cmake -V
+          cbuildgen -V
+
       - name: Run Test
         id: run_robot
         shell: bash
