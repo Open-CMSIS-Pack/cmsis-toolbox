@@ -437,7 +437,7 @@ jobs:
           exit 1
 
   consolidate-report:
-    if: always()
+    if: github.repository == 'Open-CMSIS-Pack/cmsis-toolbox' && always()
     needs: [run-tests]
     runs-on: ubuntu-latest
     permissions: write-all
