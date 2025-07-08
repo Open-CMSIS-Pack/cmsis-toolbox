@@ -33,12 +33,12 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@002fdce3c6a235733a90a27c80493a3241e56863 # v2.12.1
+        uses: step-security/harden-runner@6c439dc8bdf85cadbbce9ed30d1c7b959517bc49 # v2.12.2
         with:
           egress-policy: audit
 
       - name: Harden Runner
-        uses: step-security/harden-runner@002fdce3c6a235733a90a27c80493a3241e56863 # v2.12.1
+        uses: step-security/harden-runner@6c439dc8bdf85cadbbce9ed30d1c7b959517bc49 # v2.12.2
         with:
           egress-policy: audit
 
@@ -60,7 +60,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@002fdce3c6a235733a90a27c80493a3241e56863 # v2.12.1
+        uses: step-security/harden-runner@6c439dc8bdf85cadbbce9ed30d1c7b959517bc49 # v2.12.2
         with:
           egress-policy: audit
 
@@ -409,7 +409,7 @@ jobs:
           - { os: ubuntu-22.04, target: linux, arch: arm64}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@002fdce3c6a235733a90a27c80493a3241e56863 # v2.12.1
+        uses: step-security/harden-runner@6c439dc8bdf85cadbbce9ed30d1c7b959517bc49 # v2.12.2
         with:
           egress-policy: audit
 
@@ -470,7 +470,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@002fdce3c6a235733a90a27c80493a3241e56863 # v2.12.1
+        uses: step-security/harden-runner@6c439dc8bdf85cadbbce9ed30d1c7b959517bc49 # v2.12.2
         with:
           egress-policy: audit
 
@@ -570,7 +570,7 @@ jobs:
         working-directory: testreports
 
       - name: Attach test report archive to release assets
-        uses: svenstaro/upload-release-action@ebd922b779f285dafcac6410a0710daee9c12b82 # v2
+        uses: svenstaro/upload-release-action@81c65b7cd4de9b2570615ce3aad67a41de5b1a13 # v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: testreports/testreports.zip
@@ -590,7 +590,7 @@ jobs:
 
       - name: Attach installer to release assets
         id: release_assets
-        uses: svenstaro/upload-release-action@ebd922b779f285dafcac6410a0710daee9c12b82 # v2
+        uses: svenstaro/upload-release-action@81c65b7cd4de9b2570615ce3aad67a41de5b1a13 # v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: toolbox/zip/cmsis-toolbox-*
@@ -606,7 +606,7 @@ jobs:
           path: debian
 
       - name: Attach Debian Package to release assets
-        uses: svenstaro/upload-release-action@ebd922b779f285dafcac6410a0710daee9c12b82 # v2
+        uses: svenstaro/upload-release-action@81c65b7cd4de9b2570615ce3aad67a41de5b1a13 # v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: debian/cmsis-toolbox_*_amd64.deb
