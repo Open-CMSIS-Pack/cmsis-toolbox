@@ -13,7 +13,10 @@ def test_check_archive(base_path):
     Test to check the archive content
     """
     dirDict = dict()
-    dirDict["bin"] = {'cbridge', 'cbuild', 'cbuild2cmake', 'cbuildgen', 'cpackget', 'csolution', 'launch-MCUXpressoConfigTools', 'packchk', 'svdconv',  'vidx2pidx'}
+    dirDict["bin"] = {
+        'cbridge', 'cbuild', 'cbuild2cmake', 'cbuildgen',
+        'cpackget', 'csolution', 'launch-MCUXpressoConfigTools',
+        'packchk', 'svdconv',  'vidx2pidx', 'launch-Infineon_Dev_Config'}
     dirDict["doc"] = {'index.html'}
     dirDict["etc"] = {
         "AC6.6.16.2.cmake",

@@ -261,7 +261,8 @@ jobs:
           cp ./cpackget/build/cpackget${{ matrix.binary_extension }}                                        ./cmsis-toolbox/bin/cpackget${{ matrix.binary_extension }}
           cp ./cbuild2cmake/build/cbuild2cmake${{ matrix.binary_extension }}                                ./cmsis-toolbox/bin/cbuild2cmake${{ matrix.binary_extension }}
           cp ./cbridge/build/cbridge${{ matrix.binary_extension }}                                          ./cmsis-toolbox/bin/cbridge${{ matrix.binary_extension }}
-          cp ./cbridge/scripts/MCUXpresso_Config_Tools/${{ matrix.target }}-${{ matrix.arch }}/launch-MCUXpressoConfigTools*  ./cmsis-toolbox/bin/
+          cp ./cbridge/scripts/MCUXpresso_Config_Tools/${{ matrix.target }}-${{ matrix.arch }}/launch-MCUXpressoConfigTools*     ./cmsis-toolbox/bin/
+          cp ./cbridge/scripts/Infineon_Device_Configurator/${{ matrix.target }}-${{ matrix.arch }}/launch-Infineon_Dev_Config*  ./cmsis-toolbox/bin/
           cp ./vidx2pidx/build/vidx2pidx${{ matrix.binary_extension }}                                      ./cmsis-toolbox/bin/vidx2pidx${{ matrix.binary_extension }}
           cp -r devtools/tools/projmgr/templates/*                ./cmsis-toolbox/etc
           cp -r devtools/tools/projmgr/schemas/*                  ./cmsis-toolbox/etc
