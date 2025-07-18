@@ -278,6 +278,7 @@ jobs:
           cp -r ./projmgr/etc/*                                                                             ./distribution/etc
           cp ./cbridge/*/cbridge${{ matrix.binary_extension }}                                              ./distribution/bin/cbridge${{ matrix.binary_extension }}
           cp ./cbridge/*/launch-MCUXpressoConfigTools*                                                      ./distribution/bin/
+          cp ./cbridge/*/launch-Infineon_Dev_Config*                                                        ./distribution/bin/
           cp ./cbuild/*/cbuild${{ matrix.binary_extension }}                                                ./distribution/bin/cbuild${{ matrix.binary_extension }}
           cp ./cbuild2cmake/*/cbuild2cmake${{ matrix.binary_extension }}                                    ./distribution/bin/cbuild2cmake${{ matrix.binary_extension }}
           cp ./cpackget/*/cpackget${{ matrix.binary_extension }}                                            ./distribution/bin/cpackget${{ matrix.binary_extension }}
