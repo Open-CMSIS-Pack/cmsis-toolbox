@@ -391,7 +391,7 @@ jobs:
         working-directory: ./test
 
       - name: Download cmsis toolbox ${{ matrix.target }} ${{ matrix.arch }}
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: cmsis-toolbox
@@ -462,7 +462,7 @@ jobs:
           pip install -r test/e2e/requirements.txt
 
     - name: Download reports
-      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+      uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
       with:
         path: artifacts
         pattern: reports-*
@@ -604,7 +604,7 @@ jobs:
           rm -rf ${{steps.ref_toolbox_path.outputs.path}}
 
       - name: Download cmsis-toolbox
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           name: cmsis-toolbox-linux-amd64
           path: cmsis-toolbox
