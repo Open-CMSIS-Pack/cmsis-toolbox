@@ -42,7 +42,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - uses: JoshuaTheMiller/conditional-build-matrix@81b51eb8d89e07b86404934b5fecde1cea1163a5 # v2.0.1
         id: set-matrix
         with:
@@ -65,7 +65,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout cmsis-toolbox repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
 
@@ -415,7 +415,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout cmsis-toolbox
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           submodules: recursive
 
