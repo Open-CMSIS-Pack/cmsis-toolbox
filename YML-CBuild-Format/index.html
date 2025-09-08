@@ -85,8 +85,6 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#directory-structure">Directory Structure</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lock-pack-versions">Lock Pack Versions</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#file-format">File Format</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#cbuild-idxyml">*.cbuild-idx.yml</a>
@@ -264,6 +262,7 @@
 </tr>
 </tbody>
 </table>
+<p>!!! Note CMSIS-Toolbox 2.11 creates the <code>*.cbuild.yml</code> and <code>*.cbuild-run.yml</code> files in the <code>out</code> directory along with the related output files.</p>
 <h2 id="directory-structure">Directory Structure</h2>
 <p>The <code>csolution</code> based projects are portable across different host computers and use, therefore <strong>relative file references</strong>.</p>
 <ul>
@@ -288,26 +287,36 @@
  ┣ myapp.cbuild-pack.yml
  ┣ myapp.cbuild-set.yml
  ┣ 📂 project1
- ┃  ┣  mypro1.cproject.yml
- ┃  ┣  mypro1.cbuild.Debug+Target.yml     # file references are relative to directory project1
+ ┃  ┣  mypro1.cproject.yml                 # file references are relative to directory project1
  ┣ 📂 project2
- ┃  ┣  mypro2.cproject.yml
- ┃  ┣  mypro2.cbuild.Debug+Target.yml     # file references are relative to directory project2
+ ┃  ┣  mypro2.cproject.yml                 # file references are relative to directory project
  ┣ 📂 layer
- ┃  ┣  mylayer.clayer.yml
-</code></pre>
-<h2 id="lock-pack-versions">Lock Pack Versions</h2>
-<p>A <em>csolution project</em> refers to packs in different files (<code>*.csolution.yml</code>, <code>*.cproject.yml</code> or <code>*.clayer.yml</code>). To ensure consistent pack usage during application development (for example when new <code>target-types</code> or <code>build-types</code> are introduced), the <code>*.cbuild-pack.yml</code> file records the exact pack versions.</p>
-<p>The required packs can be specified in <em>csolution project files</em> in the following ways:</p>
-<ul>
-<li>exactly, e.g. <code>ARM::CMSIS@5.9.0</code></li>
-<li>with range, e.g. <code>ARM::CMSIS@&gt;=5.8.0</code></li>
-<li>without version, e.g. <code>ARM::CMSIS</code></li>
-<li>with wildcards on the pack name, e.g. <code>ARM::CMSI*</code></li>
-<li>without pack name, e.g. <code>ARM</code></li>
-</ul>
-<p>The required packs are resolved to an exact pack version that is recorded in the <code>*.cbuild-pack.yml</code> file as shown below:</p>
-<pre><code class="language-yml">cbuild-pack:
+ ┃  ┣  mylayer.clayer.yml                  # file references are relative to directory layer
+ ┣ 📂 out
+ ┃  ┣  myapp+Target.cbuild-run.yml         # file references are relative to directory out
+ ┣  ┣ 📂 mypro1\Target\Debug
+ ┣  ┣  ┣  mypro1.cbuild.Debug+Target.yml   # file references are relative to directory out\mypro1\Target\Debug
+ ┣  ┣ 📂 mypro2\Target\Debug
+ ┣  ┣  ┣  mypro2.cbuild.Debug+Target.yml   # file references are relative to directory out\mypro2\Target\Debug
+
+ ```
+
+## Lock Pack Versions
+
+A *csolution project* refers to packs in different files (`*.csolution.yml`, `*.cproject.yml` or `*.clayer.yml`). To ensure consistent pack usage during application development (for example when new `target-types` or `build-types` are introduced), the `*.cbuild-pack.yml` file records the exact pack versions.
+
+The required packs can be specified in *csolution project files* in the following ways:
+
+- exactly, e.g. `ARM::CMSIS@5.9.0`
+- with range, e.g. `ARM::CMSIS@&gt;=5.8.0`
+- without version, e.g. `ARM::CMSIS`
+- with wildcards on the pack name, e.g. `ARM::CMSI*`
+- without pack name, e.g. `ARM`
+
+The required packs are resolved to an exact pack version that is recorded in the `*.cbuild-pack.yml` file as shown below:
+
+```yml
+cbuild-pack:
   resolved-packs:
     - resolved-pack: ARM::CMSIS@5.9.0
       selected-by-pack:
@@ -411,10 +420,10 @@
       clayers:
         - clayer: $Board-Layer$
   cbuilds:
-    - cbuild: Device/HID/HID.Debug+B-U585I-IOT02A.cbuild.yml
+    - cbuild: out/HID/B-U585I-IOT02A/Debug/HID.Debug+B-U585I-IOT02A.cbuild.yml
       project: HID
       configuration: .Debug+B-U585I-IOT02A
-    - cbuild: Device/MassStorage/MassStorage.Release+B-U585I-IOT02A.cbuild.yml
+    - cbuild: out/MassStorage/B-U585I-IOT02A/Release/MassStorage.Release+B-U585I-IOT02A.cbuild.yml
       project: MassStorage
       configuration: .Release+B-U585I-IOT02A
   errors: true                  # indicates error
@@ -1191,6 +1200,10 @@
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>instances:</code></td>
 <td style="text-align: left;">Number of component instances configured.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>maxInstances:</code></td>
+<td style="text-align: left;">Maximum number component instances that can be configured.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#generator"><code>generator:</code></a></td>

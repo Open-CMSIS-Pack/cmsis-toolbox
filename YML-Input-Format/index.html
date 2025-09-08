@@ -2904,6 +2904,11 @@ settings are processed in the following order:</p>
 <td>Optional</td>
 <td style="text-align: left;">Offset applied to the binary content when loading the image file.</td>
 </tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#device"><code>device:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">For image files a pname can be specified to denote the processor that runs the image.</td>
+</tr>
 </tbody>
 </table>
 <div class="admonition note">
@@ -2923,7 +2928,7 @@ The <code>type:</code> specification is only accepted for an <code>image:</code>
 <tbody>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>image+symbols</code></td>
-<td style="text-align: left;">Load both the binary image and the debug symbol information (default for file <code>type: elf</code>).</td>
+<td style="text-align: left;">Load both the binary image and the debug symbol information (default for <code>project-context</code> and <code>image</code> with file type elf).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>symbols</code></td>
@@ -2931,7 +2936,7 @@ The <code>type:</code> specification is only accepted for an <code>image:</code>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>image</code></td>
-<td style="text-align: left;">Load only the binary image (default for other file types).</td>
+<td style="text-align: left;">Load only the binary image (default <code>image</code> for other file types).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>none</code></td>
@@ -2981,7 +2986,7 @@ The <code>type:</code> specification is only accepted for an <code>image:</code>
       board: FRDM-MCXN947
       device: NXP::MCXN947VDF
       target-set:
-        - set:                             // without id, &lt;default&gt; set
+        - set:                             # without id, &lt;default&gt; set
           debugger:
             name: ST-Link
           images:
@@ -2990,12 +2995,14 @@ The <code>type:</code> specification is only accepted for an <code>image:</code>
         - set: production
           images:
           - project-context: core1.Release
+            device: :core1                 # specify the pname that runs the image
           - project-context: core0.Release
+            device: :core0                 # specify the pname that runs the image
 
     - type: Custom-HW
       device: NXP::MCXN947VDF
       target-set:
-        - set:                             // without id, &lt;default&gt; set
+        - set:                             # without id, &lt;default&gt; set
           debugger:
             name: ULINKplus
             protocol: swd
