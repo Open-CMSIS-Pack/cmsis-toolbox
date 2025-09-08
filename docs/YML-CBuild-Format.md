@@ -16,6 +16,8 @@ File                                  | Description
 [`*.cbuild-set.yml`](#cbuild-setyml)  | [Context selection](build-overview.md#working-with-context-set) for the build process, enabled with option [--context-set:](build-tools.md#use-context-set).
 [`*.cbuild-run.yml`](#run-and-debug-management)  | Contains the information required to [download and debug](#run-and-debug-management) a *csolution project* to a target.
 
+!!! Note CMSIS-Toolbox 2.11 creates the `*.cbuild.yml` and `*.cbuild-run.yml` files in the `out` directory along with the related output files.
+
 ## Directory Structure
 
 The `csolution` based projects are portable across different host computers and use, therefore **relative file references**.
@@ -38,14 +40,19 @@ A typical directory structure of a `csolution` based application that uses commo
  ┣ myapp.cbuild-pack.yml
  ┣ myapp.cbuild-set.yml
  ┣ 📂 project1
- ┃  ┣  mypro1.cproject.yml
- ┃  ┣  mypro1.cbuild.Debug+Target.yml     # file references are relative to directory project1
+ ┃  ┣  mypro1.cproject.yml                 # file references are relative to directory project1
  ┣ 📂 project2
- ┃  ┣  mypro2.cproject.yml
- ┃  ┣  mypro2.cbuild.Debug+Target.yml     # file references are relative to directory project2
+ ┃  ┣  mypro2.cproject.yml                 # file references are relative to directory project
  ┣ 📂 layer
- ┃  ┣  mylayer.clayer.yml
-```
+ ┃  ┣  mylayer.clayer.yml                  # file references are relative to directory layer
+ ┣ 📂 out
+ ┃  ┣  myapp+Target.cbuild-run.yml         # file references are relative to directory out
+ ┣  ┣ 📂 mypro1\Target\Debug
+ ┣  ┣  ┣  mypro1.cbuild.Debug+Target.yml   # file references are relative to directory out\mypro1\Target\Debug
+ ┣  ┣ 📂 mypro2\Target\Debug
+ ┣  ┣  ┣  mypro2.cbuild.Debug+Target.yml   # file references are relative to directory out\mypro2\Target\Debug
+ 
+ ```
 
 ## Lock Pack Versions
 
@@ -139,10 +146,10 @@ build-idx:
       clayers:
         - clayer: $Board-Layer$
   cbuilds:
-    - cbuild: Device/HID/HID.Debug+B-U585I-IOT02A.cbuild.yml
+    - cbuild: out/HID/B-U585I-IOT02A/Debug/HID.Debug+B-U585I-IOT02A.cbuild.yml
       project: HID
       configuration: .Debug+B-U585I-IOT02A
-    - cbuild: Device/MassStorage/MassStorage.Release+B-U585I-IOT02A.cbuild.yml
+    - cbuild: out/MassStorage/B-U585I-IOT02A/Release/MassStorage.Release+B-U585I-IOT02A.cbuild.yml
       project: MassStorage
       configuration: .Release+B-U585I-IOT02A
   errors: true                  # indicates error
@@ -558,6 +565,7 @@ Keyword          | Description
 &nbsp;&nbsp;&nbsp; [`add-path:`](YML-Input-Format.md#add-path) | Additional include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](YML-Input-Format.md#misc)         | Literal tool-specific controls.
 &nbsp;&nbsp;&nbsp; `instances:`                                | Number of component instances configured.
+&nbsp;&nbsp;&nbsp; `maxInstances:`                             | Maximum number component instances that can be configured.
 &nbsp;&nbsp;&nbsp; [`generator:`](#generator)                  | Generator information for components that are configurable via a generator.
 &nbsp;&nbsp;&nbsp; `implements:`                               | Refers to the API that the component is based on.
 &nbsp;&nbsp;&nbsp; [`files:`](#files-of-a-component)           | List of files that belong to this component.

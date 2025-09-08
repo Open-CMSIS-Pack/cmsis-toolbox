@@ -22,7 +22,7 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.9.0 (C) 2022-2025 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.11.0 (C) 2022-2025 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -78,15 +78,19 @@ Commands:
   list configs                  Print list of configuration files
   list contexts                 Print list of contexts in a <name>.csolution.yml
   list components               Print list of available components
+  list debuggers                Print list of debuggers from debug-adapters.yml
   list dependencies             Print list of unresolved project dependencies
   list devices                  Print list of available device names
   list environment              Print list of environment configurations
+  list examples                 Print list of examples
+  list templates                Print list of templates
   list generators               Print list of code generators of a given context
   list layers                   Print list of available, referenced and compatible layers
   list packs                    Print list of used packs from the pack repository
   list target-sets              Print list of target-sets in a <name>.csolution.yml
   list toolchains               Print list of supported toolchains
   run                           Run code generator
+  rpc                           Run remote procedure call server
   update-rte                    Create/update configuration files and validate solution
 
 Options:
@@ -104,7 +108,6 @@ Options:
   -N, --no-update-rte           Skip creation of RTE directory and files
   -o,-O --output arg            Base folder for output files, 'outdir' and 'tmpdir' (default "Same as '*.csolution.yml'")
   -q, --quiet                   Run silently, printing only error messages
-  -R, --relative-paths          Print paths relative to project or ${CMSIS_PACK_ROOT}
   -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
   -t, --toolchain arg           Selection of the toolchain used in the project optionally with version
   -v, --verbose                 Enable verbose messages
@@ -118,7 +121,8 @@ Use 'csolution <command> -h' for more information about a command.
 Manage the installation of *software packs* on the host computer.
 
 ``` txt
-cpackget version 2.1.7 (C) 2021-2023 Linaro, 2024-2025 Arm Ltd.
+cpackget version 2.1.9
+ (C) 2021-2023 Linaro, 2024-2025 Arm Ltd.
 
 Usage:
   cpackget [command] [flags]
@@ -229,7 +233,7 @@ To install software packs from a public web service, run:
 
 ```shell
 cpackget add Arm::CMSIS
-cpackget add Arm::CMSIS@5.9.0     # optional with version specification
+cpackget add Arm::CMSIS@6.1.0     # optional with version specification
 ```
 
 ### List Installed Packs

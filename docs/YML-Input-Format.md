@@ -1411,6 +1411,8 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 &nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the image file.
 &nbsp;&nbsp;&nbsp; [`type:`](#type)                   |   Optional   | Specifies an explicit file of the image type.
 &nbsp;&nbsp;&nbsp; `load-offset:`                     |   Optional   | Offset applied to the binary content when loading the image file.
+&nbsp;&nbsp;&nbsp; [`device:`](#device)               |   Optional   | For image files a pname can be specified to denote the processor that runs the image.
+
 
 !!! Note
     Either `project-context:` or `image:` is required, but these nodes are mutually exclusive.
@@ -1422,9 +1424,9 @@ Specifies the load mode for an image file. This information is used by programme
 
 `load:`                              | Description
 :------------------------------------|:-------------
-&nbsp;&nbsp;&nbsp; `image+symbols`   | Load both the binary image and the debug symbol information (default for file `type: elf`).
+&nbsp;&nbsp;&nbsp; `image+symbols`   | Load both the binary image and the debug symbol information (default for `project-context` and `image` with file type elf).
 &nbsp;&nbsp;&nbsp; `symbols`         | Load only the debug symbol information.
-&nbsp;&nbsp;&nbsp; `image`           | Load only the binary image (default for other file types).
+&nbsp;&nbsp;&nbsp; `image`           | Load only the binary image (default `image` for other file types).
 &nbsp;&nbsp;&nbsp; `none`            | No content is loaded for this image, however it is part of the build process.
 
 #### `type:`
@@ -1449,7 +1451,7 @@ solution:
       board: FRDM-MCXN947
       device: NXP::MCXN947VDF
       target-set:
-        - set:                             // without id, <default> set
+        - set:                             # without id, <default> set
           debugger:
             name: ST-Link
           images:
@@ -1458,12 +1460,14 @@ solution:
         - set: production
           images:
           - project-context: core1.Release
+            device: :core1                 # specify the pname that runs the image
           - project-context: core0.Release
+            device: :core0                 # specify the pname that runs the image
 
     - type: Custom-HW
       device: NXP::MCXN947VDF
       target-set:
-        - set:                             // without id, <default> set
+        - set:                             # without id, <default> set
           debugger:
             name: ULINKplus
             protocol: swd
