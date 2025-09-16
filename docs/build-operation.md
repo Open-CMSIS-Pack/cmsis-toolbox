@@ -376,21 +376,18 @@ The options are added
 
 `user-interface:`                                       |            | Content
 :-------------------------------------------------------|:-----------|:------------------------------------
-`- title:`                                              |**Required**| Label text for the user interface.
+`- section:`                                            |**Required**| Label text for configuration section.
 &nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Hover over text.
-&nbsp;&nbsp;&nbsp; `yml-node:`                          |**Required**| Name of the node in the csolution file under `debugger:` section.
-&nbsp;&nbsp;&nbsp; `type:`                              |**Required**| Type (enum: value list, int: number, string: name).
-&nbsp;&nbsp;&nbsp; `range:`                             |  Optional  | Value range for type int.
-&nbsp;&nbsp;&nbsp; `values:`                            |  Optional  | Value list for type enum.
-&nbsp;&nbsp;&nbsp; `default:`                           |  Optional  | Default value for user interface when no value given in csolution.yml.
-&nbsp;&nbsp;&nbsp; `sub:`                               |  Optional  | Sub nodes.
+&nbsp;&nbsp;&nbsp; `yml-node:`                          |  Optional  | If present, options are under this group node in the `debugger:` section. 
+&nbsp;&nbsp;&nbsp; `select:`                            |  Optional  | If present, the section can be enabled. Applies to all options. 
+&nbsp;&nbsp;&nbsp; `options:`                           |  Optional  | List of available options.
 
 !!! Note
-    The nodes with `title: Clock (xxx)` and `title: Protocol` are displayed in the same line as the Debug Adapter and when defined cannot be disabled.  All other `title:` nodes have a enable/disable feature that removes the node from the `csolution.yml` file.
+    When a `section:` is disabled all nodes are removed from the `csolution.yml` file.
 
-`sub:`                                                  |            | Content
+`options:`                                              |            | Content
 :-------------------------------------------------------|:-----------|:------------------------------------
-`- title:`                                              |**Required**| Label text for the user interface.
+`- name:`                                               |**Required**| Label text for the option in the user interface.
 &nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Hover over text.
 &nbsp;&nbsp;&nbsp; `yml-node:`                          |**Required**| Name of the node in the csolution file under `debugger:` section.
 &nbsp;&nbsp;&nbsp; `type:`                              |**Required**| Type (enum: value list, int: number, string: name).
@@ -431,37 +428,42 @@ debug-adapters:
       protocol: swd
       clock: 1000kHz
     user-interface:  # this section is only used by the UI to display and edit settings
-      - title: Clock (kHz)         # UI display
+      - section: Debug Interface
+        description: Interface configuration for the debug port
+        options:
+        - name: Clock (kHz)       # UI display
+          description: Trace configuration   # hover over text
+          yml-node: clock          # node entry in csolution.yml
+          type: int                # type of value
+          range: [10, 5000]        # valid range
+          unit: kHz
+          default: 1000kHz         # default value if not specified anywhere
+        - name: Protocol
+          yml-node: protocol
+          type: enum
+          values: [jtag, swd]
+          default: swd
+      - section: Trace
         description: Trace configuration   # hover over text
-        yml-node: clock          # node entry in csolution.yml
-        type: int                # type of value
-        range: [10, 5000]        # valid range
-        unit: kHz
-        default: 1000kHz         # default value if not specified anywhere
-      - title: Protocol
-        yml-node: protocol
-        type: enum
-        values: [jtag, swd]
-        default: swd
-      - title: Trace
-        description: Trace configuration   # hover over text
-        yml-node: trace
-        sub:
-          - title: Clock (kHz)
+        yml-node: trace                    # when a yml node is given options are under this section
+        select: off
+        options:
+          - name: Clock (kHz)
             yml-node: trace-clock
             type: int
             range: [10, 200000] # 10 kHz .. 200 MHz
             default: 12000
             unit: kHz
-          - title: Mode
+          - name: Mode
             yml-node: trace-port
             type: enum
             values: [UART, Manchester, TP1, TP2, TP4]
             default: UART
-      - title: Telnet
+      - section: Telnet
         description: Telnet server configuration   # hover over text
         yml-node: telnet
-        sub:
+        select: off
+        option:
           - title: Port
             yml-node: port
             type: int
@@ -469,22 +471,26 @@ debug-adapters:
             default: 4444
  
   - name: "JLink Server"
-      - title: Clock (kHz)       # UI display
-        description: Trace configuration   # hover over text
-        yml-node: clock          # node entry in csolution.yml
-        type: int                # type of value
-        range: [10, 5000]        # valid range
-        default: 4000            # default value if not specified anywhere
-      - title: Protocol
-        yml-node: protocol
-        type: enum
-        values: [swd]
-        default: swd
-      - title: Trace
+      - section: Debug Interface
+        description: Interface configuration for the debug port
+        options:
+        - name: Clock (kHz)       # UI display
+          description: JTAG/SWO clock frequency   # hover over text
+          yml-node: clock          # node entry in csolution.yml
+          type: int                # type of value
+          range: [10, 5000]        # valid range
+          default: 4000            # default value if not specified anywhere
+        - name: Protocol
+          yml-node: protocol
+          type: enum
+          values: [swd]
+          default: swd
+      - section: Trace
         description: Trace configuration   # hover over text
         yml-node: trace                    # only on/off option
-        sub:
-          - title: Mode
+        select: off
+        options:
+          - name: Mode
             yml-node: trace-port
             type: enum
             values: [UART]
@@ -496,9 +502,12 @@ debug-adapters:
       uv4: "C:\\Keil_v5\\UV4\\UV4.exe"
       args: []
     user-interface:  # this section is only used by the UI to display and edit settings
-      - title: Path
-        description: Absolute path to uVision executable
-        yml-node: uv4            # node entry in csolution.yml
-        type: string             # type of value
-        default: "C:\\Keil_v5\\UV4\\UV4.exe"
+      - section: Setup
+        description: Configure uVision settings
+        options:
+        - name: Path
+          description: Absolute path to uVision executable
+          yml-node: uv4            # node entry in csolution.yml
+          type: string             # type of value
+          default: "C:\\Keil_v5\\UV4\\UV4.exe"
 ```
