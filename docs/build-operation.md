@@ -313,13 +313,14 @@ The file `debug-adapters.yml` in the CMSIS-Toolbox `./etc` directory contains th
 
  The `debug-adapters:` node in this YAML file registers the supported debug adapters with the following keys:
 
-`debug-adapters:`                                    |            | Content
-:----------------------------------------------------|:-----------|:------------------------------------
-`- name:`                                            |**Required**| `<generator-id>` referred in the `*.PDSC` file
-&nbsp;&nbsp;&nbsp; `alias-name:`                     |  Optional  | List of names (in input node or BSP) that map to this debug adapter.
-&nbsp;&nbsp;&nbsp; `template:`                       |  Optional  | Used only by the [VS Code CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension for configuration.
-&nbsp;&nbsp;&nbsp; `gdbserver:`                      |  Optional  | Add the [`gdbserver:`](YML-CBuild-Format.md#gdbserver) node in the `cbuild-run.yml` file.
-&nbsp;&nbsp;&nbsp; `defaults:`                       |  Optional  | List of default options to use when not specified in the [`target-set:`](YML-Input-Format.md#target-set) node.
+`debug-adapters:`                                       |            | Content
+:-------------------------------------------------------|:-----------|:------------------------------------
+`- name:`                                               |**Required**| `<generator-id>` referred in the `*.PDSC` file
+&nbsp;&nbsp;&nbsp; `alias-name:`                        |  Optional  | List of names (in input node or BSP) that map to this debug adapter.
+&nbsp;&nbsp;&nbsp; `template:`                          |  Optional  | Used only by the [VS Code CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension for configuration.
+&nbsp;&nbsp;&nbsp; `gdbserver:`                         |  Optional  | Add the [`gdbserver:`](YML-CBuild-Format.md#gdbserver) node in the `cbuild-run.yml` file.
+&nbsp;&nbsp;&nbsp; `defaults:`                          |  Optional  | List of default options to use when not specified in the [`target-set:`](YML-Input-Format.md#target-set) node.
+&nbsp;&nbsp;&nbsp; [`user-interface:`](#user-interface) |  Optional  | Defines the user interface for VS Code CMSIS Solution extension.
 
 !!! Note
     As the file is shared with the [VS Code CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension, also template files are references. However these template files are not part of the CMSIS-Toolbox.
@@ -366,4 +367,138 @@ debug-adapters:
 
   - name: "Keil uVision"
     template: uVision.adapter.json            # template file
+```
+
+### User Interface
+
+The file `debug-adapters.yml` also contains the information for the user interface that is available in the VS Code CMSIS Solution extension.
+The options are added 
+
+`user-interface:`                                       |            | Content
+:-------------------------------------------------------|:-----------|:------------------------------------
+`- title:`                                              |**Required**| Label text for the user interface.
+&nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Hover over text.
+&nbsp;&nbsp;&nbsp; `yml-node:`                          |**Required**| Name of the node in the csolution file under `debugger:` section.
+&nbsp;&nbsp;&nbsp; `type:`                              |**Required**| Type (enum: value list, int: number, string: name).
+&nbsp;&nbsp;&nbsp; `range:`                             |  Optional  | Value range for type int.
+&nbsp;&nbsp;&nbsp; `values:`                            |  Optional  | Value list for type enum.
+&nbsp;&nbsp;&nbsp; `default:`                           |  Optional  | Default value for user interface when no value given in csolution.yml.
+&nbsp;&nbsp;&nbsp; `sub:`                               |  Optional  | Sub nodes.
+
+!!! Note
+    The nodes with `title: Clock (xxx)` and `title: Protocol` are displayed in the same line as the Debug Adapter and when defined cannot be disabled.  All other `title:` nodes have a enable/disable feature that removes the node from the `csolution.yml` file.
+
+`sub:`                                                  |            | Content
+:-------------------------------------------------------|:-----------|:------------------------------------
+`- title:`                                              |**Required**| Label text for the user interface.
+&nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Hover over text.
+&nbsp;&nbsp;&nbsp; `yml-node:`                          |**Required**| Name of the node in the csolution file under `debugger:` section.
+&nbsp;&nbsp;&nbsp; `type:`                              |**Required**| Type (enum: value list, int: number, string: name).
+&nbsp;&nbsp;&nbsp; `range:`                             |  Optional  | Value range for type int.
+&nbsp;&nbsp;&nbsp; `values:`                            |  Optional  | Value list for type enum.
+&nbsp;&nbsp;&nbsp; `default:`                           |  Optional  | Default value for user interface when no value given in csolution.yml.
+
+**Example**
+
+![Debug Adapter User Interface](./images/DebugAdapter.png "Debug Adapter User Interface")
+
+```yml
+solution:
+   :
+      target-set:
+        - set:
+          debugger:
+            name: CMSIS-DAP@pyOCD
+            protocol: swd
+            clock: 1000kHz
+            trace:
+              trace-port: UART
+              trace-clock: 12000kHz
+            telnet:
+              port: 4444
+```
+ 
+**Example `debug-adapters.yml`**
+
+```yml
+debug-adapters:
+  - name: "CMSIS-DAP@pyOCD"
+    alias-name: ["CMSIS-DAP", "DAP-Link"] # alternative names that map to this debug adapter
+    template: CMSIS-DAP-pyOCD.adapter.json # template file
+    gdbserver: # add gdbserver: node under debugger: in cbuild-run.yml
+    defaults: # this section is only used by csolution to provide default values when settings are missing
+      port: 3333 # default value of first gdbserver port
+      protocol: swd
+      clock: 1000kHz
+    user-interface:  # this section is only used by the UI to display and edit settings
+      - title: Clock (kHz)         # UI display
+        description: Trace configuration   # hover over text
+        yml-node: clock          # node entry in csolution.yml
+        type: int                # type of value
+        range: [10, 5000]        # valid range
+        unit: kHz
+        default: 1000kHz         # default value if not specified anywhere
+      - title: Protocol
+        yml-node: protocol
+        type: enum
+        values: [jtag, swd]
+        default: swd
+      - title: Trace
+        description: Trace configuration   # hover over text
+        yml-node: trace
+        sub:
+          - title: Clock (kHz)
+            yml-node: trace-clock
+            type: int
+            range: [10, 200000] # 10 kHz .. 200 MHz
+            default: 12000
+            unit: kHz
+          - title: Mode
+            yml-node: trace-port
+            type: enum
+            values: [UART, Manchester, TP1, TP2, TP4]
+            default: UART
+      - title: Telnet
+        description: Telnet server configuration   # hover over text
+        yml-node: telnet
+        sub:
+          - title: Port
+            yml-node: port
+            type: int
+            range: [1, 100000]
+            default: 4444
+ 
+  - name: "JLink Server"
+      - title: Clock (kHz)       # UI display
+        description: Trace configuration   # hover over text
+        yml-node: clock          # node entry in csolution.yml
+        type: int                # type of value
+        range: [10, 5000]        # valid range
+        default: 4000            # default value if not specified anywhere
+      - title: Protocol
+        yml-node: protocol
+        type: enum
+        values: [swd]
+        default: swd
+      - title: Trace
+        description: Trace configuration   # hover over text
+        yml-node: trace                    # only on/off option
+        sub:
+          - title: Mode
+            yml-node: trace-port
+            type: enum
+            values: [UART]
+            default: UART
+
+  - name: "Keil uVision"
+    template: uVision.adapter.json # template file
+    defaults:
+      uv4: "C:\\Keil_v5\\UV4\\UV4.exe"
+      args: []
+    user-interface:  # this section is only used by the UI to display and edit settings
+      - title: Path
+        description: Absolute path to uVision executable
+        yml-node: uv4            # node entry in csolution.yml
+        type: string             # type of value
+        default: "C:\\Keil_v5\\UV4\\UV4.exe"
 ```
