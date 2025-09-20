@@ -233,7 +233,9 @@ Access Sequence                                | Description
 `$Dname$`                                      | [Dname](#device-name-conventions) of the selected device as specified in the [`device:`](#device) node.
 `$Pname$`                                      | [Pname](#device-name-conventions) of the selected device as specified in the [`device:`](#device) node.
 `$BuildType$`                                  | [Build-type](#build-types) name of the currently processed project.
+`$BuildDefines$`                               | [Define](#define) symbols of the current active [build type](#build-types) in CMake format.
 `$TargetType$`                                 | [Target-type](#target-types) name of the currently processed project.
+`$TargetDefines$`                              | [Define](#define) symbols of the current active [target type](#target-types) in CMake format.
 `$Compiler$`                                   | [Compiler](#compiler) name of the compiler used in this project context as specified in the [`compiler:`](#compiler) node.
 **YML Input**                                  | **Access to YML Input Directories and Files**
 `$Solution$`                                   | Solution name (base name of the *.csolution.yml file).
@@ -1535,6 +1537,25 @@ solution:
       type: Board               # layer of type `Board` is expected
 ```
 
+#### Variable `West-Board` 
+
+[West Build](#west-build) uses a different schema for the [board name](#board-name-conventions). However several board names can be mapped to `west` tool. By default, the variable `$West-Board$` holds the `board_name` (converted to lower-case, `-` replaced by `_`) of the current active target type as default for the [west:](#west) node. However, as some CMSIS boards names do not map, the variable `$West-Board$` can be defined as shown below.
+
+*Example.csolution.yml*
+
+```yml
+solution:
+  target-types:
+    - type: Alif Board
+      board: Alif Semiconductor::DevKit-E7
+      variables:
+        - West-Board: alif_e7_dk_rtss_he              # explicit west board name
+
+    - type: ST Board
+      board: STMicroelectronics::STM32H7B3I-DK        # $West-Board$ set to `stm32h7b3i_dk`
+```
+
+
 ### `context-map:`
 
 The `context-map:` node allows for a specific `project-name` the remapping of `target-types:` and/or `build-types:` to a different `context:` which enables:
@@ -2027,7 +2048,7 @@ Use the command `west build` to generate images from application source code spe
 :---------------------------------------------------------|:-------------|:------------------------------------
 `- app-path:`                                             | **Required** | Path to the application source directory.
 &nbsp;&nbsp;&nbsp; `project-id:`                          |   Optional   | Project identifier (default: last sub-dir name of `app-path`).
-&nbsp;&nbsp;&nbsp; `board:`                               |   Optional   | Board name used for west build invocation (default: [variable](#variables) `$West-Board$`).
+&nbsp;&nbsp;&nbsp; `board:`                               |   Optional   | Board name used for west build invocation (default: [variable `$West-Board$`](#variable-west-board)).
 &nbsp;&nbsp;&nbsp; [`device:`](#device)                   |   Optional   | Specify the processor core for execution of the generated image (used in `*.cbuild-run.yml`).
 &nbsp;&nbsp;&nbsp; `cmake-opt:`                           |   Optional   | Options for the `CMake` tool (default: [access sequence](#access-sequences) `$Target-Defines$ $Build-Defines$`).
 &nbsp;&nbsp;&nbsp; `west-opt:`                            |   Optional   | Options for the `west` tool (default: [access sequence](#access-sequences) `$Target-Defines$ $Build-Defines$`).
@@ -2036,13 +2057,21 @@ Use the command `west build` to generate images from application source code spe
 
 The information provided with above nodes is used to generate the command line for the `west` tool:
 
-`west build --board <board> --build-dir $SolutionDir()$/out/$TargetType$/<project-id> <west-opt> <app-path> <cmake-opt>`
+```bash
+>west build --board <board> --build-dir $SolutionDir()$/out/$TargetType$/<project-id>
+            --pristine {auto | always} <west-opt> <app-path> <cmake-opt>
+```
 
-!!! Note
-The CMSIS build system configures the environment variables ...
+!!! Notes
+    - The CMSIS build system configures the [environment variables for west](build-operation.md#west-integration).
+    - The `--sysbuild` option is not supported as the *csolution project* manages multiple applications and images.
+    - The cbuild option `--rebuild` is mapped to `--pristine always`; without `--rebuild` west is called with `--pristine auto`.
 
+**Examples:**
 
-## Pre/Post build steps
+ToDo
+
+## Pre/Post Build Steps
 
 The CMSIS-Toolbox supports pre-build and post-build steps that utilize external tools or scripts. Such external commands can be used for various tasks such as:
 

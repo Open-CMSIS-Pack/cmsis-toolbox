@@ -909,7 +909,7 @@ The following example uses a CMSIS-DAP debugger with JTAG protocol and configure
 
 ### Using pyOCD
 
-A *csolution project* that uses `target-set:` to configure the debugger should be build using the option `--active` to select the target-type.  The `cbuild` command creates then a corresponding `*.build-run.yml` file that can be used with [pyOCD version (todo)](https://pyocd.io/) or higher. This `*.build-run.yml` file contains all information to [program and debug the application](YML-CBuild-Format.md#run-and-debug-management).
+A *csolution project* that uses `target-set:` to configure the debugger should be build using the option `--active` to select the target-type.  The `cbuild` command creates then a corresponding `*.build-run.yml` file that can be used with [pyOCD version 0.37.0](https://pyocd.io/) or higher. This `*.build-run.yml` file contains all information to [program and debug the application](YML-CBuild-Format.md#run-and-debug-management).
 
 **Example:**
 
@@ -934,13 +934,12 @@ An explict `*.dbgconf` configuration file can be specified using the [`debugger:
 
 ## West Build System Integration
 
-The West build system is a meta-tool and project management system used primarily in the [Zephyr](https://www.zephyrproject.org/) ecosystem. The integration in the CMSIS-Toolbox acts as a "build orchestration wrapper" around CMake. It connects a west project with the build and debug configuration features of the CMSIS-Toolbox as shown below. When combined with the [VS Code CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension, features such as project outline in the CMSIS View or "go-to-definition" with `clangd` are available.
+The West build system is a project management system used primarily in the [Zephyr](https://www.zephyrproject.org/) ecosystem. The integration in the CMSIS-Toolbox acts as a "build orchestration wrapper" around CMake.
+The CMSIS-Toolbox connects the `west build` command with the information of the CMSIS-Pack system as shown in the diagram below. For the [selected compiler](#compiler-selection) the related [environment variables for the west build system](build-operation.md#west-integration) are set. When combined with the [VS Code CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension, features such as project outline in the CMSIS View or "go-to-definition" with `clangd` are available.
 
 ![West Build System Integration](./images/west-integration.png "West Build System Integration")
 
-As shown above, the CMSIS-Toolbox connects `west build` with the information of the CMSIS-Pack system and manages the west command line arguments. For the [selected compiler](#compiler-selection) the related [environment variables for the west build system](build-operation.md#west-integration) are set.
-
-West projects are specified using the [`west:`](YML-Input-Format.md) node in the `*.csolution.yml` file and can be managed with the `target-types` and `build-types` of the *csolution project*. Note that the `sysbuild` feature of `west` is not supported as the CMSIS-Toolbox manages already related projects.
+West projects are specified using the [`west:`](YML-Input-Format.md#west) node in the `*.csolution.yml` file and can be managed with the `target-types` and `build-types` of the *csolution project*. Note that the `sysbuild` feature of `west` is not supported as the CMSIS-Toolbox manages already related projects.
 
 **Example:**
 
