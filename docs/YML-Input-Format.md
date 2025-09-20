@@ -395,6 +395,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`projects:`](#projects)          |**Required**| List of projects that belong to the solution.
 &nbsp;&nbsp;&nbsp; [`executes:`](#executes)          |  Optional  | Additional pre or post build steps using external tools.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                  |  Optional  | Literal tool-specific controls.
+&nbsp;&nbsp;&nbsp; [`west:`](#west)                  |  Optional  | Enable West "build orchestration wrapper" for Zephyr projects.
 
 **Example:**
 
@@ -1495,7 +1496,7 @@ solution:
 
 The `variables:` node defines *key/value* pairs in the `*.csolution.yml` file. Using `$<key>$` in `*.cproject.yml` and `*.clayer.yml` files expands to the *value* of the variable. The variable `$<key>$` can be used in the following nodes: [`layers:`](#layers), [`define:`](#define), [`define-asm:`](#define-asm), [`add-path:`](#add-path), [`add-path-asm:`](#add-path-asm), [`misc:`](#misc), [`files:`](#files), and [`executes:`](#executes). The `<key>:` name format `<type>-Layer` is a convention that references [layer-type](#layer-type). In this case the `copied-from:` can be used to describe the orginal source of a layer (typically a path in a software pack).
 
-`load:`                              | Description
+`variables:`                         | Description
 :------------------------------------|:-------------
 &nbsp;&nbsp;&nbsp; `<key>:`          | `<key>:` specifies a variable name with value.
 &nbsp;&nbsp;&nbsp; `copied-from:`    | Descriptive text that documents the source of a layer. 
@@ -1893,7 +1894,7 @@ Add a software layer to a project. Used in `*.cproject.yml` files.
 `layers:`                                                 |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
 [`- layer:`](#layer)                                      |   Optional   | Path to the `*.clayer.yml` file that defines the layer.
-&nbsp;&nbsp;&nbsp; [`type:`](#layer-type)               |   Optional   | Refers to an expected layer type.
+&nbsp;&nbsp;&nbsp; [`type:`](#layer-type)                 |   Optional   | Refers to an expected layer type.
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |   Optional   | Include layer for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude layer for a list of *build* and *target* types.
 
@@ -2013,6 +2014,33 @@ will be copied multiple times to the project. The name of the component (for exa
 
 The availability of instances in a project can be made public in the `RTE_Components.h` file. The existing way to extend
 the `%Instance%` with the instance number `n`.
+
+## West Build
+
+Enable the [West build system integration](build-overview.md#west-build-system-integration) and add [Zephyr](https://www.zephyrproject.org/) application images to the *csolution project*.
+
+### `west:`
+
+Use the command `west build` to generate images from application source code specified in the `west:` node.  When this node is applied (even with an empty application source list), the build environment variables for the west build system are created based on the [`compiler:`](#compiler) selection.
+
+`west:`                                                   |              | Content
+:---------------------------------------------------------|:-------------|:------------------------------------
+`- app-path:`                                             | **Required** | Path to the application source directory.
+&nbsp;&nbsp;&nbsp; `project-id:`                          |   Optional   | Project identifier (default: last sub-dir name of `app-path`).
+&nbsp;&nbsp;&nbsp; `board:`                               |   Optional   | Board name used for west build invocation (default: [variable](#variables) `$West-Board$`).
+&nbsp;&nbsp;&nbsp; [`device:`](#device)                   |   Optional   | Specify the processor core for execution of the generated image (used in `*.cbuild-run.yml`).
+&nbsp;&nbsp;&nbsp; `cmake-opt:`                           |   Optional   | Options for the `CMake` tool (default: [access sequence](#access-sequences) `$Target-Defines$ $Build-Defines$`).
+&nbsp;&nbsp;&nbsp; `west-opt:`                            |   Optional   | Options for the `west` tool (default: [access sequence](#access-sequences) `$Target-Defines$ $Build-Defines$`).
+&nbsp;&nbsp;&nbsp; [`for-context:`](#not-for-context)     |   Optional   | Exclude run command for a list of *build* and *target* types  (only supported in `*.cproject.yml`).
+&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude run command for a list of *build* and *target* types  (only supported in `*.cproject.yml`).
+
+The information provided with above nodes is used to generate the command line for the `west` tool:
+
+`west build --board <board> --build-dir $SolutionDir()$/out/$TargetType$/<project-id> <west-opt> <app-path> <cmake-opt>`
+
+!!! Note
+The CMSIS build system configures the environment variables ...
+
 
 ## Pre/Post build steps
 

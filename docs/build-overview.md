@@ -11,6 +11,7 @@ This chapter outlines the structure of *csolution project files* that contain th
 - [Linker Script Management](#linker-script-management) defines the  available memory and controls the linker operation.
 - [Generator Support](#generator-support) integrates configuration tools such as STM32CubeMX or MCUXpresso Config.
 - [Run and Debug Configuration](#run-and-debug-configuration) explains how to configure debug adapters such as CMSIS-DAP or JLink.
+- [West Build System Integration](#west-build-system-integration) allows to manage Zephyr applications in context with a *csolution project*.
 
 ## Overview of Operation
 
@@ -930,3 +931,65 @@ The `.cmsis` directory in the *csolution project* directory contains for each ta
 This file can be configured to reflect user settings.
 
 An explict `*.dbgconf` configuration file can be specified using the [`debugger:` node](YML-Input-Format.md#debugger) in the `*.csolution.yml` file.
+
+## West Build System Integration
+
+The West build system is a meta-tool and project management system used primarily in the [Zephyr](https://www.zephyrproject.org/) ecosystem. The integration in the CMSIS-Toolbox acts as a "build orchestration wrapper" around CMake. It connects a west project with the build and debug configuration features of the CMSIS-Toolbox as shown below. When combined with the [VS Code CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension, features such as project outline in the CMSIS View or "go-to-definition" with `clangd` are available.
+
+![West Build System Integration](./images/west-integration.png "West Build System Integration")
+
+As shown above, the CMSIS-Toolbox connects `west build` with the information of the CMSIS-Pack system and manages the west command line arguments. For the [selected compiler](#compiler-selection) the related [environment variables for the west build system](build-operation.md#west-integration) are set.
+
+West projects are specified using the [`west:`](YML-Input-Format.md) node in the `*.csolution.yml` file and can be managed with the `target-types` and `build-types` of the *csolution project*. Note that the `sysbuild` feature of `west` is not supported as the CMSIS-Toolbox manages already related projects.
+
+**Example:**
+
+```yml
+solution:
+  compiler: AC6
+
+  packs:
+    - pack: AlifSemiconductor::Ensemble@^2.0.0-0
+    - pack: ARM::CMSIS
+
+  # List different hardware targets that are used to deploy the solution.
+  target-types:
+    - type: DevKit-E7
+      board: Alif Semiconductor::DevKit-E7
+      device: Alif Semiconductor::AE722F80F55D5LS
+      variables:                        # west board selection
+        - West-Board: alif_e7_dk_rtss
+
+      target-set:
+        - set:
+          debugger:
+            name: JLink Server
+            port: 3333
+            protocol: swd
+          images:
+            - project-context: M55_HE.Debug
+            - project-context: M55_HP.Debug
+
+  build-types:
+    - type: Debug
+      optimize: debug
+      define:                           # west defines
+        - CONFIG_DEBUG: y
+        - CONFIG_DEBUG_THREAD_INFO: y
+        - SE_SERVICES: OFF
+        - CMAKE_BUILD_TYPE: Debug
+
+    - type: Release
+      optimize: size
+      define:                           # west defines
+        - SE_SERVICES: OFF
+        - CMAKE_BUILD_TYPE: Release
+
+  west:
+    - app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_he
+      board: $West-Board$_he
+      device: :M55_HE
+    - app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_hp
+      board: $West-Board$_he
+      device: :M55_HE
+```

@@ -243,6 +243,18 @@ solution:
         - project/Web.c  # Output file for FCARM
 ```
 
+## West Integration
+
+The west build system uses two environment variables to configure the toolchain. These variables are set when the `*.csolution.yml` contains the [`west:`](YML-Input-Format.md#west) node. It is created by the VS Code CMSIS Solution extension (or the CBUILD process) when a terminal is opened or west 
+build is called during the build process.
+
+The `west build` command is called for each `app-path:` that is specified in the [`west:`](YML-Input-Format.md#west) node.
+
+Environment Variable         | Description
+:----------------------------|:-------------------------------------------------------------------
+`ZEPHYR_TOOLCHAIN_VARIANT`   | Toolchain selection depending on the selected [`compiler:`](YML-Input-Format.md#compiler) in `csolution.yml`. Values are: armclang (for AC6), gnuarmemb (for GCC), llvm (for LLVM), iar (for IAR).
+`<TOOLCHAIN>_TOOLCHAIN_PATH` | Path to selected compiler executable. `<TOOLCHAIN>` is the capitalized string specified with `ZEPHYR_TOOLCHAIN_VARIANT`. The value is copied from the compiler registration [environment variable](installation.md#environment-variables). 
+
 ## Generator Integration
 
 The diagram below shows how the STM32CubeMX generator is integrated into the CMSIS build process. The data flow is exemplified on STM32CubeMX (Generator ID for this example is `CubeMX`). The information about the project is delivered to the generator using the [Generator Information](YML-CBuild-Format.md#generator-information-files) files (`<solution-name>.cbuild-gen-idx.yml` and `<context>.cbuild-gen.yml`). This information provides `CubeMX` with the project context, such as the selected board or device, and CPU mode, such as TrustZone, disabled/enabled.
