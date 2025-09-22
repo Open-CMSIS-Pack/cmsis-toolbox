@@ -254,7 +254,7 @@ Access Sequence                                | Description
 `$Dpack$`                                      | Path to the pack that defines the selected device (DFP).
 `$Pack(vendor::name)$`                         | Path to a specific pack. Example: `$Pack(NXP::K32L3A60_DFP)$`.
 
-For a [`context`](#context-name-conventions), the `project-name`, `.build-type`, and `+target-type` are optional. An **access sequence** that specifies only `project-name` uses the context that is currently processed. It is important that the `project` is part of the [context-set](build-overview.md#working-with-context-set) in the build process. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file.
+For a [`context`](#context-name-conventions), the `project-name`, `.build-type`, and `+target-type` are optional. An **access sequence** that specifies only `project-name` uses the context that is currently processed. It is important that the `project` is part of the [selected build variant](build-overview.md#working-with-target-set) in the build process. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file.
 
 **Example:**
 
@@ -265,9 +265,17 @@ solution:
   target-types:
     - type: Board               # target-type: Board
       board: NUCLEO-L552ZE-Q    # specifies board
+      target-set:
+        - set:
+          - project-context: TFM.Debug
+          - project-context: MQTT_AWS.Debug
 
     - type: Production-HW       # target-type: Production-HW
       device: STM32L5X          # specifies device
+      target-set:
+        - set:
+          - project-context: TFM.Release
+          - project-context: MQTT_AWS.Debug
 
   build-types:
     - type: Debug               # build-type: Debug
@@ -292,10 +300,10 @@ For example, these references are possible in the file `MQTT_AWS.cproject.yml`.
       - file: $cmse-lib(TFM)$                         # use symbol output file of TFM Project
 ```
 
-The example above uses the `build-type` and `target-type` of the processed context for the project `TFM`. With a [context-set](build-overview.md#working-with-context-set) you may mix different `build-types` for an application. Note that it is important to build both projects using the same build process.
+The example above uses the `build-type` and `target-type` of the processed context for the project `TFM`. With a [target-set](build-overview.md#working-with-target-set) you may mix different `build-types` for an application. Note that it is important to build both projects using the same build process, for example by specifying the option `--active` to [select a build variant](build-overview.md#working-with-target-set).
 
 ```bash
-cbuild iot-product.csolution.yml --context-set --context TFM.Release+Board --context MQTT_AWS.Debug+Board
+cbuild iot-product.csolution.yml --active Production-HW
 ```
 
 The example below uses from the TFM project always `build-type: Debug` and the `target-type: Production-HW`.
@@ -1408,7 +1416,7 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 
 `images:`                                             |              | Content
 :-----------------------------------------------------|--------------|:------------------------------------
-`- project-context:`                                  |   Optional   | Project output with optional build-type to use. Format: `<project_name>[.buid_type]`
+`- project-context:`                                  |   Optional   | Project output or with optional build-type to use. Format: `<project_name>[.buid_type]`
 &nbsp;&nbsp;&nbsp; `image:`                           |   Optional   | Additional image file to load.
 &nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode of the image file for programmers and debug tools.
 &nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the image file.
@@ -1416,10 +1424,10 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 &nbsp;&nbsp;&nbsp; `load-offset:`                     |   Optional   | Offset applied to the binary content when loading the image file.
 &nbsp;&nbsp;&nbsp; [`device:`](#device)               |   Optional   | For image files a pname can be specified to denote the processor that runs the image.
 
-
-!!! Note
-    Either `project-context:` or `image:` is required, but these nodes are mutually exclusive.
+!!! Notes
+    - Either `project-context:` or `image:` is required, but these nodes are mutually exclusive.
     The `type:` specification is only accepted for an `image:` file.
+    - The `project-context:` can also refer to a [west](#west) `project-id:` with build type.
 
 #### `load:`
 
@@ -1460,7 +1468,7 @@ solution:
           images:
           - project-context: core1.Debug
           - project-context: core0.Release
-        - set: production
+        - set: production                  # id for this target set
           images:
           - project-context: core1.Release
             device: :core1                 # specify the pname that runs the image
@@ -2042,7 +2050,7 @@ Enable the [West build system integration](build-overview.md#west-build-system-i
 
 ### `west:`
 
-Use the command `west build` to generate images from application source code specified in the `west:` node.  When this node is applied (even with an empty application source list), the build environment variables for the west build system are created based on the [`compiler:`](#compiler) selection.
+Use the command `west build` to generate images from application source code specified in the `west:` node.  When the `west:` node is applied (even with an empty `app-path` source directory list), the [environment variables for the west build system](build-operation.md#west-integration) are created based on the [`compiler:`](#compiler) selection.
 
 `west:`                                                   |              | Content
 :---------------------------------------------------------|:-------------|:------------------------------------
@@ -2063,6 +2071,7 @@ The information provided with above nodes is used to generate the command line f
 ```
 
 !!! Notes
+    - The generated image files in the build directory (zephyr/zephyr.elf, zephyr/zephyr.axf, zephyr/zephyr.hex) are added to the [`output:`](YML-CBuild-Format.md#output) node in `*.cbuild-run.yml`.
     - The CMSIS build system configures the [environment variables for west](build-operation.md#west-integration).
     - The `--sysbuild` option is not supported as the *csolution project* manages multiple applications and images.
     - The cbuild option `--rebuild` is mapped to `--pristine always`; without `--rebuild` west is called with `--pristine auto`.
