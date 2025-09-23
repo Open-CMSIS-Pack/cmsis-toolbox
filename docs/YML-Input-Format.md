@@ -1323,6 +1323,7 @@ The `target-types:` node may include [toolchain options](#toolchain-options), [t
 &nbsp;&nbsp;&nbsp; [`variables:`](#variables)      |   Optional   | Variables that can be used to define project components.
 &nbsp;&nbsp;&nbsp; [`memory:`](#memory)            |   Optional   | Add additional off-chip memory available in target hardware.
 &nbsp;&nbsp;&nbsp; [`target-set:`](#target-set)    |   Optional   | One or more target-set configurations for projects, images, and debugger.
+&nbsp;&nbsp;&nbsp; [`west-defs:`](#west-defs)      |   Optional   | Defines in `CMake` format for the [west build](#west-build) system.
 
 !!! Note
     Either `device:` or `board:` is required.
@@ -1349,6 +1350,7 @@ The `build-types:` node may include [toolchain options](#toolchain-options):
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                |   Optional   | Literal tool-specific controls.
 &nbsp;&nbsp;&nbsp; [`context-map:`](#context-map)  |   Optional   | Use different `build-types:` for specific projects.
 &nbsp;&nbsp;&nbsp; [`variables:`](#variables)      |   Optional   | Variables that can be used to define project components.
+&nbsp;&nbsp;&nbsp; [`west-defs:`](#west-defs)      |   Optional   | Defines in `CMake` format for the [west build](#west-build) system.
 
 **Example:**
 
@@ -1545,9 +1547,9 @@ solution:
       type: Board               # layer of type `Board` is expected
 ```
 
-#### Variable `West-Board` 
+#### Variable `west-board` 
 
-[West Build](#west-build) uses a different schema for the [board name](#board-name-conventions). However several board names can be mapped to `west` tool. By default, the variable `$West-Board$` holds the `board_name` (converted to lower-case, `-` replaced by `_`) of the current active target type as default for the [west:](#west) node. However, as some CMSIS boards names do not map, the variable `$West-Board$` can be defined as shown below.
+[West Build](#west-build) uses a different schema for the [board name](#board-name-conventions). However several board names can be mapped to `west` tool. By default, the variable `$west-board$` holds the `board_name` (converted to lower-case, `-` replaced by `_`) of the current active target type as default for the [west:](#west) node. However, as some CMSIS boards names do not map, the variable `$west-board$` can be defined as shown below.
 
 *Example.csolution.yml*
 
@@ -1557,12 +1559,11 @@ solution:
     - type: Alif Board
       board: Alif Semiconductor::DevKit-E7
       variables:
-        - West-Board: alif_e7_dk_rtss_he              # explicit west board name
+        - west-board: alif_e7_dk_rtss_he              # explicit west board name
 
     - type: ST Board
-      board: STMicroelectronics::STM32H7B3I-DK        # $West-Board$ set to `stm32h7b3i_dk`
+      board: STMicroelectronics::STM32H7B3I-DK        # $west-board$ set to `stm32h7b3i_dk`
 ```
-
 
 ### `context-map:`
 
@@ -2056,18 +2057,24 @@ Use the command `west build` to generate images from application source code spe
 :---------------------------------------------------------|:-------------|:------------------------------------
 `- app-path:`                                             | **Required** | Path to the application source directory.
 &nbsp;&nbsp;&nbsp; `project-id:`                          |   Optional   | Project identifier (default: last sub-dir name of `app-path`).
-&nbsp;&nbsp;&nbsp; `board:`                               |   Optional   | Board name used for west build invocation (default: [variable `$West-Board$`](#variable-west-board)).
+&nbsp;&nbsp;&nbsp; `board:`                               |   Optional   | Board name used for west build invocation (default: [variable `$west-board$`](#variable-west-board)).
 &nbsp;&nbsp;&nbsp; [`device:`](#device)                   |   Optional   | Specify the processor core for execution of the generated image (used in `*.cbuild-run.yml`).
-&nbsp;&nbsp;&nbsp; `cmake-opt:`                           |   Optional   | Options for the `CMake` tool (default: [access sequence](#access-sequences) `$Target-Defines$ $Build-Defines$`).
-&nbsp;&nbsp;&nbsp; `west-opt:`                            |   Optional   | Options for the `west` tool (default: [access sequence](#access-sequences) `$Target-Defines$ $Build-Defines$`).
+&nbsp;&nbsp;&nbsp; [`west-defs:`](#west-defs)             |   Optional   | Defines in `CMake` format. The `west-defs:` from build and target-type are added.
+&nbsp;&nbsp;&nbsp; `west-opt:`                            |   Optional   | Options for the `west` tool (default: empty).
 &nbsp;&nbsp;&nbsp; [`for-context:`](#not-for-context)     |   Optional   | Exclude run command for a list of *build* and *target* types  (only supported in `*.cproject.yml`).
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude run command for a list of *build* and *target* types  (only supported in `*.cproject.yml`).
 
-The information provided with above nodes is used to generate the command line for the `west` tool:
+### `west-defs:`
+
+Defines for the `west build` commands are specified in CMake format. The `west-defs:` that are defined under the active target and build type are concatinated as follows:
+
+`<west-defs> := <west:west-defs> + <target-type:west-defs> + <build-type:west-defs>`
+
+The information provided with the `west:` and `west-def:` nodes are used to generate the command line for the `west` tool:
 
 ```bash
 >west build --board <board> --build-dir $SolutionDir()$/out/$TargetType$/<project-id>
-            --pristine {auto | always} <west-opt> <app-path> <cmake-opt>
+            --pristine {auto | always} <west-opt> <app-path> <west-defs>
 ```
 
 !!! Notes

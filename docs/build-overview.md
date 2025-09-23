@@ -999,13 +999,12 @@ solution:
     - pack: AlifSemiconductor::Ensemble@^2.0.0-0
     - pack: ARM::CMSIS
 
-  # List different hardware targets that are used to deploy the solution.
   target-types:
     - type: DevKit-E7
       board: Alif Semiconductor::DevKit-E7
       device: Alif Semiconductor::AE722F80F55D5LS
-      variables:                        # west board selection
-        - West-Board: alif_e7_dk_rtss
+      variables:                            # west board selection
+        - west-board: alif_e7_dk_rtss
 
       target-set:
         - set:
@@ -1020,23 +1019,19 @@ solution:
   build-types:
     - type: Debug
       optimize: debug
-      define:                           # west defines
-        - CONFIG_DEBUG: y
-        - CONFIG_DEBUG_THREAD_INFO: y
-        - SE_SERVICES: OFF
-        - CMAKE_BUILD_TYPE: Debug
+      west-defs:  |                         # west defines
+        -DCONFIG_DEBUG: y -DCONFIG_DEBUG_THREAD_INFO: y -DSE_SERVICES: OFF -DCMAKE_BUILD_TYPE: Debug
 
     - type: Release
       optimize: size
-      define:                           # west defines
-        - SE_SERVICES: OFF
-        - CMAKE_BUILD_TYPE: Release
+      west-defs:  |                         # west defines
+        -DSE_SERVICES: OFF -DCMAKE_BUILD_TYPE: Release
 
   west:
     - app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_he
-      board: $West-Board$_he
+      board: $west-board$_he
       device: :M55_HE
     - app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_hp
-      board: $West-Board$_hp
+      board: $west-board$_hp
       device: :M55_HP
 ```
