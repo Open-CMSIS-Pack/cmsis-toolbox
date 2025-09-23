@@ -233,9 +233,7 @@ Access Sequence                                | Description
 `$Dname$`                                      | [Dname](#device-name-conventions) of the selected device as specified in the [`device:`](#device) node.
 `$Pname$`                                      | [Pname](#device-name-conventions) of the selected device as specified in the [`device:`](#device) node.
 `$BuildType$`                                  | [Build-type](#build-types) name of the currently processed project.
-`$BuildDefines$`                               | [Define](#define) symbols of the current active [build type](#build-types) in CMake format.
 `$TargetType$`                                 | [Target-type](#target-types) name of the currently processed project.
-`$TargetDefines$`                              | [Define](#define) symbols of the current active [target type](#target-types) in CMake format.
 `$Compiler$`                                   | [Compiler](#compiler) name of the compiler used in this project context as specified in the [`compiler:`](#compiler) node.
 **YML Input**                                  | **Access to YML Input Directories and Files**
 `$Solution$`                                   | Solution name (base name of the *.csolution.yml file).
