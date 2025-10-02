@@ -642,25 +642,28 @@ Each different license that is used in a project context has a separate section.
         :
 ```
 
-#### `west-builds:`
+#### `west:`
 
-For each west build command an entry under the node `west-build:` is created.
+For each west build context a node `west:` is created in *.cbuild.yml
 
-`west-builds:`                                           | Content
-:--------------------------------------------------------|:------------------------------------
-`- run:`                                                 | West build command including all paramters.
-&nbsp;&nbsp;&nbsp; `project-id:`                         | Project identifier used by the CMSIS-Toolbox for referencing the project.
-&nbsp;&nbsp;&nbsp; `out-dir:`                            | Output directory for the west build artifacts.
+`west:`                                                   |              | Content
+:---------------------------------------------------------|:-------------|:------------------------------------
+`- app-path:`                                             | **Required** | Path to the application source directory.
+&nbsp;&nbsp;&nbsp; `project-id:`                          | **Required** | Project identifier
+&nbsp;&nbsp;&nbsp; `board:`                               | **Required** | Board name used for west build invocation.
+&nbsp;&nbsp;&nbsp; `device:`                              |   Optional   | Specify the processor core for execution of the generated image (used in `*.cbuild-run.yml`).
+&nbsp;&nbsp;&nbsp; `west-defs:`                           |   Optional   | Defines in `CMake` format. The `west-defs:` from build and target-type are added.
+&nbsp;&nbsp;&nbsp; `west-opt:`                            |   Optional   | Options for the `west` tool (default: empty).
 
 **Example:**
 
 ```yml
-  west-builds:
-    - run: "west build -p auto -b stm32h7b3i_dk -d out/build ../../zephyr/samples/hello_world"
-      project-id: hello_world
-      out-dir: out/MySolution/hello_world/ST_Board
-```
-
+  west:
+    project-id: hello_world
+    app-path: ../../../../hello_world
+    board: stm32h7b3i_dk 
+    west-defs:
+      - CONFIG_BUILD_OUTPUT_HEX=y
 ## Generator Information Files
 
 The `csolution run` command generates the following build information files in the [`intdir:`](YML-Input-Format.md#output-dirs) of the related `context`. These files are the input to a generator and provide information about the *csolution project* to the generator.  The files are generated in the [`tmp` directory](build-overview.md#output-directory-structure) of the project and contain absolute paths.
