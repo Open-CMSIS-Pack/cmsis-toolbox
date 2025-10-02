@@ -152,10 +152,10 @@ build-idx:
     - cbuild: out/MassStorage/B-U585I-IOT02A/Release/MassStorage.Release+B-U585I-IOT02A.cbuild.yml
       project: MassStorage
       configuration: .Release+B-U585I-IOT02A
-  west-builds:
-    - run: "west build -p auto -b stm32h7b3i_dk -d out/build ../../zephyr/samples/hello_world"
-      project-id: hello_world
-      out-dir: out/MySolution/ST_Board/hello_world
+    - cbuild: out/hello_world/B-U585I-IOT02A/Release/hello_world.Release+B-U585I-IOT02A.cbuild.yml
+      west: true
+      project: hello_world
+      configuration: .Release+B-U585I-IOT02A
 
   errors: true                  # indicates error
   packs-missing:                # lists missing packs
