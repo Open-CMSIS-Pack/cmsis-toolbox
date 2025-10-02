@@ -252,7 +252,7 @@ Access Sequence                                | Description
 `$Dpack$`                                      | Path to the pack that defines the selected device (DFP).
 `$Pack(vendor::name)$`                         | Path to a specific pack. Example: `$Pack(NXP::K32L3A60_DFP)$`.
 
-For a [`context`](#context-name-conventions), the `project-name`, `.build-type`, and `+target-type` are optional. An **access sequence** that specifies only `project-name` uses the context that is currently processed. It is important that the `project` is part of the [context-set](build-overview.md#working-with-context-set) in the build process. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file.
+For a [`context`](#context-name-conventions), the `project-name`, `.build-type`, and `+target-type` are optional. An **access sequence** that specifies only `project-name` uses the context that is currently processed. It is important that the `project` is part of the [selected build variant](build-overview.md#working-with-target-set) in the build process. Example: `$ProjectDir()$` is the directory of the current processed `cproject.yml` file.
 
 **Example:**
 
@@ -263,9 +263,17 @@ solution:
   target-types:
     - type: Board               # target-type: Board
       board: NUCLEO-L552ZE-Q    # specifies board
+      target-set:
+        - set:
+          - project-context: TFM.Debug
+          - project-context: MQTT_AWS.Debug
 
     - type: Production-HW       # target-type: Production-HW
       device: STM32L5X          # specifies device
+      target-set:
+        - set:
+          - project-context: TFM.Release
+          - project-context: MQTT_AWS.Debug
 
   build-types:
     - type: Debug               # build-type: Debug
@@ -290,10 +298,10 @@ For example, these references are possible in the file `MQTT_AWS.cproject.yml`.
       - file: $cmse-lib(TFM)$                         # use symbol output file of TFM Project
 ```
 
-The example above uses the `build-type` and `target-type` of the processed context for the project `TFM`. With a [context-set](build-overview.md#working-with-context-set) you may mix different `build-types` for an application. Note that it is important to build both projects using the same build process.
+The example above uses the `build-type` and `target-type` of the processed context for the project `TFM`. With a [target-set](build-overview.md#working-with-target-set) you may mix different `build-types` for an application. Note that it is important to build both projects using the same build process, for example by specifying the option `--active` to [select a build variant](build-overview.md#working-with-target-set).
 
 ```bash
-cbuild iot-product.csolution.yml --context-set --context TFM.Release+Board --context MQTT_AWS.Debug+Board
+cbuild iot-product.csolution.yml --active Production-HW
 ```
 
 The example below uses from the TFM project always `build-type: Debug` and the `target-type: Production-HW`.
@@ -395,6 +403,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`projects:`](#projects)          |**Required**| List of projects that belong to the solution.
 &nbsp;&nbsp;&nbsp; [`executes:`](#executes)          |  Optional  | Additional pre or post build steps using external tools.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                  |  Optional  | Literal tool-specific controls.
+&nbsp;&nbsp;&nbsp; [`west:`](#west)                  |  Optional  | Enable West "build orchestration wrapper" for Zephyr projects.
 
 **Example:**
 
@@ -1312,6 +1321,7 @@ The `target-types:` node may include [toolchain options](#toolchain-options), [t
 &nbsp;&nbsp;&nbsp; [`variables:`](#variables)      |   Optional   | Variables that can be used to define project components.
 &nbsp;&nbsp;&nbsp; [`memory:`](#memory)            |   Optional   | Add additional off-chip memory available in target hardware.
 &nbsp;&nbsp;&nbsp; [`target-set:`](#target-set)    |   Optional   | One or more target-set configurations for projects, images, and debugger.
+&nbsp;&nbsp;&nbsp; [`west-defs:`](#west-defs)      |   Optional   | Defines in `CMake` format for the [west build](#west-build) system.
 
 !!! Note
     Either `device:` or `board:` is required.
@@ -1338,6 +1348,7 @@ The `build-types:` node may include [toolchain options](#toolchain-options):
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                |   Optional   | Literal tool-specific controls.
 &nbsp;&nbsp;&nbsp; [`context-map:`](#context-map)  |   Optional   | Use different `build-types:` for specific projects.
 &nbsp;&nbsp;&nbsp; [`variables:`](#variables)      |   Optional   | Variables that can be used to define project components.
+&nbsp;&nbsp;&nbsp; [`west-defs:`](#west-defs)      |   Optional   | Defines in `CMake` format for the [west build](#west-build) system.
 
 **Example:**
 
@@ -1405,7 +1416,7 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 
 `images:`                                             |              | Content
 :-----------------------------------------------------|--------------|:------------------------------------
-`- project-context:`                                  |   Optional   | Project output with optional build-type to use. Format: `<project_name>[.buid_type]`
+`- project-context:`                                  |   Optional   | Project output or with optional build-type to use. Format: `<project_name>[.buid_type]`
 &nbsp;&nbsp;&nbsp; `image:`                           |   Optional   | Additional image file to load.
 &nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode of the image file for programmers and debug tools.
 &nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the image file.
@@ -1413,10 +1424,10 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 &nbsp;&nbsp;&nbsp; `load-offset:`                     |   Optional   | Offset applied to the binary content when loading the image file.
 &nbsp;&nbsp;&nbsp; [`device:`](#device)               |   Optional   | For image files a pname can be specified to denote the processor that runs the image.
 
-
-!!! Note
-    Either `project-context:` or `image:` is required, but these nodes are mutually exclusive.
+!!! Notes
+    - Either `project-context:` or `image:` is required, but these nodes are mutually exclusive.
     The `type:` specification is only accepted for an `image:` file.
+    - The `project-context:` can also refer to a [west](#west) `project-id:` with build type.
 
 #### `load:`
 
@@ -1457,7 +1468,7 @@ solution:
           images:
           - project-context: core1.Debug
           - project-context: core0.Release
-        - set: production
+        - set: production                  # id for this target set
           images:
           - project-context: core1.Release
             device: :core1                 # specify the pname that runs the image
@@ -1495,7 +1506,7 @@ solution:
 
 The `variables:` node defines *key/value* pairs in the `*.csolution.yml` file. Using `$<key>$` in `*.cproject.yml` and `*.clayer.yml` files expands to the *value* of the variable. The variable `$<key>$` can be used in the following nodes: [`layers:`](#layers), [`define:`](#define), [`define-asm:`](#define-asm), [`add-path:`](#add-path), [`add-path-asm:`](#add-path-asm), [`misc:`](#misc), [`files:`](#files), and [`executes:`](#executes). The `<key>:` name format `<type>-Layer` is a convention that references [layer-type](#layer-type). In this case the `copied-from:` can be used to describe the orginal source of a layer (typically a path in a software pack).
 
-`load:`                              | Description
+`variables:`                         | Description
 :------------------------------------|:-------------
 &nbsp;&nbsp;&nbsp; `<key>:`          | `<key>:` specifies a variable name with value.
 &nbsp;&nbsp;&nbsp; `copied-from:`    | Descriptive text that documents the source of a layer. 
@@ -1532,6 +1543,24 @@ solution:
 
     - layer: $Board-Layer$      # no `*.clayer.yml` specified. Compatible layers are listed
       type: Board               # layer of type `Board` is expected
+```
+
+#### Variable `west-board` 
+
+[West Build](#west-build) uses a different schema for the [board name](#board-name-conventions). However several board names can be mapped to `west` tool. By default, the variable `$west-board$` holds the `board_name` (converted to lower-case, `-` replaced by `_`) of the current active target type as default for the [west:](#west) node. However, as some CMSIS boards names do not map, the variable `$west-board$` can be defined as shown below.
+
+*Example.csolution.yml*
+
+```yml
+solution:
+  target-types:
+    - type: Alif Board
+      board: Alif Semiconductor::DevKit-E7
+      variables:
+        - west-board: alif_e7_dk_rtss_he              # explicit west board name
+
+    - type: ST Board
+      board: STMicroelectronics::STM32H7B3I-DK        # $west-board$ set to `stm32h7b3i_dk`
 ```
 
 ### `context-map:`
@@ -1893,7 +1922,7 @@ Add a software layer to a project. Used in `*.cproject.yml` files.
 `layers:`                                                 |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
 [`- layer:`](#layer)                                      |   Optional   | Path to the `*.clayer.yml` file that defines the layer.
-&nbsp;&nbsp;&nbsp; [`type:`](#layer-type)               |   Optional   | Refers to an expected layer type.
+&nbsp;&nbsp;&nbsp; [`type:`](#layer-type)                 |   Optional   | Refers to an expected layer type.
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |   Optional   | Include layer for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude layer for a list of *build* and *target* types.
 
@@ -2014,7 +2043,49 @@ will be copied multiple times to the project. The name of the component (for exa
 The availability of instances in a project can be made public in the `RTE_Components.h` file. The existing way to extend
 the `%Instance%` with the instance number `n`.
 
-## Pre/Post build steps
+## West Build
+
+Enable the [West build system integration](build-overview.md#west-build-system-integration) and add [Zephyr](https://www.zephyrproject.org/) application images to the *csolution project*.
+
+### `west:`
+
+Use the command `west build` to generate images from application source code specified in the `west:` node.  When the `west:` node is applied (even with an empty `app-path` source directory list), the [environment variables for the west build system](build-operation.md#west-integration) are created based on the [`compiler:`](#compiler) selection.
+
+`west:`                                                   |              | Content
+:---------------------------------------------------------|:-------------|:------------------------------------
+`- app-path:`                                             | **Required** | Path to the application source directory.
+&nbsp;&nbsp;&nbsp; `project-id:`                          |   Optional   | Project identifier (default: last sub-dir name of `app-path`).
+&nbsp;&nbsp;&nbsp; `board:`                               |   Optional   | Board name used for west build invocation (default: [variable `$west-board$`](#variable-west-board)).
+&nbsp;&nbsp;&nbsp; [`device:`](#device)                   |   Optional   | Specify the processor core for execution of the generated image (used in `*.cbuild-run.yml`).
+&nbsp;&nbsp;&nbsp; [`west-defs:`](#west-defs)             |   Optional   | Defines in `CMake` format. The `west-defs:` from build and target-type are added.
+&nbsp;&nbsp;&nbsp; `west-opt:`                            |   Optional   | Options for the `west` tool (default: empty).
+&nbsp;&nbsp;&nbsp; [`for-context:`](#not-for-context)     |   Optional   | Exclude run command for a list of *build* and *target* types  (only supported in `*.cproject.yml`).
+&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude run command for a list of *build* and *target* types  (only supported in `*.cproject.yml`).
+
+### `west-defs:`
+
+Defines for the `west build` commands are specified in CMake format. The `west-defs:` that are defined under the active target and build type are concatinated as follows:
+
+`<west-defs> := <west:west-defs> + <target-type:west-defs> + <build-type:west-defs>`
+
+The information provided with the `west:` and `west-def:` nodes are used to generate the command line for the `west` tool:
+
+```bash
+>west build --board <board> --build-dir $SolutionDir()$/out/<project-id>/$TargetType$
+            --pristine {auto | always} <west-opt> <app-path> <west-defs>
+```
+
+!!! Notes
+    - The generated image files in the build directory (zephyr/zephyr.elf, zephyr/zephyr.axf, zephyr/zephyr.hex) are added to the [`output:`](YML-CBuild-Format.md#output) node in `*.cbuild-run.yml`.
+    - The CMSIS build system configures the [environment variables for west](build-operation.md#west-integration).
+    - The `--sysbuild` option is not supported as the *csolution project* manages multiple applications and images.
+    - The cbuild option `--rebuild` is mapped to `--pristine always`; without `--rebuild` west is called with `--pristine auto`.
+
+**Examples:**
+
+ToDo
+
+## Pre/Post Build Steps
 
 The CMSIS-Toolbox supports pre-build and post-build steps that utilize external tools or scripts. Such external commands can be used for various tasks such as:
 
