@@ -659,7 +659,7 @@ For each west build command an entry under the node `west-build:` is created.
   west-builds:
     - run: "west build -p auto -b stm32h7b3i_dk -d out/build ../../zephyr/samples/hello_world"
       project-id: hello_world
-      out-dir: out/MySolution/ST_Board/hello_world
+      out-dir: out/MySolution/hello_world/ST_Board
 ```
 
 ## Generator Information Files

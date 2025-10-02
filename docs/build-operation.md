@@ -252,7 +252,7 @@ The `west build` command is called for each `app-path:` that is specified in the
 
 Environment Variable         | Description
 :----------------------------|:-------------------------------------------------------------------
-`ZEPHYR_TOOLCHAIN_VARIANT`   | Toolchain selection depending on the selected [`compiler:`](YML-Input-Format.md#compiler) in `csolution.yml`. Values are: armclang (for AC6), gnuarmemb (for GCC), llvm (for LLVM), iar (for IAR).
+`ZEPHYR_TOOLCHAIN_VARIANT`   | Toolchain selection depending on the selected [`compiler:`](YML-Input-Format.md#compiler) in `csolution.yml`. Values are: armclang (for AC6), gnuarmemb (for GCC), llvm (for CLANG), iar (for IAR).
 `<TOOLCHAIN>_TOOLCHAIN_PATH` | Path to selected compiler executable. `<TOOLCHAIN>` is the capitalized string specified with `ZEPHYR_TOOLCHAIN_VARIANT`. The value is copied from the compiler registration [environment variable](installation.md#environment-variables). 
 
 The various build operations of the `cbuild` tool map as shown below to the `west` tool.
@@ -346,7 +346,8 @@ The file `debug-adapters.yml` in the CMSIS-Toolbox `./etc` directory contains th
 &nbsp;&nbsp;&nbsp; [`user-interface:`](#user-interface) |  Optional  | Defines the user interface for VS Code CMSIS Solution extension.
 
 !!! Note
-    As the file is shared with the [VS Code CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension, also template files are references. However these template files are not part of the CMSIS-Toolbox.
+    - As the file is shared with the [VS Code CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension, also template files are references. However these template files are not part of the CMSIS-Toolbox.
+    - The debugger `name: <none>` identifies no debugger configuration. With this setting, no `template:` is applied and the `.vscode` configuration files are not modified.
 
 **Example `debug-adapters.yml`**
 
@@ -413,10 +414,11 @@ The options are added
 `- name:`                                               |**Required**| Label text for the option in the user interface.
 &nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Hover over text.
 &nbsp;&nbsp;&nbsp; `yml-node:`                          |**Required**| Name of the node in the csolution file under `debugger:` section.
-&nbsp;&nbsp;&nbsp; `type:`                              |**Required**| Type (enum: value list, int: number, string: name).
+&nbsp;&nbsp;&nbsp; `type:`                              |**Required**| Type (enum: value list, number: value, string: name, file: name).
 &nbsp;&nbsp;&nbsp; `range:`                             |  Optional  | Value range for type int.
 &nbsp;&nbsp;&nbsp; `values:`                            |  Optional  | Value list for type enum.
 &nbsp;&nbsp;&nbsp; `default:`                           |  Optional  | Default value for user interface when no value given in csolution.yml.
+&nbsp;&nbsp;&nbsp; `unit:`                              |  Optional  | The unit string is appended to `yml-node:` string in `csolution.yml` file.
 
 **Example**
 
@@ -427,10 +429,10 @@ solution:
    :
       target-set:
         - set:
-          debugger:
+          debugger:0
             name: CMSIS-DAP@pyOCD
             protocol: swd
-            clock: 1000kHz
+            clock: 1000
             trace:
               trace-port: UART
               trace-clock: 12000kHz
@@ -449,7 +451,7 @@ debug-adapters:
     defaults: # this section is only used by csolution to provide default values when settings are missing
       port: 3333 # default value of first gdbserver port
       protocol: swd
-      clock: 1000kHz
+      clock: 1000
     user-interface:  # this section is only used by the UI to display and edit settings
       - section: Debug Interface
         description: Interface configuration for the debug port
@@ -459,8 +461,7 @@ debug-adapters:
           yml-node: clock          # node entry in csolution.yml
           type: int                # type of value
           range: [10, 5000]        # valid range
-          unit: kHz
-          default: 1000kHz         # default value if not specified anywhere
+          default: 1000            # default value if not specified anywhere
         - name: Protocol
           yml-node: protocol
           type: enum
@@ -473,10 +474,10 @@ debug-adapters:
         options:
           - name: Clock (kHz)
             yml-node: trace-clock
-            type: int
+            type: number
             range: [10, 200000] # 10 kHz .. 200 MHz
             default: 12000
-            unit: kHz
+            unit: kHz                      # unit string appended to yml-node string in csolution.yml
           - name: Mode
             yml-node: trace-port
             type: enum
@@ -489,7 +490,7 @@ debug-adapters:
         option:
           - title: Port
             yml-node: port
-            type: int
+            type: number
             range: [1, 100000]
             default: 4444
  
@@ -500,7 +501,7 @@ debug-adapters:
         - name: Clock (kHz)       # UI display
           description: JTAG/SWO clock frequency   # hover over text
           yml-node: clock          # node entry in csolution.yml
-          type: int                # type of value
+          type: number                # type of value
           range: [10, 5000]        # valid range
           default: 4000            # default value if not specified anywhere
         - name: Protocol
@@ -531,6 +532,6 @@ debug-adapters:
         - name: Path
           description: Absolute path to uVision executable
           yml-node: uv4            # node entry in csolution.yml
-          type: string             # type of value
+          type: file               # type of value
           default: "C:\\Keil_v5\\UV4\\UV4.exe"
 ```
