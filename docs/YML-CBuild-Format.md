@@ -664,6 +664,8 @@ For each west build context a node `west:` is created in *.cbuild.yml
     board: stm32h7b3i_dk 
     west-defs:
       - CONFIG_BUILD_OUTPUT_HEX=y
+```
+
 ## Generator Information Files
 
 The `csolution run` command generates the following build information files in the [`intdir:`](YML-Input-Format.md#output-dirs) of the related `context`. These files are the input to a generator and provide information about the *csolution project* to the generator.  The files are generated in the [`tmp` directory](build-overview.md#output-directory-structure) of the project and contain absolute paths.
