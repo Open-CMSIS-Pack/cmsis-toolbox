@@ -93,7 +93,7 @@ jobs:
       #       --name ${{ matrix.target }}-${{ matrix.arch }} \
       #       ./e2e
 
-      # - name: Archieve test results
+      # - name: Archive test results
       #   if: always()
       #   uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       #   with:
@@ -156,4 +156,5 @@ jobs:
   #     with:
   #       name: consolidated-reports
   #       path: artifacts/collective_robot_results
+
 
