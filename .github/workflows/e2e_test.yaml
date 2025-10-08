@@ -150,9 +150,10 @@ jobs:
   #     if: always()
   #     run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
 
-  #   - name: Archieve consolidated test results
+  #   - name: Archive consolidated test results
   #     if: always()
   #     uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
   #     with:
   #       name: consolidated-reports
   #       path: artifacts/collective_robot_results
+
