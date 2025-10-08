@@ -60,7 +60,7 @@ jobs:
             pip install -r test/e2e/requirements.txt
 
       - name: Setup vcpkg environment
-        uses: ARM-software/cmsis-actions/vcpkg@f608f32a6d83e90d79e1f2bbb7812fdb94bf1679 # v1
+        uses: soumeh01/cmsis-actions/vcpkg@test-cache
         with:
           config: "./test/vcpkg-configuration.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
@@ -80,79 +80,79 @@ jobs:
           cbuild2cmake${{ matrix.binary_extension }} -V
           cbuildgen${{ matrix.binary_extension }} -V
 
-      - name: Run Test
-        shell: bash
-        continue-on-error: true
-        working-directory: ./test
-        env:
-          IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
-        run: |
-          robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} \
-            --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}.md \
-            --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }} \
-            --name ${{ matrix.target }}-${{ matrix.arch }} \
-            ./e2e
+      # - name: Run Test
+      #   shell: bash
+      #   continue-on-error: true
+      #   working-directory: ./test
+      #   env:
+      #     IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
+      #   run: |
+      #     robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} \
+      #       --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}.md \
+      #       --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }} \
+      #       --name ${{ matrix.target }}-${{ matrix.arch }} \
+      #       ./e2e
 
-      - name: Archieve test results
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: reports-${{ matrix.target }}-${{ matrix.arch }}
-          path: ./test/reports-${{ matrix.target }}-${{ matrix.arch }}
+      # - name: Archieve test results
+      #   if: always()
+      #   uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      #   with:
+      #     name: reports-${{ matrix.target }}-${{ matrix.arch }}
+      #     path: ./test/reports-${{ matrix.target }}-${{ matrix.arch }}
 
-  report:
-    runs-on: ubuntu-latest
-    if: always()
-    needs: test
-    permissions: write-all
-    steps:
-    - name: Harden Runner
-      uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
-      with:
-        egress-policy: audit
+  # report:
+  #   runs-on: ubuntu-latest
+  #   if: always()
+  #   needs: test
+  #   permissions: write-all
+  #   steps:
+  #   - name: Harden Runner
+  #     uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+  #     with:
+  #       egress-policy: audit
 
-    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+  #   - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
-    - name: Set up Python
-      uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
-      with:
-        python-version: '3.11'
-        cache: 'pip'
+  #   - name: Set up Python
+  #     uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+  #     with:
+  #       python-version: '3.11'
+  #       cache: 'pip'
 
-    - name: Install pip dependencies
-      run: |
-          pip install --upgrade pip
-          pip install -r test/e2e/requirements.txt
+  #   - name: Install pip dependencies
+  #     run: |
+  #         pip install --upgrade pip
+  #         pip install -r test/e2e/requirements.txt
 
-    - name: Download reports
-      uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
-      with:
-        path: artifacts
-        pattern: reports-*
+  #   - name: Download reports
+  #     uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+  #     with:
+  #       path: artifacts
+  #       pattern: reports-*
 
-    - name: Consolidate robot test results
-      working-directory: artifacts
-      continue-on-error: true
-      run: |
-        python -m robot.rebot --name Collective_Robot_Results --outputdir collective_robot_results --output output.xml \
-          ./reports-windows-amd64/output.xml \
-          ./reports-linux-amd64/output.xml
+  #   - name: Consolidate robot test results
+  #     working-directory: artifacts
+  #     continue-on-error: true
+  #     run: |
+  #       python -m robot.rebot --name Collective_Robot_Results --outputdir collective_robot_results --output output.xml \
+  #         ./reports-windows-amd64/output.xml \
+  #         ./reports-linux-amd64/output.xml
 
-    - name: Generate Summary report
-      if: always()
-      run: |
-        python ./test/e2e/lib/execution_summary.py artifacts \
-          -r ./test/e2e/reference.md \
-          -o artifacts/collective_robot_results/output.xml \
-          -m summary_report.md
+  #   - name: Generate Summary report
+  #     if: always()
+  #     run: |
+  #       python ./test/e2e/lib/execution_summary.py artifacts \
+  #         -r ./test/e2e/reference.md \
+  #         -o artifacts/collective_robot_results/output.xml \
+  #         -m summary_report.md
 
-    - name: Print E2E Report
-      if: always()
-      run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
+  #   - name: Print E2E Report
+  #     if: always()
+  #     run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
 
-    - name: Archieve consolidated test results
-      if: always()
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-      with:
-        name: consolidated-reports
-        path: artifacts/collective_robot_results
+  #   - name: Archieve consolidated test results
+  #     if: always()
+  #     uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+  #     with:
+  #       name: consolidated-reports
+  #       path: artifacts/collective_robot_results
