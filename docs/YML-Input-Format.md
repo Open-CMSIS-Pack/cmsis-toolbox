@@ -1756,19 +1756,20 @@ This example uses multiple projects but with additional controls.
 ```yml
   projects:
     - project: ./CM0/CM0.cproject.yml      # specify cproject.yml file
-      for-context: +CM0-Addon                 # build only when 'target-type: CM0-Addon' is selected
-      for-compiler: GCC                    # build only when 'compiler: GCC'  is selected
+      for-context: +CM0-Addon              # build only when 'target-type: CM0-Addon' is selected
       define:                              # add additional defines during build process
         - test: 12
 
     - project: ./CM0/CM0.cproject.yml      # specify cproject.yml file
-      for-context: +CM0-Addon                 # specify use case
-      for-compiler: AC6                    # build only when 'compiler: AC6'  is selected
+      for-context: +CM0-Addon              # specify use case
       define:                              # add additional defines during build process
         - test: 9
 
     - project: ./Debug/Debug.cproject.yml  # specify cproject.yml file
-      not-for-context: .Release               # generated for any 'build-type:' except 'Release'
+      not-for-context: .Release            # generated for any 'build-type:' except 'Release'
+
+    - west:                                # enable west build orchestration wrapper
+        app-path: ./blinky                 # specify a zephyr application path
 ```
 
 ## Source File Management
