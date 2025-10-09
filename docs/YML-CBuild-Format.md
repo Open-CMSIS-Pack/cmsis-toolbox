@@ -648,7 +648,7 @@ For each west build context a node `west:` is created in *.cbuild.yml
 
 `west:`                                                   |              | Content
 :---------------------------------------------------------|:-------------|:------------------------------------
-`- app-path:`                                             | **Required** | Path to the application source directory.
+&nbsp;&nbsp;&nbsp; `app-path:`                            | **Required** | Path to the application source directory.
 &nbsp;&nbsp;&nbsp; `project-id:`                          | **Required** | Project identifier
 &nbsp;&nbsp;&nbsp; `board:`                               | **Required** | Board name used for west build invocation.
 &nbsp;&nbsp;&nbsp; `device:`                              |   Optional   | Specify the processor core for execution of the generated image (used in `*.cbuild-run.yml`).

@@ -987,7 +987,7 @@ The CMSIS-Toolbox connects the `west build` command with the information of the 
 
 ![West Build System Integration](./images/west-integration.png "West Build System Integration")
 
-West projects are specified using the [`west:`](YML-Input-Format.md#west) node in the `*.csolution.yml` file and can be managed with the `target-types` and `build-types` of the *csolution project*. Note that the `sysbuild` feature of `west` is not supported as the CMSIS-Toolbox manages already related projects.
+West projects are specified using the [`west:`](YML-Input-Format.md#west) node under `projects:` in the `*.csolution.yml` file and can be managed with the `target-types` and `build-types` of the *csolution project*. Note that the `sysbuild` feature of `west` is not supported as the CMSIS-Toolbox manages already related projects.
 
 **Example:**
 
@@ -1019,19 +1019,25 @@ solution:
   build-types:
     - type: Debug
       optimize: debug
-      west-defs:  |                         # west defines
-        -DCONFIG_DEBUG: y -DCONFIG_DEBUG_THREAD_INFO: y -DSE_SERVICES: OFF -DCMAKE_BUILD_TYPE: Debug
+      west-defs:                           # west defines
+        - CONFIG_DEBUG: y
+        - CONFIG_DEBUG_THREAD_INFO: y
+        - SE_SERVICES: OFF
+        - CMAKE_BUILD_TYPE: Debug
 
     - type: Release
       optimize: size
-      west-defs:  |                         # west defines
-        -DSE_SERVICES: OFF -DCMAKE_BUILD_TYPE: Release
+      west-defs:                           # west defines
+        - SE_SERVICES: OFF
+        - CMAKE_BUILD_TYPE: Release
 
-  west:
-    - app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_he
-      board: $west-board$_he
-      device: :M55_HE
-    - app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_hp
-      board: $west-board$_hp
-      device: :M55_HP
+  projects:
+    - west:
+        app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_he
+        board: $west-board$_he
+        device: :M55_HE
+    - west:
+        app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_hp
+        board: $west-board$_hp
+        device: :M55_HP
 ```
