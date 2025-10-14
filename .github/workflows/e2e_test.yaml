@@ -60,11 +60,10 @@ jobs:
             pip install -r test/e2e/requirements.txt
 
       - name: Setup vcpkg environment
-        uses: ARM-software/cmsis-actions/vcpkg@f608f32a6d83e90d79e1f2bbb7812fdb94bf1679 # v1
+        uses: ARM-software/cmsis-actions/vcpkg@update-cache-option
         with:
           config: "./test/vcpkg-configuration.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
-          cache: "-"
 
       - name: Activate Arm tool license
         run: |
@@ -156,3 +155,4 @@ jobs:
       with:
         name: consolidated-reports
         path: artifacts/collective_robot_results
+
