@@ -11,3 +11,8 @@ project:
     - group: Header
       files:
         - file: ./tes t/tes t.h
+
+  output:
+    base-name: white space
+    type:
+      - map
