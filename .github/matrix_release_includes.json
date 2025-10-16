@@ -1,6 +1,6 @@
 [
     {
-        "runs_on":"macos-13",
+        "runs_on":"macos-15-intel",
         "target":"darwin",
         "arch": "amd64",
         "binary_extension": "",
@@ -27,7 +27,7 @@
         "runOnBranch":"always"
     },
     {
-        "runs_on":"macos-14",
+        "runs_on":"macos-15",
         "target":"darwin",
         "arch": "arm64",
         "binary_extension": "",
