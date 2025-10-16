@@ -401,7 +401,7 @@ jobs:
       fail-fast: true
       matrix:
         config:
-          - { os: macos-13, target: darwin, arch: amd64 }
+          - { os: macos-15-intel, target: darwin, arch: amd64 }
           - { os: macos-14, target: darwin, arch: arm64 }
           - { os: windows-2022, target: windows, arch: amd64}
           - { os: windows-2022, target: windows, arch: arm64}
