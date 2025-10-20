@@ -417,8 +417,14 @@ The options are added
 &nbsp;&nbsp;&nbsp; `type:`                              |**Required**| Type (enum: value list, number: value, string: name, file: name).
 &nbsp;&nbsp;&nbsp; `range:`                             |  Optional  | Value range for type int.
 &nbsp;&nbsp;&nbsp; `values:`                            |  Optional  | Value list for type enum.
-&nbsp;&nbsp;&nbsp; `default:`                           |  Optional  | Default value for user interface when no value given in csolution.yml.
+&nbsp;&nbsp;&nbsp; `default:`                           |  Optional  | Default value (or enum name) for user interface when no value given in csolution.yml.
 &nbsp;&nbsp;&nbsp; `unit:`                              |  Optional  | The unit string is appended to `yml-node:` string in `csolution.yml` file.
+
+`values:`                                               |            | Content
+:-------------------------------------------------------|:-----------|:------------------------------------
+`- name:`                                               |**Required**| Label text for the option in the user interface.
+&nbsp;&nbsp;&nbsp; `map:`                               |**Required**| key name used in yml files or value for script processing.
+&nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Descriptive text (hover over or sub-text in dialog)
 
 **Example**
 
@@ -438,6 +444,7 @@ solution:
               trace-clock: 12000kHz
             telnet:
               port: 4444
+              
 ```
  
 **Example `debug-adapters.yml`**
@@ -465,8 +472,12 @@ debug-adapters:
         - name: Protocol
           yml-node: protocol
           type: enum
-          values: [jtag, swd]
-          default: swd
+          values: 
+            - name: JTAG
+              map: jtag
+            - name: SWD
+              map: swd
+          default: SWD
       - section: Trace
         description: Trace configuration   # hover over text
         yml-node: trace                    # when a yml node is given options are under this section
@@ -481,7 +492,16 @@ debug-adapters:
           - name: Mode
             yml-node: trace-port
             type: enum
-            values: [UART, Manchester, TP1, TP2, TP4]
+            values: 
+              - name: UART
+                map: UART
+                description: SWO configured for UART protocol
+              - name: Manchester
+                map: Man
+                description: SWO configured for Manchester protocol
+              - name: Trace Port 4
+                map: TP4
+                description: Connection via 4-bit Trace port
             default: UART
       - section: Telnet
         description: Telnet server configuration   # hover over text
@@ -507,8 +527,10 @@ debug-adapters:
         - name: Protocol
           yml-node: protocol
           type: enum
-          values: [swd]
-          default: swd
+          values: 
+            - name: SWD
+              map: swd
+          default: SWD
       - section: Trace
         description: Trace configuration   # hover over text
         yml-node: trace                    # only on/off option
@@ -517,7 +539,9 @@ debug-adapters:
           - name: Mode
             yml-node: trace-port
             type: enum
-            values: [UART]
+            values:
+              name: UART
+              map: UART
             default: UART
 
   - name: "Keil uVision"
