@@ -403,7 +403,6 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`projects:`](#projects)          |**Required**| List of projects that belong to the solution.
 &nbsp;&nbsp;&nbsp; [`executes:`](#executes)          |  Optional  | Additional pre or post build steps using external tools.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                  |  Optional  | Literal tool-specific controls.
-&nbsp;&nbsp;&nbsp; [`west:`](#west)                  |  Optional  | Enable West "build orchestration wrapper" for Zephyr projects.
 
 **Example:**
 
@@ -1735,9 +1734,12 @@ The YAML structure of the section `projects:` is:
 
 `projects:`                                               |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
-[`- project:`](#project)                                  | **Required** | Path to the project file.
+[`- project:`](#project)                                  |   Optional   | Path to the project file.
+&nbsp;&nbsp;&nbsp; [`west:`](#west)                       |   Optional   | Enable West "build orchestration wrapper" for Zephyr projects.
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |   Optional   | Include project for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude project for a list of *build* and *target* types.
+
+!!! Notes: `project` and `west` nodes are mutually exclusive (ToDo)
 
 **Examples:**
 
@@ -1754,19 +1756,16 @@ This example uses multiple projects but with additional controls.
 ```yml
   projects:
     - project: ./CM0/CM0.cproject.yml      # specify cproject.yml file
-      for-context: +CM0-Addon                 # build only when 'target-type: CM0-Addon' is selected
-      for-compiler: GCC                    # build only when 'compiler: GCC'  is selected
-      define:                              # add additional defines during build process
-        - test: 12
+      for-context: +CM0-Addon              # build only when 'target-type: CM0-Addon' is selected
 
     - project: ./CM0/CM0.cproject.yml      # specify cproject.yml file
-      for-context: +CM0-Addon                 # specify use case
-      for-compiler: AC6                    # build only when 'compiler: AC6'  is selected
-      define:                              # add additional defines during build process
-        - test: 9
+      for-context: +CM0-Addon              # specify use case
 
     - project: ./Debug/Debug.cproject.yml  # specify cproject.yml file
-      not-for-context: .Release               # generated for any 'build-type:' except 'Release'
+      not-for-context: .Release            # generated for any 'build-type:' except 'Release'
+
+    - west:                                # enable west build orchestration wrapper
+        app-path: ./blinky                 # specify a zephyr application path
 ```
 
 ## Source File Management
@@ -2053,14 +2052,12 @@ Use the command `west build` to generate images from application source code spe
 
 `west:`                                                   |              | Content
 :---------------------------------------------------------|:-------------|:------------------------------------
-`- app-path:`                                             | **Required** | Path to the application source directory.
+&nbsp;&nbsp;&nbsp; `app-path:`                            | **Required** | Path to the application source directory.
 &nbsp;&nbsp;&nbsp; `project-id:`                          |   Optional   | Project identifier (default: last sub-dir name of `app-path`).
 &nbsp;&nbsp;&nbsp; `board:`                               |   Optional   | Board name used for west build invocation (default: [variable `$west-board$`](#variable-west-board)).
 &nbsp;&nbsp;&nbsp; [`device:`](#device)                   |   Optional   | Specify the processor core for execution of the generated image (used in `*.cbuild-run.yml`).
 &nbsp;&nbsp;&nbsp; [`west-defs:`](#west-defs)             |   Optional   | Defines in `CMake` format. The `west-defs:` from build and target-type are added.
 &nbsp;&nbsp;&nbsp; `west-opt:`                            |   Optional   | Options for the `west` tool (default: empty).
-&nbsp;&nbsp;&nbsp; [`for-context:`](#not-for-context)     |   Optional   | Exclude run command for a list of *build* and *target* types  (only supported in `*.cproject.yml`).
-&nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude run command for a list of *build* and *target* types  (only supported in `*.cproject.yml`).
 
 ### `west-defs:`
 
@@ -2072,14 +2069,14 @@ The information provided with the `west:` and `west-def:` nodes are used to gene
 
 ```bash
 >west build --board <board> --build-dir $SolutionDir()$/out/<project-id>/$TargetType$
-            --pristine {auto | always} <west-opt> <app-path> <west-defs>
+            --pristine {auto | always} <west-opt> <app-path> -- <west-defs>
 ```
 
 !!! Notes
-    - The generated image files in the build directory (zephyr/zephyr.elf, zephyr/zephyr.axf, zephyr/zephyr.hex) are added to the [`output:`](YML-CBuild-Format.md#output) node in `*.cbuild-run.yml`.
+    - The generated image files in the build directory (zephyr/zephyr.elf, zephyr/zephyr.hex) are added to the [`output:`](YML-CBuild-Format.md#output) node in `*.cbuild-run.yml`.
     - The CMSIS build system configures the [environment variables for west](build-operation.md#west-integration).
     - The `--sysbuild` option is not supported as the *csolution project* manages multiple applications and images.
-    - The cbuild option `--rebuild` is mapped to `--pristine always`; without `--rebuild` west is called with `--pristine auto`.
+    - The cbuild orchestration instructs `west` calls with `--pristine auto` option. The cbuild option `--rebuild` cleans temporary files before proceeding with a new build.
 
 **Examples:**
 

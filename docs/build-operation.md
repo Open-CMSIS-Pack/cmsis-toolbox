@@ -252,8 +252,7 @@ solution:
 
 ## West Integration
 
-The west build system uses two environment variables to configure the toolchain. These variables are set when the `*.csolution.yml` contains the [`west:`](YML-Input-Format.md#west) node. It is created by the VS Code CMSIS Solution extension (or the CBUILD process) when a terminal is opened or west 
-build is called during the build process.
+The west build system uses two environment variables to configure the toolchain. These variables are set when the `*.csolution.yml` contains the [`west:`](YML-Input-Format.md#west) node. It is created by the VS Code CMSIS Solution extension when a terminal is opened (ToDo) or by the cbuild orchestration when west build is called during the setup and build process.
 
 The `west build` command is called for each `app-path:` that is specified in the [`west:`](YML-Input-Format.md#west) node.
 
@@ -267,11 +266,9 @@ The various build operations of the `cbuild` tool map as shown below to the `wes
 Operation                     | Cbuild Invocation                   | West Invocation
 :-----------------------------|:------------------------------------|:------------------------   
 Build                         | `cbuild <name>.csolution.yml`       | `west build -p auto -d <dir> -b <board> <app>`
-Rebuild                       | `cbuild <name>.csolution.yml -r`    | `west build -p always -d <dir> -b <board> <app>`
-Clean                         | `cbuild <name>.csolution.yml -C`    | `west build -t clean -p always -d <dir> -b <board> <app>`
-[Database](#cmake-invocation) | `cbuild setup <name>.csolution.yml` | `west build -p auto -d <dir> -b <board>  <app> --cmake-only -DCMAKE_EXPORT_COMPILE_COMMANDS=ON`
+[Database](#cmake-invocation) | `cbuild setup <name>.csolution.yml` | `west build -p auto -d <dir> -b <board> --cmake-only <app> -- -DCMAKE_EXPORT_COMPILE_COMMANDS=ON`
 
-ToDo: is Clean mapped in the best way?
+The cbuild `Clean` operation is performed as usual by cleaning temporary and output files, and the cbuild `Rebuild` triggers a normal build after cleaning. No other `west build` option is required.
 
 ## Generator Integration
 
