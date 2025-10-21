@@ -405,6 +405,7 @@ The options are added
 &nbsp;&nbsp;&nbsp; `yml-node:`                          |  Optional  | If present, options are under this group node in the `debugger:` section. 
 &nbsp;&nbsp;&nbsp; `select:`                            |  Optional  | If present, the section can be enabled. Applies to all options. 
 &nbsp;&nbsp;&nbsp; `options:`                           |  Optional  | List of available options.
+&nbsp;&nbsp;&nbsp; `pname-options:`                     |  Optional  | List of available options that are repeated for each pname.
 
 !!! Note
     When a `section:` is disabled all nodes are removed from the `csolution.yml` file.
@@ -418,13 +419,14 @@ The options are added
 &nbsp;&nbsp;&nbsp; `range:`                             |  Optional  | Value range for type int.
 &nbsp;&nbsp;&nbsp; `values:`                            |  Optional  | Value list for type enum.
 &nbsp;&nbsp;&nbsp; `default:`                           |  Optional  | Default value (or enum name) for user interface when no value given in csolution.yml.
+&nbsp;&nbsp;&nbsp; `scale:`                             |  Optional  | The value in csolution.yml value is multiplied by the scale factor.
 &nbsp;&nbsp;&nbsp; `unit:`                              |  Optional  | The unit string is appended to `yml-node:` string in `csolution.yml` file.
 
 `values:`                                               |            | Content
 :-------------------------------------------------------|:-----------|:------------------------------------
 `- name:`                                               |**Required**| Label text for the option in the user interface.
-&nbsp;&nbsp;&nbsp; `map:`                               |**Required**| key name used in yml files or value for script processing.
-&nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Descriptive text (hover over or sub-text in dialog)
+&nbsp;&nbsp;&nbsp; `map:`                               |**Required**| Value used for the enum name in file csolution.yml file.
+&nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Descriptive text (hover over or sub-text in dialog).
 
 **Example**
 
@@ -507,10 +509,10 @@ debug-adapters:
         description: Telnet server configuration   # hover over text
         yml-node: telnet
         select: off
-        option:
+        pname-option:
           - title: Port
             yml-node: port
-            type: number
+            type: inumber
             range: [1, 100000]
             default: 4444
  
@@ -521,7 +523,7 @@ debug-adapters:
         - name: Clock (kHz)       # UI display
           description: JTAG/SWO clock frequency   # hover over text
           yml-node: clock          # node entry in csolution.yml
-          type: number                # type of value
+          type: number             # type of value
           range: [10, 5000]        # valid range
           default: 4000            # default value if not specified anywhere
         - name: Protocol
@@ -559,3 +561,15 @@ debug-adapters:
           type: file               # type of value
           default: "C:\\Keil_v5\\UV4\\UV4.exe"
 ```
+
+## Debugger Options
+
+The following section lists the possible options for various debuggers that can be applied in the *.csolution.yml file.
+
+### pyOCD
+
+### JLINK Server
+
+### Keil uVision
+
+### 
