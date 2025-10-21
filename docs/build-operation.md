@@ -1,10 +1,17 @@
-# Build Operation
+# Theory of Operation
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-This chapter explains the overall build process of the CMSIS-Toolbox and how to add a new compiler toolchain.
+This chapter contains technical details about the operation of the CMSIS Toolbox.
+
+- [Build Process Overview](#build-process-overview) details the build process.
+- [Adding a Toolchain to CMSIS-Toolbox](#adding-a-toolchain-to-cmsis-toolbox) contains details about the Compiler support.
+- [CMake Integration](#cmake-integration) describes the integration of CMake.
+- [West Integration](#west-integration) describes the integration of the West build system for Zephyr applications.
+- [Generator Integration](#generator-integration) explains the integration of device configuration tools.
+- [Debug Adapter Integration](#debug-adapter-integration) explains the integration of debuggers.
 
 ## Build Process Overview
 
@@ -420,12 +427,11 @@ The options are added
 &nbsp;&nbsp;&nbsp; `values:`                            |  Optional  | Value list for type enum.
 &nbsp;&nbsp;&nbsp; `default:`                           |  Optional  | Default value (or enum name) for user interface when no value given in csolution.yml.
 &nbsp;&nbsp;&nbsp; `scale:`                             |  Optional  | The value in csolution.yml value is multiplied by the scale factor.
-&nbsp;&nbsp;&nbsp; `unit:`                              |  Optional  | The unit string is appended to `yml-node:` string in `csolution.yml` file.
 
 `values:`                                               |            | Content
 :-------------------------------------------------------|:-----------|:------------------------------------
 `- name:`                                               |**Required**| Label text for the option in the user interface.
-&nbsp;&nbsp;&nbsp; `map:`                               |**Required**| Value used for the enum name in file csolution.yml file.
+&nbsp;&nbsp;&nbsp; `value:`                             |**Required**| Value used for the enum name in file csolution.yml file.
 &nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Descriptive text (hover over or sub-text in dialog).
 
 **Example**
@@ -476,9 +482,9 @@ debug-adapters:
           type: enum
           values: 
             - name: JTAG
-              map: jtag
+              value: jtag
             - name: SWD
-              map: swd
+              value: swd
           default: SWD
       - section: Trace
         description: Trace configuration   # hover over text
@@ -490,19 +496,18 @@ debug-adapters:
             type: number
             range: [10, 200000] # 10 kHz .. 200 MHz
             default: 12000
-            unit: kHz                      # unit string appended to yml-node string in csolution.yml
           - name: Mode
             yml-node: trace-port
             type: enum
             values: 
               - name: UART
-                map: UART
+                value: UART
                 description: SWO configured for UART protocol
               - name: Manchester
-                map: Man
+                value: Man
                 description: SWO configured for Manchester protocol
               - name: Trace Port 4
-                map: TP4
+                value: TP4
                 description: Connection via 4-bit Trace port
             default: UART
       - section: Telnet
@@ -531,7 +536,7 @@ debug-adapters:
           type: enum
           values: 
             - name: SWD
-              map: swd
+              value: swd
           default: SWD
       - section: Trace
         description: Trace configuration   # hover over text
@@ -543,7 +548,7 @@ debug-adapters:
             type: enum
             values:
               name: UART
-              map: UART
+              value: UART
             default: UART
 
   - name: "Keil uVision"
@@ -561,15 +566,3 @@ debug-adapters:
           type: file               # type of value
           default: "C:\\Keil_v5\\UV4\\UV4.exe"
 ```
-
-## Debugger Options
-
-The following section lists the possible options for various debuggers that can be applied in the *.csolution.yml file.
-
-### pyOCD
-
-### JLINK Server
-
-### Keil uVision
-
-### 

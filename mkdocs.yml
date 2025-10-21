@@ -13,7 +13,7 @@ nav:
     - Configure STM32 Devices with STM32CubeMX: CubeMX.md
     - Configure NXP Devices with MCUXpresso Config Tools: MCUXpressoConfig.md
     - Build Information Files: YML-CBuild-Format.md
-    - Build Operation: build-operation.md
+    - Theory of Operation: build-operation.md
     - Pack Creation: pack-tools.md
     - Troubleshooting: Troubleshooting.md
     - Experimental Features: Experimental-Features.md
