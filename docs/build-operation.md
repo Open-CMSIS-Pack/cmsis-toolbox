@@ -1,10 +1,17 @@
-# Build Operation
+# Theory of Operation
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-This chapter explains the overall build process of the CMSIS-Toolbox and how to add a new compiler toolchain.
+This chapter contains technical details about the operation of the CMSIS Toolbox.
+
+- [Build Process Overview](#build-process-overview) details the build process.
+- [Adding a Toolchain to CMSIS-Toolbox](#adding-a-toolchain-to-cmsis-toolbox) contains details about the Compiler support.
+- [CMake Integration](#cmake-integration) describes the integration of CMake.
+- [West Integration](#west-integration) describes the integration of the West build system for Zephyr applications.
+- [Generator Integration](#generator-integration) explains the integration of device configuration tools.
+- [Debug Adapter Integration](#debug-adapter-integration) explains the integration of debuggers.
 
 ## Build Process Overview
 
@@ -405,6 +412,7 @@ The options are added
 &nbsp;&nbsp;&nbsp; `yml-node:`                          |  Optional  | If present, options are under this group node in the `debugger:` section. 
 &nbsp;&nbsp;&nbsp; `select:`                            |  Optional  | If present, the section can be enabled. Applies to all options. 
 &nbsp;&nbsp;&nbsp; `options:`                           |  Optional  | List of available options.
+&nbsp;&nbsp;&nbsp; `pname-options:`                     |  Optional  | List of available options that are repeated for each pname.
 
 !!! Note
     When a `section:` is disabled all nodes are removed from the `csolution.yml` file.
@@ -417,8 +425,14 @@ The options are added
 &nbsp;&nbsp;&nbsp; `type:`                              |**Required**| Type (enum: value list, number: value, string: name, file: name).
 &nbsp;&nbsp;&nbsp; `range:`                             |  Optional  | Value range for type int.
 &nbsp;&nbsp;&nbsp; `values:`                            |  Optional  | Value list for type enum.
-&nbsp;&nbsp;&nbsp; `default:`                           |  Optional  | Default value for user interface when no value given in csolution.yml.
-&nbsp;&nbsp;&nbsp; `unit:`                              |  Optional  | The unit string is appended to `yml-node:` string in `csolution.yml` file.
+&nbsp;&nbsp;&nbsp; `default:`                           |  Optional  | Default value (or enum name) for user interface when no value given in csolution.yml.
+&nbsp;&nbsp;&nbsp; `scale:`                             |  Optional  | The value in csolution.yml value is multiplied by the scale factor.
+
+`values:`                                               |            | Content
+:-------------------------------------------------------|:-----------|:------------------------------------
+`- name:`                                               |**Required**| Label text for the option in the user interface.
+&nbsp;&nbsp;&nbsp; `value:`                             |**Required**| Value used for the enum name in file csolution.yml file.
+&nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Descriptive text (hover over or sub-text in dialog).
 
 **Example**
 
@@ -438,6 +452,7 @@ solution:
               trace-clock: 12000kHz
             telnet:
               port: 4444
+              
 ```
  
 **Example `debug-adapters.yml`**
@@ -465,8 +480,12 @@ debug-adapters:
         - name: Protocol
           yml-node: protocol
           type: enum
-          values: [jtag, swd]
-          default: swd
+          values: 
+            - name: JTAG
+              value: jtag
+            - name: SWD
+              value: swd
+          default: SWD
       - section: Trace
         description: Trace configuration   # hover over text
         yml-node: trace                    # when a yml node is given options are under this section
@@ -477,20 +496,28 @@ debug-adapters:
             type: number
             range: [10, 200000] # 10 kHz .. 200 MHz
             default: 12000
-            unit: kHz                      # unit string appended to yml-node string in csolution.yml
           - name: Mode
             yml-node: trace-port
             type: enum
-            values: [UART, Manchester, TP1, TP2, TP4]
+            values: 
+              - name: UART
+                value: UART
+                description: SWO configured for UART protocol
+              - name: Manchester
+                value: Man
+                description: SWO configured for Manchester protocol
+              - name: Trace Port 4
+                value: TP4
+                description: Connection via 4-bit Trace port
             default: UART
       - section: Telnet
         description: Telnet server configuration   # hover over text
         yml-node: telnet
         select: off
-        option:
+        pname-option:
           - title: Port
             yml-node: port
-            type: number
+            type: inumber
             range: [1, 100000]
             default: 4444
  
@@ -501,14 +528,16 @@ debug-adapters:
         - name: Clock (kHz)       # UI display
           description: JTAG/SWO clock frequency   # hover over text
           yml-node: clock          # node entry in csolution.yml
-          type: number                # type of value
+          type: number             # type of value
           range: [10, 5000]        # valid range
           default: 4000            # default value if not specified anywhere
         - name: Protocol
           yml-node: protocol
           type: enum
-          values: [swd]
-          default: swd
+          values: 
+            - name: SWD
+              value: swd
+          default: SWD
       - section: Trace
         description: Trace configuration   # hover over text
         yml-node: trace                    # only on/off option
@@ -517,7 +546,9 @@ debug-adapters:
           - name: Mode
             yml-node: trace-port
             type: enum
-            values: [UART]
+            values:
+              name: UART
+              value: UART
             default: UART
 
   - name: "Keil uVision"

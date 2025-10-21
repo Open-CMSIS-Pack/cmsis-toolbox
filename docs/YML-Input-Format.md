@@ -2427,10 +2427,10 @@ to overwrite configuration information or to define new debugger setups.
 :---------------------------------------------------------|-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `name:`                                |**Required** | Identifies the debug adapter.
 &nbsp;&nbsp;&nbsp; `protocol:`                            |  Optional   | Select debug portocol (jtag or swd).
-&nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Select debug clock speed (in Hz).
+&nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Select debug clock speed (in Hz for pyOCD, in kHz for JLink).
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Configuration file for device settings such as trace pins and option bytes.
 &nbsp;&nbsp;&nbsp; `start-pname:`                         |  Optional   | Debugger connects at start to this processor.
-&nbsp;&nbsp;&nbsp; `*:`                                   |  Optional   | Other debugger specific options can be used, the section is not schema checked.
+&nbsp;&nbsp;&nbsp; `*:`                                   |  Optional   | Other debugger specific options can be used (see below), the section is not schema checked.
 
 !!! Note
     If values are not specified, the default values from `debug-adapter.yml` are used.
@@ -2441,7 +2441,7 @@ to overwrite configuration information or to define new debugger setups.
 debugger:
   name: CMSIS-DAP
   protocol: swd
-  clock: 20000000   # 20 MHz
+  clock: 20000000               # 20 MHz
 ```
 
 ```yml
@@ -2455,9 +2455,68 @@ debugger:
 ```yml
 debugger:
   name: JLink
-  clock: auto
+  clock: 4000                    # 4000 kHz
   protocol: swd
 ```
+
+### Options for pyOCD
+
+This section lists options that are specific for pyOCD that is used to connect to CMSIS-DAP and ST-Link debug adapters.
+
+#### `telnet:` 
+
+pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
+
+`telnet:`                                                 |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- pname:`                                                |  Optional   | Identifies the processor (not requried for single core system).
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set port number of Telnet Server (default: 4444).
+&nbsp;&nbsp;&nbsp; `log:`                                 |  Optional   | Log output to a pre-defined (`file`) or console output (`stdio`). Default is `off`.
+
+**Examples:**
+
+Enable Telnet service or a single core system.
+
+```yml
+debugger:
+  name: CMSIS-DAP
+  protocol: swd
+  telnet:                   # enable Telnet service with default settings 
+```
+
+Enable Telnet service or a single core system.
+
+```yml
+debugger:
+  name: CMSIS-DAP
+  protocol: swd
+  telnet:
+    port: 4444
+    log: stdio              # route Telnet output to console 
+```
+
+```yml
+debugger:
+  name: CMSIS-DAP
+  protocol: swd
+  telnet:
+    - pname: Core0          # enable Telnet service with default settings
+      port: 4444
+    - pname: Core1
+      log: stdio            # route Telnet output to console 
+    - pname: Core2
+      log: file             # log Telnet output 
+```
+
+- provides Telnet port for connecting remote tools (MSFT Serial Monitor is one example)
+- log output to file or STDIO
+
+
+### Options for Segger JLink
+
+This section lists options that are specific for Segger JLink.
+
+todo
 
 ## Add Memory
 
