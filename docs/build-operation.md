@@ -443,13 +443,11 @@ solution:
           debugger:0
             name: CMSIS-DAP@pyOCD
             protocol: swd
-            clock: 1000
+            clock: 10000000      # SWD clock = 10MHz
             trace:
-              trace-port: UART
-              trace-clock: 12000kHz
-            telnet:
-              port: 4444
-              
+              mode: UART
+              clock: 120000000   # Trace clock = 120 MHz
+            telnet:              # Enable telnet with defaults
 ```
  
 **Example `debug-adapters.yml`**

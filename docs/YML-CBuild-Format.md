@@ -52,7 +52,7 @@ A typical directory structure of a `csolution` based application that uses commo
  ┣  ┣ 📂 mypro2\Target\Debug
  ┣  ┣  ┣  mypro2.cbuild.Debug+Target.yml   # file references are relative to directory out\mypro2\Target\Debug
  
- ```
+```
 
 ## Lock Pack Versions
 
@@ -739,7 +739,7 @@ The `*.cgen.yml` file lists the generated *csolution project* part and starts wi
 
 ## Run and Debug Management
 
-The CMSIS-Toolbox build system manages software packs that contain information about device, board, and software components. It controls the build output (typically ELF/DWARF files), and has provisions for HEX, BIN and post-processing. The [`target-set:`](build-overview.md#run-and-debug-configuration) node configures the application images and the debugger for a [target-type](build-overview.md#project-setup-for-related-projects).
+The CMSIS-Toolbox build system manages software packs that contain information about device, board, and software components. It controls the build output (typically ELF/DWARF files), and has provisions for HEX, BIN and post-processing. The [`target-set:`](build-overview.md#run-and-debug-configuration) node configures the application images and the debugger for a [target-type](build-overview.md#configure-related-projects).
 
 The software packs contain information that is the basis for debug and run settings:
 
