@@ -85,7 +85,7 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Build Operation</a>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Theory of Operation</a>
                 </li>
               </ul>
               <ul>
@@ -234,6 +234,10 @@ In this example the file <code>image.bin</code> is included using assembler synt
       - map     # create MAP file (optional)
 </code></pre>
 <p>When a <code>type: hex</code> file is generated for AC6, the CMSIS-Toolbox configures this file in the <code>*.cbuild-run.yml</code> file with <code>load: image</code> and the <code>type: elf</code> file with <code>load: symbols</code>. This bypasses the GDB loader issue.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+</div>
+<p>The HEX file should be generated using the Arm Compiler 6 <code>fromelf</code> tool during the build process of the application. Using a HEX conversation tool for a different toolchain may generate unpredictable results.</p>
 <h2 id="layer-search-fails">Layer Search Fails</h2>
 <p>The <code>cbuild setup</code> command does not find compatible layers.</p>
 <pre><code class="language-txt">&gt;cbuild setup xxx.csolution.yml

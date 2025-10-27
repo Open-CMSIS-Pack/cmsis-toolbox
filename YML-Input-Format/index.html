@@ -196,6 +196,10 @@
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#variables">variables:</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#variable-west-board">Variable west-board</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#context-map">context-map:</a>
     </li>
@@ -243,7 +247,15 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#prepost-build-steps">Pre/Post build steps</a>
+    <li class="toctree-l2"><a class="reference internal" href="#west-build">West Build</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#west">west:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#west-defs">west-defs:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#prepost-build-steps">Pre/Post Build Steps</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#executes">executes:</a>
     </li>
@@ -307,7 +319,7 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Build Operation</a>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Theory of Operation</a>
                 </li>
               </ul>
               <ul>
@@ -817,16 +829,24 @@ can specify a different project and describe, therefore, project dependencies.</
 </tr>
 </tbody>
 </table>
-<p>For a <a href="#context-name-conventions"><code>context</code></a>, the <code>project-name</code>, <code>.build-type</code>, and <code>+target-type</code> are optional. An <strong>access sequence</strong> that specifies only <code>project-name</code> uses the context that is currently processed. It is important that the <code>project</code> is part of the <a href="../build-overview/#working-with-context-set">context-set</a> in the build process. Example: <code>$ProjectDir()$</code> is the directory of the current processed <code>cproject.yml</code> file.</p>
+<p>For a <a href="#context-name-conventions"><code>context</code></a>, the <code>project-name</code>, <code>.build-type</code>, and <code>+target-type</code> are optional. An <strong>access sequence</strong> that specifies only <code>project-name</code> uses the context that is currently processed. It is important that the <code>project</code> is part of the <a href="../build-overview/#working-with-target-set">selected build variant</a> in the build process. Example: <code>$ProjectDir()$</code> is the directory of the current processed <code>cproject.yml</code> file.</p>
 <p><strong>Example:</strong></p>
 <p>This example uses the following <code>build-type</code>, <code>target-type</code>, and <code>projects</code> definitions.</p>
 <pre><code class="language-yml">solution:
   target-types:
     - type: Board               # target-type: Board
       board: NUCLEO-L552ZE-Q    # specifies board
+      target-set:
+        - set:
+          - project-context: TFM.Debug
+          - project-context: MQTT_AWS.Debug
 
     - type: Production-HW       # target-type: Production-HW
       device: STM32L5X          # specifies device
+      target-set:
+        - set:
+          - project-context: TFM.Release
+          - project-context: MQTT_AWS.Debug
 
   build-types:
     - type: Debug               # build-type: Debug
@@ -846,8 +866,8 @@ can specify a different project and describe, therefore, project dependencies.</
 <pre><code class="language-yml">    files:
       - file: $cmse-lib(TFM)$                         # use symbol output file of TFM Project
 </code></pre>
-<p>The example above uses the <code>build-type</code> and <code>target-type</code> of the processed context for the project <code>TFM</code>. With a <a href="../build-overview/#working-with-context-set">context-set</a> you may mix different <code>build-types</code> for an application. Note that it is important to build both projects using the same build process.</p>
-<pre><code class="language-bash">cbuild iot-product.csolution.yml --context-set --context TFM.Release+Board --context MQTT_AWS.Debug+Board
+<p>The example above uses the <code>build-type</code> and <code>target-type</code> of the processed context for the project <code>TFM</code>. With a <a href="../build-overview/#working-with-target-set">target-set</a> you may mix different <code>build-types</code> for an application. Note that it is important to build both projects using the same build process, for example by specifying the option <code>--active</code> to <a href="../build-overview/#working-with-target-set">select a build variant</a>.</p>
+<pre><code class="language-bash">cbuild iot-product.csolution.yml --active Production-HW
 </code></pre>
 <p>The example below uses from the TFM project always <code>build-type: Debug</code> and the <code>target-type: Production-HW</code>.</p>
 <pre><code class="language-yml">    files:
@@ -940,7 +960,7 @@ the compiler with specific default controls. The search order for this file is:<
 </div>
 <h3 id="solution"><code>solution:</code></h3>
 <p>The <code>solution:</code> node is the start of a <code>*.csolution.yml</code> file that collects related projects as described in the section
-<a href="../build-overview/#project-setup-for-related-projects">"Project setup for related projects"</a>.</p>
+<a href="../build-overview/#configure-related-projects">"Configure Related Projects"</a>.</p>
 <table>
 <thead>
 <tr>
@@ -2566,7 +2586,7 @@ packs. This information is used to define the <code>device:</code> along with ba
 <li>Blank characters (' ') in the context name are not permitted by CMake.</li>
 </ul>
 </div>
-<p>The section <a href="../build-overview/#project-setup-for-related-projects">project setup for related projects</a>
+<p>The section <a href="../build-overview/#configure-related-projects">"Configure Related Projects"</a>
 explains the overall concept of  <code>target-types</code> and <code>build-types</code>. These <code>target-types</code> and <code>build-types</code> are defined in the <code>*.csolution.yml</code> that defines the overall application for a system.</p>
 <p>The settings of the <code>target-types:</code> are processed first, followed by the settings of the <code>build-types:</code>, which potentially overwrite the <code>target-types:</code> settings.</p>
 <h3 id="target-types"><code>target-types:</code></h3>
@@ -2690,6 +2710,11 @@ explains the overall concept of  <code>target-types</code> and <code>build-types
 <td>Optional</td>
 <td style="text-align: left;">One or more target-set configurations for projects, images, and debugger.</td>
 </tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#west-defs"><code>west-defs:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Defines in <code>CMake</code> format for the <a href="#west-build">west build</a> system.</td>
+</tr>
 </tbody>
 </table>
 <div class="admonition note">
@@ -2787,6 +2812,11 @@ explains the overall concept of  <code>target-types</code> and <code>build-types
 <td>Optional</td>
 <td style="text-align: left;">Variables that can be used to define project components.</td>
 </tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#west-defs"><code>west-defs:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Defines in <code>CMake</code> format for the <a href="#west-build">west build</a> system.</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
@@ -2831,7 +2861,8 @@ settings are processed in the following order:</p>
     device: :cm0plus          # use the Cortex-M0+ processor
 </code></pre>
 <h3 id="target-set"><code>target-set:</code></h3>
-<p>The <code>target-set:</code> specifies for a <code>target-type:</code> the projects and images to include along with the configuration settings for a debug adapter. It is possible to specify one or more <code>set</code> configurations per <code>target-type</code>.</p>
+<p>The <code>target-set:</code> specifies for a <code>target-type:</code> the projects and images to include along with the configuration settings for a debug adapter. It is possible to specify one or more <code>set</code> configurations per <code>target-type</code>.
+Refer to the section <a href="../build-overview/#configure-related-projects">"Configure Related Projects"</a> that describes how to combine multiple projects into an application.</p>
 <table>
 <thead>
 <tr>
@@ -2877,7 +2908,7 @@ settings are processed in the following order:</p>
 <tr>
 <td style="text-align: left;"><code>- project-context:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Project output with optional build-type to use. Format: <code>&lt;project_name&gt;[.buid_type]</code></td>
+<td style="text-align: left;">Project output or with optional build-type to use. Format: <code>&lt;project_name&gt;[.buid_type]</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>image:</code></td>
@@ -2911,10 +2942,13 @@ settings are processed in the following order:</p>
 </tr>
 </tbody>
 </table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Either <code>project-context:</code> or <code>image:</code> is required, but these nodes are mutually exclusive.
-The <code>type:</code> specification is only accepted for an <code>image:</code> file.</p>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
+<ul>
+<li>Each list node must contain either <code>image:</code> or <code>project-context:</code> (but not both).</li>
+<li>The <code>type:</code> specification is only accepted for an <code>image:</code> file.</li>
+<li>The <code>project-context:</code> can also refer to a <a href="#west">west</a> <code>project-id:</code> with build type.</li>
+</ul>
 </div>
 <h4 id="load"><code>load:</code></h4>
 <p>Specifies the load mode for an image file. This information is used by programmers and debug tools.</p>
@@ -2992,7 +3026,7 @@ The <code>type:</code> specification is only accepted for an <code>image:</code>
           images:
           - project-context: core1.Debug
           - project-context: core0.Release
-        - set: production
+        - set: production                  # id for this target set
           images:
           - project-context: core1.Release
             device: :core1                 # specify the pname that runs the image
@@ -3030,7 +3064,7 @@ The <code>type:</code> specification is only accepted for an <code>image:</code>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;"><code>load:</code></th>
+<th style="text-align: left;"><code>variables:</code></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
@@ -3070,6 +3104,19 @@ The <code>type:</code> specification is only accepted for an <code>image:</code>
 
     - layer: $Board-Layer$      # no `*.clayer.yml` specified. Compatible layers are listed
       type: Board               # layer of type `Board` is expected
+</code></pre>
+<h4 id="variable-west-board">Variable <code>west-board</code></h4>
+<p><a href="#west-build">West Build</a> uses a different schema for the <a href="#board-name-conventions">board name</a>. However several board names can be mapped to <code>west</code> tool. By default, the variable <code>$west-board$</code> holds the <code>board_name</code> (converted to lower-case, <code>-</code> replaced by <code>_</code>) of the current active target type as default for the <a href="#west">west:</a> node. However, as some CMSIS boards names do not map, the variable <code>$west-board$</code> can be defined as shown below.</p>
+<p><em>Example.csolution.yml</em></p>
+<pre><code class="language-yml">solution:
+  target-types:
+    - type: Alif Board
+      board: Alif Semiconductor::DevKit-E7
+      variables:
+        - west-board: alif_e7_dk_rtss_he              # explicit west board name
+
+    - type: ST Board
+      board: STMicroelectronics::STM32H7B3I-DK        # $west-board$ set to `stm32h7b3i_dk`
 </code></pre>
 <h3 id="context-map"><code>context-map:</code></h3>
 <p>The <code>context-map:</code> node allows for a specific <code>project-name</code> the remapping of <code>target-types:</code> and/or <code>build-types:</code> to a different <code>context:</code> which enables:</p>
@@ -3238,7 +3285,7 @@ not-for-context:  .Release+Virtual   # remove item for build-type: Release with 
     - for-context: \.*Test*`
 </code></pre>
 <h2 id="multiple-projects">Multiple Projects</h2>
-<p>The section <a href="../build-overview/#project-setup-for-related-projects">Project setup for related projects</a> describes the
+<p>The section <a href="../build-overview/#configure-related-projects">"Configure Related Projects"</a> describes the
 organization of multiple projects. The file <code>*.csolution.yml</code> describes the relationship of these projects and may also re-map
 <code>target-types:</code> and <code>build-types:</code> for projects using <a href="#context-map"><code>context-map:</code></a>.</p>
 <h3 id="projects"><code>projects:</code></h3>
@@ -3254,8 +3301,13 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 <tbody>
 <tr>
 <td style="text-align: left;"><a href="#project"><code>- project:</code></a></td>
-<td><strong>Required</strong></td>
+<td>Optional</td>
 <td style="text-align: left;">Path to the project file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#west"><code>west:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Enable West "build orchestration wrapper" for Zephyr projects.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
@@ -3269,6 +3321,7 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 </tr>
 </tbody>
 </table>
+<p>!!! Notes: <code>project</code> and <code>west</code> nodes are mutually exclusive (ToDo)</p>
 <p><strong>Examples:</strong></p>
 <p>This example uses two projects that are built in parallel using the same <code>build-type:</code> and <code>target-type:</code>.  Such a setup is typical for multi-processor systems.</p>
 <pre><code class="language-yml">  projects:
@@ -3278,19 +3331,16 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 <p>This example uses multiple projects but with additional controls.</p>
 <pre><code class="language-yml">  projects:
     - project: ./CM0/CM0.cproject.yml      # specify cproject.yml file
-      for-context: +CM0-Addon                 # build only when 'target-type: CM0-Addon' is selected
-      for-compiler: GCC                    # build only when 'compiler: GCC'  is selected
-      define:                              # add additional defines during build process
-        - test: 12
+      for-context: +CM0-Addon              # build only when 'target-type: CM0-Addon' is selected
 
     - project: ./CM0/CM0.cproject.yml      # specify cproject.yml file
-      for-context: +CM0-Addon                 # specify use case
-      for-compiler: AC6                    # build only when 'compiler: AC6'  is selected
-      define:                              # add additional defines during build process
-        - test: 9
+      for-context: +CM0-Addon              # specify use case
 
     - project: ./Debug/Debug.cproject.yml  # specify cproject.yml file
-      not-for-context: .Release               # generated for any 'build-type:' except 'Release'
+      not-for-context: .Release            # generated for any 'build-type:' except 'Release'
+
+    - west:                                # enable west build orchestration wrapper
+        app-path: ./blinky                 # specify a zephyr application path
 </code></pre>
 <h2 id="source-file-management">Source File Management</h2>
 <table>
@@ -3813,7 +3863,70 @@ will be copied multiple times to the project. The name of the component (for exa
 </ul>
 <p>The availability of instances in a project can be made public in the <code>RTE_Components.h</code> file. The existing way to extend
 the <code>%Instance%</code> with the instance number <code>n</code>.</p>
-<h2 id="prepost-build-steps">Pre/Post build steps</h2>
+<h2 id="west-build">West Build</h2>
+<p>Enable the <a href="../build-overview/#west-build-system-integration">West build system integration</a> and add <a href="https://www.zephyrproject.org/">Zephyr</a> application images to the <em>csolution project</em>.</p>
+<h3 id="west"><code>west:</code></h3>
+<p>Use the command <code>west build</code> to generate images from application source code specified in the <code>west:</code> node.  When the <code>west:</code> node is applied (even with an empty <code>app-path</code> source directory list), the <a href="../build-operation/#west-integration">environment variables for the west build system</a> are created based on the <a href="#compiler"><code>compiler:</code></a> selection.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>west:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>app-path:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Path to the application source directory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>project-id:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Project identifier (default: last sub-dir name of <code>app-path</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>board:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Board name used for west build invocation (default: <a href="#variable-west-board">variable <code>$west-board$</code></a>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#device"><code>device:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Specify the processor core for execution of the generated image (used in <code>*.cbuild-run.yml</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#west-defs"><code>west-defs:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Defines in <code>CMake</code> format. The <code>west-defs:</code> from build and target-type are added.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>west-opt:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Options for the <code>west</code> tool (default: empty).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="west-defs"><code>west-defs:</code></h3>
+<p>Defines for the <code>west build</code> commands are specified in CMake format. The <code>west-defs:</code> that are defined under the active target and build type are concatinated as follows:</p>
+<p><code>&lt;west-defs&gt; := &lt;west:west-defs&gt; + &lt;target-type:west-defs&gt; + &lt;build-type:west-defs&gt;</code></p>
+<p>The information provided with the <code>west:</code> and <code>west-def:</code> nodes are used to generate the command line for the <code>west</code> tool:</p>
+<pre><code class="language-bash">&gt;west build --board &lt;board&gt; --build-dir $SolutionDir()$/out/&lt;project-id&gt;/$TargetType$
+            --pristine {auto | always} &lt;west-opt&gt; &lt;app-path&gt; -- &lt;west-defs&gt;
+</code></pre>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
+<ul>
+<li>The generated image files in the build directory (zephyr/zephyr.elf, zephyr/zephyr.hex) are added to the <a href="../YML-CBuild-Format/#output"><code>output:</code></a> node in <code>*.cbuild-run.yml</code>.</li>
+<li>The CMSIS build system configures the <a href="../build-operation/#west-integration">environment variables for west</a>.</li>
+<li>The <code>--sysbuild</code> option is not supported as the <em>csolution project</em> manages multiple applications and images.</li>
+<li>The cbuild orchestration instructs <code>west</code> calls with <code>--pristine auto</code> option. The cbuild option <code>--rebuild</code> cleans temporary files before proceeding with a new build.</li>
+</ul>
+</div>
+<p><strong>Examples:</strong></p>
+<p>ToDo</p>
+<h2 id="prepost-build-steps">Pre/Post Build Steps</h2>
 <p>The CMSIS-Toolbox supports pre-build and post-build steps that utilize external tools or scripts. Such external commands can be used for various tasks such as:</p>
 <ul>
 <li>pre-process source files.</li>
@@ -4226,7 +4339,7 @@ to overwrite configuration information or to define new debugger setups.</p>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Select debug clock speed (in Hz).</td>
+<td style="text-align: left;">Select debug clock speed (in Hz for pyOCD, in kHz for JLink).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>dbgconf:</code></td>
@@ -4241,7 +4354,7 @@ to overwrite configuration information or to define new debugger setups.</p>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>*:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Other debugger specific options can be used, the section is not schema checked.</td>
+<td style="text-align: left;">Other debugger specific options can be used (see below), the section is not schema checked.</td>
 </tr>
 </tbody>
 </table>
@@ -4253,7 +4366,7 @@ to overwrite configuration information or to define new debugger setups.</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP
   protocol: swd
-  clock: 20000000   # 20 MHz
+  clock: 20000000               # 20 MHz
 </code></pre>
 <pre><code class="language-yml">debugger:
   name: ULink
@@ -4263,9 +4376,75 @@ to overwrite configuration information or to define new debugger setups.</p>
 </code></pre>
 <pre><code class="language-yml">debugger:
   name: JLink
-  clock: auto
+  clock: 4000                    # 4000 kHz
   protocol: swd
 </code></pre>
+<!---
+ToDo: this section needs to be in-synch with pyOCD
+
+### Options for pyOCD
+
+This section lists options that are specific for pyOCD that is used to connect to CMSIS-DAP and ST-Link debug adapters.
+
+#### `telnet:` 
+
+pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
+The `telnet:` node configures:
+
+- Telnet port for connecting remote tools, for example the [VS Code extension Serial Monitor](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
+- Redirect the output to a log file or the console.
+
+`telnet:`                                                 |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- pname:`                                                |  Optional   | Identifies the processor (not requried for single core system).
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set port number of Telnet Server (default: 4444).
+&nbsp;&nbsp;&nbsp; `log:`                                 |  Optional   | Log output to a pre-defined (`file`) or console output (`stdio`). Default is `off`.
+
+**Examples:**
+
+Enable Telnet service or a single core system.
+
+
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP
+  protocol: swd
+  telnet:                   # enable Telnet service with default settings 
+</code></pre>
+
+
+Enable Telnet service or a single core system.
+
+
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP
+  protocol: swd
+  telnet:
+    port: 4444
+    log: stdio              # route Telnet output to console 
+</code></pre>
+
+
+
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP
+  protocol: swd
+  telnet:
+    - pname: Core0          # enable Telnet service with default settings
+      port: 4444
+    - pname: Core1
+      log: stdio            # route Telnet output to console 
+    - pname: Core2
+      log: file             # log Telnet output 
+</code></pre>
+
+
+### Options for Segger JLink
+
+This section lists options that are specific for Segger JLink.
+
+todo
+--->
+
 <h2 id="add-memory">Add Memory</h2>
 <p>Hardware targets may have additional off-chip memory. The <code>memory:</code> node that can be added as additional information to a target type.
 This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-management">Run and Debug Management</a> and the <a href="../build-overview/#automatic-linker-script-generation">Automatic Linker Script generation</a>.</p>

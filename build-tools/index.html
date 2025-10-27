@@ -169,7 +169,7 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Build Operation</a>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Theory of Operation</a>
                 </li>
               </ul>
               <ul>
@@ -441,7 +441,7 @@ csolution list boards --filter NXP
 <pre><code class="language-shell">csolution run -g CubeMX mysolution.csolution.yml -c Blinky.Debug+STM32L4
 </code></pre>
 <h3 id="use-context-set">Use context set</h3>
-<p>When working with <a href="../build-overview/#project-setup-for-related-projects">multiple related projects</a>, it might be necessary to combine different build types for debugging and downloading in the target hardware. The option <code>--context-set</code> allows you to save and reuse the selected <code>--context</code> options.</p>
+<p>When working with <a href="../build-overview/#configure-related-projects">multiple related projects</a>, it might be necessary to combine different build types for debugging and downloading in the target hardware. The option <code>--context-set</code> allows you to save and reuse the selected <code>--context</code> options.</p>
 <p>Write the selected <code>--context</code> options to the file <code>SimpleTZ.cbuild-set.yml</code>. Refer to <a href="../YML-CBuild-Format/#cbuild-setyml">file structure of <code>*.cbuild-set.yml</code></a> for details.</p>
 <pre><code class="language-shell">cbuild SimpleTZ.csolution.yml -S -c CM33_s.Release -c CM33_ns.Debug
 </code></pre>

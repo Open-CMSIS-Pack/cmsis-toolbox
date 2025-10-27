@@ -89,7 +89,9 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#project-setup-for-related-projects">Project Setup for Related Projects</a>
+    <li class="toctree-l3"><a class="reference internal" href="#configure-related-projects">Configure Related Projects</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#working-with-target-set">Working with target-set</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#working-with-context-set">Working with context-set</a>
     </li>
@@ -175,6 +177,8 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#west-build-system-integration">West Build System Integration</a>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -203,7 +207,7 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Build Operation</a>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Theory of Operation</a>
                 </li>
               </ul>
               <ul>
@@ -254,6 +258,7 @@
 <li><a href="#linker-script-management">Linker Script Management</a> defines the  available memory and controls the linker operation.</li>
 <li><a href="#generator-support">Generator Support</a> integrates configuration tools such as STM32CubeMX or MCUXpresso Config.</li>
 <li><a href="#run-and-debug-configuration">Run and Debug Configuration</a> explains how to configure debug adapters such as CMSIS-DAP or JLink.</li>
+<li><a href="#west-build-system-integration">West Build System Integration</a> allows to manage Zephyr applications in context with a <em>csolution project</em>.</li>
 </ul>
 <h2 id="overview-of-operation">Overview of Operation</h2>
 <p>The diagram below outlines the operation of the <code>csolution</code> command <code>convert</code> that processes the <em>csolution project</em> with one or more <a href="../YML-Input-Format/#context"><code>context</code></a> configurations for an application.</p>
@@ -357,7 +362,7 @@
 <p>Read Input Files (<em>csolution project</em> and <em>Software Packs</em>)</p>
 </li>
 <li>
-<p>Process each project context (selected by a <a href="#working-with-context-set">context-set</a> or option: <code>--context</code>):</p>
+<p>Process each project context (defined by a <a href="#working-with-target-set">target-set</a> or the option: <code>--context</code>):</p>
 <ul>
 <li>Apply <a href="../YML-Input-Format/#pack"><code>pack:</code></a>, <a href="../YML-Input-Format/#device"><code>device:</code></a>, <a href="../YML-Input-Format/#board"><code>board:</code></a>, and <a href="../YML-Input-Format/#compiler"><code>compiler:</code></a> to filter the content of software packs.</li>
 <li>From <a href="../YML-Input-Format/#groups"><code>groups:</code></a> add the list of user source files.</li>
@@ -493,7 +498,7 @@
 <pre><code class="language-txt">Sample.Debug+FRDM-K32L3A6
 </code></pre>
 <p>The <a href="../YML-Input-Format/#context-name-conventions">context</a> allows you to refer to each possible build combination that, by default, uses a different <a href="#output-directory-structure">output directory</a>. A context may be partly specified in many places.</p>
-<p>The <a href="#working-with-context-set">context-set</a> defines a combination of projects and is useful when an application is composed of <a href="#project-setup-for-related-projects">multiple related projects</a>.</p>
+<p>The <a href="#working-with-context-set">context-set</a> defines a combination of projects and is useful when an application is composed of <a href="#configure-related-projects">multiple related projects</a>.</p>
 <h3 id="toolchain-agnostic-project">Toolchain Agnostic Project</h3>
 <p>Generic <a href="../YML-Input-Format/#translation-control"><strong>Translation Control</strong></a> settings enable projects that work across the range of supported compilers (AC6, GCC, IAR, CLANG). The <a href="../YML-Input-Format/#translation-control"><strong>Translation Control</strong></a> settings are mapped to specify compiler controls by the build tools.</p>
 <h4 id="cdefaultyml">cdefault.yml</h4>
@@ -608,7 +613,7 @@ Optionally, the file <code>*.cbuild-set.yml</code> defines the application's con
 <p class="admonition-title">Note</p>
 <p>If the file <code>*.cbuild-set.yml</code> file is missing, the <code>setup</code> command creates a <code>*.cbuild-set</code> file with a selection of the first <code>target-type</code> and the first <code>build-type</code>.</p>
 </div>
-<h3 id="project-setup-for-related-projects">Project Setup for Related Projects</h3>
+<h3 id="configure-related-projects">Configure Related Projects</h3>
 <p>A solution is the software view of the complete system. It combines projects that can be generated independently and
 therefore, manages related projects. It may also be deployed to different targets during development as described in section <a href="#software-layers">Software Layers</a>.</p>
 <p>The picture below shows a system that is composed of:</p>
@@ -663,7 +668,50 @@ therefore, manages related projects. It may also be deployed to different target
       not-for-context: +Board
     - project: ./processor2/Control.cproject.yml     # Project A
 </code></pre>
+<h3 id="working-with-target-set">Working with target-set</h3>
+<p>A <a href="../YML-Input-Format/#target-set"><code>target-set:</code></a> specifies the <a href="#context">context</a> types and additional <a href="../YML-Input-Format/#images">images</a> that are combined into an application. The following example defines the <a href="#run-and-debug-configuration">Run and Debug configurations</a> for the <code>iot-product.csolution.yml</code> application that is shown above using the <a href="../YML-Input-Format/#target-set"><code>target-set:</code></a> node.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a href="#run-and-debug-configuration">Run and Debug Configuration</a> shows how a  <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> is specified for a build variant that is defined with <a href="../YML-Input-Format/#target-set"><code>target-set:</code></a>.</p>
+</div>
+<pre><code class="language-yml">solution:
+   :                            # setup not shown
+
+  target-types:
+    - type: Board
+      board: NUCLEO-L552ZE-Q    # uses device defined by the board
+      target-set:
+        - set:                  # default set for this target
+          images:
+            - project-context: MQTT_AWS.Debug
+            - project-context: Control.Debug
+
+    - type: Production-HW
+      device: STM32U5X          # specifies device
+        - set:                  # default set for this target
+          images:               # all projects as release version
+            - project-context: Bootloader.Release
+            - project-context: TFM.Release
+            - project-context: MQTT_AWS.Release
+            - project-context: Model.Release
+            - project-context: Control.Release
+        - set: Debug            # alternative set for debugging on Production-HW
+          images:               # projects and images required for debugging
+            - image: Bootloader_Dummy.hex           # use an dummy image
+            - project-context: TFM.Release
+            - project-context: MQTT_AWS.Debug       # load debug build
+            - image: Model_Test.hex                 # use a test Model
+</code></pre>
+<p>Using the <a href="../build-tools/">Build Tools</a> option <code>--active</code> (or <code>-a</code>) generates the different build variants:</p>
+<pre><code class="language-bash">cbuild iot-product.csolution.yml -a Board                   # target-type Board with default set
+cbuild iot-product.csolution.yml -a Production-HW           # target-type Production-HW with default set
+cbuild iot-product.csolution.yml -a Production-HW@Debug     # target-type Production-HW with Debug set
+</code></pre>
 <h3 id="working-with-context-set">Working with context-set</h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>With CMSIS-Toolbox version 2.9 or higher the <a href="../YML-Input-Format/#target-set"><code>target-set:</code></a> is introduced. It is recommended to use <a href="../YML-Input-Format/#target-set"><code>target-set:</code></a> instead of the <code>--context-set</code> option as the <code>--context-set</code> option may be deprecated.</p>
+</div>
 <p>Frequently, it is required to build applications with different <a href="#context">context</a> types. The following command line example generates the <code>iot-product.csolution.yml</code> with build type <code>Debug</code> for the project <code>MQTT_AWS.cproject.yml</code>, while the other projects use the build type <code>Release</code>. When using the option <code>-S</code> or <code>--context-set</code>, this selection is saved to the file <code>iot-product.cbuild-set.yml</code> located in the same directory as the <code>*.csolution.yml</code> file. Refer to <a href="../YML-CBuild-Format/#cbuild-setyml">File Structure of <code>*.cbuild-set.yml</code></a> for details.</p>
 <pre><code class="language-txt">cbuild iot-product.csolution.yml -c TFM.Release+Board -c MQTT_AWS.Debug+Board -c Bootloader.Release+Board -S
 </code></pre>
@@ -1180,12 +1228,12 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
 <h3 id="detailed-usage-instructions">Detailed Usage Instructions</h3>
 <p>These chapters explain how to manage device and board configuration in more detail:</p>
 <ul>
-<li><a href="../CubeMX/"><strong>Configure STM32 Devices with CubeMX</strong></a></li>
-<li><a href="../MCUXpressoConfig/"><strong>Configure NXP Devices with MCUXpresso Config Tools</strong></a></li>
+<li><a href="../CubeMX/">Configure STM32 Devices with CubeMX</a></li>
+<li><a href="../MCUXpressoConfig/">Configure NXP Devices with MCUXpresso Config Tools</a></li>
 </ul>
 <h2 id="run-and-debug-configuration">Run and Debug Configuration</h2>
 <p>The CMSIS-Toolbox uses the information from the DFP and BSP to simplify the debugger configuration.  It generates the file <code>&lt;solution-name&gt;+&lt;target-type&gt;.cbuild-run.yml</code> that contains for one target of a <em>csolution project</em> all information for run and debug. This file is used by <a href="https://pyocd.io/">pyOCD</a> and the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">CMSIS Solution extension for VS Code</a> to configure debug and programming features of the <a href="../build-operation/#debug-adapter-integration">supported debug adapters</a>.</p>
-<p>An application can be composed of <a href="../YML-Input-Format/#images">various project contexts and additional images</a>. In addition the <a href="../YML-Input-Format/#debugger">debugger</a> along with parameters are specified in the <code>*.csolution.yml</code> file using the <a href="../YML-Input-Format/#target-set"><code>target-set:</code></a> node.</p>
+<p>An application can be composed of <a href="#configure-related-projects">various project contexts</a> and <a href="../YML-Input-Format/#images">additional images</a>. In addition the <a href="../YML-Input-Format/#debugger">debugger</a> along with parameters are specified in the <code>*.csolution.yml</code> file using the <a href="../YML-Input-Format/#target-set"><code>target-set:</code></a> node.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Refer to <a href="../YML-CBuild-Format/#run-and-debug-management">Run and Debug Management</a> for further details.</p>
@@ -1217,7 +1265,7 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
             - project-context: core1.Release
 </code></pre>
 <h3 id="using-pyocd">Using pyOCD</h3>
-<p>A <em>csolution project</em> that uses <code>target-set:</code> to configure the debugger should be build using the option <code>--active</code> to select the target-type.  The <code>cbuild</code> command creates then a corresponding <code>*.build-run.yml</code> file that can be used with <a href="https://pyocd.io/">pyOCD version (todo)</a> or higher. This <code>*.build-run.yml</code> file contains all information to <a href="../YML-CBuild-Format/#run-and-debug-management">program and debug the application</a>.</p>
+<p>A <em>csolution project</em> that uses <code>target-set:</code> to configure the debugger should be build using the option <code>--active</code> to select the target-type.  The <code>cbuild</code> command creates then a corresponding <code>*.build-run.yml</code> file that can be used with <a href="https://pyocd.io/">pyOCD version 0.37.0</a> or higher. This <code>*.build-run.yml</code> file contains all information to <a href="../YML-CBuild-Format/#run-and-debug-management">program and debug the application</a>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-shell">cbuild MyApplication.csolution.yml --active MyBoard                       # build application
 pyOCD load --cbuild-run MyApplication+MyBoard.cbuild-run.yml              # download image to target
@@ -1230,6 +1278,61 @@ pyOCD gdbserver --cbuild-run MyApplication+MyBoard.cbuild-run.yml         # star
 <p>The <code>.cmsis</code> directory in the <em>csolution project</em> directory contains for each target a default <code>*.dbgconf</code> configuration file. For example: <code>.\.cmsis\MyApplication+MyBoard</code>.
 This file can be configured to reflect user settings.</p>
 <p>An explict <code>*.dbgconf</code> configuration file can be specified using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code> node</a> in the <code>*.csolution.yml</code> file.</p>
+<h2 id="west-build-system-integration">West Build System Integration</h2>
+<p>The West build system is a project management system used primarily in the <a href="https://www.zephyrproject.org/">Zephyr</a> ecosystem. The integration in the CMSIS-Toolbox acts as a "build orchestration wrapper" around CMake.
+The CMSIS-Toolbox connects the <code>west build</code> command with the information of the CMSIS-Pack system as shown in the diagram below. For the <a href="#compiler-selection">selected compiler</a> the related <a href="../build-operation/#west-integration">environment variables for the west build system</a> are set. When combined with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">VS Code CMSIS Solution</a> extension, features such as project outline in the CMSIS View or "go-to-definition" with <code>clangd</code> are available.</p>
+<p><img alt="West Build System Integration" src="../images/west-integration.png" title="West Build System Integration" /></p>
+<p>West projects are specified using the <a href="../YML-Input-Format/#west"><code>west:</code></a> node under <code>projects:</code> in the <code>*.csolution.yml</code> file and can be managed with the <code>target-types</code> and <code>build-types</code> of the <em>csolution project</em>. Note that the <code>sysbuild</code> feature of <code>west</code> is not supported as the CMSIS-Toolbox manages already related projects.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">solution:
+  compiler: AC6
+
+  packs:
+    - pack: AlifSemiconductor::Ensemble@^2.0.0-0
+    - pack: ARM::CMSIS
+
+  target-types:
+    - type: DevKit-E7
+      board: Alif Semiconductor::DevKit-E7
+      device: Alif Semiconductor::AE722F80F55D5LS
+      variables:                            # west board selection
+        - west-board: alif_e7_dk_rtss
+
+      target-set:
+        - set:
+          debugger:
+            name: JLink Server
+            port: 3333
+            protocol: swd
+          images:
+            - project-context: rtss_he.Debug
+            - project-context: rtss_hp.Release
+
+  build-types:
+    - type: Debug
+      optimize: debug
+      west-defs:                           # west defines
+        - CONFIG_DEBUG: y
+        - CONFIG_DEBUG_THREAD_INFO: y
+        - SE_SERVICES: OFF
+        - CMAKE_BUILD_TYPE: Debug
+
+    - type: Release
+      optimize: size
+      west-defs:                           # west defines
+        - SE_SERVICES: OFF
+        - CMAKE_BUILD_TYPE: Release
+
+  projects:
+    - west:
+        app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_he
+        board: $west-board$_he
+        device: :M55_HE
+    - west:
+        app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_hp
+        board: $west-board$_hp
+        device: :M55_HP
+</code></pre>
               
             </div>
           </div><footer>
