@@ -124,6 +124,9 @@ project:
 
 When a `type: hex` file is generated for AC6, the CMSIS-Toolbox configures this file in the `*.cbuild-run.yml` file with `load: image` and the `type: elf` file with `load: symbols`. This bypasses the GDB loader issue.
 
+!!! Note
+The HEX file should be generated using the Arm Compiler 6 `fromelf` tool during the build process of the application. Using a HEX conversation tool for a different toolchain may generate unpredictable results.
+
 ## Layer Search Fails
 
 The `cbuild setup` command does not find compatible layers.

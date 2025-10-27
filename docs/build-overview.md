@@ -165,7 +165,7 @@ Sample.Debug+FRDM-K32L3A6
 
 The [context](YML-Input-Format.md#context-name-conventions) allows you to refer to each possible build combination that, by default, uses a different [output directory](#output-directory-structure). A context may be partly specified in many places.
 
-The [context-set](#working-with-context-set) defines a combination of projects and is useful when an application is composed of [multiple related projects](#project-setup-for-related-projects).
+The [context-set](#working-with-context-set) defines a combination of projects and is useful when an application is composed of [multiple related projects](#configure-related-projects).
 
 ### Toolchain Agnostic Project
 
@@ -284,7 +284,7 @@ Optionally, the file `*.cbuild-set.yml` defines the application's context set th
 !!! Note
     If the file `*.cbuild-set.yml` file is missing, the `setup` command creates a `*.cbuild-set` file with a selection of the first `target-type` and the first `build-type`.
 
-### Project Setup for Related Projects
+### Configure Related Projects
 
 A solution is the software view of the complete system. It combines projects that can be generated independently and
 therefore, manages related projects. It may also be deployed to different targets during development as described in section [Software Layers](#software-layers).
@@ -346,10 +346,10 @@ solution:
 
 ### Working with target-set
 
-A [`target-set:`](YML-Input-Format.md#target-set) specifies the [context](#context) types and additional [images](YML-Input-Format.md#images) that are combined into an application. The following example defines build variants of this `iot-product.csolution.yml` shown above with the [`target-set:`](YML-Input-Format.md#target-set) node.
+A [`target-set:`](YML-Input-Format.md#target-set) specifies the [context](#context) types and additional [images](YML-Input-Format.md#images) that are combined into an application. The following example defines the [Run and Debug configurations](#run-and-debug-configuration) for the `iot-product.csolution.yml` application that is shown above using the [`target-set:`](YML-Input-Format.md#target-set) node.
 
 !!! Note
-    [Run and Debug Configuration](#run-and-debug-configuration) shows how a  [`debugger:`](YML-Input-Format.md#debugger) is specified for a build variant that is defined with[`target-set:`](YML-Input-Format.md#target-set).
+    [Run and Debug Configuration](#run-and-debug-configuration) shows how a  [`debugger:`](YML-Input-Format.md#debugger) is specified for a build variant that is defined with [`target-set:`](YML-Input-Format.md#target-set).
 
 ```yml
 solution:
@@ -917,7 +917,7 @@ These chapters explain how to manage device and board configuration in more deta
 
 The CMSIS-Toolbox uses the information from the DFP and BSP to simplify the debugger configuration.  It generates the file `<solution-name>+<target-type>.cbuild-run.yml` that contains for one target of a *csolution project* all information for run and debug. This file is used by [pyOCD](https://pyocd.io/) and the [CMSIS Solution extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) to configure debug and programming features of the [supported debug adapters](build-operation.md#debug-adapter-integration).
 
-An application can be composed of [various project contexts and additional images](YML-Input-Format.md#images). In addition the [debugger](YML-Input-Format.md#debugger) along with parameters are specified in the `*.csolution.yml` file using the [`target-set:`](YML-Input-Format.md#target-set) node.
+An application can be composed of [various project contexts](#configure-related-projects) and [additional images](YML-Input-Format.md#images). In addition the [debugger](YML-Input-Format.md#debugger) along with parameters are specified in the `*.csolution.yml` file using the [`target-set:`](YML-Input-Format.md#target-set) node.
 
 !!! Note
     Refer to [Run and Debug Management](YML-CBuild-Format.md#run-and-debug-management) for further details.

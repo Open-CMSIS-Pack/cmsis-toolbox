@@ -383,7 +383,7 @@ The `default:` node is the start of a [`cdefault.yml`](build-overview.md#cdefaul
 ### `solution:`
 
 The `solution:` node is the start of a `*.csolution.yml` file that collects related projects as described in the section
-["Project setup for related projects"](build-overview.md#project-setup-for-related-projects).
+["Configure Related Projects"](build-overview.md#configure-related-projects).
 
 `solution:`                                          |            | Content
 :----------------------------------------------------|:-----------|:------------------------------------
@@ -1287,7 +1287,7 @@ A [`context`](#context-name-conventions) is an environment setup for a project t
     - The [`context`](#context-name-conventions) name is used throughout the build process and is reflected in directory names. Even when there is not a fixed limit, keep identifiers short. Recommended is less than 32 characters for the [`context`](#context-name-conventions) name.
     - Blank characters (' ') in the context name are not permitted by CMake.
 
-The section [project setup for related projects](build-overview.md#project-setup-for-related-projects)
+The section ["Configure Related Projects"](build-overview.md#configure-related-projects)
 explains the overall concept of  `target-types` and `build-types`. These `target-types` and `build-types` are defined in the `*.csolution.yml` that defines the overall application for a system.
 
 The settings of the `target-types:` are processed first, followed by the settings of the `build-types:`, which potentially overwrite the `target-types:` settings.
@@ -1401,6 +1401,7 @@ target-types:
 ### `target-set:`
 
 The `target-set:` specifies for a `target-type:` the projects and images to include along with the configuration settings for a debug adapter. It is possible to specify one or more `set` configurations per `target-type`.
+Refer to the section ["Configure Related Projects"](build-overview.md#configure-related-projects) that describes how to combine multiple projects into an application.
 
 `target-set:`                                         |              | Content
 :-----------------------------------------------------|--------------|:------------------------------------
@@ -1424,8 +1425,8 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 &nbsp;&nbsp;&nbsp; [`device:`](#device)               |   Optional   | For image files a pname can be specified to denote the processor that runs the image.
 
 !!! Notes
-    - Either `project-context:` or `image:` is required, but these nodes are mutually exclusive.
-    The `type:` specification is only accepted for an `image:` file.
+    - Each list node must contain either `image:` or `project-context:` (but not both).
+    - The `type:` specification is only accepted for an `image:` file.
     - The `project-context:` can also refer to a [west](#west) `project-id:` with build type.
 
 #### `load:`
@@ -1724,7 +1725,7 @@ The following project is only included when the `build-type:` of a context conta
 
 ## Multiple Projects
 
-The section [Project setup for related projects](build-overview.md#project-setup-for-related-projects) describes the
+The section ["Configure Related Projects"](build-overview.md#configure-related-projects) describes the
 organization of multiple projects. The file `*.csolution.yml` describes the relationship of these projects and may also re-map
 `target-types:` and `build-types:` for projects using [`context-map:`](#context-map).
 
@@ -2456,6 +2457,9 @@ debugger:
   protocol: swd
 ```
 
+<!---
+ToDo: this section needs to be in-synch with pyOCD
+
 ### Options for pyOCD
 
 This section lists options that are specific for pyOCD that is used to connect to CMSIS-DAP and ST-Link debug adapters.
@@ -2463,6 +2467,10 @@ This section lists options that are specific for pyOCD that is used to connect t
 #### `telnet:` 
 
 pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
+The `telnet:` node configures:
+
+- Telnet port for connecting remote tools, for example the [VS Code extension Serial Monitor](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
+- Redirect the output to a log file or the console.
 
 `telnet:`                                                 |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
@@ -2505,15 +2513,12 @@ debugger:
       log: file             # log Telnet output 
 ```
 
-- provides Telnet port for connecting remote tools (MSFT Serial Monitor is one example)
-- log output to file or STDIO
-
-
 ### Options for Segger JLink
 
 This section lists options that are specific for Segger JLink.
 
 todo
+--->
 
 ## Add Memory
 
