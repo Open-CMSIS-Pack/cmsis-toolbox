@@ -2659,7 +2659,7 @@ JLink supports a Telnet service that connects to character I/O funtions. Charact
 
 #### `trace:` for JLink Server
 
-JLink supports a SWO Trace.
+J-Link supports SWO Trace.
 
 `trace:`                                                  |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
