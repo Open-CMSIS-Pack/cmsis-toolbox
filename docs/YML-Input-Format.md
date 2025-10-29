@@ -2416,55 +2416,71 @@ This sensor shield layer provides a set of interfaces that are configurable.
 
 ## Debugger Configuration
 
-Packs contain information for configuring debugger connection to a device or board. The `debugger:` node that is specified under the [`target-set:`](#target-set) in the *csolution project* allows
-to overwrite configuration information or to define new debugger setups.
+The `debugger:` node specified under the [`target-set:`](#target-set) in the *csolution project* configures the debugger.
+
+!!! Notes
+    - Packs may provide a default configuration for a debugger connection to a device or board. 
+    - Serveral settings are optional and the default settings are specific to the selected debug adapter.
+    - The complete debugger settings including default values are listed in `debugger:` node of the [`*.cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management).
 
 ### `debugger:`
 
 `debugger:`                                               |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `name:`                                |**Required** | Identifies the debug adapter.
-&nbsp;&nbsp;&nbsp; `protocol:`                            |  Optional   | Select debug portocol (jtag or swd).
-&nbsp;&nbsp;&nbsp; `clock:`                               |  Optional   | Select debug clock speed (in Hz for pyOCD, in kHz for JLink).
-&nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Configuration file for device settings such as trace pins and option bytes.
-&nbsp;&nbsp;&nbsp; `start-pname:`                         |  Optional   | Debugger connects at start to this processor.
-&nbsp;&nbsp;&nbsp; `*:`                                   |  Optional   | Other debugger specific options can be used (see below), the section is not schema checked.
+&nbsp;&nbsp;&nbsp; `*:`                                   |  Optional   | Other debugger specific options can be used as documented below.
 
-!!! Note
-    If values are not specified, the default values from `debug-adapter.yml` are used.
+The command `csolution list debuggers` outputs the `name:` of the supported debug adatpers; using the option `--verbose` extends the list with alias names that are also accepted as `name:`  There are five different debug adapter categories:
+
+Debug Adapter `name:`           | Description
+:-------------------------------|:-----------------------------------------------
+[`<adapter>@pyOCD`](#pyocd)    | Debug Adapters that interface via pyOCD.
+[`<adapter>@Arm-Debugger`](#arm-debugger) | Debug Adapters that interface via the Arm-Debugger.
+[`Arm-FVP`](#arm-fvp)           | [FVP](https://arm-software.github.io/AVH/main/simulation/html/index.html) simulation models that represent processor sub-systems.
+[`Keil uVision`](#keil-uvision)  | [uVision Debugger](http://developer.arm.com/documentation/101407/0543/Debugging) that is integrated in the Keil uVision IDE. 
+[`JLink Server`](#jlink-server)  | [Segger J-Link](https://www.segger.com/products/debug-probes/j-link/) debug probes that connect using the JLink Server.
+
+The [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) VS Code extension uses the `debugger:` node to create entries in the files `.vscode/tasks.json` and `.vscode/launch.json` for running and debugging using the specified debug adapter. [`pyOCD`](#pyocd) supports a command-line mode that uses the [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management) file which is created by the CMSIS-Toolbox.
+
+The following sections describe the options available for the different debug adapter types.
+
+### pyOCD 
+
+This section lists the options that are specific to pyOCD that connects to [CMSIS-DAP](https://arm-software.github.io/CMSIS-DAP/latest/index.html) and ST-Link debug adapters. CMSIS-DAP is a standardized protocol used by many different debug adapters. All CMSIS-DAP enabled debug adapters can be accessed with `name: CMSIS-DAP@pyOCD`. A specific debug adapter name such as `name: ULINKplus@pyOCD` provides tailored default settings and a custom configuration dialog in the [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) VS Code extension.
+
+#### `debugger:` for pyOCD
+
+debugger:                         |             | Description
+:---------------------------------|:------------|:-----------------------------------------------
+&nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `<adapter>@pyOCD`.
+&nbsp;&nbsp;&nbsp; `clock:`       |  Optional   | Debug clock speed in Hz.
+&nbsp;&nbsp;&nbsp; `protocol:`    |  Optional   | Debug portocol (jtag or swd).
+&nbsp;&nbsp;&nbsp; `dbgconf:`     |  Optional   | Configuration file for device settings such as trace pins and option bytes.
+&nbsp;&nbsp;&nbsp; `start-pname:` |  Optional   | Debugger connects at start to this processor.
+&nbsp;&nbsp;&nbsp; [`telnet:`](#telnet-for-pyocd) |  Optional   | Telnet service configuration.
+&nbsp;&nbsp;&nbsp; [`trace:`](#trace-for-pyocd)   |  Optional   | Trace configuration.
 
 **Examples:**
 
 ```yml
 debugger:
-  name: CMSIS-DAP
+  name: CMSIS-DAP@pyOCD
   protocol: swd
   clock: 20000000               # 20 MHz
 ```
 
 ```yml
 debugger:
-  name: ULink
+  name: ULINKplus
   protocol: jtag
   clock: 10000000               # 10 MHz
   dbgconf: MyHardware.dbgconf
 ```
 
-```yml
-debugger:
-  name: JLink
-  clock: 4000                    # 4000 kHz
-  protocol: swd
-```
+#### `telnet:` for pyOCD
 
-<!---
-ToDo: this section needs to be in-synch with pyOCD
-
-### Options for pyOCD
-
-This section lists options that are specific for pyOCD that is used to connect to CMSIS-DAP and ST-Link debug adapters.
-
-#### `telnet:` 
+!!! Note
+    The `telnet:` feature will be implemented until Dec 2025. This section is only a preview.
 
 pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
 The `telnet:` node configures:
@@ -2472,10 +2488,10 @@ The `telnet:` node configures:
 - Telnet port for connecting remote tools, for example the [VS Code extension Serial Monitor](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
 - Redirect the output to a log file or the console.
 
-`telnet:`                                                 |             | Content
+`telnet:`                                                 |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
 `- pname:`                                                |  Optional   | Identifies the processor (not requried for single core system).
-&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set port number of Telnet Server (default: 4444).
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444).
 &nbsp;&nbsp;&nbsp; `log:`                                 |  Optional   | Log output to a pre-defined (`file`) or console output (`stdio`). Default is `off`.
 
 **Examples:**
@@ -2484,7 +2500,7 @@ Enable Telnet service or a single core system.
 
 ```yml
 debugger:
-  name: CMSIS-DAP
+  name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:                   # enable Telnet service with default settings 
 ```
@@ -2493,7 +2509,7 @@ Enable Telnet service or a single core system.
 
 ```yml
 debugger:
-  name: CMSIS-DAP
+  name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:
     port: 4444
@@ -2502,7 +2518,7 @@ debugger:
 
 ```yml
 debugger:
-  name: CMSIS-DAP
+  name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:
     - pname: Core0          # enable Telnet service with default settings
@@ -2513,12 +2529,144 @@ debugger:
       log: file             # log Telnet output 
 ```
 
-### Options for Segger JLink
+#### `trace:` for pyOCD
 
-This section lists options that are specific for Segger JLink.
+!!! Note
+    The `trace:` feature will be implemented until Dec 2025. This section is only a preview.
 
-todo
---->
+CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific trace features are configured using the `*.dbgconf` file. 
+
+`trace:`                                                  |             | Description
+:---------------------------------------------------------|-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Trace clock frequency in Hz. 
+&nbsp;&nbsp;&nbsp; `mode:`                                |  Optional   | Set Trace Port transport mode. Currently only `SWO-UART` is accepted.
+&nbsp;&nbsp;&nbsp; `baudrate:`                            |  Optional   | Maxium baudrate for `SWO-UART` mode.
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Trace Server (default: 5555).
+&nbsp;&nbsp;&nbsp; `log:`                                 |  Optional   | Log trace output to a pre-defined file (default: no file created).
+
+### Arm Debugger
+
+This section lists options that are specific for the Arm Debugger.
+
+debugger:                         |             | Description
+:---------------------------------|:------------|:-----------------------------------------------
+&nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `<adapter>@Arm-Debugger`.
+
+**Example:**
+
+```yml
+debugger:
+  name: CMSIS-DAP@Arm-Debugger
+```
+
+### Arm-FVP
+
+This section lists options that are specific to the [FVP](https://arm-software.github.io/AVH/main/simulation/html/index.html) simulation models. FVPs are configureable simulation models that are designed for software validation. An FVP represents one or more Arm processors.
+
+#### `debugger:` for Arm-FVP
+
+debugger:                         |             | Description
+:---------------------------------|:------------|:-----------------------------------------------
+&nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `Arm-FVP`.
+&nbsp;&nbsp;&nbsp; `model:`       |  Optional   | Model selection for a pre-defined list (see table below). Default: `FVP_MPS2_Cortex-M3`.
+&nbsp;&nbsp;&nbsp; `model-file:`  |  Optional   | Explicit path and filename to FVP executable as alternative to `model:`.
+&nbsp;&nbsp;&nbsp; `config-file:` |  Optional   | Path and filename of the [FVP configuration file](https://arm-software.github.io/AVH/main/simulation/html/using.html).
+`args:`                           |  Optional   | Miscellaneous [command line arguments](https://arm-software.github.io/AVH/main/simulation/html/using.html).
+
+!!! Note
+    - `model-file:` is an explicit filename of an simulation model. This setting overwrites a `model:` selection.
+
+`model:` can select one of the following pre-defined reference platforms. You should use the `model:` selection in combination with a `pack:` and `device:` as listed under 
+["CMSIS-based projects for AVH FVPs"](https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html).
+
+`model:`                         | Simulation Model Represents
+:--------------------------------|:---------------------------------
+`FVP_Corstone 300`               | [Arm Corstone 300](https://developer.arm.com/documentation/100966/1128/Arm--Corstone-SSE-300-FVP) Reference Platform with Cortex-M55
+`FVP_Corstone_SSE-300_Ethos-U55` | [Arm Corstone 300](https://developer.arm.com/documentation/100966/1128/Arm--Corstone-SSE-300-FVP) Reference Platform with Cortex-M55 and Ethos-U55
+`FVP_Corstone_SSE-300_Ethos-U65` | [Arm Corstone 300](https://developer.arm.com/documentation/100966/1128/Arm--Corstone-SSE-300-FVP) Reference Platform with Cortex-M55 and Ethos-U65
+`FVP_Corstone 310`               | [Arm Corstone 310](https://developer.arm.com/documentation/102778) Reference Platform with Cortex-M85 and Ethos-U55.
+`FVP_Corstone_SSE-310_Ethos-U65` | [Arm Corstone 310](https://developer.arm.com/documentation/102778) Reference Platform with Cortex-M85 and Ethos-U65.
+`FVP_Corstone 315`               | [Arm Corstone 315](https://developer.arm.com/documentation/109395) Reference Platform with Cortex-M85, Ethos-U65, and Mali-C55.
+`FVP_Corstone 320`               | [Arm Corstone 320](https://developer.arm.com/documentation/109760) Reference Platform with Cortex-M85, Ethos-U85, and Mali-C55.
+`FVP_MPS2_Cortex-M0`             | [Arm Microcontroller Prototyping System with Cortex-M0](https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M0)
+`FVP_MPS2_Cortex-M0plus`         | [Arm Microcontroller Prototyping System with Cortex-M0+](https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M0plus)
+`FVP_MPS2_Cortex-M3`             | [Arm Microcontroller Prototyping System with Cortex-M3](https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M3)
+`FVP_MPS2_Cortex-M4`             | [Arm Microcontroller Prototyping System with Cortex-M4](https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M4)
+`FVP_MPS2_Cortex-M7`             | [Arm Microcontroller Prototyping System with Cortex-M7](https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M7)
+`FVP_MPS2_Cortex-M23`            | [Arm Microcontroller Prototyping System with Cortex-M23](https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M23)
+`FVP_MPS2_Cortex-M33`            | [Arm Microcontroller Prototyping System with Cortex-M33](https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M33)
+`FVP_MPS2_Cortex-M35P`           | [Arm Microcontroller Prototyping System with Cortex-M35P](https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M35P)
+`FVP_MPS2_Cortex-M52`            | [Arm Microcontroller Prototyping System with Cortex-M52](https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M52)
+`FVP_MPS2_Cortex-M55`            | [Arm Microcontroller Prototyping System with Cortex-M55](https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M55)
+`FVP_MPS2_Cortex-M85`            | [Arm Microcontroller Prototyping System with Cortex-M85](https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M85)
+
+**Example:**
+
+```yml
+debugger:
+  name: CMSIS-DAP@Arm-Debugger
+  model:  FVP_Corstone_SSE-320
+  config-file: ./FVP_Config.txt
+  args: --simlimit 600            # stop simulation after 600 seconds
+```
+
+### Keil uVision
+
+This section lists options that are specific for the uVision Debugger.
+
+#### `debugger:` for Keil uVision
+
+debugger:                         |             | Description
+:---------------------------------|:------------|:-----------------------------------------------
+&nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `Keil uVision`.
+&nbsp;&nbsp;&nbsp; `uv4:`         |  Optional   | Path to the uVision executable; default: `C:/Keil_v5/UV4/UV4.exe`.
+
+```yml
+debugger:
+  name: Keil uVision
+```
+
+### JLink Server
+
+This section lists options that are specific for the  [Segger J-Link](https://www.segger.com/products/debug-probes/j-link/) debug probes.
+
+#### `debugger:` for JLink Server
+
+debugger:                         |             | Description
+:---------------------------------|:------------|:-----------------------------------------------
+&nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `<adapter>@pyOCD`.
+&nbsp;&nbsp;&nbsp; `clock:`       |  Optional   | Debug clock speed in Hz.
+&nbsp;&nbsp;&nbsp; `protocol:`    |  Optional   | Debug portocol (jtag or swd).
+&nbsp;&nbsp;&nbsp; [`telnet:`](#telnet-for-pyocd) |  Optional   | Telnet service configuration.
+&nbsp;&nbsp;&nbsp; [`trace:`](#trace-for-pyocd)   |  Optional   | Trace configuration.
+
+**Examples:**
+
+```yml
+debugger:
+  name: JLink Server
+  clock: 4000                    # 4000 kHz
+  protocol: swd
+```
+
+#### `telnet:` for JLink Server
+
+J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
+
+`telnet:`                                                 |             | Description
+:---------------------------------------------------------|-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444).
+
+#### `trace:` for JLink Server
+
+J-Link supports SWO Trace.
+
+`trace:`                                                  |             | Description
+:---------------------------------------------------------|-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Trace clock frequency in Hz.
+&nbsp;&nbsp;&nbsp; `mode:`                                |  Optional   | Set Trace Port transport mode. Currently only `SWO-UART` is accepted.
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444).
+
 
 ## Add Memory
 
