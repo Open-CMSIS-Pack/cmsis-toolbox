@@ -799,9 +799,7 @@ cbuild-run:
       :
 
   debugger:
-    - name: pyOCD: CMSIS-DAP
-      :
-    - name: JLink
+    - name: pyOCD@CMSIS-DAP
       :
 
   debug-vars:
