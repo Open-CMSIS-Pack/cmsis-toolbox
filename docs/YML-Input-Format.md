@@ -2561,7 +2561,7 @@ debugger:
 
 ### Arm-FVP
 
-This section lists options that are specific to the [FVP](https://arm-software.github.io/AVH/main/simulation/html/index.html) simulation models. An FVP is a configureable simulation model that are designed for software validation. It represents one or more Arm processors.
+This section lists options that are specific to the [FVP](https://arm-software.github.io/AVH/main/simulation/html/index.html) simulation models. FVPs are configureable simulation models that are designed for software validation. An FVP represents one or more Arm processors.
 
 #### `debugger:` for Arm-FVP
 
