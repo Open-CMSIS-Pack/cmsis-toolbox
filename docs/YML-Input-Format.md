@@ -2568,16 +2568,12 @@ This section lists options that are specific to the [FVP](https://arm-software.g
 debugger:                         |             | Description
 :---------------------------------|:------------|:-----------------------------------------------
 &nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `Arm-FVP`.
-&nbsp;&nbsp;&nbsp; `model:`       |  Optional   | Model selection for a pre-defined list (see table below). Default: `FVP_MPS2_Cortex-M3`.
-&nbsp;&nbsp;&nbsp; `model-file:`  |  Optional   | Explicit path and filename to FVP executable as alternative to `model:`.
+&nbsp;&nbsp;&nbsp; `model:`       |  Optional   | Filename (optionally with path) of the FVP executable. Default: `FVP_MPS2_Cortex-M3`.
 &nbsp;&nbsp;&nbsp; `config-file:` |  Optional   | Path and filename of the [FVP configuration file](https://arm-software.github.io/AVH/main/simulation/html/using.html).
 `args:`                           |  Optional   | Miscellaneous [command line arguments](https://arm-software.github.io/AVH/main/simulation/html/using.html).
 
-!!! Note
-    - `model-file:` is an explicit filename of an simulation model. This setting overwrites a `model:` selection.
-
-`model:` can select one of the following pre-defined reference platforms. You should use the `model:` selection in combination with a `pack:` and `device:` as listed under 
-["CMSIS-based projects for AVH FVPs"](https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html).
+The following `model:` executables are installed from the [Arm Tools Artifactory](https://www.keil.arm.com/artifacts/#models/arm/avh-fvp). You should use these models in combination with a `pack:` and `device:` as listed under 
+["CMSIS-based projects for AVH FVPs"](https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html). The PATH environment variable of your system can define the path to the FVP executable (then only the `model:` name from the list below is required. Optionally an explicit path can be specified in the `model:` node.
 
 `model:`                         | Simulation Model Represents
 :--------------------------------|:---------------------------------
