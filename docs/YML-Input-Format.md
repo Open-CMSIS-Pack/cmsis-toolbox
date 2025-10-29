@@ -2651,7 +2651,7 @@ debugger:
 
 #### `telnet:` for JLink Server
 
-JLink supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
+J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
 
 `telnet:`                                                 |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
