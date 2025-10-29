@@ -488,7 +488,7 @@ jobs:
       if: always()
       run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
 
-    - name: Archieve consolidated test results
+    - name: Archive consolidated test results
       if: always()
       uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
       with:
@@ -537,13 +537,13 @@ jobs:
           sudo apt-get install -y hyperfine unzip
 
       # Download the reference toolbox release
-      # This needed to be updated when positive performance delta is expected
+      # This needed to be updated when a positive performance delta is expected
       - name: Download Reference cmsis-toolbox
         continue-on-error: true
         uses: robinraju/release-downloader@v1.12
         with:
           repository: Open-CMSIS-Pack/cmsis-toolbox
-          tag: "performance-test-reference"
+          tag: "2.11.0-test-reference"
           fileName: "cmsis-toolbox-linux-amd64.zip"
 
       - name: Unzip Reference cmsis-toolbox
