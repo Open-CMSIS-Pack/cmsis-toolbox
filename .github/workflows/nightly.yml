@@ -319,7 +319,7 @@ jobs:
             -e "$BINARY_EXTENSION" \
             --host "$HOST"
 
-      - name: Archive cmsis-toolbox
+      - name: Archieve cmsis-toolbox
         if: always()
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
