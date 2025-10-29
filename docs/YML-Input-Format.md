@@ -2446,7 +2446,7 @@ The following sections describe the options available for the different debug ad
 
 ### pyOCD 
 
-This section lists options that are specific for pyOCD that connects to [CMSIS-DAP](https://arm-software.github.io/CMSIS-DAP/latest/index.html) and ST-Link debug adapters. CMSIS-DAP is a standardize protocol that is used by many different debug adapters. All CMSIS-DAP enabled debug adapters can be accessed with `name: CMSIS-DAP@pyOCD`. A specific debug adapter name such as `name: ULINKplus@pyOCD` provides tailored default settings and a custom configuration dialog in the [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) VS Code extension.
+This section lists the options that are specific to pyOCD that connects to [CMSIS-DAP](https://arm-software.github.io/CMSIS-DAP/latest/index.html) and ST-Link debug adapters. CMSIS-DAP is a standardized protocol used by many different debug adapters. All CMSIS-DAP enabled debug adapters can be accessed with `name: CMSIS-DAP@pyOCD`. A specific debug adapter name such as `name: ULINKplus@pyOCD` provides tailored default settings and a custom configuration dialog in the [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) VS Code extension.
 
 #### `debugger:` for pyOCD
 
