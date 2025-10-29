@@ -2540,6 +2540,7 @@ CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific
 :---------------------------------------------------------|-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Trace clock frequency in Hz. 
 &nbsp;&nbsp;&nbsp; `mode:`                                |  Optional   | Set Trace Port transport mode. Currently only `SWO-UART` is accepted.
+&nbsp;&nbsp;&nbsp; `baudrate:`                            |  Optional   | Maxium baudrate for `SWO-UART` mode.
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Trace Server (default: 5555).
 &nbsp;&nbsp;&nbsp; `log:`                                 |  Optional   | Log trace output to a pre-defined file (default: no file created).
 
@@ -2568,14 +2569,14 @@ debugger:                         |             | Description
 :---------------------------------|:------------|:-----------------------------------------------
 &nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `Arm-FVP`.
 &nbsp;&nbsp;&nbsp; `model:`       |  Optional   | Model selection for a pre-defined list (see table below). Default: `FVP_MPS2_Cortex-M3`.
-&nbsp;&nbsp;&nbsp; `model-file:`  |  Optional   | Path and filename of the FVP executable; this setting overrules `model:`.
+&nbsp;&nbsp;&nbsp; `model-file:`  |  Optional   | Explicit path and filename to FVP executable as alternative to `model:`.
 &nbsp;&nbsp;&nbsp; `config-file:` |  Optional   | Path and filename of the [FVP configuration file](https://arm-software.github.io/AVH/main/simulation/html/using.html).
 `args:`                           |  Optional   | Miscellaneous [command line arguments](https://arm-software.github.io/AVH/main/simulation/html/using.html).
 
 !!! Note
     - `model-file:` is an explicit filename of an simulation model. This setting overwrites a `model:` selection.
 
-`model:` can select only of the following pre-defined reference platforms. You should use the `model:` selection in combination with a `pack:` and `device:` as listed under 
+`model:` can select one of the following pre-defined reference platforms. You should use the `model:` selection in combination with a `pack:` and `device:` as listed under 
 ["CMSIS-based projects for AVH FVPs"](https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html).
 
 `model:`                         | Simulation Model Represents
