@@ -32,7 +32,10 @@
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
           <a href=".." class="icon icon-home"> CMSIS-Toolbox
-        </a><div role="search">
+        </a>
+        <div class="version">
+          2.12.0
+        </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
   </form>
@@ -286,6 +289,40 @@
     <li class="toctree-l2"><a class="reference internal" href="#debugger-configuration">Debugger Configuration</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#debugger">debugger:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pyocd">pyOCD</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#debugger-for-pyocd">debugger: for pyOCD</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#telnet-for-pyocd">telnet: for pyOCD</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#trace-for-pyocd">trace: for pyOCD</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#arm-debugger">Arm Debugger</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#arm-fvp">Arm-FVP</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#debugger-for-arm-fvp">debugger: for Arm-FVP</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#keil-uvision">Keil uVision</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#debugger-for-keil-uvision">debugger: for Keil uVision</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#jlink-server">JLink Server</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#debugger-for-jlink-server">debugger: for JLink Server</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#telnet-for-jlink-server">telnet: for JLink Server</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#trace-for-jlink-server">trace: for JLink Server</a>
+    </li>
+        </ul>
     </li>
         </ul>
     </li>
@@ -4314,8 +4351,15 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
         - Ardunio_Uno_D3:
 </code></pre>
 <h2 id="debugger-configuration">Debugger Configuration</h2>
-<p>Packs contain information for configuring debugger connection to a device or board. The <code>debugger:</code> node that is specified under the <a href="#target-set"><code>target-set:</code></a> in the <em>csolution project</em> allows
-to overwrite configuration information or to define new debugger setups.</p>
+<p>The <code>debugger:</code> node specified under the <a href="#target-set"><code>target-set:</code></a> in the <em>csolution project</em> configures the debugger.</p>
+<div class="admonition notes">
+<p class="admonition-title">Notes</p>
+<ul>
+<li>Packs may provide a default configuration for a debugger connection to a device or board. </li>
+<li>Serveral settings are optional and the default settings are specific to the selected debug adapter.</li>
+<li>The complete debugger settings including default values are listed in <code>debugger:</code> node of the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>*.cbuild-run.yml</code> file</a>.</li>
+</ul>
+</div>
 <h3 id="debugger"><code>debugger:</code></h3>
 <table>
 <thead>
@@ -4332,101 +4376,160 @@ to overwrite configuration information or to define new debugger setups.</p>
 <td style="text-align: left;">Identifies the debug adapter.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>protocol:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>*:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Select debug portocol (jtag or swd).</td>
+<td style="text-align: left;">Other debugger specific options can be used as documented below.</td>
+</tr>
+</tbody>
+</table>
+<p>The command <code>csolution list debuggers</code> outputs the <code>name:</code> of the supported debug adatpers; using the option <code>--verbose</code> extends the list with alias names that are also accepted as <code>name:</code>  There are five different debug adapter categories:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Debug Adapter <code>name:</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#pyocd"><code>&lt;adapter&gt;@pyOCD</code></a></td>
+<td style="text-align: left;">Debug Adapters that interface via pyOCD.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#arm-debugger"><code>&lt;adapter&gt;@Arm-Debugger</code></a></td>
+<td style="text-align: left;">Debug Adapters that interface via the Arm-Debugger.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#arm-fvp"><code>Arm-FVP</code></a></td>
+<td style="text-align: left;"><a href="https://arm-software.github.io/AVH/main/simulation/html/index.html">FVP</a> simulation models that represent processor sub-systems.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#keil-uvision"><code>Keil uVision</code></a></td>
+<td style="text-align: left;"><a href="http://developer.arm.com/documentation/101407/0543/Debugging">uVision Debugger</a> that is integrated in the Keil uVision IDE.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#jlink-server"><code>JLink Server</code></a></td>
+<td style="text-align: left;"><a href="https://www.segger.com/products/debug-probes/j-link/">Segger J-Link</a> debug probes that connect using the JLink Server.</td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a> VS Code extension uses the <code>debugger:</code> node to create entries in the files <code>.vscode/tasks.json</code> and <code>.vscode/launch.json</code> for running and debugging using the specified debug adapter. <a href="#pyocd"><code>pyOCD</code></a> supports a command-line mode that uses the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>*.cbuild-run.yml</code></a> file which is created by the CMSIS-Toolbox.</p>
+<p>The following sections describe the options available for the different debug adapter types.</p>
+<h3 id="pyocd">pyOCD</h3>
+<p>This section lists the options that are specific to pyOCD that connects to <a href="https://arm-software.github.io/CMSIS-DAP/latest/index.html">CMSIS-DAP</a> and ST-Link debug adapters. CMSIS-DAP is a standardized protocol used by many different debug adapters. All CMSIS-DAP enabled debug adapters can be accessed with <code>name: CMSIS-DAP@pyOCD</code>. A specific debug adapter name such as <code>name: ULINKplus@pyOCD</code> provides tailored default settings and a custom configuration dialog in the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a> VS Code extension.</p>
+<h4 id="debugger-for-pyocd"><code>debugger:</code> for pyOCD</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">debugger:</th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>name:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Identifies the debug adapter with <code>&lt;adapter&gt;@pyOCD</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Select debug clock speed (in Hz for pyOCD, in kHz for JLink).</td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Debug clock speed in Hz.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>protocol:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Debug portocol (jtag or swd).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>dbgconf:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Configuration file for device settings such as trace pins and option bytes.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>start-pname:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Debugger connects at start to this processor.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>*:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Other debugger specific options can be used (see below), the section is not schema checked.</td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#telnet-for-pyocd"><code>telnet:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Telnet service configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#trace-for-pyocd"><code>trace:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Trace configuration.</td>
 </tr>
 </tbody>
 </table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If values are not specified, the default values from <code>debug-adapter.yml</code> are used.</p>
-</div>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">debugger:
-  name: CMSIS-DAP
+  name: CMSIS-DAP@pyOCD
   protocol: swd
   clock: 20000000               # 20 MHz
 </code></pre>
 <pre><code class="language-yml">debugger:
-  name: ULink
+  name: ULINKplus
   protocol: jtag
   clock: 10000000               # 10 MHz
   dbgconf: MyHardware.dbgconf
 </code></pre>
+<h4 id="telnet-for-pyocd"><code>telnet:</code> for pyOCD</h4>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>telnet:</code> feature will be implemented until Dec 2025. This section is only a preview.</p>
+</div>
+<p>pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
+The <code>telnet:</code> node configures:</p>
+<ul>
+<li>Telnet port for connecting remote tools, for example the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor">VS Code extension Serial Monitor</a>.</li>
+<li>Redirect the output to a log file or the console.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>telnet:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Identifies the processor (not requried for single core system).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Set TCP/IP port number of Telnet Server (default: 4444).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>log:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Log output to a pre-defined (<code>file</code>) or console output (<code>stdio</code>). Default is <code>off</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<p>Enable Telnet service or a single core system.</p>
 <pre><code class="language-yml">debugger:
-  name: JLink
-  clock: 4000                    # 4000 kHz
-  protocol: swd
-</code></pre>
-<!---
-ToDo: this section needs to be in-synch with pyOCD
-
-### Options for pyOCD
-
-This section lists options that are specific for pyOCD that is used to connect to CMSIS-DAP and ST-Link debug adapters.
-
-#### `telnet:` 
-
-pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
-The `telnet:` node configures:
-
-- Telnet port for connecting remote tools, for example the [VS Code extension Serial Monitor](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
-- Redirect the output to a log file or the console.
-
-`telnet:`                                                 |             | Content
-:---------------------------------------------------------|-------------|:------------------------------------
-`- pname:`                                                |  Optional   | Identifies the processor (not requried for single core system).
-&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set port number of Telnet Server (default: 4444).
-&nbsp;&nbsp;&nbsp; `log:`                                 |  Optional   | Log output to a pre-defined (`file`) or console output (`stdio`). Default is `off`.
-
-**Examples:**
-
-Enable Telnet service or a single core system.
-
-
-<pre><code class="language-yml">debugger:
-  name: CMSIS-DAP
+  name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:                   # enable Telnet service with default settings 
 </code></pre>
-
-
-Enable Telnet service or a single core system.
-
-
+<p>Enable Telnet service or a single core system.</p>
 <pre><code class="language-yml">debugger:
-  name: CMSIS-DAP
+  name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:
     port: 4444
     log: stdio              # route Telnet output to console 
 </code></pre>
-
-
-
 <pre><code class="language-yml">debugger:
-  name: CMSIS-DAP
+  name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:
     - pname: Core0          # enable Telnet service with default settings
@@ -4436,15 +4539,324 @@ Enable Telnet service or a single core system.
     - pname: Core2
       log: file             # log Telnet output 
 </code></pre>
-
-
-### Options for Segger JLink
-
-This section lists options that are specific for Segger JLink.
-
-todo
---->
-
+<h4 id="trace-for-pyocd"><code>trace:</code> for pyOCD</h4>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>trace:</code> feature will be implemented until Dec 2025. This section is only a preview.</p>
+</div>
+<p>CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific trace features are configured using the <code>*.dbgconf</code> file. </p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>trace:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Trace clock frequency in Hz.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Set Trace Port transport mode. Currently only <code>SWO-UART</code> is accepted.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>baudrate:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Maxium baudrate for <code>SWO-UART</code> mode.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Set TCP/IP port number of Trace Server (default: 5555).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>log:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Log trace output to a pre-defined file (default: no file created).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="arm-debugger">Arm Debugger</h3>
+<p>This section lists options that are specific for the Arm Debugger.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">debugger:</th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>name:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Identifies the debug adapter with <code>&lt;adapter&gt;@Arm-Debugger</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@Arm-Debugger
+</code></pre>
+<h3 id="arm-fvp">Arm-FVP</h3>
+<p>This section lists options that are specific to the <a href="https://arm-software.github.io/AVH/main/simulation/html/index.html">FVP</a> simulation models. FVPs are configureable simulation models that are designed for software validation. An FVP represents one or more Arm processors.</p>
+<h4 id="debugger-for-arm-fvp"><code>debugger:</code> for Arm-FVP</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">debugger:</th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>name:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Identifies the debug adapter with <code>Arm-FVP</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>model:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Model selection for a pre-defined list (see table below). Default: <code>FVP_MPS2_Cortex-M3</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>model-file:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Explicit path and filename to FVP executable as alternative to <code>model:</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>config-file:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Path and filename of the <a href="https://arm-software.github.io/AVH/main/simulation/html/using.html">FVP configuration file</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>args:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Miscellaneous <a href="https://arm-software.github.io/AVH/main/simulation/html/using.html">command line arguments</a>.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li><code>model-file:</code> is an explicit filename of an simulation model. This setting overwrites a <code>model:</code> selection.</li>
+</ul>
+</div>
+<p><code>model:</code> can select one of the following pre-defined reference platforms. You should use the <code>model:</code> selection in combination with a <code>pack:</code> and <code>device:</code> as listed under 
+<a href="https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html">"CMSIS-based projects for AVH FVPs"</a>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>model:</code></th>
+<th style="text-align: left;">Simulation Model Represents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>FVP_Corstone 300</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/1128/Arm--Corstone-SSE-300-FVP">Arm Corstone 300</a> Reference Platform with Cortex-M55</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_Corstone_SSE-300_Ethos-U55</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/1128/Arm--Corstone-SSE-300-FVP">Arm Corstone 300</a> Reference Platform with Cortex-M55 and Ethos-U55</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_Corstone_SSE-300_Ethos-U65</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/1128/Arm--Corstone-SSE-300-FVP">Arm Corstone 300</a> Reference Platform with Cortex-M55 and Ethos-U65</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_Corstone 310</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/102778">Arm Corstone 310</a> Reference Platform with Cortex-M85 and Ethos-U55.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_Corstone_SSE-310_Ethos-U65</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/102778">Arm Corstone 310</a> Reference Platform with Cortex-M85 and Ethos-U65.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_Corstone 315</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/109395">Arm Corstone 315</a> Reference Platform with Cortex-M85, Ethos-U65, and Mali-C55.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_Corstone 320</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/109760">Arm Corstone 320</a> Reference Platform with Cortex-M85, Ethos-U85, and Mali-C55.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_MPS2_Cortex-M0</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M0">Arm Microcontroller Prototyping System with Cortex-M0</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_MPS2_Cortex-M0plus</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M0plus">Arm Microcontroller Prototyping System with Cortex-M0+</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_MPS2_Cortex-M3</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M3">Arm Microcontroller Prototyping System with Cortex-M3</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_MPS2_Cortex-M4</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M4">Arm Microcontroller Prototyping System with Cortex-M4</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_MPS2_Cortex-M7</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M7">Arm Microcontroller Prototyping System with Cortex-M7</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_MPS2_Cortex-M23</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M23">Arm Microcontroller Prototyping System with Cortex-M23</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_MPS2_Cortex-M33</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M33">Arm Microcontroller Prototyping System with Cortex-M33</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_MPS2_Cortex-M35P</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M35P">Arm Microcontroller Prototyping System with Cortex-M35P</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_MPS2_Cortex-M52</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M52">Arm Microcontroller Prototyping System with Cortex-M52</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_MPS2_Cortex-M55</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M55">Arm Microcontroller Prototyping System with Cortex-M55</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>FVP_MPS2_Cortex-M85</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/documentation/100966/latest/MPS2-Platform-FVPs/FVP-MPS2-Cortex-M85">Arm Microcontroller Prototyping System with Cortex-M85</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@Arm-Debugger
+  model:  FVP_Corstone_SSE-320
+  config-file: ./FVP_Config.txt
+  args: --simlimit 600            # stop simulation after 600 seconds
+</code></pre>
+<h3 id="keil-uvision">Keil uVision</h3>
+<p>This section lists options that are specific for the uVision Debugger.</p>
+<h4 id="debugger-for-keil-uvision"><code>debugger:</code> for Keil uVision</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">debugger:</th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>name:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Identifies the debug adapter with <code>Keil uVision</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>uv4:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Path to the uVision executable; default: <code>C:/Keil_v5/UV4/UV4.exe</code>.</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-yml">debugger:
+  name: Keil uVision
+</code></pre>
+<h3 id="jlink-server">JLink Server</h3>
+<p>This section lists options that are specific for the  <a href="https://www.segger.com/products/debug-probes/j-link/">Segger J-Link</a> debug probes.</p>
+<h4 id="debugger-for-jlink-server"><code>debugger:</code> for JLink Server</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">debugger:</th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>name:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Identifies the debug adapter with <code>&lt;adapter&gt;@pyOCD</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Debug clock speed in Hz.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>protocol:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Debug portocol (jtag or swd).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#telnet-for-pyocd"><code>telnet:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Telnet service configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#trace-for-pyocd"><code>trace:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Trace configuration.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">debugger:
+  name: JLink Server
+  clock: 4000                    # 4000 kHz
+  protocol: swd
+</code></pre>
+<h4 id="telnet-for-jlink-server"><code>telnet:</code> for JLink Server</h4>
+<p>J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>telnet:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Set TCP/IP port number of Telnet Server (default: 4444).</td>
+</tr>
+</tbody>
+</table>
+<h4 id="trace-for-jlink-server"><code>trace:</code> for JLink Server</h4>
+<p>J-Link supports SWO Trace.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>trace:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Trace clock frequency in Hz.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Set Trace Port transport mode. Currently only <code>SWO-UART</code> is accepted.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Set TCP/IP port number of Telnet Server (default: 4444).</td>
+</tr>
+</tbody>
+</table>
 <h2 id="add-memory">Add Memory</h2>
 <p>Hardware targets may have additional off-chip memory. The <code>memory:</code> node that can be added as additional information to a target type.
 This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-management">Run and Debug Management</a> and the <a href="../build-overview/#automatic-linker-script-generation">Automatic Linker Script generation</a>.</p>
