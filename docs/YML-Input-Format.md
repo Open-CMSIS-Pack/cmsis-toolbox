@@ -2442,7 +2442,7 @@ Debug Adapter `name:`           | Description
 
 The [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) VS Code extension creates from the information provided by `debugger:` node, the entries in the files `.vscode/tasks.json` and `.vscode/launch.json` for starting the debug adapter. [`pyOCD`](#pyocd) supports a command-line mode that uses the [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management) file which is created by the CMSIS-Toolbox.
 
-The following sections describes the options available for the different debug adapter types.
+The following sections describe the options available for the different debug adapter types.
 
 ### pyOCD 
 
