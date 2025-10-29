@@ -4623,12 +4623,7 @@ The <code>telnet:</code> node configures:</p>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>model:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Model selection for a pre-defined list (see table below). Default: <code>FVP_MPS2_Cortex-M3</code>.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>model-file:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Explicit path and filename to FVP executable as alternative to <code>model:</code>.</td>
+<td style="text-align: left;">Filename (optionally with path) of the FVP executable. Default: <code>FVP_MPS2_Cortex-M3</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>config-file:</code></td>
@@ -4642,14 +4637,8 @@ The <code>telnet:</code> node configures:</p>
 </tr>
 </tbody>
 </table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li><code>model-file:</code> is an explicit filename of an simulation model. This setting overwrites a <code>model:</code> selection.</li>
-</ul>
-</div>
-<p><code>model:</code> can select one of the following pre-defined reference platforms. You should use the <code>model:</code> selection in combination with a <code>pack:</code> and <code>device:</code> as listed under 
-<a href="https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html">"CMSIS-based projects for AVH FVPs"</a>.</p>
+<p>The following <code>model:</code> executables are installed from the <a href="https://www.keil.arm.com/artifacts/#models/arm/avh-fvp">Arm Tools Artifactory</a>. You should use these models in combination with a <code>pack:</code> and <code>device:</code> as listed under 
+<a href="https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html">"CMSIS-based projects for AVH FVPs"</a>. The PATH environment variable of your system can define the path to the FVP executable (then only the <code>model:</code> name from the list below is required. Optionally an explicit path can be specified in the <code>model:</code> node.</p>
 <table>
 <thead>
 <tr>
