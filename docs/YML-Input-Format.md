@@ -2548,15 +2548,19 @@ CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific
 
 This section lists options that are specific for the Arm Debugger.
 
-debugger:                         |             | Description
-:---------------------------------|:------------|:-----------------------------------------------
-&nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `<adapter>@Arm-Debugger`.
+debugger:                            |             | Description
+:------------------------------------|:------------|:-----------------------------------------------
+&nbsp;&nbsp;&nbsp; `name:`           |**Required** | Identifies the debug adapter with `<adapter>@Arm-Debugger`.
+&nbsp;&nbsp;&nbsp; `clock-armdbg`    |  Optional   | Debug clock speed. Possible values: auto (default), 50MHz, 33MHz, 25MHz, 20MHz, 10MHz, 5MHz, 2MHz, 1MHz, 500kHz, 200kHz, 100kHz, 50kHz, 20kHz, 10kHz, 5kHz
+&nbsp;&nbsp;&nbsp; `protocol-armdbg` |  Optional   | Debug protocol. Possible values: auto (default), JTAG, SWD
 
 **Example:**
 
 ```yml
 debugger:
   name: CMSIS-DAP@Arm-Debugger
+  protocol-armdbg: SWD
+  clock-armdbg: 5MHz
 ```
 
 ### Arm-FVP
@@ -2570,7 +2574,7 @@ debugger:                         |             | Description
 &nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `Arm-FVP`.
 &nbsp;&nbsp;&nbsp; `model:`       |  Optional   | Filename (optionally with path) of the FVP executable. Default: `FVP_MPS2_Cortex-M3`.
 &nbsp;&nbsp;&nbsp; `config-file:` |  Optional   | Path and filename of the [FVP configuration file](https://arm-software.github.io/AVH/main/simulation/html/using.html).
-`args:`                           |  Optional   | Miscellaneous [command line arguments](https://arm-software.github.io/AVH/main/simulation/html/using.html).
+&nbsp;&nbsp;&nbsp; `args:`        |  Optional   | Miscellaneous [command line arguments](https://arm-software.github.io/AVH/main/simulation/html/using.html).
 
 The following `model:` executables are installed from the [Arm Tools Artifactory](https://www.keil.arm.com/artifacts/#models/arm/avh-fvp). You should use these models in combination with a `pack:` and `device:` as listed under 
 ["CMSIS-based projects for AVH FVPs"](https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html). The PATH environment variable of your system can define the path to the FVP executable (then only the `model:` name from the list below is required. Optionally an explicit path can be specified in the `model:` node.
