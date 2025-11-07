@@ -428,7 +428,7 @@ The options are added
 `values:`                                               |            | Content
 :-------------------------------------------------------|:-----------|:------------------------------------
 `- name:`                                               |**Required**| Label text for the option in the user interface.
-&nbsp;&nbsp;&nbsp; `value:`                             |**Required**| Value used for the enum name in file csolution.yml file.
+&nbsp;&nbsp;&nbsp; `value:`                             |  Optional  | Value used for the enum name in csolution.yml file. If empty, `name` is used as `value`.
 &nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Descriptive text (hover over or sub-text in dialog).
 
 **Example**
@@ -495,8 +495,7 @@ debug-adapters:
             yml-node: trace-port
             type: enum
             values: 
-              - name: UART
-                value: UART
+              - name: UART                 # UART is also used as value
                 description: SWO configured for UART protocol
               - name: Manchester
                 value: Man
@@ -543,7 +542,6 @@ debug-adapters:
             type: enum
             values:
               name: UART
-              value: UART
             default: UART
 
   - name: "Keil uVision"
