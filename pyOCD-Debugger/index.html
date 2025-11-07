@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>pyOCD Debugger - CMSIS-Toolbox</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "pyOCD Debugger";
+        var mkdocs_page_input_path = "pyOCD-Debugger.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
+        </a>
+        <div class="version">
+          2.12.0
+        </div><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">CSolution Project Structure</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">pyOCD Debugger</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#command-line-invocation">Command Line Invocation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#content-of-cbuild-runyml">Content of cbuild-run.yml</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#cbuild-run">cbuild-run:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#output">output:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#system-resources">system-resources:</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Theory of Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Troubleshooting/">Troubleshooting</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">MCUXpresso for NXP Devices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">STM32CubeMX for STM32 Devices</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CMSIS-Toolbox</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">pyOCD Debugger</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/pyOCD-Debugger.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="pyocd-debugger">pyOCD Debugger</h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>This section contains preliminary information and is work-in-progress.</li>
+</ul>
+</div>
+<p>The CMSIS-Toolbox has many features. For debuggers it organizes projects and configuration options.
+This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Debugger in combination with these CMSIS-Toolbox features.</p>
+<p>Other manual sections describe how to configure debuggers:</p>
+<ul>
+<li><a href="../build-overview/#run-and-debug-configuration">Run and Debug Configuration</a> explains overall structure and how projects and images are configured.</li>
+<li><a href="../YML-Input-Format/#pyocd">Debugger Configuration - pyOCD</a> contains details about the options that are specific to pyOCD.</li>
+</ul>
+<h2 id="command-line-invocation">Command Line Invocation</h2>
+<p>The CMSIS-Toolbox debugger configuration is provided in the <a href="../YML-CBuild-Format/#file-structure-of-cbuild-runyml">file <code>*.cbuild-run.yml</code></a>. Use the following command line syntax to leverage this information:</p>
+<pre><code class="language-bash">&gt;pyOCD &lt;command&gt; --cbuild-run &lt;cbuild-run.yml file&gt; [options]
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>&lt;command&gt;</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>run</code></td>
+<td style="text-align: left;">Execute application.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>erase</code></td>
+<td style="text-align: left;">Erase device</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>load</code></td>
+<td style="text-align: left;">Load image to device.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>&lt;options&gt;</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>--timelimit sec</code></td>
+<td style="text-align: left;">Terminate pyOCD when the timelimit is reached.  Applies to <code>run</code> command only.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--eot</code></td>
+<td style="text-align: left;">Terminate when EOT character (<code>0x04</code>) is printed via a telnet channel. Applies to <code>run</code> command only.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--load</code></td>
+<td style="text-align: left;">Erase device and flash program the images specified in cbuild-run.yml. Applies to <code>run</code> command only.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--udi &lt;id&gt;</code></td>
+<td style="text-align: left;">Specify an id of a debug probe</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<p>ToDo: command line examples</p>
+<h2 id="content-of-cbuild-runyml">Content of <code>cbuild-run.yml</code></h2>
+<p>This section details the content of <code>cbuild-run.yml</code> file and how it is used to configure pyOCD. The <code>cbuild-run.yml</code> file is generated by the CMSIS-Toolbox from the information provided in the <em>csolution project</em>.
+However, it is possible to create a <code>*.cbuild-run.yml</code> file manually and the following section explains the file structure.</p>
+<p><strong>Configuration File Example:</strong></p>
+<pre><code class="language-yml">todo
+</code></pre>
+<h3 id="cbuild-run"><code>cbuild-run:</code></h3>
+<p>The <code>cbuild-run:</code> node is the start of a <code>*.cbuild-run.yml</code> file.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>cbuild-run:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Identifies the device.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device-pack:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Identifies the device pack used.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#output"><code>output:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Lists the possible compiler selection that this project is tested with.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#system-resources"><code>system-resources:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">When specified, the <a href="../build-overview/#cdefaultyml"><code>cdefault.yml</code></a> file is used to setup compiler specific controls.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="output"><code>output:</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>output:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Identifies the device.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device-pack:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Identifies the device pack used.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#output"><code>output:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Lists the possible compiler selection that this project is tested with.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#system-resources"><code>system-resources:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">When specified, the <a href="../build-overview/#cdefaultyml"><code>cdefault.yml</code></a> file is used to setup compiler specific controls.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="system-resources"><code>system-resources:</code></h3>
+<pre><code class="language-yml">cbuild-run:
+  device:
+  device-pack:      ? is the board-pack: not used?
+  output:
+    - file:
+      info:
+      type:
+      load-offset:
+      load:
+      pname:
+  system-resources:
+    memory:
+      - name:
+        access:
+        start:
+        size:
+        pname:
+        alias:
+        from-pack:
+  system-descriptions:
+    - file:
+      type:
+      pname:
+  debugger:
+    name:
+    clock:
+    dbgconf:
+    start-pname:
+    gdbserver:
+      - port:
+        pname:
+      - port:
+        pname:
+  debug-vars:
+    vars:
+  debug-sequences:
+    - name:
+      info:
+      pname:
+      blocks:
+        - info:
+          if:
+          while:
+          execute:
+          timeout:
+          atomic:
+          blocks:
+  programming:
+    - algorithm:
+      ram-start:
+      size:
+      ram-start:
+      ram-size:
+      pname:
+  debug-topology:
+    debugports:
+      - dpid:
+        accessports:
+          - apid:
+            address:
+            index:
+    processors:
+      - pname:
+        apid:
+    swj:
+    dormant:
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../YML-CBuild-Format/" class="btn btn-neutral float-left" title="Build Information Files"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../build-operation/" class="btn btn-neutral float-right" title="Theory of Operation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../YML-CBuild-Format/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../build-operation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

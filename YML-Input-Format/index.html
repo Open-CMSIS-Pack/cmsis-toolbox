@@ -344,15 +344,11 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">Configure STM32 Devices with STM32CubeMX</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">Configure NXP Devices with MCUXpresso Config Tools</a>
-                </li>
-              </ul>
-              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pyOCD-Debugger/">pyOCD Debugger</a>
                 </li>
               </ul>
               <ul>
@@ -370,6 +366,13 @@
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
                 </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">MCUXpresso for NXP Devices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">STM32CubeMX for STM32 Devices</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -4597,11 +4600,23 @@ The <code>telnet:</code> node configures:</p>
 <td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Identifies the debug adapter with <code>&lt;adapter&gt;@Arm-Debugger</code>.</td>
 </tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock-armdbg</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Debug clock speed. Possible values: auto (default), 50MHz, 33MHz, 25MHz, 20MHz, 10MHz, 5MHz, 2MHz, 1MHz, 500kHz, 200kHz, 100kHz, 50kHz, 20kHz, 10kHz, 5kHz</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>protocol-armdbg</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Debug protocol. Possible values: auto (default), JTAG, SWD</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@Arm-Debugger
+  protocol-armdbg: SWD
+  clock-armdbg: 5MHz
 </code></pre>
 <h3 id="arm-fvp">Arm-FVP</h3>
 <p>This section lists options that are specific to the <a href="https://arm-software.github.io/AVH/main/simulation/html/index.html">FVP</a> simulation models. FVPs are configureable simulation models that are designed for software validation. An FVP represents one or more Arm processors.</p>
@@ -4631,7 +4646,7 @@ The <code>telnet:</code> node configures:</p>
 <td style="text-align: left;">Path and filename of the <a href="https://arm-software.github.io/AVH/main/simulation/html/using.html">FVP configuration file</a>.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>args:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>args:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Miscellaneous <a href="https://arm-software.github.io/AVH/main/simulation/html/using.html">command line arguments</a>.</td>
 </tr>
