@@ -2484,9 +2484,8 @@ debugger:
 
 CMSIS-DAP based Debug Adapters implement [debug access sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#pdsc_SequenceNameEnum_pg) that are configured in the [DFP for a device](build-overview.md#overview-of-operation).
 
-
 Connect Mode  | Description
-:-------------|:--1------------------------------------
+:-------------|:--------------------------------------
 `pre-reset`   | Apply a hardware reset before connect. Sequence: [ResetHardware](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardware).
 `under-reset` | Asserts a hardware reset using during connect and de-asserts after core(s) are halted. Sequence: [ResetHardwareAssert](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareAssert), [ResetHardwareDeassert](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareDeassert). 
 `attach`      | Do not change status of the core(s). No sequence is executed. ToDo: review StopProcessor as there is no squence.
