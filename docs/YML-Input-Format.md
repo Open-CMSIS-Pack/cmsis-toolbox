@@ -2538,11 +2538,21 @@ CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific
 
 `trace:`                                                  |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Trace clock frequency in Hz. 
+&nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Trace interface input clock (TRACECLKIN) frequency in Hz.
 &nbsp;&nbsp;&nbsp; `mode:`                                |  Optional   | Set Trace Port transport mode. Currently only `SWO-UART` is accepted.
-&nbsp;&nbsp;&nbsp; `baudrate:`                            |  Optional   | Maxium baudrate for `SWO-UART` mode.
+&nbsp;&nbsp;&nbsp; `baudrate:`                            |  Optional   | Maxium baudrate supported by device + debug adapter for `SWO-UART` mode.
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Trace Server (default: 5555).
 &nbsp;&nbsp;&nbsp; `log:`                                 |  Optional   | Log trace output to a pre-defined file (default: no file created).
+
+**CLARIFICATIONS, TO DISCUSS - DO NOT MERGE**
+- clock: TRACECLKIN like for TPIU - Provided by user. Investigate if device specific calculation based on clocktree analysis feasible.
+- baudrate: Max baudrate is max(max. device SWO pin support, max debug unit support). Calculate in cbuild?
+  - Device SWO pin support should come from PDSC (\<trace\> elements + extensions)
+  - Debug unit support supplied either from BSP (debugger features), or from debug-adapters.yml. May need to be a list of discrete values
+    as supported by debug unit/firmware.
+  - Attempt TPIU/SWO pre-scaler calculation based on `trace.baudrate` and `trace.clock`.  
+    Enforce different pre-scaler values by manual update of `trace.baudrate`.
+- TODO: Clever defaults?
 
 ### Arm Debugger
 
