@@ -2561,6 +2561,8 @@ the debug unit's SWO capture capabillities to calculate the effective baudrate. 
 !!! **Note - TO DISCUSS**
 
 - Important: `baudrate:` here a max value. But in both pyOCD and J-Link a fixed value. J-Link has additional auto-detection.
+- `baudrate:` - assumption is that most users want the maximum possible, i.e. either have a fixed limit per device or a limit equal to core clock. Hence,
+    I believe `baudrate:` does not need to be overly prominent in the GUI, but rather be prefilled with a value from a device description (see further below).
 - Some debuggers allow to configure the SWO asynchronous prescaler which can be a quicker and simpler way to manipulate the baudrate based on `clock:`.
     - Assumption is however that this is rarely needed and that values are calculated based on the other two settings.
     - pyOCD doesn't have a setting yet to explicitly set the prescaler.
