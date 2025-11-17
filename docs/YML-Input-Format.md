@@ -2540,7 +2540,7 @@ CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific
 :---------------------------------------------------------|-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Trace interface input clock (TRACECLKIN) frequency in Hz.
 &nbsp;&nbsp;&nbsp; `mode:`                                |  Optional   | Set trace interface transport mode. Currently only `SWO-UART` is accepted.
-&nbsp;&nbsp;&nbsp; `baudrate:`                            |  Optional   | Maxium baudrate supported for `SWO-UART` mode.
+&nbsp;&nbsp;&nbsp; `baudrate:`                            |  Optional   | Maxium requested baudrate for `SWO-UART` mode.
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Trace Server (default: 5555).
 &nbsp;&nbsp;&nbsp; `log:`                                 |  Optional   | Log trace output to a pre-defined file (default: no file created).
 
@@ -2555,11 +2555,12 @@ Check the details of your application and platform to determine the trace interf
 
 #### `baudrate:`
 
-The maximum baudrate for `SWO-UART` mode. A debugger uses the value in combination with `clock:` and knowledge about
+The maximum requested baudrate for `SWO-UART` mode. A debugger uses the value in combination with `clock:` and knowledge about
 the debug unit's SWO capture capabillities to calculate the effective baudrate. If not provided, `baudrate:` defaults to the value of `clock:`.
 
 !!! **Note - TO DISCUSS**
 
+- Important: `baudrate:` here a max value. But in both pyOCD and J-Link a fixed value. J-Link has additional auto-detection.
 - Some debuggers allow to configure the SWO asynchronous prescaler which can be a quicker and simpler way to manipulate the baudrate based on `clock:`.
     - Assumption is however that this is rarely needed and that values are calculated based on the other two settings.
     - pyOCD doesn't have a setting yet to explicitly set the prescaler.
