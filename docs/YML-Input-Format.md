@@ -2555,7 +2555,7 @@ Check the details of your application and platform to determine the trace interf
 
 #### `baudrate:`
 
-The maximum requested baudrate for `SWO-UART` mode. A debugger uses the value in combination with `clock:` and knowledge about
+The maximum requested baudrate for `SWO-UART` mode. A debugger (or debug adapter template) uses the value in combination with `clock:` and knowledge about
 the debug unit's SWO capture capabillities to calculate the effective baudrate. If not provided, `baudrate:` defaults to the value of `clock:`.
 
 !!! **Note - TO DISCUSS**
