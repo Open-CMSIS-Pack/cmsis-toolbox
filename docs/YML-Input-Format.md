@@ -2539,31 +2539,34 @@ CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific
 `trace:`                                                  |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Trace interface input clock (TRACECLKIN) frequency in Hz.
-&nbsp;&nbsp;&nbsp; `mode:`                                |  Optional   | Set Trace Port transport mode. Currently only `SWO-UART` is accepted.
+&nbsp;&nbsp;&nbsp; `mode:`                                |  Optional   | Set trace interface transport mode. Currently only `SWO-UART` is accepted.
 &nbsp;&nbsp;&nbsp; `baudrate:`                            |  Optional   | Maxium baudrate supported for `SWO-UART` mode.
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Trace Server (default: 5555).
 &nbsp;&nbsp;&nbsp; `log:`                                 |  Optional   | Log trace output to a pre-defined file (default: no file created).
 
 #### `clock:`
 
-The `clock:` value depends on the system implementation and the running application:
+The `clock:` value depends on the system implementation and on the running application:
 
-- For the majority of single-core systems, the clock is the same as the CPU clock.
+- Same as the CPU clock for the majority of single-core systems.
 - High-performant and/or complex multi-core systems can use a divided CPU clock or an independent trace input clock.
+
+Check the details of your application and platform to determine the trace interface input `clock:`.
 
 #### `baudrate:`
 
-The maximum baudrate for `SWO-UART` mode is a combination of the maximum frequencies supported by the device and by the debug unit. It
-usually can be auto-detected based on `clock:`. Only in some exceptional cases a manual override is needed, e.g. to deal with side-effects
-of a PCB design or the test environment.
+The maximum baudrate for `SWO-UART` mode. A debugger uses the value in combination with `clock:` and knowledge about
+the debug unit's SWO capture capabillities to calculate the effective baudrate. If not provided, `baudrate:` defaults to the value of `clock:`.
 
-**TODO, TO DISCUSS - DO NOT MERGE**
-- later: `clock:` Investigate if device specific calculation based on clocktree analysis feasible.
-- baudrate: Max baudrate is max(max. device SWO pin support, max debug unit support). Calculate in cbuild?
-  - Device SWO pin support should come from PDSC (\<trace\> elements + extensions)
-  - Debug unit support supplied either from BSP (debugger features), or from debug-adapters.yml.
-    May need to be a list of discrete values as supported by debug unit/firmware. Can be added later as `supportedBaudrates` if really needed.
-- TODO: Clever defaults?
+!!! **Note - TO DISCUSS**
+
+- Some debuggers allow to configure the SWO asynchronous prescaler which can be a quicker and simpler way to manipulate the baudrate based on `clock:`.
+    - Assumption is however that this is rarely needed and that values are calculated based on the other two settings.
+    - pyOCD doesn't have a setting yet to explicitly set the prescaler.
+    - J-Link GDB server's `SWO EnableTarget` command does have an optional prescaler argument. But seems to prefer frequencies as above as input. Users can still manipulate generated launch/tasks JSON files if needed.
+- TBD: [`<device>/<trace>/<serialwire>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace_serialwire) attribute `baudrate`
+    is used when cbuild generates a default configuration for a debugger connection.
+- Future: `clock:` Investigate if device specific calculation based on clocktree analysis feasible.
 
 ### Arm Debugger
 
