@@ -572,7 +572,7 @@ Refer to [Header File Structure](#header-file-structure) for more information.
 
 #include "stm32u5xx_hal.h"
 #include "GPIO_STM32U5xx.h"
-#include "Driver_I2C.h"          // ToDo are these headers included in CMSIS_target_header?
+#include "Driver_I2C.h"
 #include "Driver_SPI.h"
 #include "Driver_USART.h"
 

@@ -1,4 +1,4 @@
-# Configure NXP Devices with MCUXpresso Config Tools
+# MCUXpresso for NXP Devices
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->

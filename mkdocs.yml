@@ -1,22 +1,26 @@
 site_name: CMSIS-Toolbox
+extra:
+  version: 2.12.0
 repo_url: https://github.com/Open-CMSIS-Pack/cmsis-toolbox
 edit_uri: ./edit/main/docs
 nav:
-    - Home: index.md
-    - Overview: overview.md
-    - Installation: installation.md
-    - Build Tools: build-tools.md
-    - CSolution Project Structure: build-overview.md
-    - CSolution Project Format: YML-Input-Format.md
-    - Create Applications: CreateApplications.md
-    - Reference Applications: ReferenceApplications.md
-    - Configure STM32 Devices with STM32CubeMX: CubeMX.md
-    - Configure NXP Devices with MCUXpresso Config Tools: MCUXpressoConfig.md
-    - Build Information Files: YML-CBuild-Format.md
-    - Build Operation: build-operation.md
-    - Pack Creation: pack-tools.md
-    - Troubleshooting: Troubleshooting.md
-    - Experimental Features: Experimental-Features.md
+  - Home: index.md
+  - Overview: overview.md
+  - Installation: installation.md
+  - Build Tools: build-tools.md
+  - CSolution Project Structure: build-overview.md
+  - CSolution Project Format: YML-Input-Format.md
+  - Create Applications: CreateApplications.md
+  - Reference Applications: ReferenceApplications.md
+  - Build Information Files: YML-CBuild-Format.md
+  - pyOCD Debugger: pyOCD-Debugger.md
+  - Theory of Operation: build-operation.md
+  - Pack Creation: pack-tools.md
+  - Troubleshooting: Troubleshooting.md
+  - Experimental Features: Experimental-Features.md
+  - Device Configuration Tools:
+    - MCUXpresso for NXP Devices: MCUXpressoConfig.md
+    - STM32CubeMX for STM32 Devices: CubeMX.md
 theme:
   name: readthedocs
 markdown_extensions:

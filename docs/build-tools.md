@@ -318,7 +318,7 @@ csolution run -g CubeMX mysolution.csolution.yml -c Blinky.Debug+STM32L4
 
 ### Use context set
 
-When working with [multiple related projects](build-overview.md#project-setup-for-related-projects), it might be necessary to combine different build types for debugging and downloading in the target hardware. The option `--context-set` allows you to save and reuse the selected `--context` options.
+When working with [multiple related projects](build-overview.md#configure-related-projects), it might be necessary to combine different build types for debugging and downloading in the target hardware. The option `--context-set` allows you to save and reuse the selected `--context` options.
 
 Write the selected `--context` options to the file `SimpleTZ.cbuild-set.yml`. Refer to [file structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-setyml) for details.
 

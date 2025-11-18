@@ -34,7 +34,7 @@ jobs:
       test: ${{ steps.test-matrix.outputs.matrix }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
           egress-policy: audit
 
@@ -61,7 +61,7 @@ jobs:
       matrix: ${{ fromJson(needs.matrix_prep.outputs.build) }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
           egress-policy: audit
 
@@ -321,7 +321,7 @@ jobs:
 
       - name: Archive cmsis-toolbox
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: cmsis-toolbox
@@ -345,7 +345,7 @@ jobs:
 
       - name: Archive Debian Package
         if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: cmsis-toolbox-debian-package
           path: ./debian/build/cmsis-toolbox_*_amd64.deb
@@ -361,7 +361,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
           egress-policy: audit
 
@@ -380,7 +380,7 @@ jobs:
             pip install -r test/e2e/requirements.txt
 
       - name: Setup vcpkg environment
-        uses: ARM-software/cmsis-actions/vcpkg@f608f32a6d83e90d79e1f2bbb7812fdb94bf1679 # v1
+        uses: ARM-software/cmsis-actions/vcpkg@afc8e1a46fad8a5e1a08f8477b71050d442f60a7 # v1
         with:
           config: "./test/vcpkg-configuration.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
@@ -392,7 +392,7 @@ jobs:
         working-directory: ./test
 
       - name: Download cmsis toolbox ${{ matrix.target }} ${{ matrix.arch }}
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: cmsis-toolbox
@@ -426,7 +426,7 @@ jobs:
 
       - name: Archieve test results
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: reports-${{ matrix.target }}-${{ matrix.arch }}
           path: ./test/reports-${{ matrix.target }}-${{ matrix.arch }}
@@ -445,7 +445,7 @@ jobs:
     if: needs.run-tests.result == 'success' || needs.run-tests.result == 'failure'
     steps:
     - name: Harden Runner
-      uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+      uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
       with:
         egress-policy: audit
 
@@ -463,7 +463,7 @@ jobs:
           pip install -r test/e2e/requirements.txt
 
     - name: Download reports
-      uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+      uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
       with:
         path: artifacts
         pattern: reports-*
@@ -488,9 +488,9 @@ jobs:
       if: always()
       run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
 
-    - name: Archieve consolidated test results
+    - name: Archive consolidated test results
       if: always()
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
       with:
         name: consolidated-reports
         path: artifacts/collective_robot_results
@@ -501,7 +501,7 @@ jobs:
     runs-on: [ ubuntu-latest ]
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@f4a75cfd619ee5ce8d5b864b0d183aff3c69b55a # v2.13.1
+        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
         with:
           egress-policy: audit
 
@@ -520,7 +520,7 @@ jobs:
             pip install -r test/performance/requirements.txt
 
       - name: Setup vcpkg environment
-        uses: ARM-software/cmsis-actions/vcpkg@f608f32a6d83e90d79e1f2bbb7812fdb94bf1679 # v1
+        uses: ARM-software/cmsis-actions/vcpkg@afc8e1a46fad8a5e1a08f8477b71050d442f60a7 # v1
         with:
           config: "./test/vcpkg-configuration.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
@@ -537,13 +537,13 @@ jobs:
           sudo apt-get install -y hyperfine unzip
 
       # Download the reference toolbox release
-      # This needed to be updated when positive performance delta is expected
+      # This needed to be updated when a positive performance delta is expected
       - name: Download Reference cmsis-toolbox
         continue-on-error: true
         uses: robinraju/release-downloader@v1.12
         with:
           repository: Open-CMSIS-Pack/cmsis-toolbox
-          tag: "2.8.0-test-reference"
+          tag: "2.11.0-test-reference"
           fileName: "cmsis-toolbox-linux-amd64.zip"
 
       - name: Unzip Reference cmsis-toolbox
@@ -605,7 +605,7 @@ jobs:
           rm -rf ${{steps.ref_toolbox_path.outputs.path}}
 
       - name: Download cmsis-toolbox
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: cmsis-toolbox-linux-amd64
           path: cmsis-toolbox
