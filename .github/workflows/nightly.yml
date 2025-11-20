@@ -543,14 +543,14 @@ jobs:
         uses: robinraju/release-downloader@v1.12
         with:
           repository: Open-CMSIS-Pack/cmsis-toolbox
-          tag: "2.11.0-test-reference"
-          fileName: "cmsis-toolbox-linux-amd64.zip"
+          tag: "2.12.0"
+          fileName: "cmsis-toolbox-linux-amd64.tar.gz"
 
       - name: Unzip Reference cmsis-toolbox
         shell: bash
         run: |
-          mkdir -p cmsis-toolbox-reference
-          unzip cmsis-toolbox-linux-amd64.zip -d cmsis-toolbox-reference
+          tar -xvf cmsis-toolbox-linux-amd64.tar.gz
+          mv cmsis-toolbox-linux-amd64 cmsis-toolbox-reference
 
       - name: Set Execution Permissions
         run: |
