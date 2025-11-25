@@ -2495,18 +2495,21 @@ The `telnet:` node configures:
 
 `telnet:`                                                 |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
-`- mode:`                                                 |**Required** | Redirect output: `off` (default), `server`, `file`, `console`, `monitor`.
+`- mode:`                                                 |**Required** | Redirect output: `off`, `server`, `file`, `console`, `monitor`.
 &nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Identifies the processor (not requried for single core system).
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
 &nbsp;&nbsp;&nbsp; `file:`                                |  Optional   | Explicit path and name of the telnet output file. Default: `<solution-name>+<target-type>.<pname>.out`.
 
 Telnet Mode   | Description
 :-------------|:--------------------------------------
-`off`         | Telnet service (including semihosting) is disabled.
-`server`      | Output is routed to a TCP/IP port.
-`file`        | Output is routed to a file.
-`console`     | Output is routed to the console output (Debug console in VS Code).
-`monitor`     | Output is routed to a TCP/IP port and the VS Code Serial Monitor is configured.
+`server`      | Serial I/O is routed to Telnet server port
+`file`        | Serial output to a text file (default: ./out/<solution-name>+<target-type>.<pname>.out).
+`console`     | Serial output to console (Debug console in VS Code). 
+`monitor`     | Serial I/O is routed via TCP/IP port to VS Code Serial Monitor.
+`off`         | Serial I/O disabled.
+
+!!! Note
+    - When no `telnet` node is applied Serial I/O to all processors is disabled.
 
 **Examples:**
 
@@ -2657,13 +2660,15 @@ J-Link supports a Telnet service that connects to character I/O funtions. Charac
 
 `telnet:`                                                 |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
-`- mode:`                                                 |**Required** | Redirect output: `off` (default), `server`, `monitor`.
+`- mode:`                                                 |**Required** | Redirect output: `server`, `monitor`.
 
 Telnet Mode   | Description
 :-------------|:--------------------------------------
-`off`         | Telnet service (including semihosting) is disabled.
-`server`      | Output is routed to a TCP/IP port.
-`monitor`     | Output is routed to a TCP/IP port and the VS Code Serial Monitor is configured.
+`server`      | Serial I/O is routed to Telnet server port
+`console`     | Serial output to console (Debug console in VS Code). 
+
+!!! Note
+    - When no `telnet` node is applied Serial I/O is disabled.
 
 #### `trace:` for JLink Server
 
