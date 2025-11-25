@@ -2502,10 +2502,10 @@ The `telnet:` node configures:
 
 Telnet Mode   | Description
 :-------------|:--------------------------------------
-`server`      | Serial I/O is routed to Telnet server port
-`file`        | Serial output to a text file (default: ./out/<solution-name>+<target-type>.<pname>.out).
+`server`      | Serial I/O to Telnet server port
+`file`        | Serial output to text file (default: ./out/<solution-name>+<target-type>.<pname>.out).
 `console`     | Serial output to console (Debug console in VS Code). 
-`monitor`     | Serial I/O is routed via TCP/IP port to VS Code Serial Monitor.
+`monitor`     | Serial I/O via TCP/IP port to VS Code Serial Monitor.
 `off`         | Serial I/O disabled.
 
 !!! Note
@@ -2664,8 +2664,9 @@ J-Link supports a Telnet service that connects to character I/O funtions. Charac
 
 Telnet Mode   | Description
 :-------------|:--------------------------------------
-`server`      | Serial I/O is routed to Telnet server port
+`server`      | Serial I/O to Telnet server port
 `console`     | Serial output to console (Debug console in VS Code). 
+`monitor`     | Serial I/O via TCP/IP port to VS Code Serial Monitor.
 
 !!! Note
     - When no `telnet` node is applied Serial I/O is disabled.
