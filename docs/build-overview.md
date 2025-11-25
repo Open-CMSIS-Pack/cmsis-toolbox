@@ -26,8 +26,8 @@ The diagram below outlines the operation of the `csolution` command `convert` th
 Input Files              | Description
 :------------------------|:---------------------------------
 [Generic Software Packs](https://www.keil.arm.com/packs/?q=&pack-search=&contents=software_only) | Provide re-usable software components that are typically configurable  towards a user application.
-[DFP Software Packs](https://www.keil.arm.com/devices)  | Device-related information (including memory sizes) for the tool configuration.
-[BSP Software Packs](https://www.keil.arm.com/boards)   | Board specific configuration (i.e. additional memory resources).
+[DFP Software Pack](https://www.keil.arm.com/devices)   | Device-related information (including memory sizes) for the tool configuration.
+[BSP Software Pack](https://www.keil.arm.com/boards)    | Board specific configuration (i.e. additional memory resources).
 [cdefault.yml](YML-Input-Format.md#cdefault)            | When enabled with [`cdefault:`](YML-Input-Format.md#solution), setup of toolchain specific controls and pre-defined toolchains.
 [*.csolution.yml](YML-Input-Format.md#solution)         | Complete scope of the application with sub-projects. Defines [target](YML-Input-Format.md#target-types) and [build](YML-Input-Format.md#build-types) types.
 [*.cproject.yml](YML-Input-Format.md#project)           | Content of an independent build step (linker or library archiver run).
