@@ -2503,7 +2503,7 @@ The `telnet:` node configures:
 Telnet Mode   | Description
 :-------------|:--------------------------------------
 `server`      | Serial I/O to Telnet server port
-`file`        | Serial output to text file (default: ./out/<solution-name>+<target-type>.<pname>.out).
+`file`        | Serial output to text file (default: ./out/\<solution-name\>+\<target-type\>.\<pname\>.out).
 `console`     | Serial output to console (Debug console in VS Code). 
 `monitor`     | Serial I/O via TCP/IP port to VS Code Serial Monitor.
 `off`         | Serial I/O disabled.
