@@ -2434,11 +2434,11 @@ The command `csolution list debuggers` outputs the `name:` of the supported debu
 
 Debug Adapter `name:`           | Description
 :-------------------------------|:-----------------------------------------------
-[`<adapter>@pyOCD`](#pyocd)    | Debug Adapters that interface via pyOCD.
+[`<adapter>@pyOCD`](#pyocd)     | Debug Adapters that interface via pyOCD ([CMSIS-DAP](https://arm-software.github.io/CMSIS-DAP/latest/index.html) and ST-Link).
 [`<adapter>@Arm-Debugger`](#arm-debugger) | Debug Adapters that interface via the Arm-Debugger.
 [`Arm-FVP`](#arm-fvp)           | [FVP](https://arm-software.github.io/AVH/main/simulation/html/index.html) simulation models that represent processor sub-systems.
-[`Keil uVision`](#keil-uvision)  | [uVision Debugger](http://developer.arm.com/documentation/101407/0543/Debugging) that is integrated in the Keil uVision IDE. 
-[`JLink Server`](#jlink-server)  | [Segger J-Link](https://www.segger.com/products/debug-probes/j-link/) debug probes that connect using the JLink Server.
+[`Keil uVision`](#keil-uvision) | [uVision Debugger](http://developer.arm.com/documentation/101407/0543/Debugging) that is integrated in the Keil uVision IDE. 
+[`JLink Server`](#jlink-server) | [Segger J-Link](https://www.segger.com/products/debug-probes/j-link/) debug probes that connect using the JLink Server.
 
 The [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) VS Code extension uses the `debugger:` node to create entries in the files `.vscode/tasks.json` and `.vscode/launch.json` for running and debugging using the specified debug adapter. [`pyOCD`](#pyocd) supports a command-line mode that uses the [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management) file which is created by the CMSIS-Toolbox.
 
@@ -2447,6 +2447,8 @@ The following sections describe the options available for the different debug ad
 ### pyOCD 
 
 This section lists the options that are specific to pyOCD that connects to [CMSIS-DAP](https://arm-software.github.io/CMSIS-DAP/latest/index.html) and ST-Link debug adapters. CMSIS-DAP is a standardized protocol used by many different debug adapters. All CMSIS-DAP enabled debug adapters can be accessed with `name: CMSIS-DAP@pyOCD`. A specific debug adapter name such as `name: ULINKplus@pyOCD` provides tailored default settings and a custom configuration dialog in the [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) VS Code extension.
+
+[Extended options](pyOCD-Debugger.md#extended-options) are required for rare use cases and further tailor the behaviour of pyOCD.
 
 #### `debugger:` for pyOCD
 
@@ -2458,10 +2460,10 @@ debugger:                         |             | Description
 &nbsp;&nbsp;&nbsp; `dbgconf:`     |  Optional   | Configuration file for device settings such as trace pins and option bytes.
 &nbsp;&nbsp;&nbsp; `start-pname:` |  Optional   | Debugger connects at start to this processor.
 &nbsp;&nbsp;&nbsp; [`telnet:`](#telnet-for-pyocd) |  Optional   | Telnet service configuration.
-&nbsp;&nbsp;&nbsp; [`trace:`](#trace-for-pyocd)   |  Optional   | Trace configuration.
-&nbsp;&nbsp;&nbsp; `connect:`      |  Optional   | [Connect Mode](#debug-sequences-for-pyocd): `pre-reset`, `under-reset`, `halt`, `attach` (default)
-&nbsp;&nbsp;&nbsp; [`reset:`](#reset-for-pyocd)           |  Optional   | [Reset type configuration](#reset-for-pyocd) for various cores.
-&nbsp;&nbsp;&nbsp; [`load-setup:`](#load-setup-for-pyocd) |  Optional   | Reset type and Halt configuration for Load command.
+&nbsp;&nbsp;&nbsp; [`trace:`](pyOCD-Debugger.md#trace)     |  Optional   | Extended Option: Trace configuration.
+&nbsp;&nbsp;&nbsp; [`connect:`](pyOCD-Debugger.md#connect) |  Optional   | Extended Option: Connect mode to hardware.
+&nbsp;&nbsp;&nbsp; [`reset:`](pyOCD-Debugger.md#reset)           |  Optional   | Extended Option: Reset type configuration for various cores.
+&nbsp;&nbsp;&nbsp; [`load-setup:`](pyOCD-Debugger.md#load-setup) |  Optional   | Extended Option: Reset type and Halt configuration for Load command.
 
 *Examples:**
 
@@ -2478,80 +2480,6 @@ debugger:
   protocol: jtag
   clock: 10000000               # 10 MHz
   dbgconf: MyHardware.dbgconf
-```
-
-#### Debug Sequences for pyOCD
-
-CMSIS-DAP based Debug Adapters implement [debug access sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#pdsc_SequenceNameEnum_pg) that are configured in the [DFP for a device](build-overview.md#overview-of-operation).
-
-Connect Mode  | Description
-:-------------|:--------------------------------------
-`pre-reset`   | Apply a hardware reset before connect. Sequence: [ResetHardware](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardware).
-`under-reset` | Asserts a hardware reset using during connect and de-asserts after core(s) are halted. Sequence: [ResetHardwareAssert](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareAssert), [ResetHardwareDeassert](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareDeassert). 
-`attach`      | Do not change status of the core(s). No sequence is executed. ToDo: review StopProcessor as there is no squence.
-`halt`        | Halt core(s) after connect. [Sequence:](#debug-sequences-for-pyocd)  [ResetCatchSet](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchSet), [ResetCatchClear](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchClear).
-
-The following table describes the reset types that are user selectable in the *csolution* project with `connect:`, `reset:`, and `load-setup:`
-
-Reset Types   | Description
-:-------------|:--------------------------------------
-`hardware`    | Use the Reset pin of the debug adapter. Sequence: [ResetHardware](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardware).
-`system`      | Use a system-wide reset via software mechanism. Sequence: [ResetSystem](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetSystem).
-`core`        | Use a processor reset via software mechanism. Sequence: [ResetProcessor](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetProcessor)
-
-!!! Note
-    - The `defaultResetSequence` in DFP element [/package/devices/family/.../debug](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debug) can define a different default reset type. If no `defaultResetSequence` the default reset type is `system`.
-
-#### `reset:` for pyOCD
-
-Configures the reset behavior for each core when a reset is requested.
-
-`reset:`                                                  |             | Description
-:---------------------------------------------------------|-------------|:------------------------------------
-`- pname:`                                                |  Optional   | Identifies the processor (not requried for single core system).
-&nbsp;&nbsp;&nbsp; `type:`                                |**Required** | Selects the reset type: `hardware`, `system`, `core`. Default: specified in DFP by todo.
-
-#### `load-setup:` for pyOCD
-
-Configures the [debug sequences](#debug-sequences-for-pyocd) executed during the `load` command of pyOCD.
-
-ToDo: missing is a overall flow chart of load and run sequences.  When is connect executed, etc.  Does pyOCD use Verify?  This info may go into pyOCD-Debugger.md.
-
-`load-cmd:`                       |             | Description
-:---------------------------------|:------------|:-----------------------------------------------
-&nbsp;&nbsp;&nbsp; `halt:`        |  Optional   | Halt core(s) before load: `on` (default), `off`. [Sequence:](#debug-sequences-for-pyocd)  [ResetCatchSet](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchSet), [ResetCatchClear](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchClear).
-&nbsp;&nbsp;&nbsp; `pre-reset:`   |  Optional   | Reset type before loading: `off`, `hardware`, `system`, `core`. Default: specified in DFP (ToDo how???].
-&nbsp;&nbsp;&nbsp; `post-reset:`  |  Optional   | Reset type after loading: `off`, `hardware` (default), `system`, `core`.
-
-**Examples:**
-
-```yml
-debugger:
-  name: CMSIS-DAP@pyOCD     # default connect, halt and reset behavior
-```
-
-```yml
-debugger:
-  name: CMSIS-DAP@pyOCD
-  connect: under-reset      # connect under hardware reset
-  reset:
-    - type: system          # use system reset
-  load-setup:
-    halt: on                # halt core after load
-    post-reset: hardware    # use hardware reset after load
-```
-
-```yml
-debugger:
-  name: CMSIS-DAP@pyOCD
-  connect: pre-reset        # apply hardware reset before connect
-  reset:
-    - pname: Core0          # for Core0
-      type: hardware        # use hardware reset
-    - pname: Core1          # for Core1
-      type: system          # use system reset
-  load-stop:
-    post-reset: off         # no reset after load
 ```
 
 #### `telnet:` for pyOCD
@@ -2572,6 +2500,14 @@ The `telnet:` node configures:
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
 &nbsp;&nbsp;&nbsp; `file:`                                |  Optional   | Explicit path and name of the telnet output file. Default: `<solution-name>+<target-type>.<pname>.out`.
 
+Telnet Mode   | Description
+:-------------|:--------------------------------------
+`off`         | Telnet service (including semihosting) is disabled.
+`server`      | Output is routed to a TCP/IP port.
+`file`        | Output is routed to a file.
+`console`     | Output is routed to the console output (Debug console in VS Code).
+`monitor`     | Output is routed to a TCP/IP port and the VS Code Serial Monitor is configured.
+
 **Examples:**
 
 Enable Telnet service or a single core system.
@@ -2580,7 +2516,8 @@ Enable Telnet service or a single core system.
 debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
-  telnet:                   # enable Telnet service with default settings 
+  telnet:
+    mode: monitor          # Output via TCP/IP port to VS Code Serial Monitor
 ```
 
 Enable Telnet service or a single core system.
@@ -2605,24 +2542,6 @@ debugger:
     - pname: Core2
       mode: file            # log Telnet output 
 ```
-
-#### `trace:` for pyOCD
-
-!!! Note
-    The `trace:` feature will be implemented until Dec 2025. This section is only a preview.
-
-CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific trace features are configured using the `*.dbgconf` file. 
-
-The default trace output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management) and uses the extension `<pname>.txt`, format: `<solution-name>+<target-type>.trace`
-
-`trace:`                                                  |             | Description
-:---------------------------------------------------------|-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `mode:`                                |**Required** | Trace: `off` (default), `server`, `file`.
-&nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Trace clock frequency in Hz.
-&nbsp;&nbsp;&nbsp; `port-type:`                           |  Optional   | Set Trace Port transport mode. Currently only `SWO-UART` is accepted.
-&nbsp;&nbsp;&nbsp; `baudrate:`                            |  Optional   | Maxium baudrate for `SWO-UART` mode.
-&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Trace Server (default: 5555).
-&nbsp;&nbsp;&nbsp; `file:`                                |  Optional   | Explicit path and name of the trace output file. Default: `<solution-name>+<target-type>.trace`.
 
 ### Arm Debugger
 
@@ -2717,8 +2636,8 @@ debugger:                         |             | Description
 &nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `<adapter>@pyOCD`.
 &nbsp;&nbsp;&nbsp; `clock:`       |  Optional   | Debug clock speed in Hz.
 &nbsp;&nbsp;&nbsp; `protocol:`    |  Optional   | Debug portocol (jtag or swd).
-&nbsp;&nbsp;&nbsp; [`telnet:`](#telnet-for-pyocd) |  Optional   | Telnet service configuration.
-&nbsp;&nbsp;&nbsp; [`trace:`](#trace-for-pyocd)   |  Optional   | Trace configuration.
+&nbsp;&nbsp;&nbsp; [`telnet:`](#telnet-for-jlink-server) |  Optional   | Telnet service configuration.
+&nbsp;&nbsp;&nbsp; [`trace:`](#trace-for-jlink-server)   |  Optional   | Trace configuration.
 
 **Examples:**
 
@@ -2731,22 +2650,33 @@ debugger:
 
 #### `telnet:` for JLink Server
 
-J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
+!!! Note
+    The `telnet:` feature will be implemented until Dec 2025. This section is only a preview.
+
+J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting (or Segger RTT channel 0). Currently only semihosting is configured for the primiary core.
 
 `telnet:`                                                 |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444).
+`- mode:`                                                 |**Required** | Redirect output: `off` (default), `server`, `monitor`.
+
+Telnet Mode   | Description
+:-------------|:--------------------------------------
+`off`         | Telnet service (including semihosting) is disabled.
+`server`      | Output is routed to a TCP/IP port.
+`monitor`     | Output is routed to a TCP/IP port and the VS Code Serial Monitor is configured.
 
 #### `trace:` for JLink Server
 
+!!! Note
+    The `trace:` feature is Work-In-Progress and will be completed in Q1'26.
+  
 J-Link supports SWO Trace.
 
 `trace:`                                                  |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Trace clock frequency in Hz.
 &nbsp;&nbsp;&nbsp; `mode:`                                |  Optional   | Set Trace Port transport mode. Currently only `SWO-UART` is accepted.
-&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444).
-
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Trace output (default: 4444).
 
 ## Add Memory
 
