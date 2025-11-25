@@ -2498,7 +2498,7 @@ The `telnet:` node configures:
 `- mode:`                                                 |**Required** | Redirect output: `off`, `server`, `file`, `console`, `monitor`.
 &nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Identifies the processor (not requried for single core system).
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
-&nbsp;&nbsp;&nbsp; `file:`                                |  Optional   | Explicit path and name of the telnet output file. Default: `<solution-name>+<target-type>.<pname>.out`.
+&nbsp;&nbsp;&nbsp; `file:`                                |  Optional   | Explicit path and name of the telnet output file (default: ./out/\<solution-name\>+\<target-type\>.\<pname\>.out).
 
 Telnet Mode   | Description
 :-------------|:--------------------------------------
