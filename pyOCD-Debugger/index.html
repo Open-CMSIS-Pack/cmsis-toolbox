@@ -82,12 +82,24 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">pyOCD Debugger</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#extended-options">Extended Options</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#connect">connect:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#reset">reset:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#load-setup">load-setup:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#trace">trace:</a>
+    </li>
+        </ul>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#command-line-invocation">Command Line Invocation</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#content-of-cbuild-runyml">Content of cbuild-run.yml</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#cbuild-run">cbuild-run:</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cbuild-run">cbuild-run:</a>
+        <ul>
     <li class="toctree-l3"><a class="reference internal" href="#output">output:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#system-resources">system-resources:</a>
@@ -151,13 +163,218 @@
 <li>This section contains preliminary information and is work-in-progress.</li>
 </ul>
 </div>
-<p>The CMSIS-Toolbox has many features. For debuggers it organizes projects and configuration options.
-This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Debugger in combination with these CMSIS-Toolbox features.</p>
+<p>The CMSIS-Toolbox organizes for debuggers projects and configuration options.
+This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Debugger in combination with the CMSIS-Toolbox.</p>
+<ul>
+<li><a href="#extended-options">Extended Options</a> explains additional configuration features that are required in specific use-cases.</li>
+<li><a href="#command-line-invocation">Command Line Invocation</a> describes how to call pyOCD directly from the command-line.</li>
+<li><a href="#cbuild-run"><code>cbuild-run:</code></a> explains the configuration file that describes the overall pyOCD system setup.</li>
+</ul>
 <p>Other manual sections describe how to configure debuggers:</p>
 <ul>
 <li><a href="../build-overview/#run-and-debug-configuration">Run and Debug Configuration</a> explains overall structure and how projects and images are configured.</li>
 <li><a href="../YML-Input-Format/#pyocd">Debugger Configuration - pyOCD</a> contains details about the options that are specific to pyOCD.</li>
 </ul>
+<h2 id="extended-options">Extended Options</h2>
+<p>The section <a href="../YML-Input-Format/#pyocd">CSolution Project Format - pyOCD</a> contains the pyOCD configuration for typical systems.</p>
+<p>Extended YML options are required to configure specific use-cases or overwrite information that is typically provided in the <a href="../build-overview/#overview-of-operation">DFP</a>.</p>
+<p>CMSIS-DAP based Debug Adapters implement <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#pdsc_SequenceNameEnum_pg">debug access sequences</a> that are configured in the <a href="../build-overview/#overview-of-operation">DFP for a device</a>.</p>
+<h3 id="connect"><code>connect:</code></h3>
+<p>Configures the behavior for connecting pyOCD to the hardware target.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>connect:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Selects the connect mode: <code>pre-reset</code>, <code>under-reset</code>, <code>attach</code>, <code>halt</code>.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Connect Mode</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>pre-reset</code></td>
+<td style="text-align: left;">Apply a hardware reset before connect. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardware">ResetHardware</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>under-reset</code></td>
+<td style="text-align: left;">Asserts a hardware reset using during connect and de-asserts after core(s) are halted. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareAssert">ResetHardwareAssert</a>, <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareDeassert">ResetHardwareDeassert</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>attach</code></td>
+<td style="text-align: left;">Do not change status of the core(s). No sequence is executed. ToDo: review StopProcessor as there is no squence.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>halt</code></td>
+<td style="text-align: left;">Halt core(s) after connect. Sequence:  <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchSet">ResetCatchSet</a>, <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchClear">ResetCatchClear</a>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reset"><code>reset:</code></h3>
+<p>Configures the reset behavior for each core when a reset is requested.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>reset:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Identifies the processor (not requried for single core system).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Selects the reset type: <code>hardware</code>, <code>system</code>, <code>core</code>. Default: specified in DFP by todo.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Reset Types</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>hardware</code></td>
+<td style="text-align: left;">Use the Reset pin of the debug adapter. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardware">ResetHardware</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>system</code></td>
+<td style="text-align: left;">Use a system-wide reset via software mechanism. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetSystem">ResetSystem</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>core</code></td>
+<td style="text-align: left;">Use a processor reset via software mechanism. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetProcessor">ResetProcessor</a></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The <code>defaultResetSequence</code> in DFP element <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debug">/package/devices/family/.../debug</a> can define a different default reset type. If no <code>defaultResetSequence</code> the default reset type is <code>system</code>.</li>
+</ul>
+</div>
+<h3 id="load-setup"><code>load-setup:</code></h3>
+<p>Configures the debug sequences executed during the <code>load</code> command of pyOCD.</p>
+<p>ToDo: missing is a overall flow chart of load and run sequences.  When is connect executed, etc.  Does pyOCD use Verify?  This info may go into pyOCD-Debugger.md.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>load-cmd:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>halt:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Halt core(s) before load: <code>on</code> (default), <code>off</code>. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchSet">ResetCatchSet</a>, <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchClear">ResetCatchClear</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pre-reset:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Reset type before loading: <code>off</code>, <code>hardware</code>, <code>system</code>, <code>core</code>. Default: specified in DFP (ToDo how???].</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>post-reset:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Reset type after loading: <code>off</code>, <code>hardware</code> (default), <code>system</code>, <code>core</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@pyOCD     # default connect, halt and reset behavior
+</code></pre>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@pyOCD
+  connect: under-reset      # connect under hardware reset
+  reset:
+    - type: system          # use system reset
+  load-setup:
+    halt: on                # halt core after load
+    post-reset: hardware    # use hardware reset after load
+</code></pre>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@pyOCD
+  connect: pre-reset        # apply hardware reset before connect
+  reset:
+    - pname: Core0          # for Core0
+      type: hardware        # use hardware reset
+    - pname: Core1          # for Core1
+      type: system          # use system reset
+  load-stop:
+    post-reset: off         # no reset after load
+</code></pre>
+<h3 id="trace"><code>trace:</code></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>trace:</code> feature will be implemented until Dec 2025. This section is only a preview.</p>
+</div>
+<p>CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific trace features are configured using the <code>*.dbgconf</code> file.</p>
+<p>The default trace output file and location is derived from the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a> and uses the extension <code>&lt;pname&gt;.txt</code>, format: <code>&lt;solution-name&gt;+&lt;target-type&gt;.trace</code></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>trace:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Trace: <code>off</code> (default), <code>server</code>, <code>file</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Trace clock frequency in Hz.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port-type:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Set Trace Port transport mode. Currently only <code>SWO-UART</code> is accepted.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>baudrate:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Maxium baudrate for <code>SWO-UART</code> mode.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Set TCP/IP port number of Trace Server (default: 5555).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>file:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Explicit path and name of the trace output file. Default: <code>&lt;solution-name&gt;+&lt;target-type&gt;.trace</code>.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="command-line-invocation">Command Line Invocation</h2>
 <p>The CMSIS-Toolbox debugger configuration is provided in the <a href="../YML-CBuild-Format/#file-structure-of-cbuild-runyml">file <code>*.cbuild-run.yml</code></a>. Use the following command line syntax to leverage this information:</p>
 <pre><code class="language-bash">&gt;pyOCD &lt;command&gt; --cbuild-run &lt;cbuild-run.yml file&gt; [options]
@@ -218,7 +435,7 @@ However, it is possible to create a <code>*.cbuild-run.yml</code> file manually 
 <p><strong>Configuration File Example:</strong></p>
 <pre><code class="language-yml">todo
 </code></pre>
-<h3 id="cbuild-run"><code>cbuild-run:</code></h3>
+<h2 id="cbuild-run"><code>cbuild-run:</code></h2>
 <p>The <code>cbuild-run:</code> node is the start of a <code>*.cbuild-run.yml</code> file.</p>
 <table>
 <thead>

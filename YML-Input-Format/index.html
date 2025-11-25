@@ -296,8 +296,6 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#telnet-for-pyocd">telnet: for pyOCD</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#trace-for-pyocd">trace: for pyOCD</a>
-    </li>
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#arm-debugger">Arm Debugger</a>
@@ -4396,7 +4394,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <tbody>
 <tr>
 <td style="text-align: left;"><a href="#pyocd"><code>&lt;adapter&gt;@pyOCD</code></a></td>
-<td style="text-align: left;">Debug Adapters that interface via pyOCD.</td>
+<td style="text-align: left;">Debug Adapters that interface via pyOCD (<a href="https://arm-software.github.io/CMSIS-DAP/latest/index.html">CMSIS-DAP</a> and ST-Link).</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="#arm-debugger"><code>&lt;adapter&gt;@Arm-Debugger</code></a></td>
@@ -4420,6 +4418,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p>The following sections describe the options available for the different debug adapter types.</p>
 <h3 id="pyocd">pyOCD</h3>
 <p>This section lists the options that are specific to pyOCD that connects to <a href="https://arm-software.github.io/CMSIS-DAP/latest/index.html">CMSIS-DAP</a> and ST-Link debug adapters. CMSIS-DAP is a standardized protocol used by many different debug adapters. All CMSIS-DAP enabled debug adapters can be accessed with <code>name: CMSIS-DAP@pyOCD</code>. A specific debug adapter name such as <code>name: ULINKplus@pyOCD</code> provides tailored default settings and a custom configuration dialog in the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a> VS Code extension.</p>
+<p><a href="../pyOCD-Debugger/#extended-options">Extended options</a> are required for rare use cases and further tailor the behaviour of pyOCD.</p>
 <h4 id="debugger-for-pyocd"><code>debugger:</code> for pyOCD</h4>
 <table>
 <thead>
@@ -4461,13 +4460,28 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <td style="text-align: left;">Telnet service configuration.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#trace-for-pyocd"><code>trace:</code></a></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../pyOCD-Debugger/#trace"><code>trace:</code></a></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Trace configuration.</td>
+<td style="text-align: left;">Extended Option: Trace configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../pyOCD-Debugger/#connect"><code>connect:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Extended Option: Connect mode to hardware.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../pyOCD-Debugger/#reset"><code>reset:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Extended Option: Reset type configuration for various cores.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../pyOCD-Debugger/#load-setup"><code>load-setup:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Extended Option: Reset type and Halt configuration for Load command.</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Examples:</strong></p>
+<p><em>Examples:</em>*</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
@@ -4487,8 +4501,8 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p>pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
 The <code>telnet:</code> node configures:</p>
 <ul>
-<li>Telnet port for connecting remote tools, for example the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor">VS Code extension Serial Monitor</a>.</li>
-<li>Redirect the output to a log file or the console.</li>
+<li>Telnet port for connecting remote tools, for example the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor">Serial Monitor VS Code extension</a>.</li>
+<li>Redirect the output to a <code>file</code>, <code>console</code>, <code>port</code>, or <code>monitor</code>. The setting <code>monitor</code> connects a telnet <code>port</code> to the Serial Monitor in VS Code. The default output file and location is derived from the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a> and uses the extension <code>&lt;pname&gt;.txt</code>, format: <code>&lt;solution-name&gt;+&lt;target-type&gt;.&lt;pname&gt;.out</code></li>
 </ul>
 <table>
 <thead>
@@ -4500,36 +4514,77 @@ The <code>telnet:</code> node configures:</p>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>- pname:</code></td>
+<td style="text-align: left;"><code>- mode:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Redirect output: <code>off</code>, <code>server</code>, <code>file</code>, <code>console</code>, <code>monitor</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
 <td>Optional</td>
 <td style="text-align: left;">Identifies the processor (not requried for single core system).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Set TCP/IP port number of Telnet Server (default: 4444).</td>
+<td style="text-align: left;">Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>log:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>file:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Log output to a pre-defined (<code>file</code>) or console output (<code>stdio</code>). Default is <code>off</code>.</td>
+<td style="text-align: left;">Explicit path and name of the telnet output file (default: ./out/\&lt;solution-name&gt;+\&lt;target-type&gt;.\&lt;pname&gt;.out).</td>
 </tr>
 </tbody>
 </table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Telnet Mode</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>server</code></td>
+<td style="text-align: left;">Serial I/O to Telnet server port</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>file</code></td>
+<td style="text-align: left;">Serial output to text file (default: ./out/\&lt;solution-name&gt;+\&lt;target-type&gt;.\&lt;pname&gt;.out).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>console</code></td>
+<td style="text-align: left;">Serial output to console (Debug console in VS Code).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>monitor</code></td>
+<td style="text-align: left;">Serial I/O via TCP/IP port to VS Code Serial Monitor.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>off</code></td>
+<td style="text-align: left;">Serial I/O disabled.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>When no <code>telnet</code> node is applied Serial I/O to all processors is disabled.</li>
+</ul>
+</div>
 <p><strong>Examples:</strong></p>
 <p>Enable Telnet service or a single core system.</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
-  telnet:                   # enable Telnet service with default settings 
+  telnet:
+    mode: monitor          # Output via TCP/IP port to VS Code Serial Monitor
 </code></pre>
 <p>Enable Telnet service or a single core system.</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:
-    port: 4444
-    log: stdio              # route Telnet output to console 
+    mode: server
 </code></pre>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
@@ -4538,52 +4593,10 @@ The <code>telnet:</code> node configures:</p>
     - pname: Core0          # enable Telnet service with default settings
       port: 4444
     - pname: Core1
-      log: stdio            # route Telnet output to console 
+      mode: console         # route Telnet output to console 
     - pname: Core2
-      log: file             # log Telnet output 
+      mode: file            # log Telnet output 
 </code></pre>
-<h4 id="trace-for-pyocd"><code>trace:</code> for pyOCD</h4>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The <code>trace:</code> feature will be implemented until Dec 2025. This section is only a preview.</p>
-</div>
-<p>CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific trace features are configured using the <code>*.dbgconf</code> file. </p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>trace:</code></th>
-<th></th>
-<th style="text-align: left;">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
-<td><strong>Required</strong></td>
-<td style="text-align: left;">Trace clock frequency in Hz.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Set Trace Port transport mode. Currently only <code>SWO-UART</code> is accepted.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>baudrate:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Maxium baudrate for <code>SWO-UART</code> mode.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Set TCP/IP port number of Trace Server (default: 5555).</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>log:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Log trace output to a pre-defined file (default: no file created).</td>
-</tr>
-</tbody>
-</table>
 <h3 id="arm-debugger">Arm Debugger</h3>
 <p>This section lists options that are specific for the Arm Debugger.</p>
 <table>
@@ -4798,12 +4811,12 @@ The <code>telnet:</code> node configures:</p>
 <td style="text-align: left;">Debug portocol (jtag or swd).</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#telnet-for-pyocd"><code>telnet:</code></a></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#telnet-for-jlink-server"><code>telnet:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Telnet service configuration.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#trace-for-pyocd"><code>trace:</code></a></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#trace-for-jlink-server"><code>trace:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Trace configuration.</td>
 </tr>
@@ -4816,7 +4829,11 @@ The <code>telnet:</code> node configures:</p>
   protocol: swd
 </code></pre>
 <h4 id="telnet-for-jlink-server"><code>telnet:</code> for JLink Server</h4>
-<p>J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>telnet:</code> feature will be implemented until Dec 2025. This section is only a preview.</p>
+</div>
+<p>J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting (or Segger RTT channel 0). Currently only semihosting is configured for the primiary core.</p>
 <table>
 <thead>
 <tr>
@@ -4827,13 +4844,45 @@ The <code>telnet:</code> node configures:</p>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Set TCP/IP port number of Telnet Server (default: 4444).</td>
+<td style="text-align: left;"><code>- mode:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Redirect output: <code>server</code>, <code>monitor</code>.</td>
 </tr>
 </tbody>
 </table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Telnet Mode</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>server</code></td>
+<td style="text-align: left;">Serial I/O to Telnet server port</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>console</code></td>
+<td style="text-align: left;">Serial output to console (Debug console in VS Code).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>monitor</code></td>
+<td style="text-align: left;">Serial I/O via TCP/IP port to VS Code Serial Monitor.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>When no <code>telnet</code> node is applied Serial I/O is disabled.</li>
+</ul>
+</div>
 <h4 id="trace-for-jlink-server"><code>trace:</code> for JLink Server</h4>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>trace:</code> feature is Work-In-Progress and will be completed in Q1'26.</p>
+</div>
 <p>J-Link supports SWO Trace.</p>
 <table>
 <thead>
@@ -4857,7 +4906,7 @@ The <code>telnet:</code> node configures:</p>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Set TCP/IP port number of Telnet Server (default: 4444).</td>
+<td style="text-align: left;">Set TCP/IP port number of Trace output (default: 4444).</td>
 </tr>
 </tbody>
 </table>
