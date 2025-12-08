@@ -29,16 +29,16 @@ File Extension           | [Category](https://open-cmsis-pack.github.io/Open-CMS
 The **`csolution` Project Manager** uses the following syntax to specify the `pack:` names in the `*.yml` files.
 
 ```yml
-[vendor ::] pack-name                # Use the latest version of the pack
-[vendor ::] pack-name@version        # With exact version
-[vendor ::] pack-name@>=version      # With version equal or higher
-[vendor ::] pack-name@^version       # With version equal or higher but the same major version
-[vendor ::] pack-name@~version       # With version equal or higher but the same major and minor version
+vendor::pack-name                # Use the latest version of the pack
+vendor::pack-name@version        # With exact version
+vendor::pack-name@>=version      # With version equal or higher
+vendor::pack-name@^version       # With version equal or higher but the same major version
+vendor::pack-name@~version       # With version equal or higher but the same major and minor version
 ```
 
 Element      |              | Description
 :------------|--------------|:---------------------
-`vendor`     | Optional     | Vendor name of the software pack.
+`vendor`     | **Required** | Vendor name of the software pack.
 `pack-name`  | **Required** | Name of the software pack; wildcards (\*, ?) can be used.
 `@version`   | Optional     | Software pack version number must exactly match, i.e. `@1.2.3`
 `@>=version` | Optional     | Automatically update to any version higher or equal.
@@ -53,13 +53,13 @@ Element      |              | Description
 **Examples:**
 
 ```yml
-- pack:   ARM::CMSIS@5.9.0           # 'CMSIS' Pack with version 5.5.0
-- pack:   MDK-Middleware@>=7.13.0    # latest version 7.13.0 or higher
-- pack:   MDK-Middleware@^7.13.0     # latest version 7.13.0 or higher, but lower than 8.0.0
-- pack:   Keil::TFM                  # 'TFM' Pack from vendor Keil, latest installed version
-- pack:   AWS                        # All Software Packs from vendor 'AWS', latest version
-- pack:   Keil::STM*                 # Software Packs that start with 'STM' from vendor 'Keil'
-- pack:   MDK-Middleware@>=8.0.0-0   # version 8.0.0 or higher including pre-release versions
+- pack:   ARM::CMSIS@5.9.0                 # 'CMSIS' Pack with version 5.5.0
+- pack:   Keil::MDK-Middleware@>=7.13.0    # latest version 7.13.0 or higher
+- pack:   Keil::MDK-Middleware@^7.13.0     # latest version 7.13.0 or higher, but lower than 8.0.0
+- pack:   Keil::TFM                        # 'TFM' Pack from vendor Keil, latest installed version
+- pack:   AWS                              # All Software Packs from vendor 'AWS', latest version
+- pack:   Keil::STM*                       # Software Packs that start with 'STM' from vendor 'Keil'
+- pack:   Keil::MDK-Middleware@>=8.0.0-0   # version 8.0.0 or higher including pre-release versions
 ```
 
 ### `component:` Name Conventions
