@@ -2438,7 +2438,7 @@ Debug Adapter `name:`           | Description
 [`<adapter>@Arm-Debugger`](#arm-debugger) | Debug Adapters that interface via the Arm-Debugger.
 [`Arm-FVP`](#arm-fvp)           | [FVP](https://arm-software.github.io/AVH/main/simulation/html/index.html) simulation models that represent processor sub-systems.
 [`Keil uVision`](#keil-uvision) | [uVision Debugger](http://developer.arm.com/documentation/101407/0543/Debugging) that is integrated in the Keil uVision IDE. 
-[`JLink Server`](#jlink-server) | [Segger J-Link](https://www.segger.com/products/debug-probes/j-link/) debug probes that connect using the JLink Server.
+[`J-Link Server`](#j-link-server) | [Segger J-Link](https://www.segger.com/products/debug-probes/j-link/) debug probes that connect using the J-Link Server.
 
 The [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) VS Code extension uses the `debugger:` node to create entries in the files `.vscode/tasks.json` and `.vscode/launch.json` for running and debugging using the specified debug adapter. [`pyOCD`](#pyocd) supports a command-line mode that uses the [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management) file which is created by the CMSIS-Toolbox.
 
@@ -2628,30 +2628,32 @@ debugger:
   name: Keil uVision
 ```
 
-### JLink Server
+### J-Link Server
 
-This section lists options that are specific for the  [Segger J-Link](https://www.segger.com/products/debug-probes/j-link/) debug probes.
+This section lists options that are specific for the [Segger J-Link](https://www.segger.com/products/debug-probes/j-link/) debug probes.
 
-#### `debugger:` for JLink Server
+[Extended options](JLink-Debugger.md#extended-options) are required for rare use cases and further tailor the behaviour of J-Link Server.
+
+#### `debugger:` for J-Link Server
 
 debugger:                         |             | Description
 :---------------------------------|:------------|:-----------------------------------------------
 &nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `<adapter>@pyOCD`.
 &nbsp;&nbsp;&nbsp; `clock:`       |  Optional   | Debug clock speed in Hz.
 &nbsp;&nbsp;&nbsp; `protocol:`    |  Optional   | Debug portocol (jtag or swd).
-&nbsp;&nbsp;&nbsp; [`telnet:`](#telnet-for-jlink-server) |  Optional   | Telnet service configuration.
-&nbsp;&nbsp;&nbsp; [`trace:`](#trace-for-jlink-server)   |  Optional   | Trace configuration.
+&nbsp;&nbsp;&nbsp; [`telnet:`](#telnet-for-j-link-server) |  Optional   | Telnet service configuration.
+&nbsp;&nbsp;&nbsp; [`trace:`](#trace-for-j-link-server)   |  Optional   | Trace configuration.
 
 **Examples:**
 
 ```yml
 debugger:
-  name: JLink Server
+  name: J-Link Server
   clock: 4000                    # 4000 kHz
   protocol: swd
 ```
 
-#### `telnet:` for JLink Server
+#### `telnet:` for J-Link Server
 
 !!! Note
     The `telnet:` feature will be implemented until Dec 2025. This section is only a preview.
@@ -2673,7 +2675,7 @@ Telnet Mode   | Description
 !!! Note
     - Serial I/O is always enabled for J-Link. Always provide `telnet:` nodes for multi-core connections to ensure correct functionality of the J-Link GDB server.
 
-#### `trace:` for JLink Server
+#### `trace:` for J-Link Server
 
 !!! Note
     The `trace:` feature is Work-In-Progress and will be completed in Q1'26.

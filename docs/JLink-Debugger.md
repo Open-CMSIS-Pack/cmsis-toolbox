@@ -4,18 +4,18 @@
     - This section contains preliminary information and is work-in-progress.
   
 The CMSIS-Toolbox organizes for debuggers projects and configuration options.
-This chapter explains the usage of the [Segger J-Link](https://kb.segger.com/J-Link_GDB_Server) in combination with the CMSIS-Toolbox.
+This chapter explains the usage of the [Segger J-Link GDB Server](https://kb.segger.com/J-Link_GDB_Server) in combination with the CMSIS-Toolbox.
 
 - [Extended Options](#extended-options) explains additional configuration features that are required in specific use-cases.
 
 Other manual sections describe how to configure debuggers:
 
 - [Run and Debug Configuration](build-overview.md#run-and-debug-configuration) explains overall structure and how projects and images are configured.
-- [Debugger Configuration - JLink Server](YML-Input-Format.md#jlink-server) contains details about the options that are specific to J-Link.
+- [Debugger Configuration - J-Link Server](YML-Input-Format.md#j-link-server) contains details about the options that are specific to J-Link.
 
 ## Extended Options
 
-The section [Debugger Configuration - JLink Server](YML-Input-Format.md#jlink-server) contains the J-Link configuration for typical systems.
+The section [Debugger Configuration - J-Link Server](YML-Input-Format.md#j-link-server) contains the J-Link configuration for typical systems.
 
 ### `connect:`
 
