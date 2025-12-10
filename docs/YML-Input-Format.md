@@ -2643,6 +2643,8 @@ debugger:                         |             | Description
 &nbsp;&nbsp;&nbsp; `protocol:`    |  Optional   | Debug portocol (jtag or swd).
 &nbsp;&nbsp;&nbsp; [`telnet:`](#telnet-for-j-link-server) |  Optional   | Telnet service configuration.
 &nbsp;&nbsp;&nbsp; [`trace:`](#trace-for-j-link-server)   |  Optional   | Trace configuration.
+&nbsp;&nbsp;&nbsp; [`connect:`](JLink-Debugger.md#connect) |  Optional   | Extended Option: Connect mode to hardware.
+&nbsp;&nbsp;&nbsp; [`reset:`](JLink-Debugger.md#reset)           |  Optional   | Extended Option: Reset type configuration for various cores.
 
 **Examples:**
 
