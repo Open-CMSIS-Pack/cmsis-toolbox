@@ -2656,11 +2656,11 @@ debugger:
 !!! Note
     The `telnet:` feature will be implemented until Dec 2025. This section is only a preview.
 
-J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting (or Segger RTT channel 0). Currently only semihosting is configured for the primiary core.
+J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting (or Segger RTT channel 0). Currently only semihosting is configured for the primary core.
 
 `telnet:`                                                 |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
-`- mode:`                                                 |**Required** | Redirect output: `server`, `monitor`.
+`- mode:`                                                 |**Required** | Redirect output: `server`, `console`, `monitor`.
 
 Telnet Mode   | Description
 :-------------|:--------------------------------------
@@ -2669,7 +2669,7 @@ Telnet Mode   | Description
 `monitor`     | Serial I/O via TCP/IP port to VS Code Serial Monitor.
 
 !!! Note
-    - When no `telnet` node is applied Serial I/O is disabled.
+    - Serial I/O is always enabled for J-Link. Always provide `telnet:` nodes for multi-core connections to ensure correct functionality of the J-Link GDB server.
 
 #### `trace:` for JLink Server
 
