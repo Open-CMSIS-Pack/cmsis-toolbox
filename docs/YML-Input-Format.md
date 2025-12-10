@@ -2661,6 +2661,8 @@ J-Link supports a Telnet service that connects to character I/O funtions. Charac
 `telnet:`                                                 |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
 `- mode:`                                                 |**Required** | Redirect output: `server`, `console`, `monitor`.
+&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Identifies the processor (not requried for single core system).
+&nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 2333).
 
 Telnet Mode   | Description
 :-------------|:--------------------------------------
