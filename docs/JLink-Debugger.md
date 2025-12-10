@@ -19,7 +19,7 @@ The section [Debugger Configuration - J-Link Server](YML-Input-Format.md#j-link-
 
 ### `connect:`
 
-Configures the behavior for connecting J-Link to the hardware target.
+Configures the behavior for connecting J-Link to the hardware target for interactive debug.
 
 `connect:`                                                |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
@@ -32,7 +32,7 @@ Connect Mode  | Description
 
 ### `reset:`
 
-Configures the reset behavior for each core when a reset is requested.
+Configures the reset behavior for each core when a reset is requested during interactive debug.
 
 `reset:`                                                  |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
