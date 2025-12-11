@@ -2664,7 +2664,7 @@ J-Link supports a Telnet service that connects to character I/O funtions. Charac
 
 `telnet:`                                                 |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
-`- mode:`                                                 |**Required** | Redirect output: `server`, `console`, `monitor`.
+`- mode:`                                                 |**Required** | Redirect output: `server`, `console`, `monitor`, `off` (default).
 &nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Identifies the processor (not requried for single core system).
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
 
@@ -2673,9 +2673,10 @@ Telnet Mode   | Description
 `server`      | Serial I/O to Telnet server port
 `console`     | Serial output to console (Debug console in VS Code). 
 `monitor`     | Serial I/O via TCP/IP port to VS Code Serial Monitor.
+`off`         | Serial I/O disabled.
 
 !!! Note
-    - Serial I/O is always enabled for J-Link. Always provide `telnet:` nodes for multi-core connections to ensure correct functionality of the J-Link GDB server.
+    - The Telnet service is always enabled for the J-Link GDB Server. The mode `off` turns off the data source (semihosting, Segger RTT).
 
 #### `trace:` for J-Link Server
 
