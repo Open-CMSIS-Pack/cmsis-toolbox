@@ -2677,6 +2677,7 @@ Telnet Mode   | Description
 
 !!! Note
     - The Telnet service is always enabled for the J-Link GDB Server. The mode `off` turns off the data source (semihosting, Segger RTT).
+    - When no `telnet` node is added then Serial I/O to all processors is set to mode `off`.
 
 #### `trace:` for J-Link Server
 
