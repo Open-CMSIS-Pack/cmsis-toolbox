@@ -10,7 +10,7 @@ This chapter outlines the structure of *csolution project files* that contain th
 - [Directory Structure](#directory-structure) describes the overall directory structure of projects.
 - [Linker Script Management](#linker-script-management) defines the  available memory and controls the linker operation.
 - [Generator Support](#generator-support) integrates configuration tools such as STM32CubeMX or MCUXpresso Config.
-- [Run and Debug Configuration](#run-and-debug-configuration) explains how to configure debug adapters such as CMSIS-DAP or JLink.
+- [Run and Debug Configuration](#run-and-debug-configuration) explains how to configure debug adapters such as CMSIS-DAP or J-Link.
 - [West Build System Integration](#west-build-system-integration) allows to manage Zephyr applications in context with a *csolution project*.
 
 ## Overview of Operation
@@ -1009,7 +1009,7 @@ solution:
       target-set:
         - set:
           debugger:
-            name: JLink Server
+            name: J-Link Server
             port: 3333
             protocol: swd
           images:

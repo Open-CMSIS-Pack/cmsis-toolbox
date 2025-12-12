@@ -383,7 +383,7 @@ debug-adapters:
       protocol: swd
       clock: 10000000
 
-  - name: "JLink Server"
+  - name: "J-Link Server"
     template: jlink.adapter.json              # template file
     defaults:                                 # default values to use when nowhere specified
       port: 3333                              # default value of first gdbserver port
@@ -515,7 +515,7 @@ debug-adapters:
             range: [1, 100000]
             default: 4444
  
-  - name: "JLink Server"
+  - name: "J-Link Server"
       - section: Debug Interface
         description: Interface configuration for the debug port
         options:
