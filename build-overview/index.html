@@ -263,7 +263,7 @@
 <li><a href="#directory-structure">Directory Structure</a> describes the overall directory structure of projects.</li>
 <li><a href="#linker-script-management">Linker Script Management</a> defines the  available memory and controls the linker operation.</li>
 <li><a href="#generator-support">Generator Support</a> integrates configuration tools such as STM32CubeMX or MCUXpresso Config.</li>
-<li><a href="#run-and-debug-configuration">Run and Debug Configuration</a> explains how to configure debug adapters such as CMSIS-DAP or JLink.</li>
+<li><a href="#run-and-debug-configuration">Run and Debug Configuration</a> explains how to configure debug adapters such as CMSIS-DAP or J-Link.</li>
 <li><a href="#west-build-system-integration">West Build System Integration</a> allows to manage Zephyr applications in context with a <em>csolution project</em>.</li>
 </ul>
 <h2 id="overview-of-operation">Overview of Operation</h2>
@@ -1307,7 +1307,7 @@ The CMSIS-Toolbox connects the <code>west build</code> command with the informat
       target-set:
         - set:
           debugger:
-            name: JLink Server
+            name: J-Link Server
             port: 3333
             protocol: swd
           images:

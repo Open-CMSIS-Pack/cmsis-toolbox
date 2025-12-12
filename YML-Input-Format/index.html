@@ -312,13 +312,13 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#jlink-server">JLink Server</a>
+    <li class="toctree-l3"><a class="reference internal" href="#j-link-server">J-Link Server</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#debugger-for-jlink-server">debugger: for JLink Server</a>
+    <li class="toctree-l4"><a class="reference internal" href="#debugger-for-j-link-server">debugger: for J-Link Server</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#telnet-for-jlink-server">telnet: for JLink Server</a>
+    <li class="toctree-l4"><a class="reference internal" href="#telnet-for-j-link-server">telnet: for J-Link Server</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#trace-for-jlink-server">trace: for JLink Server</a>
+    <li class="toctree-l4"><a class="reference internal" href="#trace-for-j-link-server">trace: for J-Link Server</a>
     </li>
         </ul>
     </li>
@@ -4409,8 +4409,8 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <td style="text-align: left;"><a href="http://developer.arm.com/documentation/101407/0543/Debugging">uVision Debugger</a> that is integrated in the Keil uVision IDE.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="#jlink-server"><code>JLink Server</code></a></td>
-<td style="text-align: left;"><a href="https://www.segger.com/products/debug-probes/j-link/">Segger J-Link</a> debug probes that connect using the JLink Server.</td>
+<td style="text-align: left;"><a href="#j-link-server"><code>J-Link Server</code></a></td>
+<td style="text-align: left;"><a href="https://www.segger.com/products/debug-probes/j-link/">Segger J-Link</a> debug probes that connect using the J-Link Server.</td>
 </tr>
 </tbody>
 </table>
@@ -4783,9 +4783,10 @@ The <code>telnet:</code> node configures:</p>
 <pre><code class="language-yml">debugger:
   name: Keil uVision
 </code></pre>
-<h3 id="jlink-server">JLink Server</h3>
-<p>This section lists options that are specific for the  <a href="https://www.segger.com/products/debug-probes/j-link/">Segger J-Link</a> debug probes.</p>
-<h4 id="debugger-for-jlink-server"><code>debugger:</code> for JLink Server</h4>
+<h3 id="j-link-server">J-Link Server</h3>
+<p>This section lists options that are specific for the <a href="https://www.segger.com/products/debug-probes/j-link/">Segger J-Link</a> debug probes.</p>
+<p><a href="../JLink-Debugger/#extended-options">Extended options</a> are required for rare use cases and further tailor the behaviour of J-Link Server.</p>
+<h4 id="debugger-for-j-link-server"><code>debugger:</code> for J-Link Server</h4>
 <table>
 <thead>
 <tr>
@@ -4811,29 +4812,39 @@ The <code>telnet:</code> node configures:</p>
 <td style="text-align: left;">Debug portocol (jtag or swd).</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#telnet-for-jlink-server"><code>telnet:</code></a></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#telnet-for-j-link-server"><code>telnet:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Telnet service configuration.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#trace-for-jlink-server"><code>trace:</code></a></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#trace-for-j-link-server"><code>trace:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Trace configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../JLink-Debugger/#connect"><code>connect:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Extended Option: Connect mode to hardware.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../JLink-Debugger/#reset"><code>reset:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Extended Option: Reset type configuration for various cores.</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">debugger:
-  name: JLink Server
+  name: J-Link Server
   clock: 4000                    # 4000 kHz
   protocol: swd
 </code></pre>
-<h4 id="telnet-for-jlink-server"><code>telnet:</code> for JLink Server</h4>
+<h4 id="telnet-for-j-link-server"><code>telnet:</code> for J-Link Server</h4>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <code>telnet:</code> feature will be implemented until Dec 2025. This section is only a preview.</p>
 </div>
-<p>J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting (or Segger RTT channel 0). Currently only semihosting is configured for the primiary core.</p>
+<p>J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting (or Segger RTT channel 0). Currently only semihosting is configured for the primary core.</p>
 <table>
 <thead>
 <tr>
@@ -4846,7 +4857,17 @@ The <code>telnet:</code> node configures:</p>
 <tr>
 <td style="text-align: left;"><code>- mode:</code></td>
 <td><strong>Required</strong></td>
-<td style="text-align: left;">Redirect output: <code>server</code>, <code>monitor</code>.</td>
+<td style="text-align: left;">Redirect output: <code>server</code>, <code>console</code>, <code>monitor</code>, <code>off</code> (default).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Identifies the processor (not requried for single core system).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).</td>
 </tr>
 </tbody>
 </table>
@@ -4870,15 +4891,20 @@ The <code>telnet:</code> node configures:</p>
 <td style="text-align: left;"><code>monitor</code></td>
 <td style="text-align: left;">Serial I/O via TCP/IP port to VS Code Serial Monitor.</td>
 </tr>
+<tr>
+<td style="text-align: left;"><code>off</code></td>
+<td style="text-align: left;">Serial I/O disabled.</td>
+</tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>When no <code>telnet</code> node is applied Serial I/O is disabled.</li>
+<li>The Telnet service is always enabled for the J-Link GDB Server. The mode <code>off</code> turns off the data source (semihosting, Segger RTT).</li>
+<li>When no <code>telnet</code> node is added then Serial I/O to all processors is set to mode <code>off</code>.</li>
 </ul>
 </div>
-<h4 id="trace-for-jlink-server"><code>trace:</code> for JLink Server</h4>
+<h4 id="trace-for-j-link-server"><code>trace:</code> for J-Link Server</h4>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <code>trace:</code> feature is Work-In-Progress and will be completed in Q1'26.</p>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Segger J-Link Debugger - CMSIS-Toolbox</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Segger J-Link Debugger";
+        var mkdocs_page_input_path = "JLink-Debugger.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
+        </a>
+        <div class="version">
+          2.12.0
+        </div><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">CSolution Project Structure</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pyOCD-Debugger/">pyOCD Debugger</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Theory of Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Troubleshooting/">Troubleshooting</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">MCUXpresso for NXP Devices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">STM32CubeMX for STM32 Devices</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CMSIS-Toolbox</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Segger J-Link Debugger</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/JLink-Debugger.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="segger-j-link-debugger">Segger J-Link Debugger</h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>This section contains preliminary information and is work-in-progress.</li>
+</ul>
+</div>
+<p>The CMSIS-Toolbox organizes for debuggers projects and configuration options.
+This chapter explains the usage of the <a href="https://kb.segger.com/J-Link_GDB_Server">Segger J-Link GDB Server</a> in combination with the CMSIS-Toolbox.</p>
+<ul>
+<li><a href="#extended-options">Extended Options</a> explains additional configuration features that are required in specific use-cases.</li>
+</ul>
+<p>Other manual sections describe how to configure debuggers:</p>
+<ul>
+<li><a href="../build-overview/#run-and-debug-configuration">Run and Debug Configuration</a> explains overall structure and how projects and images are configured.</li>
+<li><a href="../YML-Input-Format/#j-link-server">Debugger Configuration - J-Link Server</a> contains details about the options that are specific to J-Link.</li>
+</ul>
+<h2 id="extended-options">Extended Options</h2>
+<p>The section <a href="../YML-Input-Format/#j-link-server">Debugger Configuration - J-Link Server</a> contains the J-Link configuration for typical systems.</p>
+<h3 id="connect"><code>connect:</code></h3>
+<p>Configures the behavior for connecting J-Link to the hardware target for interactive debug.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>connect:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Selects the connect mode: <code>attach</code>, <code>halt</code> (default).</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Connect Mode</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>attach</code></td>
+<td style="text-align: left;">Do not change state of the core(s). No reset is executed.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>halt</code></td>
+<td style="text-align: left;">Halt core(s) after connect.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reset"><code>reset:</code></h3>
+<p>Configures the reset behavior for each core when a reset is requested during interactive debug.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>reset:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Identifies the processor (not requried for single core system).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Selects the reset type: <code>hardware</code>, <code>system</code> (default), <code>core</code>.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Reset Types</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>hardware</code></td>
+<td style="text-align: left;">Use the J-Link <a href="https://kb.segger.com/J-Link_Reset_Strategies#Type_2:_reset_pin"><code>reset pin</code></a> reset mode.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>system</code></td>
+<td style="text-align: left;">Use the J-Link <a href="https://kb.segger.com/J-Link_Reset_Strategies#Type_0:_normal"><code>normal</code></a> reset mode.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>core</code></td>
+<td style="text-align: left;">Use the J-Link <a href="https://kb.segger.com/J-Link_Reset_Strategies#Type_1:_core"><code>core</code></a> reset mode.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">debugger:
+  name: J-Link Server       # default connect, halt and reset behavior
+</code></pre>
+<pre><code class="language-yml">debugger:
+  name: J-Link Server
+  connect: attach           # connect without reset and without CPU state change
+  reset:
+    - type: system          # use system reset
+</code></pre>
+<pre><code class="language-yml">debugger:
+  name: J-Link Server
+  connect: halt             # halt CPU after connect
+  reset:
+    - pname: Core0          # for Core0
+      type: hardware        # use hardware reset
+    - pname: Core1          # for Core1
+      type: core            # use core reset
+</code></pre>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
