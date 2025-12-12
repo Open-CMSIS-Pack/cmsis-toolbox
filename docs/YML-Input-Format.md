@@ -1421,7 +1421,7 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 &nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode of the image file for programmers and debug tools.
 &nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the image file.
 &nbsp;&nbsp;&nbsp; [`type:`](#type)                   |   Optional   | Specifies an explicit file of the image type.
-&nbsp;&nbsp;&nbsp; `load-offset:`                     |   Optional   | Offset applied to the binary content when loading the image file.
+&nbsp;&nbsp;&nbsp; `load-offset:`                     |   Optional   | Offset applied when loading a image file with `type: bin` (pyOCD only).
 &nbsp;&nbsp;&nbsp; [`device:`](#device)               |   Optional   | For image files a pname can be specified to denote the processor that runs the image.
 
 !!! Notes
@@ -2465,7 +2465,7 @@ debugger:                         |             | Description
 &nbsp;&nbsp;&nbsp; [`reset:`](pyOCD-Debugger.md#reset)           |  Optional   | Extended Option: Reset type configuration for various cores.
 &nbsp;&nbsp;&nbsp; [`load-setup:`](pyOCD-Debugger.md#load-setup) |  Optional   | Extended Option: Reset type and Halt configuration for Load command.
 
-*Examples:**
+**Examples:**
 
 ```yml
 debugger:
@@ -2498,12 +2498,13 @@ The `telnet:` node configures:
 `- mode:`                                                 |**Required** | Redirect output: `off`, `server`, `file`, `console`, `monitor`.
 &nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Identifies the processor (not requried for single core system).
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
-&nbsp;&nbsp;&nbsp; `file:`                                |  Optional   | Explicit path and name of the telnet output file (default: ./out/\<solution-name\>+\<target-type\>.\<pname\>.out).
+&nbsp;&nbsp;&nbsp; `file-in:`                             |  Optional   | Explicit path and name of the telnet input file. Default: ./out/\<solution-name\>+\<target-type\>.\<pname\>.in
+&nbsp;&nbsp;&nbsp; `file-out:`                            |  Optional   | Explicit path and name of the telnet output file. Default: ./out/\<solution-name\>+\<target-type\>.\<pname\>.out
 
 Telnet Mode   | Description
 :-------------|:--------------------------------------
 `server`      | Serial I/O to Telnet server port
-`file`        | Serial output to text file (default: ./out/\<solution-name\>+\<target-type\>.\<pname\>.out).
+`file`        | Serial I/O to text files. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.{in \| out}`
 `console`     | Serial output to console (Debug console in VS Code). 
 `monitor`     | Serial I/O via TCP/IP port to VS Code Serial Monitor.
 `off`         | Serial I/O disabled.
@@ -2541,9 +2542,9 @@ debugger:
     - pname: Core0          # enable Telnet service with default settings
       port: 4444
     - pname: Core1
-      mode: console         # route Telnet output to console 
+      mode: console         # route Telnet input/output to console 
     - pname: Core2
-      mode: file            # log Telnet output 
+      mode: file            # route Telnet input/output to files
 ```
 
 ### Arm Debugger
@@ -2651,7 +2652,7 @@ debugger:                         |             | Description
 ```yml
 debugger:
   name: J-Link Server
-  clock: 4000                    # 4000 kHz
+  clock: 4000000                  # 4000 kHz
   protocol: swd
 ```
 

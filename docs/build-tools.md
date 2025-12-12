@@ -22,7 +22,7 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.11.0 (C) 2022-2025 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.12.0 (C) 2022-2025 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -48,8 +48,16 @@ Options:
   -n, --no-schema-check    Skip schema check
   -O, --output arg         Base folder for output files, 'outdir' and 'tmpdir' (default "Same as '*.csolution.yml'")
   -p, --packs              Download missing software packs with cpackget
+  -j, --jobs int           Number of job slots for parallel execution (default 8)
+  -l, --load arg           Set policy for packs loading [latest | all | required] (default "required")
+      --log arg            Save output messages in a log file
+  -n, --no-schema-check    Skip schema check
+  -O, --output arg         Base folder for output files, 'outdir' and 'tmpdir' (default "Same as '*.csolution.yml'")
+  -p, --packs              Download missing software packs with cpackget
   -q, --quiet              Suppress output messages except build invocations
   -r, --rebuild            Remove intermediate and output directories and rebuild
+  -s, --schema             Validate project input file(s) against schema [deprecated]
+      --skip-convert       Skip csolution convert step
   -t, --target arg         Optional CMake target name
       --toolchain arg      Input toolchain to be used
       --update-rte         Update the RTE directory and files
