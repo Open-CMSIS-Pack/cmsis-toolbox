@@ -354,7 +354,7 @@ jobs:
         working-directory: toolbox
 
       - name: Archive binaries
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: ./toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}${{ matrix.archive_extension }}
@@ -378,7 +378,7 @@ jobs:
 
       - name: Archive Debian Package
         if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: cmsis-toolbox-debian-package
           path: ./debian/build/cmsis-toolbox_*_amd64.deb
@@ -446,7 +446,7 @@ jobs:
           pytest --base-path=toolbox/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }} test/packaging/tests.py -rA --junitxml=test-results-${{ matrix.config.target }}-${{ matrix.config.arch }}.xml
 
       - name: Archive test report
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: toolbox-test-${{ matrix.config.target }}-${{ matrix.config.arch }}
           path: ./test-results-*.xml
