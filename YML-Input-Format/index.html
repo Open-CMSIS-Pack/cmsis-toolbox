@@ -346,10 +346,6 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../pyOCD-Debugger/">pyOCD Debugger</a>
-                </li>
-              </ul>
-              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Theory of Operation</a>
                 </li>
               </ul>
@@ -364,6 +360,13 @@
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
                 </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Debugger Support</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../pyOCD-Debugger/">pyOCD Debugger</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../JLink-Debugger/">J-Link Debugger</a>
+                  </li>
               </ul>
               <p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
               <ul>
@@ -2971,7 +2974,7 @@ Refer to the section <a href="../build-overview/#configure-related-projects">"Co
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>load-offset:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Offset applied to the binary content when loading the image file.</td>
+<td style="text-align: left;">Offset applied when loading a image file with <code>type: bin</code> (pyOCD only).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#device"><code>device:</code></a></td>
@@ -4481,7 +4484,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </tr>
 </tbody>
 </table>
-<p><em>Examples:</em>*</p>
+<p><strong>Examples:</strong></p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
@@ -4529,9 +4532,14 @@ The <code>telnet:</code> node configures:</p>
 <td style="text-align: left;">Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>file:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>file-in:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Explicit path and name of the telnet output file (default: ./out/\&lt;solution-name&gt;+\&lt;target-type&gt;.\&lt;pname&gt;.out).</td>
+<td style="text-align: left;">Explicit path and name of the telnet input file. Default: ./out/\&lt;solution-name&gt;+\&lt;target-type&gt;.\&lt;pname&gt;.in</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>file-out:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Explicit path and name of the telnet output file. Default: ./out/\&lt;solution-name&gt;+\&lt;target-type&gt;.\&lt;pname&gt;.out</td>
 </tr>
 </tbody>
 </table>
@@ -4549,7 +4557,7 @@ The <code>telnet:</code> node configures:</p>
 </tr>
 <tr>
 <td style="text-align: left;"><code>file</code></td>
-<td style="text-align: left;">Serial output to text file (default: ./out/\&lt;solution-name&gt;+\&lt;target-type&gt;.\&lt;pname&gt;.out).</td>
+<td style="text-align: left;">Serial I/O to text files. Default: <code>./out/\&lt;solution-name\&gt;+\&lt;target-type\&gt;.\&lt;pname\&gt;.{in \| out}</code></td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>console</code></td>
@@ -4593,9 +4601,9 @@ The <code>telnet:</code> node configures:</p>
     - pname: Core0          # enable Telnet service with default settings
       port: 4444
     - pname: Core1
-      mode: console         # route Telnet output to console 
+      mode: console         # route Telnet input/output to console 
     - pname: Core2
-      mode: file            # log Telnet output 
+      mode: file            # route Telnet input/output to files
 </code></pre>
 <h3 id="arm-debugger">Arm Debugger</h3>
 <p>This section lists options that are specific for the Arm Debugger.</p>
@@ -4836,7 +4844,7 @@ The <code>telnet:</code> node configures:</p>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">debugger:
   name: J-Link Server
-  clock: 4000                    # 4000 kHz
+  clock: 4000000                  # 4000 kHz
   protocol: swd
 </code></pre>
 <h4 id="telnet-for-j-link-server"><code>telnet:</code> for J-Link Server</h4>

@@ -164,10 +164,6 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../pyOCD-Debugger/">pyOCD Debugger</a>
-                </li>
-              </ul>
-              <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Theory of Operation</a>
                 </li>
               </ul>
@@ -182,6 +178,13 @@
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
                 </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Debugger Support</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../pyOCD-Debugger/">pyOCD Debugger</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../JLink-Debugger/">J-Link Debugger</a>
+                  </li>
               </ul>
               <p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
               <ul>
@@ -233,7 +236,7 @@
 </ul>
 <h2 id="cbuild-invocation"><code>cbuild</code> Invocation</h2>
 <p>Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.</p>
-<pre><code class="language-txt">cbuild: Build Invocation 2.11.0 (C) 2022-2025 Arm Ltd. and Contributors
+<pre><code class="language-txt">cbuild: Build Invocation 2.12.0 (C) 2022-2025 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] &lt;name&gt;.csolution.yml [options]
@@ -259,8 +262,16 @@ Options:
   -n, --no-schema-check    Skip schema check
   -O, --output arg         Base folder for output files, 'outdir' and 'tmpdir' (default &quot;Same as '*.csolution.yml'&quot;)
   -p, --packs              Download missing software packs with cpackget
+  -j, --jobs int           Number of job slots for parallel execution (default 8)
+  -l, --load arg           Set policy for packs loading [latest | all | required] (default &quot;required&quot;)
+      --log arg            Save output messages in a log file
+  -n, --no-schema-check    Skip schema check
+  -O, --output arg         Base folder for output files, 'outdir' and 'tmpdir' (default &quot;Same as '*.csolution.yml'&quot;)
+  -p, --packs              Download missing software packs with cpackget
   -q, --quiet              Suppress output messages except build invocations
   -r, --rebuild            Remove intermediate and output directories and rebuild
+  -s, --schema             Validate project input file(s) against schema [deprecated]
+      --skip-convert       Skip csolution convert step
   -t, --target arg         Optional CMake target name
       --toolchain arg      Input toolchain to be used
       --update-rte         Update the RTE directory and files
