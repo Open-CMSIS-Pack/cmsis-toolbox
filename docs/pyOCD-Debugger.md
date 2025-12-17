@@ -35,8 +35,8 @@ Connect Mode  | Description
 :-------------|:--------------------------------------
 `pre-reset`   | Apply a hardware reset before connect. Sequence: [ResetHardware](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardware).
 `under-reset` | Asserts a hardware reset using during connect and de-asserts after core(s) are halted. Sequence: [ResetHardwareAssert](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareAssert), [ResetHardwareDeassert](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareDeassert).
-`attach`      | Do not change status of the core(s). No sequence is executed. ToDo: review StopProcessor as there is no squence.
-`halt`        | Halt core(s) after connect. Sequence:  [ResetCatchSet](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchSet), [ResetCatchClear](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchClear).
+`attach`      | Do not change status of the core(s). No sequence is executed. ToDo: review StopProcessor as there is no sequence.
+`halt`        | Halt core(s) after connect.
 
 ### `reset:`
 
@@ -44,7 +44,7 @@ Configures the reset behavior for each core when a reset is requested.
 
 `reset:`                                                  |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
-`- pname:`                                                |  Optional   | Identifies the processor (not requried for single core system).
+`- pname:`                                                |  Optional   | Identifies the processor (not required for single core system).
 &nbsp;&nbsp;&nbsp; `type:`                                |**Required** | Selects the reset type: `hardware`, `system`, `core`. Default: specified in DFP by todo.
 
 Reset Types   | Description
@@ -62,10 +62,10 @@ Configures the debug sequences executed during the `load` command of pyOCD.
 
 ToDo: missing is a overall flow chart of load and run sequences.  When is connect executed, etc.  Does pyOCD use Verify?  This info may go into pyOCD-Debugger.md.
 
-`load-cmd:`                       |             | Description
+`load-setup:`                       |             | Description
 :---------------------------------|:------------|:-----------------------------------------------
-&nbsp;&nbsp;&nbsp; `halt:`        |  Optional   | Halt core(s) before load: `on` (default), `off`. Sequence: [ResetCatchSet](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchSet), [ResetCatchClear](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchClear).
-&nbsp;&nbsp;&nbsp; `pre-reset:`   |  Optional   | Reset type before loading: `off`, `hardware`, `system`, `core`. Default: specified in DFP (ToDo how???].
+&nbsp;&nbsp;&nbsp; `halt:`        |  Optional   | Halt core(s) before load: `on` (default), `off`.
+&nbsp;&nbsp;&nbsp; `pre-reset:`   |  Optional   | Reset type before loading: `off`, `hardware`, `system`, `core`. Default: specified in DFP or defined with [`reset`](#reset).
 &nbsp;&nbsp;&nbsp; `post-reset:`  |  Optional   | Reset type after loading: `off`, `hardware` (default), `system`, `core`.
 
 **Examples:**
@@ -95,7 +95,7 @@ debugger:
       type: hardware        # use hardware reset
     - pname: Core1          # for Core1
       type: system          # use system reset
-  load-stop:
+  load-setup:
     post-reset: off         # no reset after load
 ```
 
@@ -113,7 +113,7 @@ The default trace output file and location is derived from the [`cbuild-run.yml`
 &nbsp;&nbsp;&nbsp; `mode:`                                |**Required** | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `clock:`                               |**Required** | Trace clock frequency in Hz.
 &nbsp;&nbsp;&nbsp; `port-type:`                           |  Optional   | Set Trace Port transport mode. Currently only `SWO-UART` is accepted.
-&nbsp;&nbsp;&nbsp; `baudrate:`                            |  Optional   | Maxium baudrate for `SWO-UART` mode.
+&nbsp;&nbsp;&nbsp; `baudrate:`                            |  Optional   | Maximum baudrate for `SWO-UART` mode.
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Trace Server (default: 5555).
 &nbsp;&nbsp;&nbsp; `file:`                                |  Optional   | Explicit path and name of the trace output file. Default: `<solution-name>+<target-type>.trace`.
 
@@ -127,8 +127,9 @@ The CMSIS-Toolbox debugger configuration is provided in the [file `*.cbuild-run.
 
 `<command>`          | Description
 :--------------------|:-------------------------------------
+`gdbserver`          | Debug application.
 `run`                | Execute application.
-`erase`              | Erase device
+`erase`              | Erase device.
 `load`               | Load image to device.
 
 `<options>`          | Description
@@ -136,7 +137,7 @@ The CMSIS-Toolbox debugger configuration is provided in the [file `*.cbuild-run.
 `--timelimit sec`    | Terminate pyOCD when the timelimit is reached.  Applies to `run` command only.
 `--eot`              | Terminate when EOT character (`0x04`) is printed via a telnet channel. Applies to `run` command only.
 `--load`             | Erase device and flash program the images specified in cbuild-run.yml. Applies to `run` command only.
-`--udi <id>`         | Specify an id of a debug probe
+`--uid <id>`         | Specify an id of a debug probe.
 
 **Examples:**
 
