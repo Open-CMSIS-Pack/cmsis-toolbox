@@ -13,11 +13,13 @@ nav:
   - Create Applications: CreateApplications.md
   - Reference Applications: ReferenceApplications.md
   - Build Information Files: YML-CBuild-Format.md
-  - pyOCD Debugger: pyOCD-Debugger.md
   - Theory of Operation: build-operation.md
   - Pack Creation: pack-tools.md
   - Troubleshooting: Troubleshooting.md
   - Experimental Features: Experimental-Features.md
+  - Debugger Support:
+    - pyOCD Debugger: pyOCD-Debugger.md
+    - J-Link Debugger: JLink-Debugger.md
   - Device Configuration Tools:
     - MCUXpresso for NXP Devices: MCUXpressoConfig.md
     - STM32CubeMX for STM32 Devices: CubeMX.md
