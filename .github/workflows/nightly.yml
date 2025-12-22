@@ -540,17 +540,17 @@ jobs:
       # This needed to be updated when a positive performance delta is expected
       - name: Download Reference cmsis-toolbox
         continue-on-error: true
-        uses: robinraju/release-downloader@v1.12
+        uses: robinraju/release-downloader@daf26c55d821e836577a15f77d86ddc078948b05 # v1.12
         with:
           repository: Open-CMSIS-Pack/cmsis-toolbox
-          tag: "2.12.0"
-          fileName: "cmsis-toolbox-linux-amd64.tar.gz"
+          tag: "2.12.0-test-reference"
+          fileName: "cmsis-toolbox-linux-amd64.zip"
 
       - name: Unzip Reference cmsis-toolbox
         shell: bash
         run: |
-          tar -xvf cmsis-toolbox-linux-amd64.tar.gz
-          mv cmsis-toolbox-linux-amd64 cmsis-toolbox-reference
+          mkdir -p cmsis-toolbox-reference
+          unzip cmsis-toolbox-linux-amd64.zip -d cmsis-toolbox-reference
 
       - name: Set Execution Permissions
         run: |
@@ -688,4 +688,4 @@ jobs:
           python ./performance/check_perf_regression.py \
             -r ref_benchmark_results.json \
             -c curr_benchmark_results.json \
-            -p 1.20
+            -p 1.10
