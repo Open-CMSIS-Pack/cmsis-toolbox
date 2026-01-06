@@ -28,17 +28,42 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - uses: JoshuaTheMiller/conditional-build-matrix@81b51eb8d89e07b86404934b5fecde1cea1163a5 # v2.0.1
-        id: test-matrix
+        id: test-matrix-base
         with:
           inputFile: '.github/matrix_includes.json'
           filter: '[?runTests==`true`]'
+
+      
+      - name: Generate matrix with cmake versions
+        id: test-matrix
+        shell: bash
+        run: |
+          base_matrix='${{ steps.test-matrix-base.outputs.matrix }}'
+
+          # Read CMake version from vcpkg config
+          vcpkg_cmake_version=$(jq -r '.requires."arm:tools/kitware/cmake"' ./test/vcpkg-configuration.json)
+          echo "CMake version from vcpkg config: $vcpkg_cmake_version"
+
+          cmake_versions="[\"$vcpkg_cmake_version\", \"4.2.1\"]"
+
+          # base_matrix is expected to be: { "include": [ ... ] }
+          # produce: { "include": [ {..config.., cmake_version: ..}, ... ] }
+          result=$(jq -nc \
+            --argjson base "$base_matrix" \
+            --argjson cmake "$cmake_versions" '
+              { include: [ $base.include[] as $cfg | $cmake[] as $ver | ($cfg + {cmake_version: $ver}) ] }
+            ')
+
+          echo "matrix=$result" >> $GITHUB_OUTPUT
 
   test:
     needs: [ matrix_prep ]
     runs-on: ${{ matrix.runs_on }}
     continue-on-error: true
     strategy:
+      fail-fast: false
       matrix: ${{ fromJson(needs.matrix_prep.outputs.test) }}
+    name: test(${{ matrix.runs_on }},${{ matrix.arch }},CMake ${{ matrix.cmake_version }})
 
     steps:
       - name: Harden Runner
@@ -55,18 +80,56 @@ jobs:
           cache: 'pip'
 
       - name: Install pip dependencies
+        shell: bash
         run: |
-            pip install --upgrade pip
-            pip install -r test/e2e/requirements.txt
+          pip install --upgrade pip
+          pip install -r test/e2e/requirements.txt
 
-      - name: Setup vcpkg environment
+      - name: Create vcpkg config without CMake
+        if: matrix.cmake_version != '3.31.5'
+        shell: bash
+        run: |
+          jq 'del(.requires."arm:tools/kitware/cmake")' ./test/vcpkg-configuration.json > ./test/vcpkg-configuration-temp.json
+
+      - name: Setup vcpkg environment (with CMake)
+        if: matrix.cmake_version == '3.31.5'
         uses: ARM-software/cmsis-actions/vcpkg@afc8e1a46fad8a5e1a08f8477b71050d442f60a7 # v1
         with:
           config: "./test/vcpkg-configuration.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
           cache: "-"
 
+      - name: Setup vcpkg environment (without CMake)
+        if: matrix.cmake_version != '3.31.5'
+        uses: ARM-software/cmsis-actions/vcpkg@afc8e1a46fad8a5e1a08f8477b71050d442f60a7 # v1
+        with:
+          config: "./test/vcpkg-configuration-temp.json"
+          vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
+          cache: "-"
+
+      # Overlay CMake for non-vcpkg runs (no need to mutate the vcpkg config)
+      - name: Install CMake ${{ matrix.cmake_version }} (amd64)
+        if: matrix.cmake_version != '3.31.5' && matrix.arch == 'amd64'
+        uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be # v2.0.2
+        with:
+          cmake-version: '${{ matrix.cmake_version }}'
+
+      - name: Install CMake ${{ matrix.cmake_version }} (arm64)
+        if: matrix.cmake_version != '3.31.5' && matrix.arch == 'arm64'
+        shell: bash
+        run: |
+          # Install CMake via pip for ARM64 compatibility
+          pip install cmake==${{ matrix.cmake_version }}
+
+      - name: Confirm CMake selected
+        shell: bash
+        run: |
+          echo "cmake_version matrix value: ${{ matrix.cmake_version }}"
+          which cmake || true
+          cmake --version
+
       - name: Activate Arm tool license
+        shell: bash
         run: |
           armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
         working-directory: ./test
@@ -87,72 +150,79 @@ jobs:
         env:
           IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
         run: |
-          robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }} \
-            --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}.md \
-            --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }} \
-            --name ${{ matrix.target }}-${{ matrix.arch }} \
+          robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }} \
+            --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }}.md \
+            --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }} \
+            --name ${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }} \
             ./e2e
 
-      - name: Archieve test results
+      - name: Archive test results
         if: always()
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: reports-${{ matrix.target }}-${{ matrix.arch }}
-          path: ./test/reports-${{ matrix.target }}-${{ matrix.arch }}
+          name: reports-${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }}
+          path: ./test/reports-${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }}
 
   report:
     runs-on: ubuntu-latest
-    if: always()
-    needs: test
+    if: always() && needs.test.result != 'skipped'
+    needs: [ test ]
     permissions: write-all
     steps:
-    - name: Harden Runner
-      uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
-      with:
-        egress-policy: audit
+      - name: Harden Runner
+        uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
+        with:
+          egress-policy: audit
 
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-    - name: Set up Python
-      uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
-      with:
-        python-version: '3.11'
-        cache: 'pip'
+      - name: Set up Python
+        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
 
-    - name: Install pip dependencies
-      run: |
+      - name: Install pip dependencies
+        shell: bash
+        run: |
           pip install --upgrade pip
           pip install -r test/e2e/requirements.txt
 
-    - name: Download reports
-      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
-      with:
-        path: artifacts
-        pattern: reports-*
+      - name: Download reports
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          path: artifacts
+          pattern: reports-*
 
-    - name: Consolidate robot test results
-      working-directory: artifacts
-      continue-on-error: true
-      run: |
-        python -m robot.rebot --name Collective_Robot_Results --outputdir collective_robot_results --output output.xml \
-          ./reports-windows-amd64/output.xml \
-          ./reports-linux-amd64/output.xml
+      - name: Consolidate robot test results
+        working-directory: artifacts
+        continue-on-error: true
+        run: |
+          python -m robot.rebot --name Collective_Robot_Results \
+            --outputdir collective_robot_results \
+            --output output.xml \
+            ./reports-windows-amd64-cmake3.31.5/output.xml \
+            ./reports-windows-amd64-cmake4.2.1/output.xml \
+            ./reports-linux-amd64-cmake3.31.5/output.xml \
+            ./reports-linux-amd64-cmake4.2.1/output.xml
 
-    - name: Generate Summary report
-      if: always()
-      run: |
-        python ./test/e2e/lib/execution_summary.py artifacts \
-          -r ./test/e2e/reference.md \
-          -o artifacts/collective_robot_results/output.xml \
-          -m summary_report.md
+      - name: Generate Summary report
+        if: always()
+        shell: bash
+        run: |
+          python ./test/e2e/lib/execution_summary.py artifacts \
+            -r ./test/e2e/reference.md \
+            -o artifacts/collective_robot_results/output.xml \
+            -m summary_report.md
 
-    - name: Print E2E Report
-      if: always()
-      run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
+      - name: Print E2E Report
+        if: always()
+        shell: bash
+        run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
 
-    - name: Archieve consolidated test results
-      if: always()
-      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-      with:
-        name: consolidated-reports
-        path: artifacts/collective_robot_results
+      - name: Archive consolidated test results
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: consolidated-reports
+          path: artifacts/collective_robot_results
