@@ -3,7 +3,7 @@ name: E2E Tests
 on:
   pull_request:
     paths:
-      - '.github/workflows/e2e_test.yaml'
+      - '.github/workflows/e2e_test.yml'
       - '.github/matrix_includes.json'
       - 'test/e2e/**'
       - 'test/vcpkg-configuration.json'
