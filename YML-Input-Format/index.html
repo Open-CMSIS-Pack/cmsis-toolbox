@@ -3953,8 +3953,8 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p>Defines for the <code>west build</code> commands are specified in CMake format. The <code>west-defs:</code> that are defined under the active target and build type are concatinated as follows:</p>
 <p><code>&lt;west-defs&gt; := &lt;west:west-defs&gt; + &lt;target-type:west-defs&gt; + &lt;build-type:west-defs&gt;</code></p>
 <p>The information provided with the <code>west:</code> and <code>west-def:</code> nodes are used to generate the command line for the <code>west</code> tool:</p>
-<pre><code class="language-bash">&gt;west build --board &lt;board&gt; --build-dir $SolutionDir()$/out/&lt;project-id&gt;/$TargetType$
-            --pristine {auto | always} &lt;west-opt&gt; &lt;app-path&gt; -- &lt;west-defs&gt;
+<pre><code class="language-bash">&gt;west &lt;west-opt&gt; build --board &lt;board&gt; --build-dir $SolutionDir()$/out/&lt;project-id&gt;/$TargetType$
+            --pristine {auto | always} &lt;app-path&gt; -- &lt;west-defs&gt;
 </code></pre>
 <div class="admonition notes">
 <p class="admonition-title">Notes</p>
