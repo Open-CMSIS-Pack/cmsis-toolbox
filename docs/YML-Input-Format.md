@@ -2069,8 +2069,8 @@ Defines for the `west build` commands are specified in CMake format. The `west-d
 The information provided with the `west:` and `west-def:` nodes are used to generate the command line for the `west` tool:
 
 ```bash
->west build --board <board> --build-dir $SolutionDir()$/out/<project-id>/$TargetType$
-            --pristine {auto | always} <west-opt> <app-path> -- <west-defs>
+>west <west-opt> build --board <board> --build-dir $SolutionDir()$/out/<project-id>/$TargetType$
+            --pristine {auto | always} <app-path> -- <west-defs>
 ```
 
 !!! Notes
