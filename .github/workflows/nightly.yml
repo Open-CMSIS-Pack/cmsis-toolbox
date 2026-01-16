@@ -317,8 +317,14 @@ jobs:
       - name: Generate manifest file
         shell: bash
         run: |
-          # Get the toolbox version
-          TOOLBOX_VERSION=$(git describe --tags || echo "untagged")
+          # Get the toolbox version from the latest semantic version tag
+          BASE_TAG=$(git tag | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          if [ -n "$BASE_TAG" ]; then
+            TOOLBOX_VERSION=$(git describe --tags --match "$BASE_TAG")
+          else
+            TOOLBOX_VERSION="untagged"
+          fi
+          echo "Toolbox version: $TOOLBOX_VERSION"
 
           # Set binary extension (default to empty string if not set)
           BINARY_EXTENSION=${{ matrix.binary_extension }}
