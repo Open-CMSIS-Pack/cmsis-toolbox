@@ -582,7 +582,7 @@ vendor::pack-name@~version       # With version equal or higher but the same maj
 </tbody>
 </table>
 <p><strong>Partly defined components</strong></p>
-<p>A component can be partly defined in <em>csolution project files</em> (<code>*.cproject.yml</code>, <code>*.clayer.yml</code>, <code>*.genlayer.yml</code>) by omitting <code>Cvendor</code>, <code>Cvariant</code>, and <code>Cversion</code>, even when this are part of the <code>components</code> element of the software pack. The component select algorithm resolves this to a fully defined component by:</p>
+<p>A component can be partly defined in <em>csolution project files</em> (<code>*.cproject.yml</code>, <code>*.clayer.yml</code>, <code>*.genlayer.yml</code>) by omitting <code>Cvendor</code>, <code>Cvariant</code>, and <code>Cversion</code>, even when these are part of the <code>components</code> element of the software pack. The component select algorithm resolves this to a fully defined component by:</p>
 <ul>
 <li>when a partly specified component resolves to several possible choices, the tool selects:<ul>
 <li>(a) the default <code>Cvariant</code> of the component as defined in the PDSC file.</li>
@@ -599,7 +599,7 @@ vendor::pack-name@~version       # With version equal or higher but the same maj
 <p>The fully resolved component name is shown in the <a href="../YML-CBuild-Format/"><code>*.cbuild.yml</code></a> output file.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Before CMSIS-Toolbox 2.7, a component that omitted <code>Csub</code> resolved to the first matching component. Installing additional software packs could change therefore component selection. When a component is defined with <code>Csub</code> it is now required to specify.</p>
+<p>Before CMSIS-Toolbox 2.7, a component that omitted <code>Csub</code> resolved to the first matching component. Installing additional software packs could therefore change component selection. When a component is defined with <code>Csub</code> it is now required to specify it.</p>
 </div>
 <p><strong>Multiple component definitions are rejected</strong></p>
 <ul>
@@ -653,7 +653,7 @@ algorithms used for device programming. The following syntax is used to specify 
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>All elements of a device name are optional, which allows to supply of additional information, such as the <code>:Pname</code> at
+<li>All elements of a device name are optional, which allows supplying additional information, such as the <code>:Pname</code> at
   different stages of the project. However, the <code>Dname</code> itself is a mandatory element and must be specified in
   the context of the various project files.</li>
 <li><code>Dvendor::</code> must be used in combination with the <code>Dname</code>.</li>
@@ -1471,7 +1471,7 @@ the compiler with specific default controls. The search order for this file is:<
 <pre><code class="language-yml">  tmpdir:  tmp                          # All projects use the same temporary directory
   outdir:  $SolutionDir()$/out/$TargetType$/$BuildType$
 </code></pre>
-<p>With the tool option <code>--output</code> an prefix top-level directory can be added. The effective <code>outdir:</code> with the command below is: <code>MyOut/out/$TargetType$/$BuildType$</code>.</p>
+<p>With the tool option <code>--output</code>, a top-level prefix directory can be added. The effective <code>outdir:</code> with the command below is: <code>MyOut/out/$TargetType$/$BuildType$</code>.</p>
 <pre><code class="language-bash">cbuild &lt;name&gt;.csolution.yml --output MyOut
 </code></pre>
 <p><strong>Example:</strong></p>
@@ -1831,8 +1831,8 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 <ul>
 <li><a href="#solution"><code>solution:</code></a> level to specify options for a collection of related projects</li>
 <li><a href="#projects"><code>project:</code></a> level to specify options for a project</li>
-<li><a href="#groups"><code>groups:</code></a> level to specify options for a specify source file group</li>
-<li><a href="#files"><code>files:</code></a> level to specify options for a specify source file</li>
+<li><a href="#groups"><code>groups:</code></a> level to specify options for a specific source file group</li>
+<li><a href="#files"><code>files:</code></a> level to specify options for a specific source file</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2448,7 +2448,7 @@ project. It is, however, possible to change that <code>setup:</code> settings on
        - test: 11
 </code></pre>
 <h2 id="pack-selection">Pack Selection</h2>
-<p>The <code>packs:</code> node can be specified in the <code>*.csolution.yml</code> file allows you to:</p>
+<p>The <code>packs:</code> node which can be specified in the <code>*.csolution.yml</code> file, allows you to:</p>
 <ul>
 <li>Reduce the scope of software packs that are available for projects.</li>
 <li>Add specific software packs that are optional with version specifications.</li>
@@ -2519,7 +2519,7 @@ The <code>pack:</code> definition may be specific to a <a href="#context"><code>
   - pack: ARM::CMSIS-FreeRTOS@^10.4.0   # add CMSIS-FreeRTOS with version 10.4.x or higher but lower than 11.0.0
 
   - pack: NXP::K32L3A60_DFP             # add pack for NXP device
-ftar    path: ./local/NXP/K32L3A60_DFP      # with path to the pack (local copy, repo, etc.)
+    path: ./local/NXP/K32L3A60_DFP      # with path to the pack (local copy, repo, etc.)
 
   - pack: AWS::coreHTTP                 # add pack
     path: ./development/AWS/coreHTTP    # with path to development source directory
@@ -2949,7 +2949,7 @@ Refer to the section <a href="../build-overview/#configure-related-projects">"Co
 <tr>
 <td style="text-align: left;"><code>- project-context:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Project output or with optional build-type to use. Format: <code>&lt;project_name&gt;[.buid_type]</code></td>
+<td style="text-align: left;">Project output or with optional build-type to use. Format: <code>&lt;project_name&gt;[.build_type]</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>image:</code></td>
@@ -3084,7 +3084,7 @@ Refer to the section <a href="../build-overview/#configure-related-projects">"Co
           images:
           - project-context: core1.Debug
           - project-context: core0.Release
-          - image: Zephry.elf
+          - image: Zephyr.elf
             load: image
 
   build-types:
@@ -3101,7 +3101,7 @@ Refer to the section <a href="../build-overview/#configure-related-projects">"Co
     - project: ./cm33_core0/core0.cproject.yml
 </code></pre>
 <h3 id="variables"><code>variables:</code></h3>
-<p>The <code>variables:</code> node defines <em>key/value</em> pairs in the <code>*.csolution.yml</code> file. Using <code>$&lt;key&gt;$</code> in <code>*.cproject.yml</code> and <code>*.clayer.yml</code> files expands to the <em>value</em> of the variable. The variable <code>$&lt;key&gt;$</code> can be used in the following nodes: <a href="#layers"><code>layers:</code></a>, <a href="#define"><code>define:</code></a>, <a href="#define-asm"><code>define-asm:</code></a>, <a href="#add-path"><code>add-path:</code></a>, <a href="#add-path-asm"><code>add-path-asm:</code></a>, <a href="#misc"><code>misc:</code></a>, <a href="#files"><code>files:</code></a>, and <a href="#executes"><code>executes:</code></a>. The <code>&lt;key&gt;:</code> name format <code>&lt;type&gt;-Layer</code> is a convention that references <a href="#layer-type">layer-type</a>. In this case the <code>copied-from:</code> can be used to describe the orginal source of a layer (typically a path in a software pack).</p>
+<p>The <code>variables:</code> node defines <em>key/value</em> pairs in the <code>*.csolution.yml</code> file. Using <code>$&lt;key&gt;$</code> in <code>*.cproject.yml</code> and <code>*.clayer.yml</code> files expands to the <em>value</em> of the variable. The variable <code>$&lt;key&gt;$</code> can be used in the following nodes: <a href="#layers"><code>layers:</code></a>, <a href="#define"><code>define:</code></a>, <a href="#define-asm"><code>define-asm:</code></a>, <a href="#add-path"><code>add-path:</code></a>, <a href="#add-path-asm"><code>add-path-asm:</code></a>, <a href="#misc"><code>misc:</code></a>, <a href="#files"><code>files:</code></a>, and <a href="#executes"><code>executes:</code></a>. The <code>&lt;key&gt;:</code> name format <code>&lt;type&gt;-Layer</code> is a convention that references <a href="#layer-type">layer-type</a>. In this case the <code>copied-from:</code> can be used to describe the original source of a layer (typically a path in a software pack).</p>
 <table>
 <thead>
 <tr>
@@ -3950,7 +3950,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </tbody>
 </table>
 <h3 id="west-defs"><code>west-defs:</code></h3>
-<p>Defines for the <code>west build</code> commands are specified in CMake format. The <code>west-defs:</code> that are defined under the active target and build type are concatinated as follows:</p>
+<p>Defines for the <code>west build</code> commands are specified in CMake format. The <code>west-defs:</code> that are defined under the active target and build type are concatenated as follows:</p>
 <p><code>&lt;west-defs&gt; := &lt;west:west-defs&gt; + &lt;target-type:west-defs&gt; + &lt;build-type:west-defs&gt;</code></p>
 <p>The information provided with the <code>west:</code> and <code>west-def:</code> nodes are used to generate the command line for the <code>west</code> tool:</p>
 <pre><code class="language-bash">&gt;west &lt;west-opt&gt; build --board &lt;board&gt; --build-dir $SolutionDir()$/out/&lt;project-id&gt;/$TargetType$
@@ -4201,7 +4201,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </tr>
 </tbody>
 </table>
-<p>The behaviour of the <code>connect:</code> node depends on the usage in <em>csolution project</em> files.</p>
+<p>The behavior of the <code>connect:</code> node depends on the usage in <em>csolution project</em> files.</p>
 <ul>
 <li>In a <code>cproject.yml</code> file the <code>connect:</code> node is always active.</li>
 <li>In a <code>clayer.yml</code> file the <code>connect:</code> node is only active if one or more <code>key</code> listed under <code>provides:</code> is listed under <code>consumes:</code> in other active <code>connect:</code> nodes. It is also active by default if the <code>connect:</code> node has no <code>provides:</code> node.</li>
@@ -4360,7 +4360,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p class="admonition-title">Notes</p>
 <ul>
 <li>Packs may provide a default configuration for a debugger connection to a device or board. </li>
-<li>Serveral settings are optional and the default settings are specific to the selected debug adapter.</li>
+<li>Several settings are optional and the default settings are specific to the selected debug adapter.</li>
 <li>The complete debugger settings including default values are listed in <code>debugger:</code> node of the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>*.cbuild-run.yml</code> file</a>.</li>
 </ul>
 </div>
@@ -4386,7 +4386,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </tr>
 </tbody>
 </table>
-<p>The command <code>csolution list debuggers</code> outputs the <code>name:</code> of the supported debug adatpers; using the option <code>--verbose</code> extends the list with alias names that are also accepted as <code>name:</code>  There are five different debug adapter categories:</p>
+<p>The command <code>csolution list debuggers</code> outputs the <code>name:</code> of the supported debug adapters; using the option <code>--verbose</code> extends the list with alias names that are also accepted as <code>name:</code>  There are five different debug adapter categories:</p>
 <table>
 <thead>
 <tr>
@@ -4421,7 +4421,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p>The following sections describe the options available for the different debug adapter types.</p>
 <h3 id="pyocd">pyOCD</h3>
 <p>This section lists the options that are specific to pyOCD that connects to <a href="https://arm-software.github.io/CMSIS-DAP/latest/index.html">CMSIS-DAP</a> and ST-Link debug adapters. CMSIS-DAP is a standardized protocol used by many different debug adapters. All CMSIS-DAP enabled debug adapters can be accessed with <code>name: CMSIS-DAP@pyOCD</code>. A specific debug adapter name such as <code>name: ULINKplus@pyOCD</code> provides tailored default settings and a custom configuration dialog in the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a> VS Code extension.</p>
-<p><a href="../pyOCD-Debugger/#extended-options">Extended options</a> are required for rare use cases and further tailor the behaviour of pyOCD.</p>
+<p><a href="../pyOCD-Debugger/#extended-options">Extended options</a> are required for rare use cases and further tailor the behavior of pyOCD.</p>
 <h4 id="debugger-for-pyocd"><code>debugger:</code> for pyOCD</h4>
 <table>
 <thead>
@@ -4445,7 +4445,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>protocol:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Debug portocol (jtag or swd).</td>
+<td style="text-align: left;">Debug protocol (jtag or swd).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>dbgconf:</code></td>
@@ -4501,7 +4501,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p class="admonition-title">Note</p>
 <p>The <code>telnet:</code> feature will be implemented until Dec 2025. This section is only a preview.</p>
 </div>
-<p>pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
+<p>pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O functions. Character I/O is supported via Semihosting or Segger RTT channel 0.
 The <code>telnet:</code> node configures:</p>
 <ul>
 <li>Telnet port for connecting remote tools, for example the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor">Serial Monitor VS Code extension</a>.</li>
@@ -4524,7 +4524,7 @@ The <code>telnet:</code> node configures:</p>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Identifies the processor (not requried for single core system).</td>
+<td style="text-align: left;">Identifies the processor (not required for single core system).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
@@ -4580,30 +4580,34 @@ The <code>telnet:</code> node configures:</p>
 </ul>
 </div>
 <p><strong>Examples:</strong></p>
-<p>Enable Telnet service or a single core system.</p>
+<p>Enable Telnet service for a single core system.</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:
-    mode: monitor          # Output via TCP/IP port to VS Code Serial Monitor
+    - mode: monitor          # Output via TCP/IP port to VS Code Serial Monitor
 </code></pre>
-<p>Enable Telnet service or a single core system.</p>
+<p>Enable Telnet service for a single core system.</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:
-    mode: server
+    - mode: server
 </code></pre>
+<p>Enable Telnet service for a multi core system.</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:
     - pname: Core0          # enable Telnet service with default settings
+      mode: server
       port: 4444
     - pname: Core1
       mode: console         # route Telnet input/output to console 
     - pname: Core2
       mode: file            # route Telnet input/output to files
+      file-in: Blinky+MyTarget.Core2.in
+      file-out: Blinky+MyTarget.Core2.out
 </code></pre>
 <h3 id="arm-debugger">Arm Debugger</h3>
 <p>This section lists options that are specific for the Arm Debugger.</p>
@@ -4640,7 +4644,7 @@ The <code>telnet:</code> node configures:</p>
   clock-armdbg: 5MHz
 </code></pre>
 <h3 id="arm-fvp">Arm-FVP</h3>
-<p>This section lists options that are specific to the <a href="https://arm-software.github.io/AVH/main/simulation/html/index.html">FVP</a> simulation models. FVPs are configureable simulation models that are designed for software validation. An FVP represents one or more Arm processors.</p>
+<p>This section lists options that are specific to the <a href="https://arm-software.github.io/AVH/main/simulation/html/index.html">FVP</a> simulation models. FVPs are configurable simulation models that are designed for software validation. An FVP represents one or more Arm processors.</p>
 <h4 id="debugger-for-arm-fvp"><code>debugger:</code> for Arm-FVP</h4>
 <table>
 <thead>
@@ -4674,7 +4678,7 @@ The <code>telnet:</code> node configures:</p>
 </tbody>
 </table>
 <p>The following <code>model:</code> executables are installed from the <a href="https://www.keil.arm.com/artifacts/#models/arm/avh-fvp">Arm Tools Artifactory</a>. You should use these models in combination with a <code>pack:</code> and <code>device:</code> as listed under 
-<a href="https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html">"CMSIS-based projects for AVH FVPs"</a>. The PATH environment variable of your system can define the path to the FVP executable (then only the <code>model:</code> name from the list below is required. Optionally an explicit path can be specified in the <code>model:</code> node.</p>
+<a href="https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html">"CMSIS-based projects for AVH FVPs"</a>. The PATH environment variable of your system can define the path to the FVP executable (then only the <code>model:</code> name from the list below is required). Optionally an explicit path can be specified in the <code>model:</code> node.</p>
 <table>
 <thead>
 <tr>
@@ -4793,7 +4797,7 @@ The <code>telnet:</code> node configures:</p>
 </code></pre>
 <h3 id="j-link-server">J-Link Server</h3>
 <p>This section lists options that are specific for the <a href="https://www.segger.com/products/debug-probes/j-link/">Segger J-Link</a> debug probes.</p>
-<p><a href="../JLink-Debugger/#extended-options">Extended options</a> are required for rare use cases and further tailor the behaviour of J-Link Server.</p>
+<p><a href="../JLink-Debugger/#extended-options">Extended options</a> are required for rare use cases and further tailor the behavior of J-Link Server.</p>
 <h4 id="debugger-for-j-link-server"><code>debugger:</code> for J-Link Server</h4>
 <table>
 <thead>
@@ -4817,7 +4821,7 @@ The <code>telnet:</code> node configures:</p>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>protocol:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Debug portocol (jtag or swd).</td>
+<td style="text-align: left;">Debug protocol (jtag or swd).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#telnet-for-j-link-server"><code>telnet:</code></a></td>
@@ -4852,7 +4856,7 @@ The <code>telnet:</code> node configures:</p>
 <p class="admonition-title">Note</p>
 <p>The <code>telnet:</code> feature will be implemented until Dec 2025. This section is only a preview.</p>
 </div>
-<p>J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting (or Segger RTT channel 0). Currently only semihosting is configured for the primary core.</p>
+<p>J-Link supports a Telnet service that connects to character I/O functions. Character I/O is supported via Semihosting (or Segger RTT channel 0). Currently only semihosting is configured for the primary core.</p>
 <table>
 <thead>
 <tr>
@@ -4870,7 +4874,7 @@ The <code>telnet:</code> node configures:</p>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Identifies the processor (not requried for single core system).</td>
+<td style="text-align: left;">Identifies the processor (not required for single core system).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>

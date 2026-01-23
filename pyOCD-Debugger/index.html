@@ -1,174 +1,203 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+
+<html class="writer-html5" lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>pyOCD Debugger - CMSIS-Toolbox</title>
-    <link rel="stylesheet" href="../css/theme.css" />
-    <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
-        <link href="../css/extra.css" rel="stylesheet" />
-    
-      <script>
+<meta charset="utf-8"/>
+<meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="../img/favicon.ico" rel="shortcut icon"/>
+<title>pyOCD Debugger - CMSIS-Toolbox</title>
+<link href="../css/theme.css" rel="stylesheet"/>
+<link href="../css/theme_extra.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" rel="stylesheet"/>
+<link href="../css/extra.css" rel="stylesheet"/>
+<script>
         // Current page data
         var mkdocs_page_name = "pyOCD Debugger";
         var mkdocs_page_input_path = "pyOCD-Debugger.md";
         var mkdocs_page_url = null;
       </script>
-    
-    <!--[if lt IE 9]>
+<!--[if lt IE 9]>
       <script src="../js/html5shiv.min.js"></script>
     <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-      <script>hljs.highlightAll();</script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script>hljs.highlightAll();</script>
 </head>
-
 <body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
-    <div class="wy-side-scroll">
-      <div class="wy-side-nav-search">
-          <a href=".." class="icon icon-home"> CMSIS-Toolbox
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side stickynav" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search">
+<a class="icon icon-home" href=".."> CMSIS-Toolbox
         </a>
-        <div class="version">
+<div class="version">
           2.12.0
         </div><div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
-      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
-  </form>
+<form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
+</form>
 </div>
-      </div>
-
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">CSolution Project Structure</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Theory of Operation</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../Troubleshooting/">Troubleshooting</a>
-                </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
-                </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Debugger Support</span></p>
-              <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">pyOCD Debugger</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#extended-options">Extended Options</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#connect">connect:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#reset">reset:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#load-setup">load-setup:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#trace">trace:</a>
-    </li>
-        </ul>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#command-line-invocation">Command Line Invocation</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#content-of-cbuild-runyml">Content of cbuild-run.yml</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#cbuild-run">cbuild-run:</a>
-        <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#output">output:</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#system-resources">system-resources:</a>
-    </li>
-        </ul>
-    </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../JLink-Debugger/">J-Link Debugger</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">MCUXpresso for NXP Devices</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">STM32CubeMX for STM32 Devices</a>
-                  </li>
-              </ul>
-      </div>
-    </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="..">CMSIS-Toolbox</a>
-        
-      </nav>
-      <div class="wy-nav-content">
-        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-          <li class="breadcrumb-item">Debugger Support</li>
-      <li class="breadcrumb-item active">pyOCD Debugger</li>
-    <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/pyOCD-Debugger.md" class="icon icon-github"> Edit on GitHub</a>
-    </li>
-  </ul>
-  <hr/>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-            <div class="section" itemprop="articleBody">
-              
-                <h1 id="pyocd-debugger">pyOCD Debugger</h1>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
 <ul>
-<li>This section contains preliminary information and is work-in-progress.</li>
+<li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../build-overview/">CSolution Project Structure</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../build-operation/">Theory of Operation</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Troubleshooting/">Troubleshooting</a>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Debugger Support</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal current" href="#">pyOCD Debugger</a>
+<ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="#extended-options">Extended Options</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#connect">connect:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#reset">reset:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#load-setup">load-setup:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#trace">trace:</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-invocation">Command Line Invocation</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#gdbserver">gdbserver</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#run">run</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#erase">erase</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#load">load</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#reset_1">reset</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#content-of-cbuild-runyml">Content of cbuild-run.yml</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#cbuild-run">cbuild-run:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#device">device:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#device-pack">device-pack:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#board-pack">board-pack:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#output">output:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#system-resources">system-resources:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#system-descriptions">system-descriptions:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#programming">programming:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#debugger">debugger:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-vars">debug-vars:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-sequences">debug-sequences:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-topology">debug-topology:</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sequence-diagrams-for-pyocd-subcommands">Sequence diagrams for pyOCD subcommands</a>
+<ul>
+<li class="toctree-l3"><a class="reference internal" href="#erase_1">Erase</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#load_1">Load</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#gdb-server">GDB server</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#run_1">Run</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../JLink-Debugger/">J-Link Debugger</a>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">MCUXpresso for NXP Devices</a>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../CubeMX/">STM32CubeMX for STM32 Devices</a>
+</li>
 </ul>
 </div>
-<p>The CMSIS-Toolbox organizes for debuggers projects and configuration options.
-This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Debugger in combination with the CMSIS-Toolbox.</p>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift">
+<nav aria-label="Mobile navigation menu" class="wy-nav-top" role="navigation">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="..">CMSIS-Toolbox</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content"><div aria-label="breadcrumbs navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a aria-label="Docs" class="icon icon-home" href=".."></a></li>
+<li class="breadcrumb-item">Debugger Support</li>
+<li class="breadcrumb-item active">pyOCD Debugger</li>
+<li class="wy-breadcrumbs-aside">
+<a class="icon icon-github" href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/pyOCD-Debugger.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div class="section" itemprop="articleBody">
+<h1 id="pyocd-debugger">pyOCD Debugger</h1>
+<p>The CMSIS-Toolbox provides a structure for debugger projects and their configuration options.
+This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debugger with the CMSIS-Toolbox.</p>
 <ul>
 <li><a href="#extended-options">Extended Options</a> explains additional configuration features that are required in specific use-cases.</li>
 <li><a href="#command-line-invocation">Command Line Invocation</a> describes how to call pyOCD directly from the command-line.</li>
@@ -188,16 +217,16 @@ This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Deb
 <table>
 <thead>
 <tr>
-<th style="text-align: left;"><code>connect:</code></th>
+<th style="text-align: left;"> </th>
 <th></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
-<td><strong>Required</strong></td>
-<td style="text-align: left;">Selects the connect mode: <code>pre-reset</code>, <code>under-reset</code>, <code>attach</code>, <code>halt</code>.</td>
+<td style="text-align: left;"><code>connect:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Selects the connect mode: <code>pre-reset</code>, <code>under-reset</code>, <code>attach</code> (default), <code>halt</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -215,15 +244,15 @@ This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Deb
 </tr>
 <tr>
 <td style="text-align: left;"><code>under-reset</code></td>
-<td style="text-align: left;">Asserts a hardware reset using during connect and de-asserts after core(s) are halted. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareAssert">ResetHardwareAssert</a>, <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareDeassert">ResetHardwareDeassert</a>.</td>
+<td style="text-align: left;">Asserts a hardware reset during connect and deasserts after core(s) are halted. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareAssert">ResetHardwareAssert</a>, <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareDeassert">ResetHardwareDeassert</a>.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>attach</code></td>
-<td style="text-align: left;">Do not change status of the core(s). No sequence is executed. ToDo: review StopProcessor as there is no squence.</td>
+<td style="text-align: left;">Do not change status of the core(s).</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>halt</code></td>
-<td style="text-align: left;">Halt core(s) after connect. Sequence:  <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchSet">ResetCatchSet</a>, <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchClear">ResetCatchClear</a>.</td>
+<td style="text-align: left;">Halt core(s) after connect.</td>
 </tr>
 </tbody>
 </table>
@@ -241,12 +270,12 @@ This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Deb
 <tr>
 <td style="text-align: left;"><code>- pname:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Identifies the processor (not requried for single core system).</td>
+<td style="text-align: left;">Identifies the processor (not required for single core system).</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
+<td style="text-align: left;">    <code>type:</code></td>
 <td><strong>Required</strong></td>
-<td style="text-align: left;">Selects the reset type: <code>hardware</code>, <code>system</code>, <code>core</code>. Default: specified in DFP by todo.</td>
+<td style="text-align: left;">Selects the reset type: <code>hardware</code>, <code>system</code>, <code>core</code>. Default: specified in DFP.</td>
 </tr>
 </tbody>
 </table>
@@ -260,7 +289,7 @@ This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Deb
 <tbody>
 <tr>
 <td style="text-align: left;"><code>hardware</code></td>
-<td style="text-align: left;">Use the Reset pin of the debug adapter. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardware">ResetHardware</a>.</td>
+<td style="text-align: left;">Use a system-wide reset via dedicated debugger reset line. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardware">ResetHardware</a>.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>system</code></td>
@@ -274,34 +303,31 @@ This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Deb
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<ul>
-<li>The <code>defaultResetSequence</code> in DFP element <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debug">/package/devices/family/.../debug</a> can define a different default reset type. If no <code>defaultResetSequence</code> the default reset type is <code>system</code>.</li>
-</ul>
+<p>The <code>defaultResetSequence</code> in DFP element <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debug">/package/devices/family/.../debug</a> can define a different default reset type. If no <code>defaultResetSequence</code>, the default reset type is <code>system</code>.</p>
 </div>
 <h3 id="load-setup"><code>load-setup:</code></h3>
 <p>Configures the debug sequences executed during the <code>load</code> command of pyOCD.</p>
-<p>ToDo: missing is a overall flow chart of load and run sequences.  When is connect executed, etc.  Does pyOCD use Verify?  This info may go into pyOCD-Debugger.md.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;"><code>load-cmd:</code></th>
+<th style="text-align: left;"><code>load-setup:</code></th>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>halt:</code></td>
+<td style="text-align: left;">    <code>halt:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Halt core(s) before load: <code>on</code> (default), <code>off</code>. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchSet">ResetCatchSet</a>, <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetCatchClear">ResetCatchClear</a>.</td>
+<td style="text-align: left;">Halt core(s) before load: <code>on</code> (default), <code>off</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pre-reset:</code></td>
+<td style="text-align: left;">    <code>pre-reset:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Reset type before loading: <code>off</code>, <code>hardware</code>, <code>system</code>, <code>core</code>. Default: specified in DFP (ToDo how???].</td>
+<td style="text-align: left;">Reset type before loading: <code>off</code>, <code>hardware</code>, <code>system</code>, <code>core</code>. Default: specified in DFP or defined with <a href="#reset"><code>reset</code></a>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>post-reset:</code></td>
+<td style="text-align: left;">    <code>post-reset:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Reset type after loading: <code>off</code>, <code>hardware</code> (default), <code>system</code>, <code>core</code>.</td>
 </tr>
@@ -317,7 +343,7 @@ This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Deb
   reset:
     - type: system          # use system reset
   load-setup:
-    halt: on                # halt core after load
+    halt: on                # halt core(s) before load
     post-reset: hardware    # use hardware reset after load
 </code></pre>
 <pre><code class="language-yml">debugger:
@@ -328,16 +354,18 @@ This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Deb
       type: hardware        # use hardware reset
     - pname: Core1          # for Core1
       type: system          # use system reset
-  load-stop:
+  load-setup:
+    pre-reset: system       # use system reset before load
     post-reset: off         # no reset after load
 </code></pre>
 <h3 id="trace"><code>trace:</code></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code>trace:</code> feature will be implemented until Dec 2025. This section is only a preview.</p>
+<p>The <code>trace:</code> feature will be implemented in the future. This section is only a preview.</p>
 </div>
 <p>CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific trace features are configured using the <code>*.dbgconf</code> file.</p>
-<p>The default trace output file and location is derived from the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a> and uses the extension <code>&lt;pname&gt;.txt</code>, format: <code>&lt;solution-name&gt;+&lt;target-type&gt;.trace</code></p>
+<p>The default trace output file and location is derived from the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a>
+and uses the extension <code>&lt;pname&gt;.txt</code>, format: <code>&lt;solution-name&gt;+&lt;target-type&gt;.trace</code></p>
 <table>
 <thead>
 <tr>
@@ -348,39 +376,40 @@ This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Deb
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
+<td style="text-align: left;">    <code>mode:</code></td>
 <td><strong>Required</strong></td>
 <td style="text-align: left;">Trace: <code>off</code> (default), <code>server</code>, <code>file</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
+<td style="text-align: left;">    <code>clock:</code></td>
 <td><strong>Required</strong></td>
 <td style="text-align: left;">Trace clock frequency in Hz.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port-type:</code></td>
+<td style="text-align: left;">    <code>port-type:</code></td>
 <td>Optional</td>
 <td style="text-align: left;">Set Trace Port transport mode. Currently only <code>SWO-UART</code> is accepted.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>baudrate:</code></td>
+<td style="text-align: left;">    <code>baudrate:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Maxium baudrate for <code>SWO-UART</code> mode.</td>
+<td style="text-align: left;">Maximum baudrate for <code>SWO-UART</code> mode.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td style="text-align: left;">    <code>port:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Set TCP/IP port number of Trace Server (default: 5555).</td>
+<td style="text-align: left;">Set TCP/IP port number of Trace server (default: 5555).</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>file:</code></td>
+<td style="text-align: left;">    <code>file:</code></td>
 <td>Optional</td>
 <td style="text-align: left;">Explicit path and name of the trace output file. Default: <code>&lt;solution-name&gt;+&lt;target-type&gt;.trace</code>.</td>
 </tr>
 </tbody>
 </table>
 <h2 id="command-line-invocation">Command Line Invocation</h2>
-<p>The CMSIS-Toolbox debugger configuration is provided in the <a href="../YML-CBuild-Format/#file-structure-of-cbuild-runyml">file <code>*.cbuild-run.yml</code></a>. Use the following command line syntax to leverage this information:</p>
+<p>The CMSIS-Toolbox debugger configuration is provided in the <a href="../YML-CBuild-Format/#file-structure-of-cbuild-runyml">file <code>*.cbuild-run.yml</code></a>.
+Use the following command line syntax to leverage this information:</p>
 <pre><code class="language-bash">&gt;pyOCD &lt;command&gt; --cbuild-run &lt;cbuild-run.yml file&gt; [options]
 </code></pre>
 <table>
@@ -392,19 +421,29 @@ This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Deb
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>run</code></td>
+<td style="text-align: left;"><a href="#gdbserver"><code>gdbserver</code></a></td>
+<td style="text-align: left;">Start GDB server(s).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#run"><code>run</code></a></td>
 <td style="text-align: left;">Execute application.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>erase</code></td>
-<td style="text-align: left;">Erase device</td>
+<td style="text-align: left;"><a href="#erase"><code>erase</code></a></td>
+<td style="text-align: left;">Erase device.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>load</code></td>
+<td style="text-align: left;"><a href="#load"><code>load</code></a></td>
 <td style="text-align: left;">Load image to device.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#reset"><code>reset</code></a></td>
+<td style="text-align: left;">Reset device.</td>
 </tr>
 </tbody>
 </table>
+<h3 id="gdbserver"><code>gdbserver</code></h3>
+<p>Start GDB servers for each target device core, used for debugging the applications.</p>
 <table>
 <thead>
 <tr>
@@ -414,33 +453,89 @@ This chapter explains the usage of the <a href="https://pyocd.io/">pyOCD</a> Deb
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>--timelimit sec</code></td>
-<td style="text-align: left;">Terminate pyOCD when the timelimit is reached.  Applies to <code>run</code> command only.</td>
+<td style="text-align: left;"><code>--semihosting</code></td>
+<td style="text-align: left;">Enable semihosting (default disabled).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>--eot</code></td>
-<td style="text-align: left;">Terminate when EOT character (<code>0x04</code>) is printed via a telnet channel. Applies to <code>run</code> command only.</td>
+<td style="text-align: left;"><code>--persist</code></td>
+<td style="text-align: left;">Keep GDB server running even after remote has detached (default disabled).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>--load</code></td>
-<td style="text-align: left;">Erase device and flash program the images specified in cbuild-run.yml. Applies to <code>run</code> command only.</td>
+<td style="text-align: left;"><code>--probe &lt;uid&gt;</code></td>
+<td style="text-align: left;">Select specific debug probe (also: <code>--uid</code>).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>--udi &lt;id&gt;</code></td>
-<td style="text-align: left;">Specify an id of a debug probe</td>
+<td style="text-align: left;"><code>--reset-run</code></td>
+<td style="text-align: left;">Reset and run before running GDB server.</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Examples:</strong></p>
-<p>ToDo: command line examples</p>
-<h2 id="content-of-cbuild-runyml">Content of <code>cbuild-run.yml</code></h2>
-<p>This section details the content of <code>cbuild-run.yml</code> file and how it is used to configure pyOCD. The <code>cbuild-run.yml</code> file is generated by the CMSIS-Toolbox from the information provided in the <em>csolution project</em>.
-However, it is possible to create a <code>*.cbuild-run.yml</code> file manually and the following section explains the file structure.</p>
-<p><strong>Configuration File Example:</strong></p>
-<pre><code class="language-yml">todo
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">pyocd gdbserver --probe cmsisdap: --persist --reset-run --semihosting --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
 </code></pre>
-<h2 id="cbuild-run"><code>cbuild-run:</code></h2>
-<p>The <code>cbuild-run:</code> node is the start of a <code>*.cbuild-run.yml</code> file.</p>
+<h3 id="run"><code>run</code></h3>
+<p>Run the target until <code>timelimit</code> is reached or an <code>EOT (0x04)</code> character is detected on stdout.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>&lt;options&gt;</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>--timelimit &lt;sec&gt;</code></td>
+<td style="text-align: left;">Maximum execution time in seconds before terminating (default no time limit).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--eot</code></td>
+<td style="text-align: left;">Terminate execution when EOT character (<code>0x04</code>) is detected on stdout (default disabled).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--probe &lt;id&gt;</code></td>
+<td style="text-align: left;">Select a specific debug probe (also: <code>--uid</code>).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">pyocd run --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml --eot --timelimit 30
+</code></pre>
+<h3 id="erase"><code>erase</code></h3>
+<p>Erase target using <code>chip</code> erase.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>&lt;options&gt;</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>--chip</code></td>
+<td style="text-align: left;">Perform a chip erase.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">pyocd erase --chip --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
+</code></pre>
+<h3 id="load"><code>load</code></h3>
+<p>Program target with images listed under the <a href="#output"><code>output</code></a> node.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-bash">pyocd load --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
+</code></pre>
+<h3 id="reset_1"><code>reset</code></h3>
+<p>Reset target using selected <a href="#reset"><code>reset</code></a> type.</p>
+<p><strong>Example</strong></p>
+<pre><code class="language-bash">pyocd reset --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
+</code></pre>
+<h2 id="content-of-cbuild-runyml">Content of <code>cbuild-run.yml</code></h2>
+<p>This section details the content of <code>cbuild-run.yml</code> file and how it is used to configure pyOCD. The <code>cbuild-run.yml</code>
+file is generated by the CMSIS-Toolbox from the information provided in the <em>csolution project</em>.
+However, it is possible to create a <code>*.cbuild-run.yml</code> file manually and the following section explains
+the file structure.</p>
+<h3 id="cbuild-run"><code>cbuild-run:</code></h3>
+<p>The <code>cbuild-run:</code> node is the start of a <code>*.cbuild-run.yml</code> file. The table below is an excerpt of the <a href="../YML-CBuild-Format/#file-structure-of-cbuild-runyml">File Structure of <code>*.cbuild-run.yml</code></a></p>
 <table>
 <thead>
 <tr>
@@ -451,176 +546,734 @@ However, it is possible to create a <code>*.cbuild-run.yml</code> file manually 
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device:</code></td>
+<td style="text-align: left;">    <a href="#device"><code>device:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Identifies the device.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device-pack:</code></td>
+<td style="text-align: left;">    <a href="#device-pack"><code>device-pack:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Identifies the device pack used.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#output"><code>output:</code></a></td>
+<td style="text-align: left;">    <a href="#board-pack"><code>board-pack:</code></a></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Lists the possible compiler selection that this project is tested with.</td>
+<td style="text-align: left;">Identifies the board pack used.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#system-resources"><code>system-resources:</code></a></td>
+<td style="text-align: left;">    <a href="#output"><code>output:</code></a></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">When specified, the <a href="../build-overview/#cdefaultyml"><code>cdefault.yml</code></a> file is used to setup compiler specific controls.</td>
+<td style="text-align: left;">Lists the images (ELF, HEX, BIN) in this solution.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#system-resources"><code>system-resources:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Lists target system resources.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#system-descriptions"><code>system-descriptions:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Lists target's description files for peripherals and software components.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#programming"><code>programming:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Lists flash algorithms for programming.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#debugger"><code>debugger:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Configures the debugger.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#debug-vars"><code>debug-vars:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Debug variables.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#debug-sequences"><code>debug-sequences:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Debug sequences.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#debug-topology"><code>debug-topology:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Debug topology.</td>
 </tr>
 </tbody>
 </table>
+<h3 id="device"><code>device:</code></h3>
+<p>pyOCD uses the <code>device</code> node to name the target in the current debug session. The node value is structured as
+<code>[&lt;vendor&gt;::]&lt;device&gt;[:&lt;pname&gt;]</code>, where only the <code>&lt;device&gt;</code> part is used to name the target. The default value
+is an empty string.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  device: Alif Semiconductor::AE722F80F55D5LS
+</code></pre>
+<h3 id="device-pack"><code>device-pack:</code></h3>
+<p>The <code>device-pack</code> (DFP) improves pyOCD's error reporting when a required file is provided by the device pack.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  device-pack: AlifSemiconductor::Ensemble@2.0.4
+</code></pre>
+<h3 id="board-pack"><code>board-pack:</code></h3>
+<p>The <code>board-pack</code> (BSP) improves pyOCD's error reporting when a required file is provided by the board pack.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  board-pack: AlifSemiconductor::Ensemble@2.0.4
+</code></pre>
 <h3 id="output"><code>output:</code></h3>
+<p>pyOCD uses the information from the <code>output</code> node to determine which images need to be loaded into the device's
+flash memory and at what addresses. The image file type is determined by the <code>type</code> node, and the load offset
+for binary image files is provided by the <code>load-offset</code> node. Only files with <code>image</code> in the <code>load:</code> node are
+programmed to the device.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"><code>output:</code></th>
-<th style="text-align: left;"></th>
+<th></th>
 <th style="text-align: left;">Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Identifies the device.</td>
+<td style="text-align: left;"><code>- file:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Specifies the file name.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device-pack:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Identifies the device pack used.</td>
+<td style="text-align: left;">    <a href="../YML-Input-Format/#type"><code>type:</code></a></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Specifies the file type.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#output"><code>output:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Lists the possible compiler selection that this project is tested with.</td>
+<td style="text-align: left;">    <code>info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Brief description of the file.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#system-resources"><code>system-resources:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">When specified, the <a href="../build-overview/#cdefaultyml"><code>cdefault.yml</code></a> file is used to setup compiler specific controls.</td>
+<td style="text-align: left;">    <a href="../YML-Input-Format/#load"><code>load:</code></a></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Load mode of the image file for programmers and debug tools.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>load-offset:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Offset applied in <code>*.csolution.yml</code> when loading the binary image file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Image belongs to processor in a multi-core system.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="system-resources"><code>system-resources:</code></h3>
-<pre><code class="language-yml">cbuild-run:
-  device:
-  device-pack:      ? is the board-pack: not used?
-  output:
-    - file:
-      info:
-      type:
-      load-offset:
-      load:
-      pname:
-  system-resources:
-    memory:
-      - name:
-        access:
-        start:
-        size:
-        pname:
-        alias:
-        from-pack:
-  system-descriptions:
-    - file:
-      type:
-      pname:
-  debugger:
-    name:
-    clock:
-    dbgconf:
-    start-pname:
-    gdbserver:
-      - port:
-        pname:
-      - port:
-        pname:
-  debug-vars:
-    vars:
-  debug-sequences:
-    - name:
-      info:
-      pname:
-      blocks:
-        - info:
-          if:
-          while:
-          execute:
-          timeout:
-          atomic:
-          blocks:
-  programming:
-    - algorithm:
-      ram-start:
-      size:
-      ram-start:
-      ram-size:
-      pname:
-  debug-topology:
-    debugports:
-      - dpid:
-        accessports:
-          - apid:
-            address:
-            index:
-    processors:
-      - pname:
-        apid:
-    swj:
-    dormant:
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  output:
+    - file: M55_HP/Alif-AppKit-E7/Debug/M55_HP.axf
+      info: generate by M55_HP.Debug+Alif-AppKit-E7
+      type: elf
+      load: image+symbols
+      pname: M55_HP
+    - file: M55_HE/Alif-AppKit-E7/Debug/M55_HE.axf
+      info: generate by M55_HE.Debug+Alif-AppKit-E7
+      type: elf
+      load: symbols
+      pname: M55_HE
+    - file: M55_HE/Alif-AppKit-E7/Debug/M55_HE.hex
+      info: generate by M55_HE.Debug+Alif-AppKit-E7
+      type: hex
+      load: image
+      pname: M55_HE
+    - file: M55_HE/Alif-AppKit-E7/Debug/M55_HE.bin
+      info: generate by M55_HE.Debug+Alif-AppKit-E7
+      type: bin
+      load: none
+      pname: M55_HE
 </code></pre>
-              
-            </div>
-          </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../Experimental-Features/" class="btn btn-neutral float-left" title="Experimental Features"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../JLink-Debugger/" class="btn btn-neutral float-right" title="J-Link Debugger">Next <span class="icon icon-circle-arrow-right"></span></a>
-    </div>
+<h3 id="system-resources"><code>system-resources:</code></h3>
+<p>Contains a list of memory regions that pyOCD uses to build the device memory map. If no memory regions are provided,
+pyOCD will fall back to a default Cortex-M memory map.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>system-resources:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">    <code>memory:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Identifies the section for memory.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>memory:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Name of the memory region (when PDSC contains id, it uses the id as name).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>access:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Access attribute string for the memory (<a href="../YML-CBuild-Format/#system-resources">see <code>access:</code> table here</a>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>start:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Base address of the memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>size:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Size of the memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Only accessible by a specific processor.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>alias:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Name of identical memory exposed at a different address.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  system-resources:
+    memory:
+      - name: ITCM_HE
+        access: rwx
+        start: 0x00000000
+        size: 0x00040000
+        pname: M55_HE
+        alias: SRAM4
+      - name: ITCM_HP
+        access: rwx
+        start: 0x00000000
+        size: 0x00040000
+        pname: M55_HP
+        alias: SRAM2
+      - name: MRAM
+        access: rx
+        start: 0x80000000
+        size: 0x00580000
+      - name: SRAM2
+        access: rwx
+        start: 0x50000000
+        size: 0x00040000
+      - name: SRAM4
+        access: rwx
+        start: 0x58000000
+        size: 0x00040000
+</code></pre>
+<h3 id="system-descriptions"><code>system-descriptions:</code></h3>
+<p>Contains a list of system description files for the target's peripherals and software components. The <code>svd</code> files are
+processed by pyOCD to present debug views and decode register reads/writes.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>system-descriptions:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- file:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Specifies the file name including the path.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>type:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Specifies the file type (see table below).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Brief description of the file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">File is used only for a specific processor; default is for all processors.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>type:</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>svd</code></td>
+<td style="text-align: left;"><a href="https://open-cmsis-pack.github.io/svd-spec/main/index.html">System View Description (<code>*.svd</code>) file</a> specified in the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debug">DFP</a>.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently pyOCD has a limitation of only processing the <code>svd</code> file for the processor listed in <code>start-pname</code>.</p>
+</div>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  system-descriptions:
+    - file: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Debug/SVD/AE722F80F55D5LS_CM55_HE_View.svd
+      type: svd
+      pname: M55_HE
+    - file: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Debug/SVD/AE722F80F55D5LS_CM55_HP_View.svd
+      type: svd
+      pname: M55_HP
+</code></pre>
+<h3 id="programming"><code>programming:</code></h3>
+<p>Contains a list of the target's flash programming algorithms. pyOCD uses these algorithms to identify which
+memory regions should be treated as flash, and it will automatically select the appropriate algorithm when
+programming flash on the target.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>programming:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- algorithm:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Programming algorithm file including the path.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>start:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Start address of memory covered by the programming algorithm.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>size:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Size of memory covered by the programming algorithm.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>ram-start:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Start address of RAM where the algorithm will be executed from.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>ram-size:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Maximum size of RAM available for executing the programming algorithm.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies the processor for the execution of the algorithm.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  programming:
+    - algorithm: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Flash/algorithms/Ensemble.FLM
+      start: 0x80000000
+      size: 0x00580000
+      ram-start: 0x00000000
+      ram-size: 0x00020000
+    - algorithm: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Flash/algorithms/Ensemble_IS25WX256.FLM
+      start: 0xC0000000
+      size: 0x02000000
+      ram-start: 0x00000000
+      ram-size: 0x00040000
+</code></pre>
+<h3 id="debugger"><code>debugger:</code></h3>
+<p>Contains the user's debugger configuration settings. The available options are described in detail in the
+CSolution Project Format section <a href="../YML-Input-Format/#debugger-for-pyocd">Debugger Configuration - pyOCD</a>.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  debugger:
+    name: CMSIS-DAP@pyOCD
+    protocol: swd
+    clock: 10000000
+    start-pname: M55_HP
+    connect: attach
+    reset:
+      - type: system
+        pname: M55_HP
+      - type: core
+        pname: M55_HE
+    gdbserver:
+      - port: 3333
+        pname: M55_HP
+      - port: 3334
+        pname: M55_HE
+    telnet:
+      - mode: console
+        pname: M55_HE
+        port: 4445
+      - mode: monitor
+        pname: M55_HP
+        port: 4444
+</code></pre>
+<h3 id="debug-vars"><code>debug-vars:</code></h3>
+<p>Contains default values for debug sequence variables. These values can be overridden by explicit settings in a
+<code>*.dbgconf</code> file provided in the <a href="#debugger"><code>debugger:</code></a> node.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  debug-vars:
+    vars: |
+      // Default values for variables in debug sequences. Are configured with a *.dbgconf file in the user project
+      __var SWO_Pin               = 0;                    // Serial Wire Output pin: 0 = PIO0_10, 1 = PIO0_8
+      __var Dbg_CR                = 0x00000000;           // DBG_CR
+      __var BootTime              = 10000;                // 10 milliseconds
+</code></pre>
+<h3 id="debug-sequences"><code>debug-sequences:</code></h3>
+<p>Contains <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence">debug sequences</a>
+from the DFP for the target. A sequence with no <code>blocks</code> disables the default sequence; sequence names can override
+default sequences from the DFP.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  debug-sequences:
+    - name: DisableWarmResetHandshake
+      blocks:
+        - execute: |
+            Write32(0x1A601024, 0);
+      pname: M55_HE
+    - name: DisableWarmResetHandshake
+      blocks:
+        - execute: |
+            Write32(0x1A600024, 0);
+      pname: M55_HP
+    - name: DebugDeviceUnlock
+      blocks:
+        - execute: |
+            DAP_Delay(500000);  // Delay for 500ms
+    - name: ResetSystem
+      blocks:
+        - execute: |
+            Sequence("DisableWarmResetHandshake");
+        - execute: |
+            // System Control Space (SCS) offset as defined in Armv6-M/Armv7-M.
 
-  <hr/>
+            __var SCS_Addr   = 0xE000E000;
+            __var AIRCR_Addr = SCS_Addr + 0xD0C;
+            __var DHCSR_Addr = SCS_Addr + 0xDF0;
 
-  <div role="contentinfo">
-    <!-- Copyright etc -->
-  </div>
+            // Execute SYSRESETREQ via AIRCR
+            Write32(AIRCR_Addr, 0x05FA0004);
+        - while: (Read32(DHCSR_Addr) &amp; 0x02000000)
+          timeout: 500000
+</code></pre>
+<h3 id="debug-topology"><code>debug-topology:</code></h3>
+<p>Describes the properties of the system hardware for debug functionality. The information for this node is taken from
+the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code> file, pyOCD will use the default values described below.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>debug-topology:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">    <code>debugports:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Describes the CoreSight debug ports of the device and its capabilities.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>processors:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Map of <code>pname</code> identifiers to access port IDs (mandatory for multi-processor devices).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>swj:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Device allows switching between Serial Wire Debug (SWD) and JTAG protocols (<code>true</code> or <code>false</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>dormant:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Device requires the dormant state to switch debug protocols (<code>true</code> or <code>false</code>).</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>debugports:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- dpid:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Unique ID of this debug port.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>accessports:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">List of CoreSight access ports (APv1/APv2) (mandatory for multi-processor devices).</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>accessports:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- apid:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Unique ID of this access port. If only <code>apid</code> is provided, access port (APv1) with index <code>0</code> will be implicitly used.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>index:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Index to select this access port (APv1) for a target access.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>address:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Address to select this access port (APv2) in its parent's address space for a target access.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>index:</code> and <code>address:</code> cannot be specified at the same time.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>processors:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- pname:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Processor identifier  (mandatory for multi-processor devices).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>apid:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Access port ID to use for this processor.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>reset-sequence:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Name of debug sequence for reset operation (default: <code>ResetSystem</code> sequence).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default values:</strong></p>
+<pre><code class="language-yml">debug-topology:
+  dormant: false
+  swj: true
+  debugports:
+    - dpid: 0
+      accessports:
+        - apid: 0
+          index: 0
+</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  debug-topology:
+    debugports:
+      - dpid: 0
+        accessports:
+          - apid: 0
+            address: 0x00200000
+          - apid: 1
+            address: 0x00300000
+    processors:
+      - pname: M55_HP
+        apid: 0
+      - pname: M55_HE
+        apid: 1
+    dormant: true
+</code></pre>
+<h2 id="sequence-diagrams-for-pyocd-subcommands">Sequence diagrams for pyOCD subcommands</h2>
+<p>pyOCD connects to the target as shown in the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences">Open-CMSIS-Pack "Usage of debug access sequences"</a>
+<strong>Connect Debugger to Device</strong> diagram. Additionally, pyOCD supports the <code>attach</code> connect mode (see <a href="#connect"><code>connect:</code></a>),
+which connects without resetting, or halting the target.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The diagram arrow "Repeat for each Processor Core" is misleading. Only the following blocks are executed once per
+processor core: <strong>Read Target Features</strong>, <strong>DebugCoreStart</strong>, <strong>Stop Processor</strong> / <strong>ResetCatchSet</strong>,
+<strong>Wait for Processor to Stop</strong>, and <strong>Initialize Debug Components</strong>. The remaining diagram elements run once for the
+device as a whole. This distinction is important for multi-core targets, where some blocks run once per core and
+others run once for the device.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Blue blocks are clickable and open the linked documentation.</p>
+</div>
+<hr/>
+<h3 id="erase_1">Erase</h3>
+<div class="mermaid">flowchart TD
+  classDef seq fill:#c7d6ea,stroke:#333;
+
+  B0(Open-CMSIS-Pack&lt;br&gt;Connect Debugger to Device&lt;br&gt;sequence):::seq
+  click B0 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
+  B0 -.-&gt; B1
+  B1[Set reset catch on all cores] --&gt; B2
+  B2[Reset device with&lt;br&gt;primary core using&lt;br&gt;selected reset type] --&gt; B3
+  B3[Clear reset catch on all cores] --&gt; loop
+  subgraph loop[Loop over algorithms for primary core]
+    B4(Open-CMSIS-Pack&lt;br&gt;Flash Erase&lt;br&gt;sequence):::seq
+    click B4 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/algorithmFunc.html"
+    B4 --&gt; B5
+    B5[Put primary core in deadloop]
+  end
+  loop -.-&gt; B6
+  B6(Open-CMSIS-Pack&lt;br&gt;Disconnect Debugger&lt;br&gt;sequence):::seq
+  click B6 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
+</div>
+<hr/>
+<h3 id="load_1">Load</h3>
+<div class="mermaid">flowchart TD
+  classDef seq fill:#c7d6ea,stroke:#333;
+
+  B0(Open-CMSIS-Pack&lt;br&gt;Connect Debugger to Device&lt;br&gt;sequence):::seq
+  click B0 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
+  B0 -.-&gt; B1
+  B1([Evaluate pre-reset type])
+  B1 --&gt; B2
+  B2[Set reset catch on all cores] --&gt; B3
+  B3[Reset device with&lt;br&gt;primary core using&lt;br&gt;selected pre-reset type] --&gt; B4
+  B4[Clear reset catch on all cores] --&gt; loop
+  B1 -- off --&gt; loop
+  subgraph loop[Loop over algorithms for primary core]
+    B5(Open-CMSIS-Pack&lt;br&gt;Flash Program&lt;br&gt;sequence):::seq
+    click B5 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/algorithmFunc.html"
+    B5 --&gt; B6
+    B6[Put primary core in deadloop] 
+  end
+  loop -.-&gt; B7
+  B7([Evaluate post-reset type])
+  B7 --&gt; B8
+  B8[Reset device with&lt;br&gt;primary core using&lt;br&gt;selected post-reset type] --&gt; B9
+  B7 -- off --&gt; B9
+  B9(Open-CMSIS-Pack&lt;br&gt;Disconnect Debugger&lt;br&gt;sequence):::seq
+  click B9 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
+</div>
+<hr/>
+<h3 id="gdb-server">GDB server</h3>
+<div class="mermaid">flowchart TD
+  classDef seq fill:#c7d6ea,stroke:#333;
+
+  B0(Open-CMSIS-Pack&lt;br&gt;Connect Debugger to Device&lt;br&gt;sequence):::seq
+  click B0 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
+  B0 -.-&gt; B1
+  B1{Is reset-run&lt;br&gt;option set?}
+  B1 -- Yes --&gt; B2
+  B2[Reset device with&lt;br&gt;primary core using&lt;br&gt;selected reset type] --&gt; B3
+  B1 -- No --&gt; B3
+  B3[Create GDB servers for all cores] --&gt; gdbserver
+  subgraph gdbserver[Core's GDB server]
+    B4([Wait for GDB client&lt;br&gt;connection to server])
+  end
+  gdbserver -.-&gt; gdbclient
+  subgraph gdbclient[GDB client connection]
+    B5[GDB client connected] --&gt; B6
+    B6[Halt core] --&gt; loop
+    subgraph loop[Loop]
+      B7([Process GDB&lt;br&gt;commands]) -.-&gt; B8
+      B8[Client detached&lt;br&gt;or disconnected]
+    end
+    B8 --&gt; B9
+    B9[Close GDB client connection]
+  end
+  gdbclient -.-&gt; gdbserver2
+  subgraph gdbserver2[Core's GDB server]
+    B10([Wait for all GDB client&lt;br&gt;connections to close]) -.-&gt; B11
+    B11[Resume core] --&gt; B12
+    B12[Close core's GDB server]
+  end
+  gdbserver2 -.-&gt; B13
+  B13([Wait for all servers to close]) --&gt; B14
+  B14(Open-CMSIS-Pack&lt;br&gt;Disconnect Debugger&lt;br&gt;sequence):::seq
+  click B14 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
+</div>
+<hr/>
+<h3 id="run_1">Run</h3>
+<div class="mermaid">flowchart TD
+  classDef seq fill:#c7d6ea,stroke:#333;
+
+  B0(Open-CMSIS-Pack&lt;br&gt;Connect Debugger to Device&lt;br&gt;sequence):::seq
+  click B0 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
+  B0 -.-&gt; B1
+  B1[Halt all cores] --&gt; B2
+  B2[Create Run servers for all cores] --&gt; B3
+  B3[Reset device with&lt;br&gt;primary core using&lt;br&gt;selected reset type]
+  B3 ---&gt; runserver
+  subgraph runserver[Core's Run server loop]
+    B4([Process&lt;br&gt;Semihosting + RTT]) -.-&gt; B6
+    B6{EOT&lt;br&gt;received?}
+  end
+  B3 --&gt; loop
+  subgraph loop[Loop]
+    B7{Timelimit&lt;br&gt;reached?}
+    B8{User terminated&lt;br&gt;pyOCD instance?}
+  end
+  B6 -- Yes ---&gt; B9
+  B7 -- Yes ---&gt; B9
+  B8 -- Yes ---&gt; B9
+  B9[Close all servers] --&gt; B10
+  B10(Open-CMSIS-Pack&lt;br&gt;Disconnect Debugger&lt;br&gt;sequence):::seq
+  click B10 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
+</div>
+</div>
+</div><footer>
+<div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
+<a class="btn btn-neutral float-left" href="../Experimental-Features/" title="Experimental Features"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+<a class="btn btn-neutral float-right" href="../JLink-Debugger/" title="J-Link Debugger">Next <span class="icon icon-circle-arrow-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<!-- Copyright etc -->
+</div>
 
   Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
 </footer>
-          
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-
-  <div class="rst-versions" role="note" aria-label="Versions">
-  <span class="rst-current-version" data-toggle="rst-current-version">
-    
-        <span>
-          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
-        </span>
-    
-    
-      <span><a href="../Experimental-Features/" style="color: #fcfcfc">&laquo; Previous</a></span>
-    
-    
-      <span><a href="../JLink-Debugger/" style="color: #fcfcfc">Next &raquo;</a></span>
-    
-  </span>
 </div>
-    <script src="../js/jquery-3.6.0.min.js"></script>
-    <script>var base_url = "..";</script>
-    <script src="../js/theme_extra.js"></script>
-    <script src="../js/theme.js"></script>
-      <script src="../search/main.js"></script>
-    <script>
+</div>
+</section>
+</div>
+<div aria-label="Versions" class="rst-versions" role="note">
+<span class="rst-current-version" data-toggle="rst-current-version">
+<span>
+<a class="fa fa-github" href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox" style="color: #fcfcfc"> GitHub</a>
+</span>
+<span><a href="../Experimental-Features/" style="color: #fcfcfc">« Previous</a></span>
+<span><a href="../JLink-Debugger/" style="color: #fcfcfc">Next »</a></span>
+</span>
+</div>
+<script src="../js/jquery-3.6.0.min.js"></script>
+<script>var base_url = "..";</script>
+<script src="../js/theme_extra.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../search/main.js"></script>
+<script>
         jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
         });
     </script>
-
-</body>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
+mermaid.initialize({});</script></body>
 </html>

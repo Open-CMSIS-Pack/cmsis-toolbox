@@ -277,7 +277,7 @@
 </table>
 <p>!!! Note CMSIS-Toolbox 2.11 creates the <code>*.cbuild.yml</code> and <code>*.cbuild-run.yml</code> files in the <code>out</code> directory along with the related output files.</p>
 <h2 id="directory-structure">Directory Structure</h2>
-<p>The <code>csolution</code> based projects are portable across different host computers and use, therefore <strong>relative file references</strong>.</p>
+<p>The <code>csolution</code> based projects are portable across different host computers and therefore use <strong>relative file references</strong>.</p>
 <ul>
 <li>
 <p>All file references use relative paths to the base directory of the related <code>*.yml</code> file.  Files that are within the file structure of the <code>csolution</code> base directory are also referenced using relative paths, i.e. <code>../layers/layer1/source-file1.c</code>.</p>
@@ -293,7 +293,7 @@
 <ul>
 <li>Files outside of the directory structure of a <code>csolution</code> based application use absolute paths. If absolute paths are used, a <code>warning</code> is issued in the <code>*.cbuild-idx.yml</code> file.</li>
 </ul>
-<p>A typical directory structure of a <code>csolution</code> based application that uses common layers source files are shown below.</p>
+<p>A typical directory structure of a <code>csolution</code> based application that uses common layers source files is shown below.</p>
 <pre><code class="language-yml">📦 # csolution base directory
  ┣ myapp.csolution.yml
  ┣ myapp.cbuild-idx.yml
@@ -334,7 +334,7 @@
         - ARM::CMSIS@&gt;=5.8.0
         - ARM::CMSIS@5.9.0
 </code></pre>
-<p>If <em>csolution project files</em> are modified, the <code>selected-by-pack</code> information ensures that consistent pack versions are used. If a required pack is no longer used in present in the <em>csolution project</em>, the relevant entry <code>resolved-pack:</code> in  the <code>*.cbuild-pack.yml</code> file is removed.</p>
+<p>If <em>csolution project files</em> are modified, the <code>selected-by-pack</code> information ensures that consistent pack versions are used. If a required pack is no longer used or present in the <em>csolution project</em>, the relevant entry <code>resolved-pack:</code> in  the <code>*.cbuild-pack.yml</code> file is removed.</p>
 <p>The <code>*.cbuild-pack.yml</code> file is located in the same directory as the <code>*.csolution.yml</code> file and is used by the <code>csolution</code> for every command that uses a <code>*.csolution.yml</code> file. Examples are:</p>
 <ul>
 <li><code>csolution convert</code> - uses <strong>and updates</strong> the <code>*.cbuild-pack.yml</code> file.</li>
@@ -365,7 +365,7 @@
 <li><a href="#nodes-for-license-information"><strong>Nodes for License Information</strong></a></li>
 </ul>
 <h3 id="cbuild-idxyml"><code>*.cbuild-idx.yml</code></h3>
-<p>The <code>&lt;solution-name&gt;.cbuild-idx.yml</code> file is generated for the <em>csolution project</em> and refers all <em>contexts</em> that are generated. It is structured as outlined below.</p>
+<p>The <code>&lt;solution-name&gt;.cbuild-idx.yml</code> file is generated for the <em>csolution project</em> and refers to all <em>contexts</em> that are generated. It is structured as outlined below.</p>
 <table>
 <thead>
 <tr>
@@ -926,7 +926,7 @@
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Packs that are located in the <a href="../installation/#environment-variables">CMSIS-Pack root directory</a> are prefixed with <code>%CMSIS_PACK_ROOT%</code>.</p>
+<p>Packs that are located in the <a href="../installation/#environment-variables">CMSIS-Pack root directory</a> are prefixed with <code>${CMSIS_PACK_ROOT}</code>.</p>
 </div>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  packs:
@@ -1102,7 +1102,7 @@
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum"><code>category:</code></a></td>
-<td style="text-align: left;">File category according Open-CMSIS-Pack specification</td>
+<td style="text-align: left;">File category according to Open-CMSIS-Pack specification</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../YML-Input-Format/#optimize"><code>optimize:</code></a></td>
@@ -1153,7 +1153,7 @@
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>implemented-by:</code></td>
-<td style="text-align: left;">Refers to the software componeent that implements the API.</td>
+<td style="text-align: left;">Refers to the software component that implements the API.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#files-of-a-component"><code>files:</code></a></td>
@@ -1295,7 +1295,7 @@
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum"><code>category:</code></a></td>
-<td style="text-align: left;">File category according Open-CMSIS-Pack specification.</td>
+<td style="text-align: left;">File category according to Open-CMSIS-Pack specification.</td>
 </tr>
 </tbody>
 </table>
@@ -1316,8 +1316,8 @@
 <td style="text-align: left;">License identifier or short description.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>lisense-agreement:</code></td>
-<td style="text-align: left;">File category according Open-CMSIS-Pack specification</td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>license-agreement:</code></td>
+<td style="text-align: left;">File category according to Open-CMSIS-Pack specification</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#packs"><code>packs:</code></a></td>
@@ -1647,7 +1647,7 @@
       :
 </code></pre>
 <h3 id="file-structure-of-cbuild-runyml">File Structure of <code>*.cbuild-run.yml</code></h3>
-<p>The following describes the overall structure of the <code>*.cbuild-run.yml</code> file.  While the content of this file is generated using the <code>cbuild</code> command, it is also posssible to manually generate this file or modify content.</p>
+<p>The following describes the overall structure of the <code>*.cbuild-run.yml</code> file.  While the content of this file is generated using the <code>cbuild</code> command, it is also possible to manually generate this file or modify content.</p>
 <table>
 <thead>
 <tr>
@@ -1861,7 +1861,7 @@ The <code>output:</code> node also contains other required files that are added 
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>alias:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Name of identical memory exposed at different address.</td>
+<td style="text-align: left;">Name of identical memory exposed at a different address.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>from-pack:</code></td>
@@ -1979,7 +1979,7 @@ The <code>output:</code> node also contains other required files that are added 
 </tbody>
 </table>
 <h4 id="debugger"><code>debugger:</code></h4>
-<p>This node contains connection information for a debugger with inital settings coming from the board support pack (BSP) or device family pack (DFP).</p>
+<p>This node contains connection information for a debugger with initial settings coming from the board support pack (BSP) or device family pack (DFP).</p>
 <table>
 <thead>
 <tr>
@@ -2025,9 +2025,9 @@ The <code>output:</code> node also contains other required files that are added 
 <td style="text-align: left;">Information for GDB server option of debugger.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>terminal:</code></td>
-<td>Future</td>
-<td style="text-align: left;">Terminal port of the debugger.</td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>telnet:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Telnet service configuration.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>trace:</code></td>
@@ -2075,7 +2075,7 @@ The <code>output:</code> node also contains other required files that are added 
 </tr>
 </tbody>
 </table>
-<p>If no input (<code>*.csolution.yml</code>, BSP or DFP) provides debugger option values, the CMSIS-Toolbox uses the values under <code>defaults:</code> from the file <a href="../build-operation/#debug-adapter-integration"><code>.\ect\debug-adapters.yml</code></a>.</p>
+<p>If no input (<code>*.csolution.yml</code>, BSP or DFP) provides debugger option values, the CMSIS-Toolbox uses the values under <code>defaults:</code> from the file <a href="../build-operation/#debug-adapter-integration"><code>./etc/debug-adapters.yml</code></a>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP
@@ -2088,7 +2088,7 @@ The <code>output:</code> node also contains other required files that are added 
 <p>These are options for the pyOCD GDB server configuration (could be optionally used by other debuggers as well).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code>gdbserver:</code> node is only generated when the file <a href="../build-operation/#debug-adapter-integration"><code>.\ect\debug-adapters.yml</code></a> contains <code>gdbserver:</code> for the selected debug adatper.</p>
+<p>The <code>gdbserver:</code> node is only generated when the file <a href="../build-operation/#debug-adapter-integration"><code>./etc/debug-adapters.yml</code></a> contains <code>gdbserver:</code> for the selected debug adapter.</p>
 </div>
 <table>
 <thead>
@@ -2112,7 +2112,7 @@ The <code>output:</code> node also contains other required files that are added 
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>punit:</code></td>
 <td>Future</td>
-<td style="text-align: left;">Identifies the procssor core in a SMP system.</td>
+<td style="text-align: left;">Identifies the processor core in a SMP system.</td>
 </tr>
 </tbody>
 </table>
@@ -2131,7 +2131,7 @@ The <code>output:</code> node also contains other required files that are added 
 <p><img alt="GDB Server Port Assignments" src="../images/GDBServer.png" title="GDB Server Port Assignments" /></p>
 <h4 id="debug-vars"><code>debug-vars:</code></h4>
 <p>This node contains the default value from the DFP for the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence">variables used in <code>debug-sequences:</code></a>.
-This initial values are overwritten by explicit settings in the <code>*.dbgconf</code> file that is provided in the <a href="#debugger"><code>debugger:</code></a> node.</p>
+These initial values are overwritten by explicit settings in the <code>*.dbgconf</code> file that is provided in the <a href="#debugger"><code>debugger:</code></a> node.</p>
 <table>
 <thead>
 <tr>
