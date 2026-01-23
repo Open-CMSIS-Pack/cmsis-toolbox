@@ -20,7 +20,7 @@ File                                  | Description
 
 ## Directory Structure
 
-The `csolution` based projects are portable across different host computers and use, therefore **relative file references**.
+The `csolution` based projects are portable across different host computers and therefore use **relative file references**.
 
 - All file references use relative paths to the base directory of the related `*.yml` file.  Files that are within the file structure of the `csolution` base directory are also referenced using relative paths, i.e. `../layers/layer1/source-file1.c`.
 
@@ -31,7 +31,7 @@ The `csolution` based projects are portable across different host computers and 
 
 - Files outside of the directory structure of a `csolution` based application use absolute paths. If absolute paths are used, a `warning` is issued in the `*.cbuild-idx.yml` file.
 
-A typical directory structure of a `csolution` based application that uses common layers source files are shown below.
+A typical directory structure of a `csolution` based application that uses common layers source files is shown below.
 
 ```yml
 📦 # csolution base directory
@@ -80,7 +80,7 @@ cbuild-pack:
         - ARM::CMSIS@5.9.0
 ```
 
-If *csolution project files* are modified, the `selected-by-pack` information ensures that consistent pack versions are used. If a required pack is no longer used in present in the *csolution project*, the relevant entry `resolved-pack:` in  the `*.cbuild-pack.yml` file is removed.
+If *csolution project files* are modified, the `selected-by-pack` information ensures that consistent pack versions are used. If a required pack is no longer used or present in the *csolution project*, the relevant entry `resolved-pack:` in  the `*.cbuild-pack.yml` file is removed.
 
 The `*.cbuild-pack.yml` file is located in the same directory as the `*.csolution.yml` file and is used by the `csolution` for every command that uses a `*.csolution.yml` file. Examples are:
 
@@ -111,7 +111,7 @@ The following sections describe the format of the *build information files*. Man
 
 ### `*.cbuild-idx.yml`
 
-The `<solution-name>.cbuild-idx.yml` file is generated for the *csolution project* and refers all *contexts* that are generated. It is structured as outlined below.
+The `<solution-name>.cbuild-idx.yml` file is generated for the *csolution project* and refers to all *contexts* that are generated. It is structured as outlined below.
 
 `build-idx:`                                                  | Content
 :-------------------------------------------------------------|:------------------------------------
@@ -454,7 +454,7 @@ The `packs:` node is the start of a pack list that is used for the project conte
 &nbsp;&nbsp;&nbsp;`path:`                             | Path name that stores the software pack (see note).
 
 !!! Note
-    Packs that are located in the [CMSIS-Pack root directory](installation.md#environment-variables) are prefixed with `%CMSIS_PACK_ROOT%`.
+    Packs that are located in the [CMSIS-Pack root directory](installation.md#environment-variables) are prefixed with `${CMSIS_PACK_ROOT}`.
 
 **Example:**
 
@@ -537,7 +537,7 @@ Keyword          | Description
 `files:`                                                       | Content
 :--------------------------------------------------------------|:------------------------------------
 `- file:`                                                      | Name of the file.
-&nbsp;&nbsp;&nbsp; [`category:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) | File category according Open-CMSIS-Pack specification
+&nbsp;&nbsp;&nbsp; [`category:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) | File category according to Open-CMSIS-Pack specification
 &nbsp;&nbsp;&nbsp; [`optimize:`](YML-Input-Format.md#optimize) | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`debug:`](YML-Input-Format.md#debug)       | Generation of debug information.
 &nbsp;&nbsp;&nbsp; [`warnings:`](YML-Input-Format.md#warnings) | Control generation of compiler diagnostics.
@@ -552,7 +552,7 @@ Keyword          | Description
 `- api:`                                                       | Name of the API.
 &nbsp;&nbsp;&nbsp; [`condition:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_conditions_pg.html#element_condition) | Reference to the condition ID of the software pack that triggered the inclusion of this API.
 &nbsp;&nbsp;&nbsp; `from-pack:`                                | Pack that defines this API.
-&nbsp;&nbsp;&nbsp; `implemented-by:`                           | Refers to the software componeent that implements the API.
+&nbsp;&nbsp;&nbsp; `implemented-by:`                           | Refers to the software component that implements the API.
 &nbsp;&nbsp;&nbsp; [`files:`](#files-of-a-component)           | List of files that belong to this API.
 
 #### `components:`
@@ -596,7 +596,7 @@ A list of files that are generated by the RTE management of the `csolution` tool
 `constructed-files:`                                     | Content
 :--------------------------------------------------------|:------------------------------------
 `- file:`                                                | Name and path to the file.
-&nbsp;&nbsp;&nbsp; [`category:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) | File category according Open-CMSIS-Pack specification.
+&nbsp;&nbsp;&nbsp; [`category:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#FileCategoryEnum) | File category according to Open-CMSIS-Pack specification.
 
 ### Nodes for License Information
 
@@ -609,7 +609,7 @@ Each different license that is used in a project context has a separate section.
 `licenses:`                                              | Content
 :--------------------------------------------------------|:------------------------------------
 `- license:`                                             | License identifier or short description.
-&nbsp;&nbsp;&nbsp; `lisense-agreement:`                  | File category according Open-CMSIS-Pack specification
+&nbsp;&nbsp;&nbsp; `license-agreement:`                  | File category according to Open-CMSIS-Pack specification
 &nbsp;&nbsp;&nbsp; [`packs:`](#packs)                    | List of software [packs](#packs) used to generate this project context.
 &nbsp;&nbsp;&nbsp; [`components:`](YML-Input-Format.md#components)   | List of software [components](YML-Input-Format.md#components) used to generate this project context.
 
@@ -814,7 +814,7 @@ cbuild-run:
 
 ### File Structure of `*.cbuild-run.yml`
 
-The following describes the overall structure of the `*.cbuild-run.yml` file.  While the content of this file is generated using the `cbuild` command, it is also posssible to manually generate this file or modify content.
+The following describes the overall structure of the `*.cbuild-run.yml` file.  While the content of this file is generated using the `cbuild` command, it is also possible to manually generate this file or modify content.
 
 `cbuild-run:`                                                             |            | Content
 :-------------------------------------------------------------------------|:-----------|-------------------------
@@ -888,7 +888,7 @@ The `system-resources:` node lists the resources of a target system.  It include
 &nbsp;&nbsp;&nbsp; `start:`                               |**Required** | Base address of the memory.
 &nbsp;&nbsp;&nbsp; `size:`                                |**Required** | Size of the memory.
 &nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Only accessible by a specific processor.
-&nbsp;&nbsp;&nbsp; `alias:`                               |  Optional   | Name of identical memory exposed at different address.
+&nbsp;&nbsp;&nbsp; `alias:`                               |  Optional   | Name of identical memory exposed at a different address.
 &nbsp;&nbsp;&nbsp; `from-pack:`                           |  Optional   | Pack that defines this memory.
 
 The table lists the letters and their meaning for use in the access attribute string.
@@ -937,7 +937,7 @@ List of the description files for peripherals and software components used in th
 
 #### `debugger:`
 
-This node contains connection information for a debugger with inital settings coming from the board support pack (BSP) or device family pack (DFP).
+This node contains connection information for a debugger with initial settings coming from the board support pack (BSP) or device family pack (DFP).
 
 `debugger:`                                               |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
@@ -948,7 +948,7 @@ This node contains connection information for a debugger with inital settings co
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
 &nbsp;&nbsp;&nbsp; `start-pname:`                         |  Optional   | Debugger connects at start to this processor.
 &nbsp;&nbsp;&nbsp; `gdbserver:`                           |  Optional   | Information for GDB server option of debugger.
-&nbsp;&nbsp;&nbsp; `terminal:`                            |  Future     | Terminal port of the debugger.
+&nbsp;&nbsp;&nbsp; `telnet:`                              |  Optional   | Telnet service configuration.
 &nbsp;&nbsp;&nbsp; `trace:`                               |  Future     | Trace port of the debugger.
 &nbsp;&nbsp;&nbsp; `*:`                                   |  Optional   | Other debugger specific options specified under [target-set](YML-Input-Format.md#target-set).
 
@@ -964,7 +964,7 @@ The information for the `debugger:` node may be configured using the [`debugger:
 &nbsp;&nbsp;&nbsp; `protocol:`|&nbsp;&nbsp;&nbsp; `protocol:`|&nbsp;&nbsp;&nbsp; `debugLink`      |&nbsp;&nbsp;&nbsp; `default`
 &nbsp;&nbsp;&nbsp; `clock:`   |&nbsp;&nbsp;&nbsp; `clock:`   |&nbsp;&nbsp;&nbsp; `debugClock`     |&nbsp;&nbsp;&nbsp; `clock`
 
-If no input (`*.csolution.yml`, BSP or DFP) provides debugger option values, the CMSIS-Toolbox uses the values under `defaults:` from the file [`.\ect\debug-adapters.yml`](build-operation.md#debug-adapter-integration).
+If no input (`*.csolution.yml`, BSP or DFP) provides debugger option values, the CMSIS-Toolbox uses the values under `defaults:` from the file [`./etc/debug-adapters.yml`](build-operation.md#debug-adapter-integration).
 
 **Example:**
 
@@ -982,13 +982,13 @@ debugger:
 These are options for the pyOCD GDB server configuration (could be optionally used by other debuggers as well).
 
 !!! Note
-    The `gdbserver:` node is only generated when the file [`.\ect\debug-adapters.yml`](build-operation.md#debug-adapter-integration) contains `gdbserver:` for the selected debug adatper.
+    The `gdbserver:` node is only generated when the file [`./etc/debug-adapters.yml`](build-operation.md#debug-adapter-integration) contains `gdbserver:` for the selected debug adapter.
 
 `gdbserver:`                                              |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
 `- port:`                                                 |**Required** | Port number of processor
 &nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Processor name of the processor (only required for multi-core systems)
-&nbsp;&nbsp;&nbsp; `punit:`                               |  Future     | Identifies the procssor core in a SMP system.
+&nbsp;&nbsp;&nbsp; `punit:`                               |  Future     | Identifies the processor core in a SMP system.
 
 **Example:**
 
@@ -1010,7 +1010,7 @@ These are options for the pyOCD GDB server configuration (could be optionally us
 #### `debug-vars:`
 
 This node contains the default value from the DFP for the [variables used in `debug-sequences:`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence).
-This initial values are overwritten by explicit settings in the `*.dbgconf` file that is provided in the [`debugger:`](#debugger) node.
+These initial values are overwritten by explicit settings in the `*.dbgconf` file that is provided in the [`debugger:`](#debugger) node.
 
 `debug-vars:`                                             |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------

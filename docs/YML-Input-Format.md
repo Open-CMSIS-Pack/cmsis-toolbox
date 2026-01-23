@@ -45,7 +45,7 @@ Element      |              | Description
 `@^version`  | Optional     | Automatically update minor/patch version, i.e. `@^1.2.3` uses releases from `1.2.3` to `< 2.0.0`.
 `@~version`  | Optional     | Automatically update patch version, i.e. `@^1.2.3` uses releases from `1.2.3` to `< 1.3.0`.
 
-!!!Notes
+!!! Notes
     - When no version is specified, the **`csolution` Project Manager** only loads the latest installed version of a software pack. This also applies when wildcards are used in the `pack-name`.
     - Use [**`cpackget`**](build-tools.md#cpackget-invocation) to download and install new pack versions.
     - To accept a [pre-release version of a pack](pack-tools.md#versioning) specify the `-pre-release` label. Use for example `- pack: Keil::MDK-Middleware@^8.0.0-0` to accept any pre-release version that is higher or equal.
@@ -84,7 +84,7 @@ Element    |              | Description
 
 **Partly defined components**
 
-A component can be partly defined in *csolution project files* (`*.cproject.yml`, `*.clayer.yml`, `*.genlayer.yml`) by omitting `Cvendor`, `Cvariant`, and `Cversion`, even when this are part of the `components` element of the software pack. The component select algorithm resolves this to a fully defined component by:
+A component can be partly defined in *csolution project files* (`*.cproject.yml`, `*.clayer.yml`, `*.genlayer.yml`) by omitting `Cvendor`, `Cvariant`, and `Cversion`, even when these are part of the `components` element of the software pack. The component select algorithm resolves this to a fully defined component by:
 
 - when a partly specified component resolves to several possible choices, the tool selects:
     - (a) the default `Cvariant` of the component as defined in the PDSC file.
@@ -97,7 +97,7 @@ A component can be partly defined in *csolution project files* (`*.cproject.yml`
 The fully resolved component name is shown in the [`*.cbuild.yml`](YML-CBuild-Format.md) output file.
 
 !!! Note
-    Before CMSIS-Toolbox 2.7, a component that omitted `Csub` resolved to the first matching component. Installing additional software packs could change therefore component selection. When a component is defined with `Csub` it is now required to specify.
+    Before CMSIS-Toolbox 2.7, a component that omitted `Csub` resolved to the first matching component. Installing additional software packs could therefore change component selection. When a component is defined with `Csub` it is now required to specify it.
 
 **Multiple component definitions are rejected**
 
@@ -136,7 +136,7 @@ Element       |          | Description
 `Pname`       | Optional | Processor identifier (Pname attribute) as defined in the `<devices>` element.
 
 !!! Note
-    - All elements of a device name are optional, which allows to supply of additional information, such as the `:Pname` at
+    - All elements of a device name are optional, which allows supplying additional information, such as the `:Pname` at
       different stages of the project. However, the `Dname` itself is a mandatory element and must be specified in
       the context of the various project files.
     - `Dvendor::` must be used in combination with the `Dname`.
@@ -567,7 +567,7 @@ The default setting for the `output-dirs:` are:
   outdir:  $SolutionDir()$/out/$TargetType$/$BuildType$
 ```
 
-With the tool option `--output` an prefix top-level directory can be added. The effective `outdir:` with the command below is: `MyOut/out/$TargetType$/$BuildType$`.
+With the tool option `--output`, a top-level prefix directory can be added. The effective `outdir:` with the command below is: `MyOut/out/$TargetType$/$BuildType$`.
 
 ```bash
 cbuild <name>.csolution.yml --output MyOut
@@ -811,8 +811,8 @@ The following translation control options may be used at various places such as:
 
 - [`solution:`](#solution) level to specify options for a collection of related projects
 - [`project:`](#projects) level to specify options for a project
-- [`groups:`](#groups) level to specify options for a specify source file group
-- [`files:`](#files) level to specify options for a specify source file
+- [`groups:`](#groups) level to specify options for a specific source file group
+- [`files:`](#files) level to specify options for a specific source file
 
 !!! Note
     - The keys `define:`, `define-asm:`, `add-path:`, `add-path-asm:`, `del-path:`, and `misc:` are additive.
@@ -1149,7 +1149,7 @@ project:
 
 ## Pack Selection
 
-The `packs:` node can be specified in the `*.csolution.yml` file allows you to:
+The `packs:` node which can be specified in the `*.csolution.yml` file, allows you to:
 
 - Reduce the scope of software packs that are available for projects.
 - Add specific software packs that are optional with version specifications.
@@ -1197,7 +1197,7 @@ packs:                                  # start section that specifics software 
   - pack: ARM::CMSIS-FreeRTOS@^10.4.0   # add CMSIS-FreeRTOS with version 10.4.x or higher but lower than 11.0.0
 
   - pack: NXP::K32L3A60_DFP             # add pack for NXP device
-ftar    path: ./local/NXP/K32L3A60_DFP      # with path to the pack (local copy, repo, etc.)
+    path: ./local/NXP/K32L3A60_DFP      # with path to the pack (local copy, repo, etc.)
 
   - pack: AWS::coreHTTP                 # add pack
     path: ./development/AWS/coreHTTP    # with path to development source directory
@@ -1416,7 +1416,7 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 
 `images:`                                             |              | Content
 :-----------------------------------------------------|--------------|:------------------------------------
-`- project-context:`                                  |   Optional   | Project output or with optional build-type to use. Format: `<project_name>[.buid_type]`
+`- project-context:`                                  |   Optional   | Project output or with optional build-type to use. Format: `<project_name>[.build_type]`
 &nbsp;&nbsp;&nbsp; `image:`                           |   Optional   | Additional image file to load.
 &nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode of the image file for programmers and debug tools.
 &nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the image file.
@@ -1485,7 +1485,7 @@ solution:
           images:
           - project-context: core1.Debug
           - project-context: core0.Release
-          - image: Zephry.elf
+          - image: Zephyr.elf
             load: image
 
   build-types:
@@ -1504,7 +1504,7 @@ solution:
 
 ### `variables:`
 
-The `variables:` node defines *key/value* pairs in the `*.csolution.yml` file. Using `$<key>$` in `*.cproject.yml` and `*.clayer.yml` files expands to the *value* of the variable. The variable `$<key>$` can be used in the following nodes: [`layers:`](#layers), [`define:`](#define), [`define-asm:`](#define-asm), [`add-path:`](#add-path), [`add-path-asm:`](#add-path-asm), [`misc:`](#misc), [`files:`](#files), and [`executes:`](#executes). The `<key>:` name format `<type>-Layer` is a convention that references [layer-type](#layer-type). In this case the `copied-from:` can be used to describe the orginal source of a layer (typically a path in a software pack).
+The `variables:` node defines *key/value* pairs in the `*.csolution.yml` file. Using `$<key>$` in `*.cproject.yml` and `*.clayer.yml` files expands to the *value* of the variable. The variable `$<key>$` can be used in the following nodes: [`layers:`](#layers), [`define:`](#define), [`define-asm:`](#define-asm), [`add-path:`](#add-path), [`add-path-asm:`](#add-path-asm), [`misc:`](#misc), [`files:`](#files), and [`executes:`](#executes). The `<key>:` name format `<type>-Layer` is a convention that references [layer-type](#layer-type). In this case the `copied-from:` can be used to describe the original source of a layer (typically a path in a software pack).
 
 `variables:`                         | Description
 :------------------------------------|:-------------
@@ -2062,7 +2062,7 @@ Use the command `west build` to generate images from application source code spe
 
 ### `west-defs:`
 
-Defines for the `west build` commands are specified in CMake format. The `west-defs:` that are defined under the active target and build type are concatinated as follows:
+Defines for the `west build` commands are specified in CMake format. The `west-defs:` that are defined under the active target and build type are concatenated as follows:
 
 `<west-defs> := <west:west-defs> + <target-type:west-defs> + <build-type:west-defs>`
 
@@ -2238,7 +2238,7 @@ The `connect:` node describes one or more functionalities that belong together.
 [`provides:`](#provides)             |   Optional   | List of functionality (*key*/*value* pairs) that are provided
 [`consumes:`](#consumes)             |   Optional   | List of functionality (*key*/*value* pairs) that are required
 
-The behaviour of the `connect:` node depends on the usage in *csolution project* files.
+The behavior of the `connect:` node depends on the usage in *csolution project* files.
 
 - In a `cproject.yml` file the `connect:` node is always active.
 - In a `clayer.yml` file the `connect:` node is only active if one or more `key` listed under `provides:` is listed under `consumes:` in other active `connect:` nodes. It is also active by default if the `connect:` node has no `provides:` node.
@@ -2420,7 +2420,7 @@ The `debugger:` node specified under the [`target-set:`](#target-set) in the *cs
 
 !!! Notes
     - Packs may provide a default configuration for a debugger connection to a device or board. 
-    - Serveral settings are optional and the default settings are specific to the selected debug adapter.
+    - Several settings are optional and the default settings are specific to the selected debug adapter.
     - The complete debugger settings including default values are listed in `debugger:` node of the [`*.cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management).
 
 ### `debugger:`
@@ -2430,7 +2430,7 @@ The `debugger:` node specified under the [`target-set:`](#target-set) in the *cs
 &nbsp;&nbsp;&nbsp; `name:`                                |**Required** | Identifies the debug adapter.
 &nbsp;&nbsp;&nbsp; `*:`                                   |  Optional   | Other debugger specific options can be used as documented below.
 
-The command `csolution list debuggers` outputs the `name:` of the supported debug adatpers; using the option `--verbose` extends the list with alias names that are also accepted as `name:`  There are five different debug adapter categories:
+The command `csolution list debuggers` outputs the `name:` of the supported debug adapters; using the option `--verbose` extends the list with alias names that are also accepted as `name:`  There are five different debug adapter categories:
 
 Debug Adapter `name:`           | Description
 :-------------------------------|:-----------------------------------------------
@@ -2448,7 +2448,7 @@ The following sections describe the options available for the different debug ad
 
 This section lists the options that are specific to pyOCD that connects to [CMSIS-DAP](https://arm-software.github.io/CMSIS-DAP/latest/index.html) and ST-Link debug adapters. CMSIS-DAP is a standardized protocol used by many different debug adapters. All CMSIS-DAP enabled debug adapters can be accessed with `name: CMSIS-DAP@pyOCD`. A specific debug adapter name such as `name: ULINKplus@pyOCD` provides tailored default settings and a custom configuration dialog in the [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) VS Code extension.
 
-[Extended options](pyOCD-Debugger.md#extended-options) are required for rare use cases and further tailor the behaviour of pyOCD.
+[Extended options](pyOCD-Debugger.md#extended-options) are required for rare use cases and further tailor the behavior of pyOCD.
 
 #### `debugger:` for pyOCD
 
@@ -2456,7 +2456,7 @@ debugger:                         |             | Description
 :---------------------------------|:------------|:-----------------------------------------------
 &nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `<adapter>@pyOCD`.
 &nbsp;&nbsp;&nbsp; `clock:`       |  Optional   | Debug clock speed in Hz.
-&nbsp;&nbsp;&nbsp; `protocol:`    |  Optional   | Debug portocol (jtag or swd).
+&nbsp;&nbsp;&nbsp; `protocol:`    |  Optional   | Debug protocol (jtag or swd).
 &nbsp;&nbsp;&nbsp; `dbgconf:`     |  Optional   | Configuration file for device settings such as trace pins and option bytes.
 &nbsp;&nbsp;&nbsp; `start-pname:` |  Optional   | Debugger connects at start to this processor.
 &nbsp;&nbsp;&nbsp; [`telnet:`](#telnet-for-pyocd) |  Optional   | Telnet service configuration.
@@ -2487,7 +2487,7 @@ debugger:
 !!! Note
     The `telnet:` feature will be implemented until Dec 2025. This section is only a preview.
 
-pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting or Segger RTT channel 0.
+pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O functions. Character I/O is supported via Semihosting or Segger RTT channel 0.
 The `telnet:` node configures:
 
 - Telnet port for connecting remote tools, for example the [Serial Monitor VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
@@ -2496,7 +2496,7 @@ The `telnet:` node configures:
 `telnet:`                                                 |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
 `- mode:`                                                 |**Required** | Redirect output: `off`, `server`, `file`, `console`, `monitor`.
-&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Identifies the processor (not requried for single core system).
+&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Identifies the processor (not required for single core system).
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
 &nbsp;&nbsp;&nbsp; `file-in:`                             |  Optional   | Explicit path and name of the telnet input file. Default: ./out/\<solution-name\>+\<target-type\>.\<pname\>.in
 &nbsp;&nbsp;&nbsp; `file-out:`                            |  Optional   | Explicit path and name of the telnet output file. Default: ./out/\<solution-name\>+\<target-type\>.\<pname\>.out
@@ -2514,25 +2514,27 @@ Telnet Mode   | Description
 
 **Examples:**
 
-Enable Telnet service or a single core system.
+Enable Telnet service for a single core system.
 
 ```yml
 debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:
-    mode: monitor          # Output via TCP/IP port to VS Code Serial Monitor
+    - mode: monitor          # Output via TCP/IP port to VS Code Serial Monitor
 ```
 
-Enable Telnet service or a single core system.
+Enable Telnet service for a single core system.
 
 ```yml
 debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
   telnet:
-    mode: server
+    - mode: server
 ```
+
+Enable Telnet service for a multi core system.
 
 ```yml
 debugger:
@@ -2540,11 +2542,14 @@ debugger:
   protocol: swd
   telnet:
     - pname: Core0          # enable Telnet service with default settings
+      mode: server
       port: 4444
     - pname: Core1
       mode: console         # route Telnet input/output to console 
     - pname: Core2
       mode: file            # route Telnet input/output to files
+      file-in: Blinky+MyTarget.Core2.in
+      file-out: Blinky+MyTarget.Core2.out
 ```
 
 ### Arm Debugger
@@ -2568,7 +2573,7 @@ debugger:
 
 ### Arm-FVP
 
-This section lists options that are specific to the [FVP](https://arm-software.github.io/AVH/main/simulation/html/index.html) simulation models. FVPs are configureable simulation models that are designed for software validation. An FVP represents one or more Arm processors.
+This section lists options that are specific to the [FVP](https://arm-software.github.io/AVH/main/simulation/html/index.html) simulation models. FVPs are configurable simulation models that are designed for software validation. An FVP represents one or more Arm processors.
 
 #### `debugger:` for Arm-FVP
 
@@ -2580,7 +2585,7 @@ debugger:                         |             | Description
 &nbsp;&nbsp;&nbsp; `args:`        |  Optional   | Miscellaneous [command line arguments](https://arm-software.github.io/AVH/main/simulation/html/using.html).
 
 The following `model:` executables are installed from the [Arm Tools Artifactory](https://www.keil.arm.com/artifacts/#models/arm/avh-fvp). You should use these models in combination with a `pack:` and `device:` as listed under 
-["CMSIS-based projects for AVH FVPs"](https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html). The PATH environment variable of your system can define the path to the FVP executable (then only the `model:` name from the list below is required. Optionally an explicit path can be specified in the `model:` node.
+["CMSIS-based projects for AVH FVPs"](https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html). The PATH environment variable of your system can define the path to the FVP executable (then only the `model:` name from the list below is required). Optionally an explicit path can be specified in the `model:` node.
 
 `model:`                         | Simulation Model Represents
 :--------------------------------|:---------------------------------
@@ -2633,7 +2638,7 @@ debugger:
 
 This section lists options that are specific for the [Segger J-Link](https://www.segger.com/products/debug-probes/j-link/) debug probes.
 
-[Extended options](JLink-Debugger.md#extended-options) are required for rare use cases and further tailor the behaviour of J-Link Server.
+[Extended options](JLink-Debugger.md#extended-options) are required for rare use cases and further tailor the behavior of J-Link Server.
 
 #### `debugger:` for J-Link Server
 
@@ -2641,7 +2646,7 @@ debugger:                         |             | Description
 :---------------------------------|:------------|:-----------------------------------------------
 &nbsp;&nbsp;&nbsp; `name:`        |**Required** | Identifies the debug adapter with `<adapter>@pyOCD`.
 &nbsp;&nbsp;&nbsp; `clock:`       |  Optional   | Debug clock speed in Hz.
-&nbsp;&nbsp;&nbsp; `protocol:`    |  Optional   | Debug portocol (jtag or swd).
+&nbsp;&nbsp;&nbsp; `protocol:`    |  Optional   | Debug protocol (jtag or swd).
 &nbsp;&nbsp;&nbsp; [`telnet:`](#telnet-for-j-link-server) |  Optional   | Telnet service configuration.
 &nbsp;&nbsp;&nbsp; [`trace:`](#trace-for-j-link-server)   |  Optional   | Trace configuration.
 &nbsp;&nbsp;&nbsp; [`connect:`](JLink-Debugger.md#connect) |  Optional   | Extended Option: Connect mode to hardware.
@@ -2661,12 +2666,12 @@ debugger:
 !!! Note
     The `telnet:` feature will be implemented until Dec 2025. This section is only a preview.
 
-J-Link supports a Telnet service that connects to character I/O funtions. Character I/O is supported via Semihosting (or Segger RTT channel 0). Currently only semihosting is configured for the primary core.
+J-Link supports a Telnet service that connects to character I/O functions. Character I/O is supported via Semihosting (or Segger RTT channel 0). Currently only semihosting is configured for the primary core.
 
 `telnet:`                                                 |             | Description
 :---------------------------------------------------------|-------------|:------------------------------------
 `- mode:`                                                 |**Required** | Redirect output: `server`, `console`, `monitor`, `off` (default).
-&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Identifies the processor (not requried for single core system).
+&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Identifies the processor (not required for single core system).
 &nbsp;&nbsp;&nbsp; `port:`                                |  Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
 
 Telnet Mode   | Description

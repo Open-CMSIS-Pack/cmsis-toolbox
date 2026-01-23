@@ -23,6 +23,9 @@ nav:
   - Device Configuration Tools:
     - MCUXpresso for NXP Devices: MCUXpressoConfig.md
     - STM32CubeMX for STM32 Devices: CubeMX.md
+plugins: 
+  - search
+  - mermaid2
 theme:
   name: readthedocs
 markdown_extensions:
