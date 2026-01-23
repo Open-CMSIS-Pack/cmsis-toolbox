@@ -35,6 +35,7 @@ jobs:
       - name: Install MkDocs
         run: |
           pip install mkdocs
+          pip install mkdocs-mermaid2-plugin
 
       - name: Build Documentation
         run: mkdocs build
