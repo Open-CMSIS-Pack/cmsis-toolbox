@@ -410,6 +410,12 @@ jobs:
         run: |
           jq 'del(.requires."arm:tools/kitware/cmake")' ./test/vcpkg-configuration.json > ./test/vcpkg-configuration-temp.json
 
+      - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
+        if: runner.os == 'Windows'
+        with:
+          node-version: 24
+          package-manager-cache: false
+
       - name: Setup vcpkg environment
         if: matrix.cmake_version == '3.31.5'
         uses: ARM-software/cmsis-actions/vcpkg@afc8e1a46fad8a5e1a08f8477b71050d442f60a7 # v1
