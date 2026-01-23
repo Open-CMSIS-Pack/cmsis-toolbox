@@ -404,6 +404,11 @@ jobs:
             pip install --upgrade pip
             pip install -r test/e2e/requirements.txt
 
+      - uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
+        with:
+          node-version: 24.13.0
+          package-manager-cache: false
+
       - name: Create vcpkg config without CMake
         if: matrix.cmake_version != '3.31.5'
         shell: bash
