@@ -416,7 +416,6 @@ jobs:
         with:
           config: "./test/vcpkg-configuration.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
-          cache: "-"
 
       - name: Setup vcpkg environment (without CMake)
         if: matrix.cmake_version != '3.31.5'
@@ -424,7 +423,6 @@ jobs:
         with:
           config: "./test/vcpkg-configuration-temp.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
-          cache: "-"
 
       # Overlay CMake for non-vcpkg runs (no need to mutate the vcpkg config)
       - name: Install CMake ${{ matrix.cmake_version }} (amd64)
