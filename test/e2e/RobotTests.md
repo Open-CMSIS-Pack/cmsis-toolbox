@@ -18,7 +18,7 @@ Install Robot Framework and its dependencies using pip:
 
 ```bash
 cd <root_dir>/test/e2e
-pip install --upgrade pip
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
