@@ -1,8 +1,6 @@
 solution:
   cdefault:
 
-  compiler: GCC
-
   packs:
     - pack: ARM::Cortex_DFP
     - pack: ARM::CMSIS
@@ -12,8 +10,11 @@ solution:
       device: ARMCM0
 
   build-types:
-    - type: Debug
-    - type: Release
+    - type: GCC
+      compiler: GCC
+
+    - type: XC
+      compiler: XC
 
   projects:
     - project: ./project/project.cproject.yml

@@ -14,7 +14,7 @@ solution:
   build-types:
     - type: Release
 
-  compiler: AC6
+  compiler: XC
 
   projects:
     - project: project/project.cproject.yml
