@@ -1,6 +1,7 @@
 # Installation
 
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
 
 This chapter explains the setup of the CMSIS-Toolbox along with a build environment.
 
@@ -20,30 +21,23 @@ To set up the **CMSIS-Toolbox** on a local computer, copy the content of the arc
 
 The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The installation of these tools is required.
 
-- [**CMake**](https://cmake.org/download) version 3.31.5 or higher.
-
-!!! Note
-    For Win64, enable the install option *Add CMake to the system PATH*.
-
-- [**Ninja**](https://github.com/ninja-build/ninja/releases) version 1.12.0 or higher.
-
-!!! Note
-    [**Ninja**](https://github.com/ninja-build/ninja/releases) may be copied to the `<cmsis-toolbox-installation-dir>/bin` directory.
+| Tool | Version | Notes |
+|:-----|:--------|:------|
+| [**CMake**](https://cmake.org/download) | 3.31.5 or higher | For Win64, enable the install option add *CMake* to the system *Path* |
+| [**Ninja**](https://github.com/ninja-build/ninja/releases) | 1.12.0 or higher | May be copied to the `<cmsis-toolbox-installation-dir>/bin` directory |
 
 ### Compiler Toolchains
 
 The CMSIS-Toolbox works with the following compiler toolchains. Install one or more compilers, depending on your requirements.
 
-- [**GNU Arm Embedded Compiler**](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads) version 10.3.1 or higher.
-
-- [**Keil MDK**](https://www.keil.com/mdk5/install) version 5.36 or higher.
-
-- [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) version 6.18.0 or higher
-    - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
-
-- [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) version 9.32.1 or higher.
-
-- [**CLANG Embedded Compiler**](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest) version 17.0.1 or higher.
+| ID | Compiler | Version | Notes |
+|:---|:---------|:--------|:------|
+| `GCC` | [**GNU Arm Embedded Compiler**](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads) | 10.3.1 or higher | |
+| `AC6` | [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) | 6.18.0 or higher | Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported |
+| `IAR` | [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) | 9.32.1 or higher | |
+| `CLANG` | [**Arm Toolchain for Embedded**](https://developer.arm.com/Tools%20and%20Software/Arm%20Toolchain%20for%20Embedded) | 17.0.1 or higher | |
+| `CLANG_TI` | [**ARM-CGT-CLANG**](https://www.ti.com/tool/download/ARM-CGT-CLANG) (TI) | 4.0.1 or higher | Configuration is mMaintained by TI |
+| `XC` | [**MPLAB XC32 Compiler**](https://www.microchip.com/en-us/tools-resources/develop/mplab-xc-compilers/xc32) (Microchip) | 5.0.0 or higher | Configuration is maintained by Microchip |
 
 ### Environment Variables
 
@@ -53,10 +47,10 @@ The various tools use the following environment variables.
 
 Environment Variable     |             | Description
 :------------------------|:------------|:------------
-`<name>`**\_TOOLCHAIN_**`<major>`\_`<minor>`\_`<patch>` | **Required** | Path to the [compiler binaries](#compiler-registration) where `<name>` is one of AC6, GCC, IAR, CLANG.
-**CMSIS_PACK_ROOT**      | Optional | Path to the [CMSIS-Pack Root](#cmsis_pack_root) directory that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
-**CMSIS_COMPILER_ROOT**  | Optional | Path to the CMSIS-Toolbox `etc` directory (i.e. `/c/cmsis-toolbox/etc`).
-**Path**                 | **Required** | Add to the system path the CMSIS-Toolbox `bin` directory (i.e. `/c/cmsis-toolbox/bin`) as well as CMake and Ninja.
+`<id>\_TOOLCHAIN_<major>`\_`<minor>`\_`<patch>` | **Required** | Path to the [compiler binaries](#compiler-registration). `<id>` is the Compiler ID from the table above (AC6, GCC, CLANG, ...).
+`CMSIS_PACK_ROOT`      | Optional | Path to the [CMSIS-Pack Root](#cmsis_pack_root) directory that stores [software packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html).
+`CMSIS_COMPILER_ROOT`  | Optional | Path to the CMSIS-Toolbox `etc` directory (i.e. `/c/cmsis-toolbox/etc`).
+`Path`                   | **Required** | Add to the system path the CMSIS-Toolbox `bin` directory (i.e. `/c/cmsis-toolbox/bin`) as well as CMake and Ninja.
 
 #### Default Values
 
@@ -73,7 +67,7 @@ The environment variables **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are op
 
 - **CMSIS_COMPILER_ROOT** default is `<toolbox>/bin/../etc`, i.e., `etc` folder relative to the toolbox executables. It is used to locate:
 
-    - Toolchain cmake files `<compiler-name>.<major>.<minor>.<patch>.cmake` for the selected [compiler](YML-Input-Format.md#compiler).
+    - Toolchain cmake files `<compiler-name>.<version>.cmake` for the selected [compiler](YML-Input-Format.md#compiler).
     - Default [linker script files](build-overview.md#linker-script-management) (to be preprocessed): `<compiler-name>_linker_script.<ext>.src`
     - The `cdefault.yml` that is used when no [`cdefault.yml`](YML-Input-Format.md#cdefault) file is found in the same directory as the `<solution-name>.csolution.yml` file.
 
