@@ -2,14 +2,12 @@
 
 [![License](https://img.shields.io/github/license/Open-CMSIS-Pack/cbuild2cmake?label)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/LICENSE)
 [![Dependency review](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/dependency-review.yml?logo=arm&logoColor=0091bd&label=Dependency%20review)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/dependency-review.yml)
-[![Copyright check](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/global.yml?logo=arm&logoColor=0091bd&label=Copyright%20check)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/global.yml)
 [![Markdown lint check](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/markdown.yml?logo=arm&logoColor=0091bd&label=Markdown%20lint%20check)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/markdown.yml)
 [![Build documentation](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/mkdocs.yml?logo=arm&logoColor=0091bd&label=Build%20documentation)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/mkdocs.yml)
 [![Build cmsis-toolbox](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/nightly.yml?logo=arm&logoColor=0091bd&label=Build%20cmsis-toolbox)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/nightly.yml)
 [![End to end tests](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/e2e_test.yml?logo=arm&logoColor=0091bd&label=End%20to%20end%20tests)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/e2e_test.yml)
 [![Publish cmsis-toolbox](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/toolbox.yml?logo=arm&logoColor=0091bd&label=Publish%20cmsis-toolbox)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/toolbox.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Open-CMSIS-Pack/cmsis-toolbox/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Open-CMSIS-Pack/cmsis-toolbox)
-
 
 This contains the executable tools of the CMSIS-Toolbox that provides a set of command-line tools to work with software packs in Open-CMSIS-Pack format.
 
