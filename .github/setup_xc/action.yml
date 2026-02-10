@@ -18,22 +18,21 @@ runs:
         OS_TYPE="${{ inputs.os }}"
         VERSION="${{ inputs.version }}"
         
-        apt update && apt install curl -y
-
         if [[ "$OS_TYPE" == *"linux"* ]]; then
           echo "Processing Linux Installation..."
           URL="https://ww1.microchip.com/downloads/aemDocuments/documents/DEV/ProductDocuments/SoftwareTools/xc32-v${VERSION}-full-install-linux-x64-installer.run"
-          curl -L "$URL" -o xc32-installer.run
+          curl -s -L "$URL" -o xc32-installer.run
           chmod +x xc32-installer.run
-          ./xc32-installer.run --mode unattended --unattendedmodeui none --netservername localhost
+          sudo ./xc32-installer.run --mode unattended --unattendedmodeui none --netservername localhost
           echo "/opt/microchip/xc32/v${VERSION}/bin" >> $GITHUB_PATH
           echo "XC_TOOLCHAIN_5_0_0=/opt/microchip/xc32/v${VERSION}/bin" >> $GITHUB_ENV
 
         elif [[ "$OS_TYPE" == *"windows"* ]]; then
           echo "Processing Windows Installation..."
           URL="https://ww1.microchip.com/downloads/aemDocuments/documents/DEV/ProductDocuments/SoftwareTools/xc32-v${VERSION}-full-install-windows-x64-installer.exe"
-          curl -L "$URL" -o xc32-installer.exe
-          ./xc32-installer.exe --mode unattended --unattendedmodeui none --netservername localhost
-          echo "C:/Program Files/Microchip/xc32/v${VERSION}/bin" >> $GITHUB_PATH
-          echo "XC_TOOLCHAIN_5_0_0=C:/Program Files/Microchip/xc32/v${VERSION}/bin" >> $GITHUB_ENV
+          curl -s -L "$URL" -o xc32-installer.exe
+          mkdir ${{ github.workspace }}/xc32_toolchain
+          ./xc32-installer.exe --mode unattended --unattendedmodeui none --netservername localhost --prefix ${{ github.workspace }}/xc32_toolchain
+          echo "${{ github.workspace }}/xc32_toolchain/bin" >> $GITHUB_PATH
+          echo "XC_TOOLCHAIN_5_0_0=${{ github.workspace }}/xc32_toolchain/bin" >> $GITHUB_ENV
         fi
