@@ -937,6 +937,9 @@ List of the description files for peripherals and software components used in th
 `svd`   | [System View Description (`*.svd`) file](https://open-cmsis-pack.github.io/svd-spec/main/index.html) specified in the [DFP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debug).
 `scvd`  | [Software Component Viewer Description (`*.scvd`) file](http://arm-software.github.io/CMSIS-View/latest/SCVD_Format.html) for [CMSIS-View](https://arm-software.github.io/CMSIS-View/latest/index.html).
 
+!!! Note
+    - The `pname:` specifier applies a description file only to a specific processor core. The same description file may therefore appear more than once with different `pname:` specifiers.
+
 #### `debugger:`
 
 This node contains connection information for a debugger with initial settings coming from the board support pack (BSP) or device family pack (DFP).

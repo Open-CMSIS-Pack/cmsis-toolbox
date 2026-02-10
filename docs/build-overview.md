@@ -964,8 +964,8 @@ A *csolution project* that uses `target-set:` to configure the debugger should b
 
 ```shell
 cbuild MyApplication.csolution.yml --active MyBoard                       # build application
-pyOCD load --cbuild-run MyApplication+MyBoard.cbuild-run.yml              # download image to target
-pyOCD gdbserver --cbuild-run MyApplication+MyBoard.cbuild-run.yml         # start GDB remote server
+pyocd load --cbuild-run MyApplication+MyBoard.cbuild-run.yml              # download image to target
+pyocd gdbserver --cbuild-run MyApplication+MyBoard.cbuild-run.yml         # start GDB remote server
 ```
 
 ### Using VS Code

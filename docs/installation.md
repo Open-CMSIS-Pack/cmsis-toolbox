@@ -67,9 +67,12 @@ The environment variables **CMSIS_PACK_ROOT** and **CMSIS_COMPILER_ROOT** are op
 
 - **CMSIS_COMPILER_ROOT** default is `<toolbox>/bin/../etc`, i.e., `etc` folder relative to the toolbox executables. It is used to locate:
 
-    - Toolchain cmake files `<compiler-name>.<version>.cmake` for the selected [compiler](YML-Input-Format.md#compiler).
+    - Toolchain CMake files `<compiler-name>.<version>.cmake` for the selected [compiler](YML-Input-Format.md#compiler).
     - Default [linker script files](build-overview.md#linker-script-management) (to be preprocessed): `<compiler-name>_linker_script.<ext>.src`
     - The `cdefault.yml` that is used when no [`cdefault.yml`](YML-Input-Format.md#cdefault) file is found in the same directory as the `<solution-name>.csolution.yml` file.
+
+!!! Note
+    - The version number of the toolchain CMake file refers to the minimum version that is required. Higher versions of the same compiler are supported with the same CMake file.
 
 #### Compiler Registration
 

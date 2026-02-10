@@ -96,6 +96,100 @@ debugger:
     post-reset: off         # no reset after load
 ```
 
+### `rtt:`
+
+[SEGGER RTT](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) implements low-latency debug I/O via RAM ring buffers. The `rtt:` node configures the RTT features and the RTT channel usage.
+
+- By default, RTT channel 0 is used for character I/O to the console (STDIO) of the host system that runs pyOCD. The setting `stdio: false` disables this console I/O.
+
+- The [`telnet:`](#telnet) node maps any RTT channel to a TCP Telnet port. pyOCD starts a Telnet server on each port and connects the corresponding RTT channel.
+
+- The [`system-view:`](#system-view) node maps any RTT channel to a core-specific [SystemView](https://www.segger.com/products/development-tools/systemview/) data file.
+
+!!! Note
+    - RTT is only enabled when using the pyOCD [run command](#run).
+    - Apply the setting `stdio: false` to connect the RTT channel 0 to a Telnet server or SystemView data file.
+
+`rtt:`                                               |              | Description
+:----------------------------------------------------|--------------|:------------------------------------
+`- pname:`                                           |   Optional   | Processor identifier (not required for single-core systems).
+&nbsp;&nbsp;&nbsp; [`control-block:`](#control-block)|   Optional   | RTT control block configuration.
+&nbsp;&nbsp;&nbsp; `stdio:`                          |   Optional   | Route STDIO over RTT channel 0: `true`, `false` (default: `true`).
+&nbsp;&nbsp;&nbsp; [`telnet:`](#telnet)              |   Optional   | Map additional RTT channels to Telnet ports.
+&nbsp;&nbsp;&nbsp; [`system-view:`](#system-view)    |   Optional   | Capture SystemView data from a designated RTT channel to a file.
+
+#### `control-block:`
+
+pyOCD discovers the RTT control block using these steps for each core on the target:
+
+1. The `control-block:` node provides an explicit `address:`. If `size:` is also specified, pyOCD scans that memory range.
+2. When no `control-block:` is specified, pyOCD checks the ELF file for the symbol `_SEGGER_RTT` that specifies the control block location.
+3. With `auto-detect: true`, pyOCD scans default memory regions for the RTT control block signature.
+  
+If the RTT control block cannot be found, RTT will be disabled for that core.
+
+The `control-block:` node configures the RTT control block discovery in pyOCD.
+
+`control-block:`                                    |              | Description
+:---------------------------------------------------|--------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `auto-detect:`                   |   Optional   | Scan default memory regions for the RTT control block signature: `true`, `false` (default: `false`).
+&nbsp;&nbsp;&nbsp; `address:`                       |   Optional   | Explicit control block address; when combined with `size`, acts as scan start address.
+&nbsp;&nbsp;&nbsp; `size:`                          |   Optional   | Scan length in bytes when `address` is provided.
+
+#### `telnet:`
+
+The `telnet:` node maps the RTT channels to Telnet ports. For general Telnet service configuration and output routing, see [`telnet:` for pyOCD](YML-Input-Format.md#telnet-for-pyocd).
+
+`telnet:`                                           |              | Description
+:---------------------------------------------------|--------------|:------------------------------------
+`- channel:`                                        |   Optional   | RTT channel that is connected to Telnet Server
+&nbsp;&nbsp;&nbsp; `port:`                          | **Required** | TCP port for the Telnet server.
+
+#### `system-view:`
+
+The `system-view:` node configures the RTT channel data capturing for [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/).
+
+`system-view:`                                      |              | Description
+:---------------------------------------------------|--------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `channel:`                       |   Optional   | RTT channel used for SystemView (default: `1`). Disabled if used by `stdio` or `telnet`.
+&nbsp;&nbsp;&nbsp; `file-out:`                      |   Optional   | Capture RTT channel output in a SystemView data file. Default: `./out/<solution-name>+<target-type>.<pname>.SVDat` (derived from [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management)).
+&nbsp;&nbsp;&nbsp; `auto-start:`                    |   Optional   | Send SystemView start command automatically: `true`, `false`.
+&nbsp;&nbsp;&nbsp; `auto-stop:`                     |   Optional   | Send SystemView stop command automatically: `true`, `false`.
+
+**Examples:**
+
+Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port `4444`:
+
+```yml
+debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  rtt:
+    - pname: Core0
+      stdio: true
+      telnet:
+        - channel: 2
+          port: 4444
+```
+
+Configure explicit control block and SystemView capture:
+
+```yml
+debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  rtt:
+    - pname: Core0
+      control-block:
+        address: 0x20000000
+        size: 0x00020000
+      system-view:
+        channel: 1
+        file-out: ./out/MyApp+MyBoard.Core0.SVDat
+        auto-start: true
+        auto-stop: true
+```
+
 ### `trace:`
 
 !!! Note
@@ -140,13 +234,22 @@ Start GDB servers for each target device core, used for debugging the applicatio
 :--------------------|:------------------------------------
 `--semihosting`      | Enable semihosting (default disabled).
 `--persist`          | Keep GDB server running even after remote has detached (default disabled).
-`--probe <uid>`      | Select specific debug probe (also: `--uid`).
+`--probe`            | Specify the probe type (`cmsisdap:` or `jlink:`). Not required if there is only one probe on the host system.
+`--uid`              | Specify the ID or serial number of a debug probe (also: `--uid`). Not required if there is only one probe on the host system.
 `--reset-run`        | Reset and run before running GDB server.
 
 **Example:**
 
+When only one probe is connected to the host computer, `--probe` and `--uid` can be omitted.
+
 ```bash
-pyocd gdbserver --probe cmsisdap: --persist --reset-run --semihosting --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
+pyocd gdbserver --persist --reset-run --semihosting --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
+```
+
+Connect to a specific probe on the host computer.
+
+```bash
+pyocd load --probe cmsisdap: --uid XP0GA4C42ZQAA --cbuild-run c:\Test\Dec11\DualCore\out\DualCore+FRDM-MCXN947.cbuild-run.yml
 ```
 
 ### `run`
@@ -157,7 +260,8 @@ Run the target until `timelimit` is reached or an `EOT (0x04)` character is dete
 :--------------------|:------------------------------------
 `--timelimit <sec>`  | Maximum execution time in seconds before terminating (default no time limit).
 `--eot`              | Terminate execution when EOT character (`0x04`) is detected on stdout (default disabled).
-`--probe <id>`       | Select a specific debug probe (also: `--uid`).
+`--probe`            | Specify the probe type (`cmsisdap:` or `jlink:`). Not required if there is only one probe on the host system.
+`--uid`              | Specify the ID or serial number of a debug probe (also: `--uid`). Not required if there is only one probe on the host system.
 
 **Example:**
 
@@ -172,6 +276,8 @@ Erase target using `chip` erase.
 `<options>`          | Description
 :--------------------|:------------------------------------
 `--chip`             | Perform a chip erase.
+`--probe`            | Specify the probe type (`cmsisdap:` or `jlink:`). Not required if there is only one probe on the host system.
+`--uid`              | Specify the ID or serial number of a debug probe (also: `--uid`). Not required if there is only one probe on the host system.
 
 **Example:**
 
@@ -185,7 +291,7 @@ Program target with images listed under the [`output`](#output) node.
 
 **Example:**
 
-```bash
+ ```bash
 pyocd load --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
 ```
 
