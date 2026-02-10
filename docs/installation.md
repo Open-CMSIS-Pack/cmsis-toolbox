@@ -36,7 +36,7 @@ The CMSIS-Toolbox works with the following compiler toolchains. Install one or m
 | `AC6` | [**Arm Compiler for Embedded**](https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6) | 6.18.0 or higher | Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported |
 | `IAR` | [**IAR EW-Arm**](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/) | 9.32.1 or higher | |
 | `CLANG` | [**Arm Toolchain for Embedded**](https://developer.arm.com/Tools%20and%20Software/Arm%20Toolchain%20for%20Embedded) | 17.0.1 or higher | |
-| `CLANG_TI` | [**ARM-CGT-CLANG**](https://www.ti.com/tool/download/ARM-CGT-CLANG) (TI) | 4.0.1 or higher | Configuration is mMaintained by TI |
+| `CLANG_TI` | [**ARM-CGT-CLANG**](https://www.ti.com/tool/download/ARM-CGT-CLANG) (TI) | 4.0.1 or higher | Configuration is maintained by TI |
 | `XC` | [**MPLAB XC32 Compiler**](https://www.microchip.com/en-us/tools-resources/develop/mplab-xc-compilers/xc32) (Microchip) | 5.0.0 or higher | Configuration is maintained by Microchip |
 
 ### Environment Variables
