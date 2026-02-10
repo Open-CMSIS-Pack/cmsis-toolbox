@@ -3,6 +3,7 @@
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
 
 This chapter contains technical details about the operation of the CMSIS Toolbox.
 
@@ -135,6 +136,10 @@ The section below describes the steps to add a new compiler toolchain to the CMS
 3. Create a new CMake file in [`./tools/buildmgr/cbuildgen/config`](https://github.com/Open-CMSIS-Pack/devtools/tree/main/tools/buildmgr/cbuildgen/config) with the naming convention `compiler_name.<version>.cmake`.
 4. Map with the file `compiler_name.<version>.cmake`. the **CMake** input variables to the **CMake** toolchain variables.
    - Use an existing `*.cmake` file, i.e. `GCC.<version>.cmake` as a reference.
+
+!!! Note
+    - `<version>` refers to the minimum version number (major, minor and patch) of the compiler toolchain that should be supported. Higher versions are accepted.
+    - Refer to [Installation - Compiler Registration](installation.md#compiler-registration) for more information.
 
 ### CMake Variables
 

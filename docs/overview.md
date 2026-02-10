@@ -2,23 +2,24 @@
 
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
+
+The CMSIS-Toolbox is a set of command-line tools for building embedded applications on Arm Cortex-M and Ethos-U based microcontrollers. It supports [multiple compiler toolchains](installation.md#compiler-toolchains), uses [YAML project files and software packs](build-overview.md#minimal-project-setup) for device support and reusable software components, and integrates with CMake/Ninja for scalable builds from simple applications to complex multi-processor systems.
+
+## Command Line and IDE Usage
+
+The CMSIS-Toolbox is designed for stand-alone usage and integration into [IDEs](build-tools.md#ide-usage) or [DevOps](build-tools.md#devops-usage) systems for Continuous Integration (CI) workflows.
+
+![Operation of `csolution` tool](./images/tool-overview.png "Operation of `csolution` tool")
+
+!!! Tip
+    - The [VS Code extension Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) is a graphical user interface for [*csolution projects*](YML-Input-Format.md).
+
+    - Many [Arm Examples](https://github.com/Arm-Examples) and several projects on [github.com/Open-CMSIS-Pack](https://github.com/Open-CMSIS-Pack) use [CI/CD workflows](https://github.com/Arm-Examples/.github/blob/main/profile/CICD.md).
 
 ## Target Audience
 
 This user's guide assumes basic knowledge about Cortex-M software development. It is written for embedded software developers that work with C/C++ compiler toolchains and utilize microcontroller devices with Cortex-M processors and Ethos-U NPUs.
-
-The CMSIS-Toolbox contains stand-alone tools [for all host platforms](https://artifacts.keil.arm.com/cmsis-toolbox/) (Windows, Mac, Linux) that support:
-
-- [Arm Compiler for Embedded](https://developer.arm.com/Tools%20and%20Software/Arm%20Compiler%20for%20Embedded) version 6.18 or higher
-    - Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported
-- [Arm GNU Toolchain (GCC)](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain) version 10.3.1 or higher
-- [IAR Compiler](https://www.iar.com/products/architectures/arm/) version 9.32.1 or higher
-- [CLANG Compiler version 17.0.1](https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases) or higher based on LLVM technology
-
-!!! Notes
-    - This documentation uses the filename extension `*.yml`, but the extension `*.yaml` is also supported.
-    - The term *CMSIS solution* refers to an application project that is specified with *csolution project files* (`*.csolution.yml`, `*cproject.yml`, and `*.clayer.yml`).
-    - *Software packs* describe software components in Open-CMSIS-Pack format that can contain middleware, drivers, board support, or device support. *Software packs* also provide documentation, examples, and reusable software layers.
 
 ## Overall Workflow
 
@@ -43,20 +44,16 @@ The build steps are:
 3. **cbuild2cmake** converts this *Build Information* into CMake format.
 4. **CMake/Ninja** call the C/C++ compiler toolchain to translate the source files into the application image.
 
-!!! Note
-    The CMSIS-Toolbox build system does not use the CMake compiler and linker flags specified by environment variables [CFLAGS, LDFLAGS](https://cmake.org/cmake/help/latest/envvar/CFLAGS.html).
-    Refer to the chapter [Build Operation](build-operation.md) for further details of the build process.
+Further information:
 
-## Command Line and IDE Usage
-
-The CMSIS-Toolbox is a set of command line tools that are designed for stand-alone usage and integration into [IDEs](build-tools.md#ide-usage) or [DevOps](build-tools.md#devops-usage) systems for Continuous Integration (CI) workflows.
-
-![Operation of `csolution` tool](./images/tool-overview.png "Operation of `csolution` tool")
-
-!!! Tip
-    - The [VS Code extension Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) is a graphical user interface for [*csolution projects*](YML-Input-Format.md).
-
-    - The [AVH-FVP examples](https://github.com/Arm-Examples) and many projects on [github.com/Open-CMSIS-Pack](https://github.com/Open-CMSIS-Pack) exemplify CI workflows.
+- [Theory of Operation - Build Process Overview](build-operation.md#build-process-overview) for details about the build process.
+- [Installation - Compiler Toolchains](installation.md#compiler-toolchains) for a list of supported compilers.
+  
+!!! Notes
+    - This documentation uses the filename extension `*.yml`, but the extension `*.yaml` is also supported.
+    - The term *CMSIS solution* refers to an application project that is specified with *csolution project files* (`*.csolution.yml`, `*cproject.yml`, and `*.clayer.yml`).
+    - *Software packs* describe software components in Open-CMSIS-Pack format that can contain middleware, drivers, board support, or device support. *Software packs* also provide documentation, examples, and reusable software layers.
+    - The CMSIS-Toolbox build system does not use the CMake compiler and linker flags specified by environment variables [CFLAGS, LDFLAGS](https://cmake.org/cmake/help/latest/envvar/CFLAGS.html).
 
 ## Benefits
 

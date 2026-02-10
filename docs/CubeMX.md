@@ -3,6 +3,8 @@
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD055 -->
+<!-- markdownlint-disable MD060 -->
 
 This chapter explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) with the CMSIS-Toolbox to manage device and board configuration.
 
@@ -209,7 +211,7 @@ requirements.
 If generated, the linker script is available as described in this table:
 
 | Toolchain | Name in STM32CubeMX | Linker script location |
-|-----------|---------------------|------------------------|
+|:----------|:--------------------|:-----------------------|
 | Arm Compiler for Embedded (AC6) | MDK-ARM | `./STM32CubeMX/<target_name>/STM32CubeMX/MDK-ARM/<device_name>.sct` |
 | IAR Compiler | EWARM | `./STM32CubeMX/<target_name>/STM32CubeMX/EWARM/<device_name>.icf` |
 | GCC | STM2CubeIDE/Makefile/CMake | `./STM32CubeMX/<target_name>/STM32CubeMX/<device_name>.ld` |

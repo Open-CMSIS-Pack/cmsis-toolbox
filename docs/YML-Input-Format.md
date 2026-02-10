@@ -3,6 +3,7 @@
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
 
 The following chapter explains the CMSIS Solution Project File Format (short form *csolution project files*), the YAML files that describe the software of an embedded application.
 
@@ -682,12 +683,17 @@ solution:
 Selects the compiler toolchain used for code generation. It can be applied in `*.csolution.yml` files.
 Optionally the compiler can have a version number specification.
 
-Compiler Name                                         | Supported Compiler
+Compiler ID                                           | Supported Compiler
 :-----------------------------------------------------|:------------------------------------
-`AC6`                                                 | Arm Compiler version 6
+`AC6`                                                 | Arm Compiler for Embedded version 6
 `GCC`                                                 | GCC Compiler
 `IAR`                                                 | IAR Compiler
-`CLANG`                                               | CLANG Compiler based on LLVM technology
+`CLANG`                                               | Arm Toolchain for Embedded (CLANG frontend based on LLVM)
+`CLANG_TI`                                            | TI variant of the CLANG Compiler
+`XC`                                                  | Microchip variant of the GCC Compiler
+
+!!! Note
+    Refer to [Installation - Compiler Toolchains](installation.md#compiler-toolchains) for details about the supported compilers.
 
 **Example:**
 
@@ -898,6 +904,28 @@ groups:
 
 !!! Note
     This feature is not available with the IAR compiler.
+
+### `link:`
+
+Apply link attributes to library archive files. This feature is only available with the LLVM and GCC compiler. 
+
+!!! Note
+    For other compilers (AC6, IAR, etc.) the `link:` node is ignored.
+
+`link:` Value                                    | Description
+:------------------------------------------------|:----------------------------
+`whole-archive`                                  | Include every object file for the archive file rather than searching for the required object files.
+
+**Example:**
+
+```yml
+groups:
+  - group:  "Libraries"
+    files:
+      - file: lib1.a                 # include all object files from library archive
+        link: whole-archive
+      - file: lib2.a                 # include only required object files from library archive
+```
 
 ### `debug:`
 
@@ -1822,6 +1850,7 @@ Add source files to a project.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)       |   Optional   | Set the language standard for C++ source file compilation.
 &nbsp;&nbsp;&nbsp; [`optimize:`](#optimize)               |   Optional   | Optimize level for code generation.
 &nbsp;&nbsp;&nbsp; [`link-time-optimize:`](#link-time-optimize) |   Optional   | Enable optimization at linker level.
+&nbsp;&nbsp;&nbsp; [`link:`](#link)                       |   Optional   | Link attribute for library archive files (GCC and LLVM only).
 &nbsp;&nbsp;&nbsp; [`debug:`](#debug)                     |   Optional   | Generation of debug information.
 &nbsp;&nbsp;&nbsp; [`warnings:`](#warnings)               |   Optional   | Control generation of compiler diagnostics.
 &nbsp;&nbsp;&nbsp; [`define:`](#define)                   |   Optional   | Define symbol settings for C/C++ code generation.
@@ -1922,7 +1951,7 @@ Add a software layer to a project. Used in `*.cproject.yml` files.
 `layers:`                                                 |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
 [`- layer:`](#layer)                                      |   Optional   | Path to the `*.clayer.yml` file that defines the layer.
-&nbsp;&nbsp;&nbsp; [`type:`](#layer-type)                 |   Optional   | Refers to an expected layer type.
+&nbsp;&nbsp;&nbsp; [`type:`](#layer-type)                 |   Optional   | Refers to an expected layer type. Enables the [auto-selection of layers](#auto-select-layers).
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |   Optional   | Include layer for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude layer for a list of *build* and *target* types.
 

@@ -1,5 +1,7 @@
 # Pack Creation
 
+<!-- markdownlint-disable MD060 -->
+
 This chapter describes how to create software packs and explains the tools `packchk` (software pack verification) and `svdconv` (SVD file converter).  A pack provides a [Pack Description file in XML format (*.pdsc)](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packFormat.html) and collects information that is required by software developers and tools to work effectively with devices, boards, and middleware.
 
 ## Introduction
