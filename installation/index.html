@@ -183,6 +183,7 @@
               
                 <h1 id="installation">Installation</h1>
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
 
 <p>This chapter explains the setup of the CMSIS-Toolbox along with a build environment.</p>
 <p>There are three different ways to set up the CMSIS-Toolbox:</p>
@@ -196,42 +197,77 @@
 <p>To set up the <strong>CMSIS-Toolbox</strong> on a local computer, copy the content of the archive file to an <code>&lt;cmsis-toolbox-installation-dir&gt;</code>, for example, to <code>~/cmsis-toolbox</code>.</p>
 <h3 id="requirements">Requirements</h3>
 <p>The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The installation of these tools is required.</p>
-<ul>
-<li><a href="https://cmake.org/download"><strong>CMake</strong></a> version 3.31.5 or higher.</li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>For Win64, enable the install option <em>Add CMake to the system PATH</em>.</p>
-</div>
-<ul>
-<li><a href="https://github.com/ninja-build/ninja/releases"><strong>Ninja</strong></a> version 1.12.0 or higher.</li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><a href="https://github.com/ninja-build/ninja/releases"><strong>Ninja</strong></a> may be copied to the <code>&lt;cmsis-toolbox-installation-dir&gt;/bin</code> directory.</p>
-</div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Tool</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="https://cmake.org/download"><strong>CMake</strong></a></td>
+<td style="text-align: left;">3.31.5 or higher</td>
+<td style="text-align: left;">For Win64, enable the install option add <em>CMake</em> to the system <em>Path</em></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://github.com/ninja-build/ninja/releases"><strong>Ninja</strong></a></td>
+<td style="text-align: left;">1.12.0 or higher</td>
+<td style="text-align: left;">May be copied to the <code>&lt;cmsis-toolbox-installation-dir&gt;/bin</code> directory</td>
+</tr>
+</tbody>
+</table>
 <h3 id="compiler-toolchains">Compiler Toolchains</h3>
 <p>The CMSIS-Toolbox works with the following compiler toolchains. Install one or more compilers, depending on your requirements.</p>
-<ul>
-<li>
-<p><a href="https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads"><strong>GNU Arm Embedded Compiler</strong></a> version 10.3.1 or higher.</p>
-</li>
-<li>
-<p><a href="https://www.keil.com/mdk5/install"><strong>Keil MDK</strong></a> version 5.36 or higher.</p>
-</li>
-<li>
-<p><a href="https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6"><strong>Arm Compiler for Embedded</strong></a> version 6.18.0 or higher</p>
-<ul>
-<li>Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported</li>
-</ul>
-</li>
-<li>
-<p><a href="https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/"><strong>IAR EW-Arm</strong></a> version 9.32.1 or higher.</p>
-</li>
-<li>
-<p><a href="https://github.com/ARM-software/LLVM-embedded-toolchain-for-Arm/releases/latest"><strong>CLANG Embedded Compiler</strong></a> version 17.0.1 or higher.</p>
-</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Compiler</th>
+<th style="text-align: left;">Version</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>GCC</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads"><strong>GNU Arm Embedded Compiler</strong></a></td>
+<td style="text-align: left;">10.3.1 or higher</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>AC6</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/tools-and-software/embedded/arm-compiler/downloads/version-6"><strong>Arm Compiler for Embedded</strong></a></td>
+<td style="text-align: left;">6.18.0 or higher</td>
+<td style="text-align: left;">Arm FuSa Compiler for Embedded version 6.16.2 or higher is also supported</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>IAR</code></td>
+<td style="text-align: left;"><a href="https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/"><strong>IAR EW-Arm</strong></a></td>
+<td style="text-align: left;">9.32.1 or higher</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>CLANG</code></td>
+<td style="text-align: left;"><a href="https://developer.arm.com/Tools%20and%20Software/Arm%20Toolchain%20for%20Embedded"><strong>Arm Toolchain for Embedded</strong></a></td>
+<td style="text-align: left;">17.0.1 or higher</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>CLANG_TI</code></td>
+<td style="text-align: left;"><a href="https://www.ti.com/tool/download/ARM-CGT-CLANG"><strong>ARM-CGT-CLANG</strong></a> (TI)</td>
+<td style="text-align: left;">4.0.1 or higher</td>
+<td style="text-align: left;">Configuration is mMaintained by TI</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>XC</code></td>
+<td style="text-align: left;"><a href="https://www.microchip.com/en-us/tools-resources/develop/mplab-xc-compilers/xc32"><strong>MPLAB XC32 Compiler</strong></a> (Microchip)</td>
+<td style="text-align: left;">5.0.0 or higher</td>
+<td style="text-align: left;">Configuration is maintained by Microchip</td>
+</tr>
+</tbody>
+</table>
 <h3 id="environment-variables">Environment Variables</h3>
 <p>It maybe required to customize the installation for the actual setup of your development environment as described in the following.</p>
 <p>The various tools use the following environment variables.</p>
@@ -245,22 +281,22 @@
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>&lt;name&gt;</code><strong>_TOOLCHAIN_</strong><code>&lt;major&gt;</code>_<code>&lt;minor&gt;</code>_<code>&lt;patch&gt;</code></td>
+<td style="text-align: left;"><code>&lt;id&gt;\_TOOLCHAIN_&lt;major&gt;</code>_<code>&lt;minor&gt;</code>_<code>&lt;patch&gt;</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Path to the <a href="#compiler-registration">compiler binaries</a> where <code>&lt;name&gt;</code> is one of AC6, GCC, IAR, CLANG.</td>
+<td style="text-align: left;">Path to the <a href="#compiler-registration">compiler binaries</a>. <code>&lt;id&gt;</code> is the Compiler ID from the table above (AC6, GCC, CLANG, ...).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>CMSIS_PACK_ROOT</strong></td>
+<td style="text-align: left;"><code>CMSIS_PACK_ROOT</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Path to the <a href="#cmsis_pack_root">CMSIS-Pack Root</a> directory that stores <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/index.html">software packs</a>.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>CMSIS_COMPILER_ROOT</strong></td>
+<td style="text-align: left;"><code>CMSIS_COMPILER_ROOT</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Path to the CMSIS-Toolbox <code>etc</code> directory (i.e. <code>/c/cmsis-toolbox/etc</code>).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><strong>Path</strong></td>
+<td style="text-align: left;"><code>Path</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Add to the system path the CMSIS-Toolbox <code>bin</code> directory (i.e. <code>/c/cmsis-toolbox/bin</code>) as well as CMake and Ninja.</td>
 </tr>
@@ -301,12 +337,18 @@
 <li>
 <p><strong>CMSIS_COMPILER_ROOT</strong> default is <code>&lt;toolbox&gt;/bin/../etc</code>, i.e., <code>etc</code> folder relative to the toolbox executables. It is used to locate:</p>
 <ul>
-<li>Toolchain cmake files <code>&lt;compiler-name&gt;.&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;.cmake</code> for the selected <a href="../YML-Input-Format/#compiler">compiler</a>.</li>
+<li>Toolchain CMake files <code>&lt;compiler-name&gt;.&lt;version&gt;.cmake</code> for the selected <a href="../YML-Input-Format/#compiler">compiler</a>.</li>
 <li>Default <a href="../build-overview/#linker-script-management">linker script files</a> (to be preprocessed): <code>&lt;compiler-name&gt;_linker_script.&lt;ext&gt;.src</code></li>
 <li>The <code>cdefault.yml</code> that is used when no <a href="../YML-Input-Format/#cdefault"><code>cdefault.yml</code></a> file is found in the same directory as the <code>&lt;solution-name&gt;.csolution.yml</code> file.</li>
 </ul>
 </li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The version number of the toolchain CMake file refers to the minimum version that is required. Higher versions of the same compiler are supported with the same CMake file.</li>
+</ul>
+</div>
 <h4 id="compiler-registration">Compiler Registration</h4>
 <p>The compiler toolchain is registered with an environment variable that includes compiler name (AC6, GCC, IAR, LLVM) and version number (major, minor and patch). This information is used by the <a href="../YML-Input-Format/#compiler"><code>compiler:</code></a> node or the <code>--toolchain</code> option to choose the compiler.</p>
 <p><strong>Format:</strong></p>

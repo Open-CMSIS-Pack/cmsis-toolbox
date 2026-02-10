@@ -193,6 +193,7 @@
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
 
 <p>This chapter contains technical details about the operation of the CMSIS Toolbox.</p>
 <ul>
@@ -343,6 +344,13 @@
 <li>Map with the file <code>compiler_name.&lt;version&gt;.cmake</code>. the <strong>CMake</strong> input variables to the <strong>CMake</strong> toolchain variables.</li>
 <li>Use an existing <code>*.cmake</code> file, i.e. <code>GCC.&lt;version&gt;.cmake</code> as a reference.</li>
 </ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li><code>&lt;version&gt;</code> refers to the minimum version number (major, minor and patch) of the compiler toolchain that should be supported. Higher versions are accepted.</li>
+<li>Refer to <a href="../installation/#compiler-registration">Installation - Compiler Registration</a> for more information.</li>
+</ul>
+</div>
 <h3 id="cmake-variables">CMake Variables</h3>
 <p>The <code>CMakeLists.txt</code> file sets the following <strong>CMake</strong> input variables that should be processed by <code>compiler_name.&lt;version&gt;.cmake</code>.</p>
 <table>

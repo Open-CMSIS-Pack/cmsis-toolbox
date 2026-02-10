@@ -172,6 +172,8 @@
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD055 -->
+<!-- markdownlint-disable MD060 -->
 
 <p>This chapter explains how to use <a href="https://www.st.com/en/development-tools/stm32cubemx.html">STM32CubeMX</a> with the CMSIS-Toolbox to manage device and board configuration.</p>
 <div class="admonition note">
@@ -376,26 +378,26 @@ requirements.</p>
 <table>
 <thead>
 <tr>
-<th>Toolchain</th>
-<th>Name in STM32CubeMX</th>
-<th>Linker script location</th>
+<th style="text-align: left;">Toolchain</th>
+<th style="text-align: left;">Name in STM32CubeMX</th>
+<th style="text-align: left;">Linker script location</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Arm Compiler for Embedded (AC6)</td>
-<td>MDK-ARM</td>
-<td><code>./STM32CubeMX/&lt;target_name&gt;/STM32CubeMX/MDK-ARM/&lt;device_name&gt;.sct</code></td>
+<td style="text-align: left;">Arm Compiler for Embedded (AC6)</td>
+<td style="text-align: left;">MDK-ARM</td>
+<td style="text-align: left;"><code>./STM32CubeMX/&lt;target_name&gt;/STM32CubeMX/MDK-ARM/&lt;device_name&gt;.sct</code></td>
 </tr>
 <tr>
-<td>IAR Compiler</td>
-<td>EWARM</td>
-<td><code>./STM32CubeMX/&lt;target_name&gt;/STM32CubeMX/EWARM/&lt;device_name&gt;.icf</code></td>
+<td style="text-align: left;">IAR Compiler</td>
+<td style="text-align: left;">EWARM</td>
+<td style="text-align: left;"><code>./STM32CubeMX/&lt;target_name&gt;/STM32CubeMX/EWARM/&lt;device_name&gt;.icf</code></td>
 </tr>
 <tr>
-<td>GCC</td>
-<td>STM2CubeIDE/Makefile/CMake</td>
-<td><code>./STM32CubeMX/&lt;target_name&gt;/STM32CubeMX/&lt;device_name&gt;.ld</code></td>
+<td style="text-align: left;">GCC</td>
+<td style="text-align: left;">STM2CubeIDE/Makefile/CMake</td>
+<td style="text-align: left;"><code>./STM32CubeMX/&lt;target_name&gt;/STM32CubeMX/&lt;device_name&gt;.ld</code></td>
 </tr>
 </tbody>
 </table>

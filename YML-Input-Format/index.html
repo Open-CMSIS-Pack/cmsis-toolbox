@@ -134,6 +134,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#link-time-optimize">link-time-optimize:</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#link">link:</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#debug">debug:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#warnings">warnings:</a>
@@ -403,6 +405,7 @@
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
 
 <p>The following chapter explains the CMSIS Solution Project File Format (short form <em>csolution project files</em>), the YAML files that describe the software of an embedded application.</p>
 <h2 id="name-conventions">Name Conventions</h2>
@@ -1639,14 +1642,14 @@ Optionally the compiler can have a version number specification.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Compiler Name</th>
+<th style="text-align: left;">Compiler ID</th>
 <th style="text-align: left;">Supported Compiler</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>AC6</code></td>
-<td style="text-align: left;">Arm Compiler version 6</td>
+<td style="text-align: left;">Arm Compiler for Embedded version 6</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>GCC</code></td>
@@ -1658,10 +1661,22 @@ Optionally the compiler can have a version number specification.</p>
 </tr>
 <tr>
 <td style="text-align: left;"><code>CLANG</code></td>
-<td style="text-align: left;">CLANG Compiler based on LLVM technology</td>
+<td style="text-align: left;">Arm Toolchain for Embedded (CLANG frontend based on LLVM)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>CLANG_TI</code></td>
+<td style="text-align: left;">TI variant of the CLANG Compiler</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>XC</code></td>
+<td style="text-align: left;">Microchip variant of the GCC Compiler</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Refer to <a href="../installation/#compiler-toolchains">Installation - Compiler Toolchains</a> for details about the supported compilers.</p>
+</div>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">compiler: GCC              # Select GCC Compiler
 </code></pre>
@@ -2012,6 +2027,34 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 <p class="admonition-title">Note</p>
 <p>This feature is not available with the IAR compiler.</p>
 </div>
+<h3 id="link"><code>link:</code></h3>
+<p>Apply link attributes to library archive files. This feature is only available with the LLVM and GCC compiler. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For other compilers (AC6, IAR, etc.) the <code>link:</code> node is ignored.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>link:</code> Value</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>whole-archive</code></td>
+<td style="text-align: left;">Include every object file for the archive file rather than searching for the required object files.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">groups:
+  - group:  &quot;Libraries&quot;
+    files:
+      - file: lib1.a                 # include all object files from library archive
+        link: whole-archive
+      - file: lib2.a                 # include only required object files from library archive
+</code></pre>
 <h3 id="debug"><code>debug:</code></h3>
 <p>Control the generation of debug information.</p>
 <table>
@@ -3577,6 +3620,11 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 <td style="text-align: left;">Enable optimization at linker level.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#link"><code>link:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Link attribute for library archive files (GCC and LLVM only).</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug"><code>debug:</code></a></td>
 <td>Optional</td>
 <td style="text-align: left;">Generation of debug information.</td>
@@ -3716,7 +3764,7 @@ target-type and/or build-type using <a href="#for-context"><code>for-context:</c
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#layer-type"><code>type:</code></a></td>
 <td>Optional</td>
-<td style="text-align: left;">Refers to an expected layer type.</td>
+<td style="text-align: left;">Refers to an expected layer type. Enables the <a href="#auto-select-layers">auto-selection of layers</a>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>

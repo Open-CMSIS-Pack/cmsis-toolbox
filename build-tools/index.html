@@ -220,6 +220,7 @@
                 <h1 id="build-tools">Build Tools</h1>
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
 
 <p>This chapter describes the tools <a href="#cbuild-invocation"><code>cbuild</code></a> (build projects), <a href="#csolution-invocation"><code>csolution</code></a> (transform <em>csolution project files</em>), and <a href="#cpackget-invocation"><code>cpackget</code></a> (manage software packs). It includes details on command line syntax and examples.</p>
 <h2 id="requirements">Requirements</h2>
@@ -236,7 +237,7 @@
 </ul>
 <h2 id="cbuild-invocation"><code>cbuild</code> Invocation</h2>
 <p>Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.</p>
-<pre><code class="language-txt">cbuild: Build Invocation 2.12.0 (C) 2022-2025 Arm Ltd. and Contributors
+<pre><code class="language-txt">cbuild: Build Invocation 2.13.0 (C) 2022-2026 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] &lt;name&gt;.csolution.yml [options]
@@ -286,7 +287,7 @@ Use &quot;cbuild [command] --help&quot; for more information about a command.
 </div>
 <h2 id="csolution-invocation"><code>csolution</code> Invocation</h2>
 <p>Create build information for embedded applications that consist of one or more related projects.</p>
-<pre><code class="language-text">csolution: Project Manager 2.9.0 (C) 2022-2025 Arm Ltd. and Contributors
+<pre><code class="language-text">csolution: Project Manager 2.13.0 (C) 2022-2026 Arm Ltd. and Contributors
 
 Usage:
   csolution &lt;command&gt; [&lt;name&gt;.csolution.yml] [options]
@@ -665,7 +666,7 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
         cpackget add ./MDK-Middleware/Keil.MDK-Middleware.pdsc
 </code></pre>
 <h3 id="examples">Examples</h3>
-<p>Several examples show CI workflows using the CMSIS-Toolbox.</p>
+<p>Several <a href="https://github.com/Arm-Examples">Arm examples</a> show CI workflows using the CMSIS-Toolbox.</p>
 <table>
 <thead>
 <tr>
@@ -674,10 +675,6 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align: left;"><a href="https://github.com/Open-CMSIS-Pack/csolution-examples">csolution-examples</a></td>
-<td style="text-align: left;">Four different examples that execute CI tests showing various concepts, including matrix tests and AVH FVP simulation.</td>
-</tr>
 <tr>
 <td style="text-align: left;"><a href="https://github.com/Arm-Examples/AVH-Hello">AVH-Hello</a></td>
 <td style="text-align: left;">Build and execution test for "Hello World" example using a GitHub Action matrix to target all Cortex-M processors, Arm Compiler or GCC, and AVH simulation.</td>
@@ -697,10 +694,6 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
 <tr>
 <td style="text-align: left;"><a href="https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP">STM32H743I-EVAL_BSP</a></td>
 <td style="text-align: left;">Build test of a Board Support Pack (BSP) with MDK-Middleware <a href="../ReferenceApplications/">Reference Applications</a> using Arm Compiler or GCC. The artifacts store the various example projects for testing on the hardware board.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><a href="https://github.com/arm-software/AVH-TFLmicrospeech">TFL Micro Speech</a></td>
-<td style="text-align: left;">This example project shows the Virtual Streaming Interface with Audio input and uses <a href="../build-overview/#software-layers">software layers</a> for retargeting.</td>
 </tr>
 </tbody>
 </table>

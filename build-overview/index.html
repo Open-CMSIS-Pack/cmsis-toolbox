@@ -258,6 +258,7 @@
                 <h1 id="csolution-project-structure">CSolution Project Structure</h1>
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
+<!-- markdownlint-disable MD060 -->
 
 <p>This chapter outlines the structure of <em>csolution project files</em> that contain the build information of the software application.</p>
 <ul>
@@ -1277,8 +1278,8 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
 <p>A <em>csolution project</em> that uses <code>target-set:</code> to configure the debugger should be build using the option <code>--active</code> to select the target-type.  The <code>cbuild</code> command creates then a corresponding <code>*.build-run.yml</code> file that can be used with <a href="https://pyocd.io/">pyOCD version 0.37.0</a> or higher. This <code>*.build-run.yml</code> file contains all information to <a href="../YML-CBuild-Format/#run-and-debug-management">program and debug the application</a>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-shell">cbuild MyApplication.csolution.yml --active MyBoard                       # build application
-pyOCD load --cbuild-run MyApplication+MyBoard.cbuild-run.yml              # download image to target
-pyOCD gdbserver --cbuild-run MyApplication+MyBoard.cbuild-run.yml         # start GDB remote server
+pyocd load --cbuild-run MyApplication+MyBoard.cbuild-run.yml              # download image to target
+pyocd gdbserver --cbuild-run MyApplication+MyBoard.cbuild-run.yml         # start GDB remote server
 </code></pre>
 <h3 id="using-vs-code">Using VS Code</h3>
 <p>With the VS Code extension <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">CMSIS Solution</a> version 1.54 or higher use the <strong>Manage Solution</strong> view to configure the debugger. You may then use the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger">CMSIS Debugger</a> extension for interactive debug or <a href="https://pyocd.io">pyOCD</a> in command line mode.</p>

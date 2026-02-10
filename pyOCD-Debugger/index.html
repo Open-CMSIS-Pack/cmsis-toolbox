@@ -103,6 +103,16 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#load-setup">load-setup:</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#rtt">rtt:</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#control-block">control-block:</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#telnet">telnet:</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#system-view">system-view:</a>
+</li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#trace">trace:</a>
 </li>
 </ul>
@@ -116,8 +126,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#erase">erase</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#load">load</a>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#reset_1">reset</a>
 </li>
 </ul>
 </li>
@@ -149,15 +157,15 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#sequence-diagrams-for-pyocd-subcommands">Sequence diagrams for pyOCD subcommands</a>
+<li class="toctree-l2"><a class="reference internal" href="#debug-access-sequence-usage-for-pyocd-commands">Debug Access Sequence Usage for pyOCD Commands</a>
 <ul>
-<li class="toctree-l3"><a class="reference internal" href="#erase_1">Erase</a>
+<li class="toctree-l3"><a class="reference internal" href="#command-pyocd-erase">Command: pyOCD erase</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#load_1">Load</a>
+<li class="toctree-l3"><a class="reference internal" href="#command-pyocd-load">Command: pyOCD load</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#gdb-server">GDB server</a>
+<li class="toctree-l3"><a class="reference internal" href="#command-pyocd-gdbserver">Command: pyOCD gdbserver</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#run_1">Run</a>
+<li class="toctree-l3"><a class="reference internal" href="#command-pyocd-run">Command: pyOCD run</a>
 </li>
 </ul>
 </li>
@@ -196,7 +204,8 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="pyocd-debugger">pyOCD Debugger</h1>
-<p>The CMSIS-Toolbox provides a structure for debugger projects and their configuration options.
+<p>The pyOCD Debugger connects to CMSIS-DAP (for example ULINKplus) or ST-Link debug adapters.
+The CMSIS-Toolbox defines the <a href="../YML-Input-Format/#debugger-configuration">debug configuration</a> as part of the <em>csolution project</em>, ensuring consistent debug sessions across development teams, CI/CD environments, and different host platforms.
 This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debugger with the CMSIS-Toolbox.</p>
 <ul>
 <li><a href="#extended-options">Extended Options</a> explains additional configuration features that are required in specific use-cases.</li>
@@ -297,7 +306,7 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 </tr>
 <tr>
 <td style="text-align: left;"><code>core</code></td>
-<td style="text-align: left;">Use a processor reset via software mechanism. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetProcessor">ResetProcessor</a></td>
+<td style="text-align: left;">Use a processor reset via software mechanism. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetProcessor">ResetProcessor</a>.</td>
 </tr>
 </tbody>
 </table>
@@ -357,6 +366,180 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
   load-setup:
     pre-reset: system       # use system reset before load
     post-reset: off         # no reset after load
+</code></pre>
+<h3 id="rtt"><code>rtt:</code></h3>
+<p><a href="https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/">SEGGER RTT</a> implements low-latency debug I/O via RAM ring buffers. The <code>rtt:</code> node configures the RTT features and the RTT channel usage.</p>
+<ul>
+<li>
+<p>By default, RTT channel 0 is used for character I/O to the console (STDIO) of the host system that runs pyOCD. The setting <code>stdio: false</code> disables this console I/O.</p>
+</li>
+<li>
+<p>The <a href="#telnet"><code>telnet:</code></a> node maps any RTT channel to a TCP Telnet port. pyOCD starts a Telnet server on each port and connects the corresponding RTT channel.</p>
+</li>
+<li>
+<p>The <a href="#system-view"><code>system-view:</code></a> node maps any RTT channel to a core-specific <a href="https://www.segger.com/products/development-tools/systemview/">SystemView</a> data file.</p>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>RTT is only enabled when using the pyOCD <a href="#run">run command</a>.</li>
+<li>Apply the setting <code>stdio: false</code> to connect the RTT channel 0 to a Telnet server or SystemView data file.</li>
+</ul>
+</div>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>rtt:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Processor identifier (not required for single-core systems).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#control-block"><code>control-block:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">RTT control block configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>stdio:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Route STDIO over RTT channel 0: <code>true</code>, <code>false</code> (default: <code>true</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#telnet"><code>telnet:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Map additional RTT channels to Telnet ports.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#system-view"><code>system-view:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Capture SystemView data from a designated RTT channel to a file.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="control-block"><code>control-block:</code></h4>
+<p>pyOCD discovers the RTT control block using these steps for each core on the target:</p>
+<ol>
+<li>The <code>control-block:</code> node provides an explicit <code>address:</code>. If <code>size:</code> is also specified, pyOCD scans that memory range.</li>
+<li>When no <code>control-block:</code> is specified, pyOCD checks the ELF file for the symbol <code>_SEGGER_RTT</code> that specifies the control block location.</li>
+<li>With <code>auto-detect: true</code>, pyOCD scans default memory regions for the RTT control block signature.</li>
+</ol>
+<p>If the RTT control block cannot be found, RTT will be disabled for that core.</p>
+<p>The <code>control-block:</code> node configures the RTT control block discovery in pyOCD.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>control-block:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">    <code>auto-detect:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Scan default memory regions for the RTT control block signature: <code>true</code>, <code>false</code> (default: <code>false</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>address:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Explicit control block address; when combined with <code>size</code>, acts as scan start address.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>size:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Scan length in bytes when <code>address</code> is provided.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="telnet"><code>telnet:</code></h4>
+<p>The <code>telnet:</code> node maps the RTT channels to Telnet ports. For general Telnet service configuration and output routing, see <a href="../YML-Input-Format/#telnet-for-pyocd"><code>telnet:</code> for pyOCD</a>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>telnet:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- channel:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">RTT channel that is connected to Telnet Server</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>port:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">TCP port for the Telnet server.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="system-view"><code>system-view:</code></h4>
+<p>The <code>system-view:</code> node configures the RTT channel data capturing for <a href="https://www.segger.com/products/development-tools/systemview/">SEGGER SystemView</a>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>system-view:</code></th>
+<th></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">    <code>channel:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">RTT channel used for SystemView (default: <code>1</code>). Disabled if used by <code>stdio</code> or <code>telnet</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>file-out:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Capture RTT channel output in a SystemView data file. Default: <code>./out/&lt;solution-name&gt;+&lt;target-type&gt;.&lt;pname&gt;.SVDat</code> (derived from <a href="../YML-CBuild-Format/#run-and-debug-management"><code>*.cbuild-run.yml</code></a>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>auto-start:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Send SystemView start command automatically: <code>true</code>, <code>false</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>auto-stop:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Send SystemView stop command automatically: <code>true</code>, <code>false</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<p>Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port <code>4444</code>:</p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  rtt:
+    - pname: Core0
+      stdio: true
+      telnet:
+        - channel: 2
+          port: 4444
+</code></pre>
+<p>Configure explicit control block and SystemView capture:</p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  rtt:
+    - pname: Core0
+      control-block:
+        address: 0x20000000
+        size: 0x00020000
+      system-view:
+        channel: 1
+        file-out: ./out/MyApp+MyBoard.Core0.SVDat
+        auto-start: true
+        auto-stop: true
 </code></pre>
 <h3 id="trace"><code>trace:</code></h3>
 <div class="admonition note">
@@ -461,8 +644,12 @@ Use the following command line syntax to leverage this information:</p>
 <td style="text-align: left;">Keep GDB server running even after remote has detached (default disabled).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>--probe &lt;uid&gt;</code></td>
-<td style="text-align: left;">Select specific debug probe (also: <code>--uid</code>).</td>
+<td style="text-align: left;"><code>--probe</code></td>
+<td style="text-align: left;">Specify the probe type (<code>cmsisdap:</code> or <code>jlink:</code>). Not required if there is only one probe on the host system.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--uid</code></td>
+<td style="text-align: left;">Specify the ID or serial number of a debug probe (also: <code>--uid</code>). Not required if there is only one probe on the host system.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>--reset-run</code></td>
@@ -471,7 +658,11 @@ Use the following command line syntax to leverage this information:</p>
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
-<pre><code class="language-bash">pyocd gdbserver --probe cmsisdap: --persist --reset-run --semihosting --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
+<p>When only one probe is connected to the host computer, <code>--probe</code> and <code>--uid</code> can be omitted.</p>
+<pre><code class="language-bash">pyocd gdbserver --persist --reset-run --semihosting --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
+</code></pre>
+<p>Connect to a specific probe on the host computer.</p>
+<pre><code class="language-bash">pyocd load --probe cmsisdap: --uid XP0GA4C42ZQAA --cbuild-run c:\Test\Dec11\DualCore\out\DualCore+FRDM-MCXN947.cbuild-run.yml
 </code></pre>
 <h3 id="run"><code>run</code></h3>
 <p>Run the target until <code>timelimit</code> is reached or an <code>EOT (0x04)</code> character is detected on stdout.</p>
@@ -492,8 +683,12 @@ Use the following command line syntax to leverage this information:</p>
 <td style="text-align: left;">Terminate execution when EOT character (<code>0x04</code>) is detected on stdout (default disabled).</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>--probe &lt;id&gt;</code></td>
-<td style="text-align: left;">Select a specific debug probe (also: <code>--uid</code>).</td>
+<td style="text-align: left;"><code>--probe</code></td>
+<td style="text-align: left;">Specify the probe type (<code>cmsisdap:</code> or <code>jlink:</code>). Not required if there is only one probe on the host system.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--uid</code></td>
+<td style="text-align: left;">Specify the ID or serial number of a debug probe (also: <code>--uid</code>). Not required if there is only one probe on the host system.</td>
 </tr>
 </tbody>
 </table>
@@ -514,6 +709,14 @@ Use the following command line syntax to leverage this information:</p>
 <td style="text-align: left;"><code>--chip</code></td>
 <td style="text-align: left;">Perform a chip erase.</td>
 </tr>
+<tr>
+<td style="text-align: left;"><code>--probe</code></td>
+<td style="text-align: left;">Specify the probe type (<code>cmsisdap:</code> or <code>jlink:</code>). Not required if there is only one probe on the host system.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>--uid</code></td>
+<td style="text-align: left;">Specify the ID or serial number of a debug probe (also: <code>--uid</code>). Not required if there is only one probe on the host system.</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
@@ -522,12 +725,17 @@ Use the following command line syntax to leverage this information:</p>
 <h3 id="load"><code>load</code></h3>
 <p>Program target with images listed under the <a href="#output"><code>output</code></a> node.</p>
 <p><strong>Example:</strong></p>
-<pre><code class="language-bash">pyocd load --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
-</code></pre>
-<h3 id="reset_1"><code>reset</code></h3>
-<p>Reset target using selected <a href="#reset"><code>reset</code></a> type.</p>
-<p><strong>Example</strong></p>
-<pre><code class="language-bash">pyocd reset --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
+<p>```bash
+pyocd load --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml</p>
+<pre><code>
+### `reset`
+
+Reset target using selected [`reset`](#reset) type.
+
+**Example:**
+
+```bash
+pyocd reset --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
 </code></pre>
 <h2 id="content-of-cbuild-runyml">Content of <code>cbuild-run.yml</code></h2>
 <p>This section details the content of <code>cbuild-run.yml</code> file and how it is used to configure pyOCD. The <code>cbuild-run.yml</code>
@@ -668,22 +876,22 @@ programmed to the device.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  output:
     - file: M55_HP/Alif-AppKit-E7/Debug/M55_HP.axf
-      info: generate by M55_HP.Debug+Alif-AppKit-E7
+      info: generated by M55_HP.Debug+Alif-AppKit-E7
       type: elf
       load: image+symbols
       pname: M55_HP
     - file: M55_HE/Alif-AppKit-E7/Debug/M55_HE.axf
-      info: generate by M55_HE.Debug+Alif-AppKit-E7
+      info: generated by M55_HE.Debug+Alif-AppKit-E7
       type: elf
       load: symbols
       pname: M55_HE
     - file: M55_HE/Alif-AppKit-E7/Debug/M55_HE.hex
-      info: generate by M55_HE.Debug+Alif-AppKit-E7
+      info: generated by M55_HE.Debug+Alif-AppKit-E7
       type: hex
       load: image
       pname: M55_HE
     - file: M55_HE/Alif-AppKit-E7/Debug/M55_HE.bin
-      info: generate by M55_HE.Debug+Alif-AppKit-E7
+      info: generated by M55_HE.Debug+Alif-AppKit-E7
       type: bin
       load: none
       pname: M55_HE
@@ -929,7 +1137,7 @@ CSolution Project Format section <a href="../YML-Input-Format/#debugger-for-pyoc
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  debug-vars:
     vars: |
-      // Default values for variables in debug sequences. Are configured with a *.dbgconf file in the user project
+      // Default values for variables in debug sequences. Can be configured with a *.dbgconf file in the user project
       __var SWO_Pin               = 0;                    // Serial Wire Output pin: 0 = PIO0_10, 1 = PIO0_8
       __var Dbg_CR                = 0x00000000;           // DBG_CR
       __var BootTime              = 10000;                // 10 milliseconds
@@ -1067,7 +1275,7 @@ the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code>
 <tr>
 <td style="text-align: left;"><code>- pname:</code></td>
 <td><strong>Required</strong></td>
-<td style="text-align: left;">Processor identifier  (mandatory for multi-processor devices).</td>
+<td style="text-align: left;">Processor identifier (mandatory for multi-processor devices).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>apid:</code></td>
@@ -1107,49 +1315,47 @@ the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code>
         apid: 1
     dormant: true
 </code></pre>
-<h2 id="sequence-diagrams-for-pyocd-subcommands">Sequence diagrams for pyOCD subcommands</h2>
-<p>pyOCD connects to the target as shown in the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences">Open-CMSIS-Pack "Usage of debug access sequences"</a>
-<strong>Connect Debugger to Device</strong> diagram. Additionally, pyOCD supports the <code>attach</code> connect mode (see <a href="#connect"><code>connect:</code></a>),
-which connects without resetting, or halting the target.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The diagram arrow "Repeat for each Processor Core" is misleading. Only the following blocks are executed once per
-processor core: <strong>Read Target Features</strong>, <strong>DebugCoreStart</strong>, <strong>Stop Processor</strong> / <strong>ResetCatchSet</strong>,
-<strong>Wait for Processor to Stop</strong>, and <strong>Initialize Debug Components</strong>. The remaining diagram elements run once for the
-device as a whole. This distinction is important for multi-core targets, where some blocks run once per core and
-others run once for the device.</p>
-</div>
+<h2 id="debug-access-sequence-usage-for-pyocd-commands">Debug Access Sequence Usage for pyOCD Commands</h2>
+<p>The sequence diagrams below show the usage of the debug access sequences for pyOCD commands. The specification <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences">Open-CMSIS-Pack - Usage of debug access sequences</a> describes the following sequence blocks. pyOCD uses these concepts, but implements these deviations:</p>
+<ul>
+<li><strong>Connect Debugger to Device</strong>:  <ul>
+<li>For the <a href="#connect"><code>connect:</code></a> mode <code>attach</code>, no reset or halt operations are issued.</li>
+<li>For multi-processor systems, only the following blocks are executed once per processor core: <strong>Read Target Features</strong>, <strong>DebugCoreStart</strong>, <strong>Stop Processor</strong> / <strong>ResetCatchSet</strong>,
+<strong>Wait for Processor to Stop</strong>, and <strong>Initialize Debug Components</strong>. The remaining diagram elements run once for the device as a whole. This distinction is important for multi-core targets, where some blocks run once per core and others run once for the device.</li>
+</ul>
+</li>
+</ul>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
-<p>Blue blocks are clickable and open the linked documentation.</p>
+<p>Sequence Blocks in the diagrams below link to the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences">Open-CMSIS-Pack</a> specification that provides further details.</p>
 </div>
 <hr/>
-<h3 id="erase_1">Erase</h3>
+<h3 id="command-pyocd-erase">Command: pyOCD erase</h3>
 <div class="mermaid">flowchart TD
   classDef seq fill:#c7d6ea,stroke:#333;
 
-  B0(Open-CMSIS-Pack&lt;br&gt;Connect Debugger to Device&lt;br&gt;sequence):::seq
+  B0(Sequence Block:&lt;br&gt;Connect Debugger to Device):::seq
   click B0 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
   B0 -.-&gt; B1
   B1[Set reset catch on all cores] --&gt; B2
   B2[Reset device with&lt;br&gt;primary core using&lt;br&gt;selected reset type] --&gt; B3
   B3[Clear reset catch on all cores] --&gt; loop
   subgraph loop[Loop over algorithms for primary core]
-    B4(Open-CMSIS-Pack&lt;br&gt;Flash Erase&lt;br&gt;sequence):::seq
+    B4(Sequence Block:&lt;br&gt;Flash Erase):::seq
     click B4 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/algorithmFunc.html"
     B4 --&gt; B5
     B5[Put primary core in deadloop]
   end
   loop -.-&gt; B6
-  B6(Open-CMSIS-Pack&lt;br&gt;Disconnect Debugger&lt;br&gt;sequence):::seq
+  B6(Sequence Block:&lt;br&gt;Disconnect Debugger):::seq
   click B6 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
 </div>
 <hr/>
-<h3 id="load_1">Load</h3>
+<h3 id="command-pyocd-load">Command: pyOCD load</h3>
 <div class="mermaid">flowchart TD
   classDef seq fill:#c7d6ea,stroke:#333;
 
-  B0(Open-CMSIS-Pack&lt;br&gt;Connect Debugger to Device&lt;br&gt;sequence):::seq
+  B0(Sequence Block:&lt;br&gt;Connect Debugger to Device):::seq
   click B0 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
   B0 -.-&gt; B1
   B1([Evaluate pre-reset type])
@@ -1159,7 +1365,7 @@ others run once for the device.</p>
   B4[Clear reset catch on all cores] --&gt; loop
   B1 -- off --&gt; loop
   subgraph loop[Loop over algorithms for primary core]
-    B5(Open-CMSIS-Pack&lt;br&gt;Flash Program&lt;br&gt;sequence):::seq
+    B5(Sequence Block:&lt;br&gt;Flash Program):::seq
     click B5 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/algorithmFunc.html"
     B5 --&gt; B6
     B6[Put primary core in deadloop] 
@@ -1169,15 +1375,15 @@ others run once for the device.</p>
   B7 --&gt; B8
   B8[Reset device with&lt;br&gt;primary core using&lt;br&gt;selected post-reset type] --&gt; B9
   B7 -- off --&gt; B9
-  B9(Open-CMSIS-Pack&lt;br&gt;Disconnect Debugger&lt;br&gt;sequence):::seq
+  B9(Sequence Block:&lt;br&gt;Disconnect Debugger):::seq
   click B9 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
 </div>
 <hr/>
-<h3 id="gdb-server">GDB server</h3>
+<h3 id="command-pyocd-gdbserver">Command: pyOCD gdbserver</h3>
 <div class="mermaid">flowchart TD
   classDef seq fill:#c7d6ea,stroke:#333;
 
-  B0(Open-CMSIS-Pack&lt;br&gt;Connect Debugger to Device&lt;br&gt;sequence):::seq
+  B0(Sequence Block:&lt;br&gt;Connect Debugger to Device):::seq
   click B0 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
   B0 -.-&gt; B1
   B1{Is reset-run&lt;br&gt;option set?}
@@ -1207,15 +1413,15 @@ others run once for the device.</p>
   end
   gdbserver2 -.-&gt; B13
   B13([Wait for all servers to close]) --&gt; B14
-  B14(Open-CMSIS-Pack&lt;br&gt;Disconnect Debugger&lt;br&gt;sequence):::seq
+  B14(Sequence Block:&lt;br&gt;Disconnect Debugger):::seq
   click B14 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
 </div>
 <hr/>
-<h3 id="run_1">Run</h3>
+<h3 id="command-pyocd-run">Command: pyOCD run</h3>
 <div class="mermaid">flowchart TD
   classDef seq fill:#c7d6ea,stroke:#333;
 
-  B0(Open-CMSIS-Pack&lt;br&gt;Connect Debugger to Device&lt;br&gt;sequence):::seq
+  B0(Sequence Block:&lt;br&gt;Connect Debugger to Device):::seq
   click B0 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
   B0 -.-&gt; B1
   B1[Halt all cores] --&gt; B2
@@ -1235,7 +1441,7 @@ others run once for the device.</p>
   B7 -- Yes ---&gt; B9
   B8 -- Yes ---&gt; B9
   B9[Close all servers] --&gt; B10
-  B10(Open-CMSIS-Pack&lt;br&gt;Disconnect Debugger&lt;br&gt;sequence):::seq
+  B10(Sequence Block:&lt;br&gt;Disconnect Debugger):::seq
   click B10 "https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences"
 </div>
 </div>
