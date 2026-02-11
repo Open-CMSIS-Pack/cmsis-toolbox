@@ -34,7 +34,7 @@
           <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a>
         <div class="version">
-          2.12.0
+          2.13.0
         </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -295,6 +295,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#pyocd">pyOCD</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#debugger-for-pyocd">debugger: for pyOCD</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#gdbserver-for-pyocd">gdbserver for pyOCD</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#telnet-for-pyocd">telnet: for pyOCD</a>
     </li>
@@ -2036,7 +2038,7 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 <table>
 <thead>
 <tr>
-<th style="text-align: left;"><code>link:</code> Value</th>
+<th style="text-align: left;">Value</th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
@@ -4506,6 +4508,11 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <td style="text-align: left;">Debugger connects at start to this processor.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#gdbserver-for-pyocd"><code>gdbserver:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">GDB Server configuration.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#telnet-for-pyocd"><code>telnet:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Telnet service configuration.</td>
@@ -4544,11 +4551,35 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
   clock: 10000000               # 10 MHz
   dbgconf: MyHardware.dbgconf
 </code></pre>
-<h4 id="telnet-for-pyocd"><code>telnet:</code> for pyOCD</h4>
+<h4 id="gdbserver-for-pyocd"><code>gdbserver</code> for pyOCD</h4>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>gdbserver:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- port:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Set TCP/IP port number of GDB Server (default: 3333, 3334, ... incremented for each processor).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Identifies the processor (not required for single core system).</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code>telnet:</code> feature will be implemented until Dec 2025. This section is only a preview.</p>
+<ul>
+<li>When no <code>gdbserver</code> node is applied the default mechanism of incrementing port number starting with <code>3333</code> is used.</li>
+</ul>
 </div>
+<h4 id="telnet-for-pyocd"><code>telnet:</code> for pyOCD</h4>
 <p>pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O functions. Character I/O is supported via Semihosting or Segger RTT channel 0.
 The <code>telnet:</code> node configures:</p>
 <ul>
