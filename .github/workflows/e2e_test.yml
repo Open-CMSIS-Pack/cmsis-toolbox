@@ -14,6 +14,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   matrix_prep:
     runs-on: ubuntu-latest
@@ -36,7 +40,6 @@ jobs:
       
       - name: Generate matrix with cmake versions
         id: test-matrix
-        shell: bash
         run: |
           base_matrix='${{ steps.test-matrix-base.outputs.matrix }}'
 
@@ -80,7 +83,6 @@ jobs:
           cache: 'pip'
 
       - name: Install pip dependencies
-        shell: bash
         run: |
           python -m pip install --upgrade pip
           pip install -r test/e2e/requirements.txt
@@ -93,7 +95,6 @@ jobs:
 
       - name: Create vcpkg config without CMake
         if: matrix.cmake_version != '3.31.5'
-        shell: bash
         run: |
           jq 'del(.requires."arm:tools/kitware/cmake")' ./test/vcpkg-configuration.json > ./test/vcpkg-configuration-temp.json
 
@@ -122,26 +123,22 @@ jobs:
 
       - name: Install CMake ${{ matrix.cmake_version }} (arm64)
         if: matrix.cmake_version != '3.31.5' && matrix.arch == 'arm64'
-        shell: bash
         run: |
           # Install CMake via pip for ARM64 compatibility
           pip install cmake==${{ matrix.cmake_version }}
 
       - name: Confirm CMake selected
-        shell: bash
         run: |
           echo "cmake_version matrix value: ${{ matrix.cmake_version }}"
           which cmake || true
           cmake --version
 
       - name: Activate Arm tool license
-        shell: bash
         run: |
           armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
         working-directory: ./test
 
       - name: Binary version info
-        shell: bash
         run: |
           csolution${{ matrix.binary_extension }} -V
           cpackget${{ matrix.binary_extension }} -V
@@ -150,7 +147,6 @@ jobs:
           cbuildgen${{ matrix.binary_extension }} -V
 
       - name: Run Test
-        shell: bash
         continue-on-error: true
         working-directory: ./test
         env:
@@ -189,7 +185,6 @@ jobs:
           cache: 'pip'
 
       - name: Install pip dependencies
-        shell: bash
         run: |
           python -m pip install --upgrade pip
           pip install -r test/e2e/requirements.txt
@@ -214,7 +209,6 @@ jobs:
 
       - name: Generate Summary report
         if: always()
-        shell: bash
         run: |
           python ./test/e2e/lib/execution_summary.py artifacts \
             -r ./test/e2e/reference.md \
@@ -223,7 +217,6 @@ jobs:
 
       - name: Print E2E Report
         if: always()
-        shell: bash
         run: cat summary_report.md >> $GITHUB_STEP_SUMMARY
 
       - name: Archive consolidated test results
