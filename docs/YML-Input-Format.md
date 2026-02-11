@@ -912,7 +912,7 @@ Apply link attributes to library archive files. This feature is only available w
 !!! Note
     For other compilers (AC6, IAR, etc.) the `link:` node is ignored.
 
-`link:` Value                                    | Description
+Value                                            | Description
 :------------------------------------------------|:----------------------------
 `whole-archive`                                  | Include every object file for the archive file rather than searching for the required object files.
 
@@ -2488,6 +2488,7 @@ debugger:                         |             | Description
 &nbsp;&nbsp;&nbsp; `protocol:`    |  Optional   | Debug protocol (jtag or swd).
 &nbsp;&nbsp;&nbsp; `dbgconf:`     |  Optional   | Configuration file for device settings such as trace pins and option bytes.
 &nbsp;&nbsp;&nbsp; `start-pname:` |  Optional   | Debugger connects at start to this processor.
+&nbsp;&nbsp;&nbsp; [`gdbserver:`](#gdbserver-for-pyocd) |  Optional   | GDB Server configuration.
 &nbsp;&nbsp;&nbsp; [`telnet:`](#telnet-for-pyocd) |  Optional   | Telnet service configuration.
 &nbsp;&nbsp;&nbsp; [`trace:`](pyOCD-Debugger.md#trace)     |  Optional   | Extended Option: Trace configuration.
 &nbsp;&nbsp;&nbsp; [`connect:`](pyOCD-Debugger.md#connect) |  Optional   | Extended Option: Connect mode to hardware.
@@ -2511,10 +2512,17 @@ debugger:
   dbgconf: MyHardware.dbgconf
 ```
 
-#### `telnet:` for pyOCD
+#### `gdbserver` for pyOCD
+
+`gdbserver:`                                              |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- port:`                                                 |**Required** | Set TCP/IP port number of GDB Server (default: 3333, 3334, ... incremented for each processor).
+&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Identifies the processor (not required for single core system).
 
 !!! Note
-    The `telnet:` feature will be implemented until Dec 2025. This section is only a preview.
+    - When no `gdbserver` node is applied the default mechanism of incrementing port number starting with `3333` is used.
+
+#### `telnet:` for pyOCD
 
 pyOCD allows to configure for each processor that runs a independent application an Telnet service that connects to character I/O functions. Character I/O is supported via Semihosting or Segger RTT channel 0.
 The `telnet:` node configures:

@@ -1,6 +1,6 @@
 site_name: CMSIS-Toolbox
 extra:
-  version: 2.12.0
+  version: 2.13.0
 repo_url: https://github.com/Open-CMSIS-Pack/cmsis-toolbox
 edit_uri: ./edit/main/docs
 nav:

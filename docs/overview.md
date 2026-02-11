@@ -51,7 +51,7 @@ Further information:
   
 !!! Notes
     - This documentation uses the filename extension `*.yml`, but the extension `*.yaml` is also supported.
-    - The term *CMSIS solution* refers to an application project that is specified with *csolution project files* (`*.csolution.yml`, `*cproject.yml`, and `*.clayer.yml`).
+    - The term *CMSIS solution* refers to an application project that is specified with *csolution project files* (`*.csolution.yml`, `*.cproject.yml`, and `*.clayer.yml`).
     - *Software packs* describe software components in Open-CMSIS-Pack format that can contain middleware, drivers, board support, or device support. *Software packs* also provide documentation, examples, and reusable software layers.
     - The CMSIS-Toolbox build system does not use the CMake compiler and linker flags specified by environment variables [CFLAGS, LDFLAGS](https://cmake.org/cmake/help/latest/envvar/CFLAGS.html).
 
