@@ -107,8 +107,7 @@ debugger:
 - The [`system-view:`](#system-view) node maps any RTT channel to a core-specific [SystemView](https://www.segger.com/products/development-tools/systemview/) data file.
 
 !!! Note
-    - RTT is only enabled when using the pyOCD [run command](#run).
-    - Apply the setting `stdio: false` to connect the RTT channel 0 to a Telnet server or SystemView data file.
+    RTT is only enabled when using the pyOCD [run command](#run).
 
 `rtt:`                                               |              | Description
 :----------------------------------------------------|--------------|:------------------------------------
@@ -120,14 +119,6 @@ debugger:
 
 #### `control-block:`
 
-pyOCD discovers the RTT control block using these steps for each core on the target:
-
-1. The `control-block:` node provides an explicit `address:`. If `size:` is also specified, pyOCD scans that memory range.
-2. When `control-block:` is empty or not specified, pyOCD checks the ELF file for the symbol `_SEGGER_RTT` that specifies the control block location.
-3. With `auto-detect: true`, pyOCD scans default memory region (RAM) for the RTT control block signature. If multiple regions are marked as default, the region with the lowest start address is selected.
-
-If the RTT control block cannot be found, RTT will be disabled for that core.
-
 The `control-block:` node configures the RTT control block discovery in pyOCD.
 
 `control-block:`                                    |              | Description
@@ -136,14 +127,27 @@ The `control-block:` node configures the RTT control block discovery in pyOCD.
 &nbsp;&nbsp;&nbsp; `address:`                       |   Optional   | Explicit control block address; when combined with `size`, acts as scan start address.
 &nbsp;&nbsp;&nbsp; `size:`                          |   Optional   | Scan length in bytes when `address` is provided.
 
+pyOCD discovers the RTT control block using the prioritized steps for each core on the target:
+
+1. `control-block:` provides an explicit `address:`:  
+    a. `size:` is provided: pyOCD scans that memory range.  
+    b. `size:` is not provided: pyOCD checks the provided explicit address.  
+2. When `auto-detect: true` pyOCD scans default memory region (RAM) for the RTT control block signature. If multiple regions are marked as default, the region with the lowest start address is selected.
+4. When `control-block:` is empty or not specified, pyOCD checks the ELF file for the symbol `_SEGGER_RTT` that specifies the control block location.
+
+If the RTT control block cannot be found, RTT will be disabled for that core.
+
 #### `telnet:`
 
-The `telnet:` node maps the individual RTT upstream and downstream channels to specific Telnet ports This configuration is independent of the [`telnet:` for pyOCD](YML-Input-Format.md#telnet-for-pyocd).
+The `telnet:` node maps the individual RTT channels (upstream and downstream) to specific Telnet ports.
 
 `telnet:`                                           |              | Description
 :---------------------------------------------------|--------------|:------------------------------------
-`- channel:`                                        |   Optional   | RTT channel that is connected to Telnet Server
+`- channel:`                                        | **Required** | RTT channel that is connected to Telnet Server
 &nbsp;&nbsp;&nbsp; `port:`                          | **Required** | TCP port for the Telnet server.
+
+!!! Note
+    Channel 0 configuration is available only when `stdio: false` is specified.
 
 #### `system-view:`
 
@@ -152,13 +156,13 @@ The `system-view:` node configures the RTT channel data capturing for [SEGGER Sy
 `system-view:`                                      |              | Description
 :---------------------------------------------------|--------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `channel:`                       |   Optional   | RTT channel used for SystemView (default: `1`). Disabled if used by `stdio` or `telnet`.
-&nbsp;&nbsp;&nbsp; `file-out:`                      |   Optional   | Capture RTT channel output in a SystemView data file. Default: `./out/<solution-name>+<target-type>.<pname>.SVDat` (derived from [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management)).
+&nbsp;&nbsp;&nbsp; `file-out:`                      |   Optional   | SystemView output data file. Default: `./out/<solution-name>+<target-type>.<pname>.SVDat` (derived from [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management)).
 &nbsp;&nbsp;&nbsp; `auto-start:`                    |   Optional   | Send SystemView start command automatically: `true`, `false` (default: `true`).
 &nbsp;&nbsp;&nbsp; `auto-stop:`                     |   Optional   | Send SystemView stop command automatically: `true`, `false` (default: `true`).
 
 **Examples:**
 
-Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port `4444`:
+Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port `4444` and channel 3 to a Telnet Server port `4445`:
 
 ```yml
 debugger:
@@ -170,9 +174,11 @@ debugger:
       telnet:
         - channel: 2
           port: 4444
+        - channel: 3
+          port: 4445
 ```
 
-Configure explicit control block and SystemView capture:
+Configure explicit control block and SystemView capture on channel 1:
 
 ```yml
 debugger:
@@ -215,7 +221,7 @@ The CMSIS-Toolbox debugger configuration is provided in the [file `*.cbuild-run.
 Use the following command line syntax to leverage this information:
 
 ```bash
->pyOCD <command> --cbuild-run <cbuild-run.yml file> [options]
+>pyocd <command> [--probe <probe>] [--uid <uid>] [options] --cbuild-run <cbuild-run.yml file>
 ```
 
 `<command>`                                       | Description
@@ -226,6 +232,22 @@ Use the following command line syntax to leverage this information:
 [`load`](#load)                                   | Load image to device.
 [`reset`](#reset)                                 | Reset device.
 
+`[options]`          | Description
+:--------------------|:------------------------------------
+`--probe`            | Specify the probe type (`cmsisdap:` or `jlink:`).
+`--uid`              | Specify the ID or serial number of a debug probe.
+
+!!! Info
+    When only one probe is connected to the host computer, `--probe` and `--uid` can be omitted.
+
+**Example:**
+
+Connect to a specific probe on the host computer.
+
+```bash
+pyocd load --probe cmsisdap: --uid XP0GA4C42ZQAA --cbuild-run c:\Test\Dec11\DualCore\out\DualCore+FRDM-MCXN947.cbuild-run.yml
+```
+
 ### `gdbserver`
 
 Start GDB servers for each target device core, used for debugging the applications.
@@ -234,22 +256,12 @@ Start GDB servers for each target device core, used for debugging the applicatio
 :--------------------|:------------------------------------
 `--semihosting`      | Enable semihosting (default: disabled).
 `--persist`          | Keep GDB server running even after remote has detached (default: disabled).
-`--probe`            | Specify the probe type (`cmsisdap:` or `jlink:`). Not required if there is only one probe on the host system.
-`--uid`              | Specify the ID or serial number of a debug probe. Not required if there is only one probe on the host system.
 `--reset-run`        | Reset and run before running GDB server.
 
 **Example:**
 
-When only one probe is connected to the host computer, `--probe` and `--uid` can be omitted.
-
 ```bash
 pyocd gdbserver --persist --reset-run --semihosting --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
-```
-
-Connect to a specific probe on the host computer.
-
-```bash
-pyocd load --probe cmsisdap: --uid XP0GA4C42ZQAA --cbuild-run c:\Test\Dec11\DualCore\out\DualCore+FRDM-MCXN947.cbuild-run.yml
 ```
 
 ### `run`
@@ -260,8 +272,6 @@ Run the target until `timelimit` is reached or an `EOT (0x04)` character is dete
 :--------------------|:------------------------------------
 `--timelimit <sec>`  | Maximum execution time in seconds before terminating (default: no time limit).
 `--eot`              | Terminate execution when EOT character (`0x04`) is detected on stdout (default: disabled).
-`--probe`            | Specify the probe type (`cmsisdap:` or `jlink:`). Not required if there is only one probe on the host system.
-`--uid`              | Specify the ID or serial number of a debug probe. Not required if there is only one probe on the host system.
 
 **Example:**
 
@@ -276,11 +286,9 @@ Erase target using `chip` erase.
 `<options>`          | Description
 :--------------------|:------------------------------------
 `--chip`             | Perform a chip erase.
-`--probe`            | Specify the probe type (`cmsisdap:` or `jlink:`). Not required if there is only one probe on the host system.
-`--uid`              | Specify the ID or serial number of a debug probe. Not required if there is only one probe on the host system.
 
 !!! Note
-    If the `--chip` option is not used, the address range to erase must be specified explicitly.
+    Currently erase without `--chip` option is not supported.
 
 **Example:**
 
