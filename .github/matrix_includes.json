@@ -5,7 +5,8 @@
         "arch": "amd64",
         "binary_extension": "",
         "runOnBranch":"always",
-        "runTests": false
+        "runTests": false,
+        "runsXCTestSuite": false
     },
     {
         "runs_on":"macos-14",
@@ -13,7 +14,8 @@
         "arch": "arm64",
         "binary_extension": "",
         "runOnBranch":"always",
-        "runTests": false
+        "runTests": false,
+        "runsXCTestSuite": false
     },
     {
         "runs_on":"ubuntu-22.04",
@@ -21,7 +23,8 @@
         "arch": "amd64",
         "binary_extension":"",
         "runOnBranch":"always",
-        "runTests": true
+        "runTests": true,
+        "runsXCTestSuite": true
     },
     {
         "runs_on":"ubuntu-22.04-arm",
@@ -29,7 +32,8 @@
         "arch": "arm64",
         "binary_extension":"",
         "runOnBranch":"always",
-        "runTests": true
+        "runTests": true,
+        "runsXCTestSuite": false
     },
     {
         "runs_on":"windows-2022",
@@ -37,7 +41,8 @@
         "arch": "amd64",
         "binary_extension":".exe",
         "runOnBranch":"always",
-        "runTests": true
+        "runTests": true,
+        "runsXCTestSuite": true
     },
     {
         "runs_on":"windows-2022",
@@ -45,6 +50,7 @@
         "arch": "arm64",
         "binary_extension":".exe",
         "runOnBranch":"always",
-        "runTests": false
+        "runTests": false,
+        "runsXCTestSuite": false
     }
 ]
