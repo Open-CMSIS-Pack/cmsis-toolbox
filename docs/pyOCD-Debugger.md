@@ -107,8 +107,7 @@ debugger:
 - The [`system-view:`](#system-view) node maps any RTT channel to a core-specific [SystemView](https://www.segger.com/products/development-tools/systemview/) data file.
 
 !!! Note
-    - RTT is only enabled when using the pyOCD [run command](#run).
-    - Apply the setting `stdio: false` to connect the RTT channel 0 to a Telnet server or SystemView data file.
+    RTT is only enabled when using the pyOCD [run command](#run).
 
 `rtt:`                                               |              | Description
 :----------------------------------------------------|--------------|:------------------------------------
@@ -120,14 +119,6 @@ debugger:
 
 #### `control-block:`
 
-pyOCD discovers the RTT control block using these steps for each core on the target:
-
-1. The `control-block:` node provides an explicit `address:`. If `size:` is also specified, pyOCD scans that memory range.
-2. When no `control-block:` is specified, pyOCD checks the ELF file for the symbol `_SEGGER_RTT` that specifies the control block location.
-3. With `auto-detect: true`, pyOCD scans default memory regions for the RTT control block signature.
-  
-If the RTT control block cannot be found, RTT will be disabled for that core.
-
 The `control-block:` node configures the RTT control block discovery in pyOCD.
 
 `control-block:`                                    |              | Description
@@ -136,14 +127,27 @@ The `control-block:` node configures the RTT control block discovery in pyOCD.
 &nbsp;&nbsp;&nbsp; `address:`                       |   Optional   | Explicit control block address; when combined with `size`, acts as scan start address.
 &nbsp;&nbsp;&nbsp; `size:`                          |   Optional   | Scan length in bytes when `address` is provided.
 
+pyOCD discovers the RTT control block using the prioritized steps for each core on the target:
+
+1. `control-block:` provides an explicit `address:`:  
+    a. `size:` is provided: pyOCD scans that memory range.  
+    b. `size:` is not provided: pyOCD checks the provided explicit address.  
+2. When `auto-detect: true` pyOCD scans default memory region (RAM) for the RTT control block signature. If multiple regions are marked as default, the region with the lowest start address is selected.
+4. When `control-block:` is empty or not specified, pyOCD checks the ELF file for the symbol `_SEGGER_RTT` that specifies the control block location.
+
+If the RTT control block cannot be found, RTT will be disabled for that core.
+
 #### `telnet:`
 
-The `telnet:` node maps the RTT channels to Telnet ports. For general Telnet service configuration and output routing, see [`telnet:` for pyOCD](YML-Input-Format.md#telnet-for-pyocd).
+The `telnet:` node maps the individual RTT channels (upstream and downstream) to specific Telnet ports.
 
 `telnet:`                                           |              | Description
 :---------------------------------------------------|--------------|:------------------------------------
-`- channel:`                                        |   Optional   | RTT channel that is connected to Telnet Server
+`- channel:`                                        | **Required** | RTT channel that is connected to Telnet Server
 &nbsp;&nbsp;&nbsp; `port:`                          | **Required** | TCP port for the Telnet server.
+
+!!! Note
+    Channel 0 configuration is available only when `stdio: false` is specified.
 
 #### `system-view:`
 
@@ -152,13 +156,13 @@ The `system-view:` node configures the RTT channel data capturing for [SEGGER Sy
 `system-view:`                                      |              | Description
 :---------------------------------------------------|--------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `channel:`                       |   Optional   | RTT channel used for SystemView (default: `1`). Disabled if used by `stdio` or `telnet`.
-&nbsp;&nbsp;&nbsp; `file-out:`                      |   Optional   | Capture RTT channel output in a SystemView data file. Default: `./out/<solution-name>+<target-type>.<pname>.SVDat` (derived from [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management)).
-&nbsp;&nbsp;&nbsp; `auto-start:`                    |   Optional   | Send SystemView start command automatically: `true`, `false`.
-&nbsp;&nbsp;&nbsp; `auto-stop:`                     |   Optional   | Send SystemView stop command automatically: `true`, `false`.
+&nbsp;&nbsp;&nbsp; `file-out:`                      |   Optional   | SystemView output data file. Default: `./out/<solution-name>+<target-type>.<pname>.SVDat` (derived from [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management)).
+&nbsp;&nbsp;&nbsp; `auto-start:`                    |   Optional   | Send SystemView start command automatically: `true`, `false` (default: `true`).
+&nbsp;&nbsp;&nbsp; `auto-stop:`                     |   Optional   | Send SystemView stop command automatically: `true`, `false` (default: `true`).
 
 **Examples:**
 
-Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port `4444`:
+Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port `4444` and channel 3 to a Telnet Server port `4445`:
 
 ```yml
 debugger:
@@ -170,9 +174,11 @@ debugger:
       telnet:
         - channel: 2
           port: 4444
+        - channel: 3
+          port: 4445
 ```
 
-Configure explicit control block and SystemView capture:
+Configure explicit control block and SystemView capture on channel 1:
 
 ```yml
 debugger:
@@ -215,7 +221,7 @@ The CMSIS-Toolbox debugger configuration is provided in the [file `*.cbuild-run.
 Use the following command line syntax to leverage this information:
 
 ```bash
->pyOCD <command> --cbuild-run <cbuild-run.yml file> [options]
+>pyocd <command> [--probe <probe>] [--uid <uid>] [options] --cbuild-run <cbuild-run.yml file>
 ```
 
 `<command>`                                       | Description
@@ -226,30 +232,36 @@ Use the following command line syntax to leverage this information:
 [`load`](#load)                                   | Load image to device.
 [`reset`](#reset)                                 | Reset device.
 
+`[options]`          | Description
+:--------------------|:------------------------------------
+`--probe`            | Specify the probe type (`cmsisdap:` or `jlink:`).
+`--uid`              | Specify the ID or serial number of a debug probe.
+
+!!! Info
+    When only one probe is connected to the host computer, `--probe` and `--uid` can be omitted.
+
+**Example:**
+
+Connect to a specific probe on the host computer.
+
+```bash
+pyocd load --probe cmsisdap: --uid XP0GA4C42ZQAA --cbuild-run c:\Test\Dec11\DualCore\out\DualCore+FRDM-MCXN947.cbuild-run.yml
+```
+
 ### `gdbserver`
 
 Start GDB servers for each target device core, used for debugging the applications.
 
 `<options>`          | Description
 :--------------------|:------------------------------------
-`--semihosting`      | Enable semihosting (default disabled).
-`--persist`          | Keep GDB server running even after remote has detached (default disabled).
-`--probe`            | Specify the probe type (`cmsisdap:` or `jlink:`). Not required if there is only one probe on the host system.
-`--uid`              | Specify the ID or serial number of a debug probe (also: `--uid`). Not required if there is only one probe on the host system.
+`--semihosting`      | Enable semihosting (default: disabled).
+`--persist`          | Keep GDB server running even after remote has detached (default: disabled).
 `--reset-run`        | Reset and run before running GDB server.
 
 **Example:**
 
-When only one probe is connected to the host computer, `--probe` and `--uid` can be omitted.
-
 ```bash
 pyocd gdbserver --persist --reset-run --semihosting --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
-```
-
-Connect to a specific probe on the host computer.
-
-```bash
-pyocd load --probe cmsisdap: --uid XP0GA4C42ZQAA --cbuild-run c:\Test\Dec11\DualCore\out\DualCore+FRDM-MCXN947.cbuild-run.yml
 ```
 
 ### `run`
@@ -258,10 +270,8 @@ Run the target until `timelimit` is reached or an `EOT (0x04)` character is dete
 
 `<options>`          | Description
 :--------------------|:------------------------------------
-`--timelimit <sec>`  | Maximum execution time in seconds before terminating (default no time limit).
-`--eot`              | Terminate execution when EOT character (`0x04`) is detected on stdout (default disabled).
-`--probe`            | Specify the probe type (`cmsisdap:` or `jlink:`). Not required if there is only one probe on the host system.
-`--uid`              | Specify the ID or serial number of a debug probe (also: `--uid`). Not required if there is only one probe on the host system.
+`--timelimit <sec>`  | Maximum execution time in seconds before terminating (default: no time limit).
+`--eot`              | Terminate execution when EOT character (`0x04`) is detected on stdout (default: disabled).
 
 **Example:**
 
@@ -276,8 +286,9 @@ Erase target using `chip` erase.
 `<options>`          | Description
 :--------------------|:------------------------------------
 `--chip`             | Perform a chip erase.
-`--probe`            | Specify the probe type (`cmsisdap:` or `jlink:`). Not required if there is only one probe on the host system.
-`--uid`              | Specify the ID or serial number of a debug probe (also: `--uid`). Not required if there is only one probe on the host system.
+
+!!! Note
+    Currently erase without `--chip` option is not supported.
 
 **Example:**
 
@@ -291,7 +302,7 @@ Program target with images listed under the [`output`](#output) node.
 
 **Example:**
 
- ```bash
+```bash
 pyocd load --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
 ```
 
@@ -318,7 +329,7 @@ The `cbuild-run:` node is the start of a `*.cbuild-run.yml` file. The table belo
 
 `cbuild-run:`                                                     |              | Content
 :-----------------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; [`device:`](#device)                           |   Optional   | Identifies the device.
+&nbsp;&nbsp;&nbsp; [`device:`](#device)                           | **Required** | Identifies the device.
 &nbsp;&nbsp;&nbsp; [`device-pack:`](#device-pack)                 |   Optional   | Identifies the device pack used.
 &nbsp;&nbsp;&nbsp; [`board-pack:`](#board-pack)                   |   Optional   | Identifies the board pack used.
 &nbsp;&nbsp;&nbsp; [`output:`](#output)                           |   Optional   | Lists the images (ELF, HEX, BIN) in this solution.
@@ -406,8 +417,9 @@ programmed to the device.
 
 ### `system-resources:`
 
-Contains a list of memory regions that pyOCD uses to build the device memory map. If no memory regions are provided,
-pyOCD will fall back to a default Cortex-M memory map.
+Contains a list of memory regions that pyOCD uses to build the device memory map. A default Cortex-M memory map is used
+as the baseline and is then updated with the information provided in the `memory:` node. If no memory regions are specified,
+pyOCD falls back to the default Cortex-M memory map.
 
 `system-resources:`                               |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
@@ -421,6 +433,45 @@ pyOCD will fall back to a default Cortex-M memory map.
 &nbsp;&nbsp;&nbsp; `size:`                        | **Required** | Size of the memory.
 &nbsp;&nbsp;&nbsp; `pname:`                       |   Optional   | Only accessible by a specific processor.
 &nbsp;&nbsp;&nbsp; `alias:`                       |   Optional   | Name of identical memory exposed at a different address.
+
+**Default Cortex-M memory map:**
+
+```yml
+  system-resources:
+    memory:
+      - name: Code
+        access: rx
+        start: 0x00000000
+        size: 0x20000000
+      - name: SRAM
+        access: rwx
+        start: 0x20000000
+        size: 0x20000000
+      - name: Peripherals
+        access: rwp
+        start: 0x40000000
+        size: 0x20000000
+      - name: RAM1
+        access: rwx
+        start: 0x60000000
+        size: 0x20000000
+      - name: RAM2
+        access: rwx
+        start: 0x80000000
+        size: 0x20000000
+      - name: Devices-Shareable
+        access: rwp
+        start: 0xA0000000
+        size: 0x20000000
+      - name: Devices-NonShareable
+        access: rwp
+        start: 0xC0000000
+        size: 0x20000000
+      - name: System-Peripherals
+        access: rwp
+        start: 0xE0000000
+        size: 0x20000000
+```
 
 **Example:**
 
