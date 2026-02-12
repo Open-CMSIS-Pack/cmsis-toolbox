@@ -1,0 +1,27 @@
+name: E2E
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    paths:
+      - '.github/workflows/e2e.yml'
+      - '.github/workflows/shared-e2e.yml'
+      - '.github/matrix_includes.json'
+      - 'debian/**'
+      - 'test/e2e/**'
+      - 'test/vcpkg-configuration.json'
+      - '!**/*.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    uses: ./.github/workflows/shared-e2e.yml
+    with:
+      retention-days: 1
+    secrets:
+      IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
