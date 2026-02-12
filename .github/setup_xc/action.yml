@@ -33,6 +33,9 @@ runs:
           curl -s -L "$URL" -o xc32-installer.exe
           mkdir $GITHUB_WORKSPACE/xc32_toolchain
           ./xc32-installer.exe --mode unattended --unattendedmodeui none --netservername localhost --prefix $GITHUB_WORKSPACE/xc32_toolchain
-          echo "$GITHUB_WORKSPACE/xc32_toolchain/bin" >> $GITHUB_PATH
-          echo "XC_TOOLCHAIN_5_0_0=$GITHUB_WORKSPACE/xc32_toolchain/bin" >> $GITHUB_ENV
+          WIN_PATH="${GITHUB_WORKSPACE}\\xc32_toolchain\\bin"
+          WIN_PATH="${WIN_PATH//\//\\}"
+          NORMALIZED_PATH="${WIN_PATH//\\/\\\\}"
+          echo "$WIN_PATH" >> "$GITHUB_PATH"
+          echo "XC_TOOLCHAIN_5_0_0=$NORMALIZED_PATH" >> "$GITHUB_ENV"
         fi
