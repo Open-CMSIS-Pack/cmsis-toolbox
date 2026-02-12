@@ -14,14 +14,6 @@ solution:
   build-types:
     - type: Release
       compiler: AC6
-    - type: GCC
-      compiler: GCC
-    - type: IAR
-      compiler: IAR
-    - type: CLANG
-      compiler: CLANG
-    - type: XC
-      compiler: XC
 
   projects:
     - project: project/project.cproject.yml
