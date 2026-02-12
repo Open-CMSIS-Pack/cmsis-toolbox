@@ -76,6 +76,7 @@ Get Contexts From Project
     ...                     -q    shell=True    stdout=${CURDIR}/stdout.txt
     ${ret_code}=        Set Variable If    ${result.rc} == ${0}    ${result.rc}    ${1}
     Log Many            StdOut: ${result.stdout}
+    Log Many            StdErr: ${result.stderr}
     Should Be Equal     ${ret_code}      ${expect}        msg=Unexpected status returned by list context command
     RETURN              ${result.stdout}
 

@@ -1,0 +1,41 @@
+name: 'Setup XC32'
+description: 'Downloads and installs Microchip XC32'
+inputs:
+  os:
+    description: 'Target OS'
+    required: true
+  version:
+    description: 'XC32 Version'
+    required: true
+    default: '5.00'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download and Install XC32
+      shell: bash
+      run: |
+        OS_TYPE="${{ inputs.os }}"
+        VERSION="${{ inputs.version }}"
+        
+        if [[ "$OS_TYPE" == *"linux"* ]]; then
+          echo "Processing Linux Installation..."
+          URL="https://ww1.microchip.com/downloads/aemDocuments/documents/DEV/ProductDocuments/SoftwareTools/xc32-v${VERSION}-full-install-linux-x64-installer.run"
+          curl -s -L "$URL" -o xc32-installer.run
+          chmod +x xc32-installer.run
+          sudo ./xc32-installer.run --mode unattended --unattendedmodeui none --netservername localhost
+          echo "/opt/microchip/xc32/v${VERSION}/bin" >> $GITHUB_PATH
+          echo "XC_TOOLCHAIN_5_0_0=/opt/microchip/xc32/v${VERSION}/bin" >> $GITHUB_ENV
+
+        elif [[ "$OS_TYPE" == *"windows"* ]]; then
+          echo "Processing Windows Installation..."
+          URL="https://ww1.microchip.com/downloads/aemDocuments/documents/DEV/ProductDocuments/SoftwareTools/xc32-v${VERSION}-full-install-windows-x64-installer.exe"
+          curl -s -L "$URL" -o xc32-installer.exe
+          mkdir $GITHUB_WORKSPACE/xc32_toolchain
+          ./xc32-installer.exe --mode unattended --unattendedmodeui none --netservername localhost --prefix $GITHUB_WORKSPACE/xc32_toolchain
+          WIN_PATH="${GITHUB_WORKSPACE}\\xc32_toolchain\\bin"
+          WIN_PATH="${WIN_PATH//\//\\}"
+          NORMALIZED_PATH="${WIN_PATH//\\/\\\\}"
+          echo "$WIN_PATH" >> "$GITHUB_PATH"
+          echo "XC_TOOLCHAIN_5_0_0=$NORMALIZED_PATH" >> "$GITHUB_ENV"
+        fi
