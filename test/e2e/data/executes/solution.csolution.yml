@@ -18,8 +18,6 @@ solution:
       compiler: GCC
     - type: IAR
       compiler: IAR
-    - type: CLANG
-      compiler: CLANG
     - type: XC
       compiler: XC
 
