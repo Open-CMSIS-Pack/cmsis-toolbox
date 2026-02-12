@@ -283,6 +283,8 @@ jobs:
           cp ../docs/index.html                                                                             ./distribution/doc
         working-directory: toolbox
 
+      # TODO: Add this on next release update
+      # sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/XC.5.0.0.cmake
       - name: Update toolchain config files
         if: ${{ matrix.target == 'windows' }}
         shell: bash
