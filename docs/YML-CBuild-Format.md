@@ -18,7 +18,8 @@ File                                  | Description
 [`*.cbuild-set.yml`](#cbuild-setyml)  | [Context selection](build-overview.md#working-with-context-set) for the build process, enabled with option [--context-set:](build-tools.md#use-context-set).
 [`*.cbuild-run.yml`](#run-and-debug-management)  | Contains the information required to [download and debug](#run-and-debug-management) a *csolution project* to a target.
 
-!!! Note CMSIS-Toolbox 2.11 creates the `*.cbuild.yml` and `*.cbuild-run.yml` files in the `out` directory along with the related output files.
+!!! Note
+    - CMSIS-Toolbox 2.11 creates the `*.cbuild.yml` and `*.cbuild-run.yml` files in the `out` directory along with the related output files.
 
 ## Directory Structure
 
@@ -745,7 +746,8 @@ The CMSIS-Toolbox build system manages software packs that contain information a
 
 The software packs contain information that is the basis for debug and run settings:
 
-- [Flash algorithms](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html) of device memory (in DFP) and board memory (in BSP).
+- [Flash algorithms](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html) for programming device memory (defined in DFP) and board memory (defined in BSP).
+- [Flash information](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_flashinfo) for device memory (defined in DFP) that uses debugger JTAG/SWD sequences for programming an image.
 - On-board debug adapter (a default programming/debug channel) including features.
 - Available memory of device and board.
 - Device parameters such as processor core(s) and clock speed.
@@ -835,6 +837,7 @@ The following describes the overall structure of the `*.cbuild-run.yml` file.  W
 &nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)                               |**Required**| Configuration information for the debug connection.
 &nbsp;&nbsp;&nbsp; [`debug-sequences:`](#debug-sequences)                 |  Optional  | Tool actions for debugging, tracing, or programming.
 &nbsp;&nbsp;&nbsp; [`programming:`](#programming)                         |  Optional  | Algorithms for flash download.
+&nbsp;&nbsp;&nbsp; [`flash-info:`](#flash-info)                           |  Optional  | Memory where the debugger uses JTAG/SWD sequences for programming.
 &nbsp;&nbsp;&nbsp; [`debug-topology:`](#debug-topology)                   |  Optional  | Properties of the system hardware for debug functionality.
 
 #### `output:`
@@ -1185,6 +1188,36 @@ The algorithm in the DFP and BSP must have the attribute `default="1"` set. If i
 
 !!! Note
     When `pname:` is specified the memory can only be programmed using the specified processor.  Otherwise any processor in a multi-processor system can execute the programming algorithm.
+
+#### `flash-info:`
+
+[Flash information](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_flashinfo) is used for memory that cannot be programmed using [flash algorithms](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html). For such NVM memory the debugger uses JTAG/SWD sequences to program an image.
+
+`flash-info:`                                             |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- name:`                                                 |**Required** | Name of the specified flash device.
+&nbsp;&nbsp;&nbsp; `start:`                               |**Required** | Base address of the memory.
+&nbsp;&nbsp;&nbsp; `page-size:`                           |**Required** | Page size. A page is the smallest unit that can be programmed.
+&nbsp;&nbsp;&nbsp; [`blocks:`](#blocks)                   |**Required** | List of blocks. A block is smallest unit that can be erased.
+&nbsp;&nbsp;&nbsp; `blank-val:`                           |  Optional   | 64-bit value in erased memory (default 0xFFFFFFFFFFFFFFFF).
+&nbsp;&nbsp;&nbsp; `fill-val:`                            |  Optional   | 64-bit value that a debugger uses to fill the remainder of a page  (default 0xFFFFFFFFFFFFFFFF).
+&nbsp;&nbsp;&nbsp; `ptime:`                               |  Optional   | Timeout in milliseconds for programming a page (default 300).
+&nbsp;&nbsp;&nbsp; `etime:`                               |  Optional   | Timeout in milliseconds for erasing a block (default 300).
+&nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Executes programming only for a specific processor (default for all processors).
+
+#### `blocks:`
+
+List of NVM memory blocks that are available.
+
+`blocks:`                                                 |             | Content
+:---------------------------------------------------------|-------------|:------------------------------------
+`- count:`                                                |**Required** | Number of blocks.
+&nbsp;&nbsp;&nbsp; `size:`                                |**Required** | Block size in bytes. Total memory size (in bytes) is `size * count`.
+&nbsp;&nbsp;&nbsp; `arg:`                                 |  Optional   | Optional value that a debugger writes to the pre-defined debug access variable `__FlashArg` at start of a flash operation (default 0).
+
+!!! Note
+    - The [`gap` element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_flashgap) is not used.
+
 
 #### `debug-topology:`
 
