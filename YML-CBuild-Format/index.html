@@ -170,6 +170,10 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#programming">programming:</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#flash-info">flash-info:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#blocks">blocks:</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#debug-topology">debug-topology:</a>
     </li>
         </ul>
@@ -276,7 +280,12 @@
 </tr>
 </tbody>
 </table>
-<p>!!! Note CMSIS-Toolbox 2.11 creates the <code>*.cbuild.yml</code> and <code>*.cbuild-run.yml</code> files in the <code>out</code> directory along with the related output files.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>CMSIS-Toolbox 2.11 creates the <code>*.cbuild.yml</code> and <code>*.cbuild-run.yml</code> files in the <code>out</code> directory along with the related output files.</li>
+</ul>
+</div>
 <h2 id="directory-structure">Directory Structure</h2>
 <p>The <code>csolution</code> based projects are portable across different host computers and therefore use <strong>relative file references</strong>.</p>
 <ul>
@@ -1583,7 +1592,8 @@
 <p>The CMSIS-Toolbox build system manages software packs that contain information about device, board, and software components. It controls the build output (typically ELF/DWARF files), and has provisions for HEX, BIN and post-processing. The <a href="../build-overview/#run-and-debug-configuration"><code>target-set:</code></a> node configures the application images and the debugger for a <a href="../build-overview/#configure-related-projects">target-type</a>.</p>
 <p>The software packs contain information that is the basis for debug and run settings:</p>
 <ul>
-<li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html">Flash algorithms</a> of device memory (in DFP) and board memory (in BSP).</li>
+<li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html">Flash algorithms</a> for programming device memory (defined in DFP) and board memory (defined in BSP).</li>
+<li><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_flashinfo">Flash information</a> for device memory (defined in DFP) that uses debugger JTAG/SWD sequences for programming an image.</li>
 <li>On-board debug adapter (a default programming/debug channel) including features.</li>
 <li>Available memory of device and board.</li>
 <li>Device parameters such as processor core(s) and clock speed.</li>
@@ -1732,6 +1742,11 @@
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#programming"><code>programming:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td>Algorithms for flash download.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#flash-info"><code>flash-info:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td>Memory where the debugger uses JTAG/SWD sequences for programming.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug-topology"><code>debug-topology:</code></a></td>
@@ -2404,6 +2419,98 @@ These initial values are overwritten by explicit settings in the <code>*.dbgconf
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When <code>pname:</code> is specified the memory can only be programmed using the specified processor.  Otherwise any processor in a multi-processor system can execute the programming algorithm.</p>
+</div>
+<h4 id="flash-info"><code>flash-info:</code></h4>
+<p><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_flashinfo">Flash information</a> is used for memory that cannot be programmed using <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html">flash algorithms</a>. For such NVM memory the debugger uses JTAG/SWD sequences to program an image.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>flash-info:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Name of the specified flash device.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>start:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Base address of the memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>page-size:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Page size. A page is the smallest unit that can be programmed.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#blocks"><code>blocks:</code></a></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">List of blocks. A block is smallest unit that can be erased.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>blank-val:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">64-bit value in erased memory (default 0xFFFFFFFFFFFFFFFF). Value is truncated to match the access size.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>fill-val:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">64-bit value that a debugger uses to fill the remainder of a page (default 0xFFFFFFFFFFFFFFFF).  Value is truncated to match the access size.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ptime:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Timeout in milliseconds for programming a page (default 300).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>etime:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Timeout in milliseconds for erasing a block (default 300).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Executes programming only for a specific processor (default for all processors).</td>
+</tr>
+</tbody>
+</table>
+<h4 id="blocks"><code>blocks:</code></h4>
+<p>List of NVM memory blocks that are available.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>blocks:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- count:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Number of blocks.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>size:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Block size in bytes. Total memory size (in bytes) is <code>size * count</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>arg:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Optional value that a debugger writes to the pre-defined debug access variable <code>__FlashArg</code> at start of a flash operation (default 0).</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_flashgap"><code>gap</code> element</a> is not used.</li>
+</ul>
 </div>
 <h4 id="debug-topology"><code>debug-topology:</code></h4>
 <p>The <code>debug-topology:</code> node describes the properties of the system hardware for debug functionality. The information for this node is taken from the DFP.

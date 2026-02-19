@@ -2139,6 +2139,8 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 <pre><code class="language-yml">define:                    # Start a list of define statements
   - TestValue: 12          # add symbol 'TestValue' with value 12
   - TestMode               # add symbol 'TestMode'
+  - MySymbol: 100UL        # add symbol 'MySymbol' with value 100UL
+  - TestSymbol: MySymbol+1 # add symbol 'TestSymbol' with value `MySymbol+1`
 </code></pre>
 <h3 id="define-asm"><code>define-asm:</code></h3>
 <p>Contains a list of symbol #define statements that are passed via the command line to the development tools for Assembler  source files.</p>
@@ -3388,7 +3390,7 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 <tr>
 <td style="text-align: left;"><a href="#project"><code>- project:</code></a></td>
 <td>Optional</td>
-<td style="text-align: left;">Path to the project file.</td>
+<td style="text-align: left;">Path to the <code>*.cproject.yml</code> file.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#west"><code>west:</code></a></td>
@@ -3407,7 +3409,12 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 </tr>
 </tbody>
 </table>
-<p>!!! Notes: <code>project</code> and <code>west</code> nodes are mutually exclusive (ToDo)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The nodes <code>project:</code> and <code>west:</code> are mutually exclusive in one list node. But you a list may contain several <code>project:</code> and <code>west:</code> nodes.</li>
+</ul>
+</div>
 <p><strong>Examples:</strong></p>
 <p>This example uses two projects that are built in parallel using the same <code>build-type:</code> and <code>target-type:</code>.  Such a setup is typical for multi-processor systems.</p>
 <pre><code class="language-yml">  projects:
@@ -4015,8 +4022,8 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <li>The cbuild orchestration instructs <code>west</code> calls with <code>--pristine auto</code> option. The cbuild option <code>--rebuild</code> cleans temporary files before proceeding with a new build.</li>
 </ul>
 </div>
-<p><strong>Examples:</strong></p>
-<p>ToDo</p>
+<p><strong>Example:</strong></p>
+<p><a href="https://github.com/Arm-Examples/CMSIS-Zephyr">Arm-Examples/CMSIS-Zephyr</a> explains the setup of a Zephyr project.</p>
 <h2 id="prepost-build-steps">Pre/Post Build Steps</h2>
 <p>The CMSIS-Toolbox supports pre-build and post-build steps that utilize external tools or scripts. Such external commands can be used for various tasks such as:</p>
 <ul>

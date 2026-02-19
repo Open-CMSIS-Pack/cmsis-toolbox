@@ -195,6 +195,13 @@
 <h2 id="manual-setup">Manual Setup</h2>
 <p>Download the CMSIS-Toolbox from the <a href="https://artifacts.keil.arm.com/cmsis-toolbox/"><strong>Arm Tools Artifactory</strong></a>. An archive file provides signed binaries for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (amd64, arm64).</p>
 <p>To set up the <strong>CMSIS-Toolbox</strong> on a local computer, copy the content of the archive file to an <code>&lt;cmsis-toolbox-installation-dir&gt;</code>, for example, to <code>~/cmsis-toolbox</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The archive contains the file <code>manifest_&lt;version&gt;.yml</code> that lists all executables in <code>/bin</code> folder with their specific version and sha256 checksum.</li>
+<li>The CMSIS-Toolbox releases on <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases">GitHub</a> contains unsigned binaries. Recommended is therefore the download from the <a href="https://artifacts.keil.arm.com/cmsis-toolbox/"><strong>Arm Tools Artifactory</strong></a> which provides signed binaries with digital certificate.</li>
+</ul>
+</div>
 <h3 id="requirements">Requirements</h3>
 <p>The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The installation of these tools is required.</p>
 <table>
