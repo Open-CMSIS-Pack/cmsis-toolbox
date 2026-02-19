@@ -974,6 +974,8 @@ Contains a list of symbol #define statements that are passed via the command lin
 define:                    # Start a list of define statements
   - TestValue: 12          # add symbol 'TestValue' with value 12
   - TestMode               # add symbol 'TestMode'
+  - MySymbol: 100UL        # add symbol 'MySymbol' with value 100UL
+  - TestSymbol: MySymbol+1 # add symbol 'TestSymbol' with value `MySymbol+1`
 ```
 
 ### `define-asm:`
@@ -2109,9 +2111,9 @@ The information provided with the `west:` and `west-def:` nodes are used to gene
     - The `--sysbuild` option is not supported as the *csolution project* manages multiple applications and images.
     - The cbuild orchestration instructs `west` calls with `--pristine auto` option. The cbuild option `--rebuild` cleans temporary files before proceeding with a new build.
 
-**Examples:**
+**Example:**
 
-ToDo
+[Arm-Examples/CMSIS-Zephyr](https://github.com/Arm-Examples/CMSIS-Zephyr) explains the setup of a Zephyr project.
 
 ## Pre/Post Build Steps
 

@@ -1199,8 +1199,8 @@ The algorithm in the DFP and BSP must have the attribute `default="1"` set. If i
 &nbsp;&nbsp;&nbsp; `start:`                               |**Required** | Base address of the memory.
 &nbsp;&nbsp;&nbsp; `page-size:`                           |**Required** | Page size. A page is the smallest unit that can be programmed.
 &nbsp;&nbsp;&nbsp; [`blocks:`](#blocks)                   |**Required** | List of blocks. A block is smallest unit that can be erased.
-&nbsp;&nbsp;&nbsp; `blank-val:`                           |  Optional   | 64-bit value in erased memory (default 0xFFFFFFFFFFFFFFFF).
-&nbsp;&nbsp;&nbsp; `fill-val:`                            |  Optional   | 64-bit value that a debugger uses to fill the remainder of a page  (default 0xFFFFFFFFFFFFFFFF).
+&nbsp;&nbsp;&nbsp; `blank-val:`                           |  Optional   | 64-bit value in erased memory (default 0xFFFFFFFFFFFFFFFF). Value is truncated to match the access size.
+&nbsp;&nbsp;&nbsp; `fill-val:`                            |  Optional   | 64-bit value that a debugger uses to fill the remainder of a page (default 0xFFFFFFFFFFFFFFFF).  Value is truncated to match the access size.
 &nbsp;&nbsp;&nbsp; `ptime:`                               |  Optional   | Timeout in milliseconds for programming a page (default 300).
 &nbsp;&nbsp;&nbsp; `etime:`                               |  Optional   | Timeout in milliseconds for erasing a block (default 300).
 &nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Executes programming only for a specific processor (default for all processors).

@@ -17,6 +17,10 @@ Download the CMSIS-Toolbox from the [**Arm Tools Artifactory**](https://artifact
 
 To set up the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example, to `~/cmsis-toolbox`.
 
+!!! Note
+    - The archive contains the file `manifest_<version>.yml` that lists all executables in `/bin` folder with their specific version and sha256 checksum.
+    - The CMSIS-Toolbox releases on [GitHub](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases) contains unsigned binaries. Recommended is therefore the download from the [**Arm Tools Artifactory**](https://artifacts.keil.arm.com/cmsis-toolbox/) which provides signed binaries with digital certificate.
+
 ### Requirements
 
 The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The installation of these tools is required.
