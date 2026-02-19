@@ -1,5 +1,5 @@
 # -------------------------------------------------------
-# Copyright (c) 2023-2025 Arm Limited. All rights reserved.
+# Copyright (c) 2023-2026 Arm Limited. All rights reserved.
 #
 # SPDX-License-Identifier: Apache-2.0
 # -------------------------------------------------------
@@ -48,7 +48,8 @@ def test_check_archive(base_path):
         "IAR.9.32.1.cmake",
         "iar_linker_script.icf.src",
         "PACK.xsd",
-        "PackIndex.xsd"}
+        "PackIndex.xsd",
+        "XC.5.0.0.cmake"}
 
     assert(True == path.isfile(path.join(base_path,"LICENSE.txt")))
     for dir in dirDict:

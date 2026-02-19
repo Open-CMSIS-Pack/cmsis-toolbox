@@ -72,7 +72,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/buildmgr/2.12.0
+          version: tags/tools/buildmgr/2.13.0
           file: cbuild_install.sh
           target: toolbox/cbuild_install.sh
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -81,7 +81,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/projmgr/2.12.0
+          version: tags/tools/projmgr/2.13.0
           file: projmgr.zip
           target: toolbox/projmgr.zip
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -90,7 +90,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/generator-bridge"
-          version: tags/v0.9.19
+          version: tags/v0.10.0
           regex: true
           file: "cbridge_.*\\.(zip|gz)"
           target: "toolbox/"
@@ -100,7 +100,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/cbuild"
-          version: tags/v2.12.0
+          version: tags/v2.13.0
           regex: true
           file: "cbuild_.*\\.(zip|gz)"
           target: "toolbox/"
@@ -110,7 +110,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/cbuild2cmake"
-          version: tags/v0.9.9
+          version: tags/v0.10.0
           regex: true
           file: "cbuild2cmake_.*\\.(zip|gz)"
           target: "toolbox/"
@@ -120,7 +120,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
         with:
           repo: "Open-CMSIS-Pack/cpackget"
-          version: tags/v2.1.9
+          version: tags/v2.2.0
           regex: true
           file: "cpackget_.*\\.(zip|gz)"
           target: "toolbox/"
@@ -263,8 +263,8 @@ jobs:
       - name: Copy Files
         shell: bash
         run: |
-          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.52/schema/PACK.xsd --output distribution/etc/PACK.xsd
-          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.52/schema/PackIndex.xsd --output distribution/etc/PackIndex.xsd
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.56/schema/PACK.xsd --output distribution/etc/PACK.xsd
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.56/schema/PackIndex.xsd --output distribution/etc/PackIndex.xsd
           cp ./buildmgr/bin/cbuildgen${{ matrix.temp_extension }}-${{ matrix.arch }}                        ./distribution/bin/cbuildgen${{ matrix.binary_extension }}
           cp -r ./buildmgr/etc/*                                                                            ./distribution/etc
           rm ./distribution/etc/setup
@@ -283,8 +283,6 @@ jobs:
           cp ../docs/index.html                                                                             ./distribution/doc
         working-directory: toolbox
 
-      # TODO: Add this on next release update
-      # sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/XC.5.0.0.cmake
       - name: Update toolchain config files
         if: ${{ matrix.target == 'windows' }}
         shell: bash
@@ -294,6 +292,7 @@ jobs:
           sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/IAR.9.32.1.cmake
           sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/CLANG.17.0.1.cmake
           sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/CLANG_TI.4.0.1.cmake
+          sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/XC.5.0.0.cmake
         working-directory: toolbox
 
       - name: Create output folders
