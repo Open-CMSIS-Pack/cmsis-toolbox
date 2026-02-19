@@ -28,5 +28,8 @@ solution:
     - type: CLANG
       compiler: CLANG
 
+    - type: XC
+      compiler: XC
+
   projects:
     - project: ./project/project.cproject.yml

@@ -57,3 +57,13 @@ project:
         - file: ./IAR/Asm.s
           define:
             - IAR_ASM_DEF
+
+    - group: XC
+      for-compiler: XC
+      define-asm:
+        - GROUP_ASM_XC_DEF
+      files:
+        - file: ./XC/XC_Asm.S
+          for-compiler: XC
+          define:
+              - XC_ASM_DEF

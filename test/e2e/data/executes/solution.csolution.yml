@@ -13,8 +13,7 @@ solution:
 
   build-types:
     - type: Release
-
-  compiler: AC6
+      compiler: AC6
 
   projects:
     - project: project/project.cproject.yml
