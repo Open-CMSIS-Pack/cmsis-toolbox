@@ -100,12 +100,7 @@ debugger:
 ### `rtt:`
 
 [SEGGER RTT](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) implements low-latency debug I/O via RAM ring buffers. The `rtt:` node configures the RTT features and the RTT channel usage.
-
-- By default, RTT channel 0 is used for character I/O to the console (STDIO) of the host system that runs pyOCD. The setting `stdio: false` disables this console I/O.
-
-- The [`telnet:`](#telnet) node maps any RTT channel to a TCP Telnet port. pyOCD starts a Telnet server on each port and connects the corresponding RTT channel.
-
-- The [`system-view:`](#system-view) node maps any RTT channel to a core-specific [SystemView](https://www.segger.com/products/development-tools/systemview/) data file.
+At least one channel is required (for a specific) core to enable RTT on that core.
 
 !!! Note
     RTT is only enabled when using the pyOCD [run command](#run).
@@ -114,9 +109,8 @@ debugger:
 :----------------------------------------------------|--------------|:------------------------------------
 `- pname:`                                           |   Optional   | Processor identifier (not required for single-core systems).
 &nbsp;&nbsp;&nbsp; [`control-block:`](#control-block)|   Optional   | RTT control block configuration.
-&nbsp;&nbsp;&nbsp; `stdio:`                          |   Optional   | Route STDIO over RTT channel 0: `true`, `false` (default: `true`).
-&nbsp;&nbsp;&nbsp; [`telnet:`](#telnet)              |   Optional   | Map additional RTT channels to Telnet ports.
-&nbsp;&nbsp;&nbsp; [`system-view:`](#system-view)    |   Optional   | Capture SystemView data from a designated RTT channel to a file.
+&nbsp;&nbsp;&nbsp; [`channel:`](#channel)            | **Required** | Channel configuration.
+
 
 #### `control-block:`
 
@@ -138,48 +132,19 @@ pyOCD discovers the RTT control block using the prioritized steps for each core 
 
 If the RTT control block cannot be found, RTT will be disabled for that core.
 
-#### `telnet:`
+#### `channel:`
 
-The `telnet:` node maps the individual RTT channels (upstream and downstream) to specific Telnet ports.
+The `channel:` node selects the RTT channel mode.
 
-`telnet:`                                           |              | Description
+`channel:`                                          |              | Description
 :---------------------------------------------------|--------------|:------------------------------------
-`- channel:`                                        | **Required** | RTT channel that is connected to Telnet Server
-&nbsp;&nbsp;&nbsp; `port:`                          | **Required** | TCP port for the Telnet server.
-
-!!! Note
-    Channel 0 configuration is available only when `stdio: false` is specified.
-
-#### `system-view:`
-
-The `system-view:` node configures the RTT channel data capturing for [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/).
-
-`system-view:`                                      |              | Description
-:---------------------------------------------------|--------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `channel:`                       |   Optional   | RTT channel used for SystemView (default: `1`). Disabled if used by `stdio` or `telnet`.
-&nbsp;&nbsp;&nbsp; `file-out:`                      |   Optional   | SystemView output data file. Default: `./out/<solution-name>+<target-type>.<pname>.SVDat` (derived from [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management)).
-&nbsp;&nbsp;&nbsp; `auto-start:`                    |   Optional   | Send SystemView start command automatically: `true`, `false` (default: `true`).
-&nbsp;&nbsp;&nbsp; `auto-stop:`                     |   Optional   | Send SystemView stop command automatically: `true`, `false` (default: `true`).
+`- number:`                                         | **Required** | Channel number.
+&nbsp;&nbsp;&nbsp; `mode:`                          | **Required** | Channel mode selection: `stdio`, `telnet`, `systemview`.
+&nbsp;&nbsp;&nbsp; `port:`                          |   Optional   | TCP port (required for `telnet` mode).
 
 **Examples:**
 
-Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port `4444` and channel 3 to a Telnet Server port `4445`:
-
-```yml
-debugger:
-  name: CMSIS-DAP@pyOCD
-  protocol: swd
-  rtt:
-    - pname: Core0
-      stdio: true
-      telnet:
-        - channel: 2
-          port: 4444
-        - channel: 3
-          port: 4445
-```
-
-Configure explicit control block and SystemView capture on channel 1:
+Enable RTT with STDIO on channel 0 and configure explicit control block:
 
 ```yml
 debugger:
@@ -190,11 +155,56 @@ debugger:
       control-block:
         address: 0x20000000
         size: 0x00020000
-      system-view:
-        channel: 1
-        file-out: ./out/MyApp+MyBoard.Core0.SVDat
-        auto-start: true
-        auto-stop: true
+      channel:
+        - number: 0
+          mode: stdio
+```
+Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port `4444` and channel 3 to a Telnet Server port `4445`:
+
+```yml
+debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  rtt:
+    - pname: Core0
+      channel:
+        - number: 0
+          mode: stdio
+        - number: 2
+          mode: telnet
+          port: 4444
+        - number: 3
+          mode: telnet
+          port: 4445
+```
+
+### `systemview:`
+
+The `systemview:` node configures the RTT channel data capturing for [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/).
+
+`systemview:`                                      |              | Description
+:---------------------------------------------------|--------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `file:`                          |   Optional   | SystemView capture file. Default: `./out/<solution-name>+<target-type>.SVDat` (derived from [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management)).
+&nbsp;&nbsp;&nbsp; `auto-start:`                    |   Optional   | Send SystemView start command automatically: `true`, `false` (default: `true`).
+&nbsp;&nbsp;&nbsp; `auto-stop:`                     |   Optional   | Send SystemView stop command automatically: `true`, `false` (default: `true`).
+
+**Examples:**
+
+Configure SystemView capture on channel 1:
+
+```yml
+debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  rtt:
+    - pname: Core0
+      channel:
+        - number: 1
+          mode: systemview
+  systemview:
+    file: ./out/MyApp+MyBoard.Core0.SVDat
+    auto-start: true
+    auto-stop: true
 ```
 
 ### `trace:`
