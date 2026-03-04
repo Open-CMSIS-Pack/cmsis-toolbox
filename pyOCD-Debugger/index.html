@@ -107,11 +107,11 @@
 <ul>
 <li class="toctree-l4"><a class="reference internal" href="#control-block">control-block:</a>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#telnet">telnet:</a>
-</li>
-<li class="toctree-l4"><a class="reference internal" href="#system-view">system-view:</a>
+<li class="toctree-l4"><a class="reference internal" href="#channel">channel:</a>
 </li>
 </ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#systemview">systemview:</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#trace">trace:</a>
 </li>
@@ -373,18 +373,8 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
     post-reset: off         # no reset after load
 </code></pre>
 <h3 id="rtt"><code>rtt:</code></h3>
-<p><a href="https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/">SEGGER RTT</a> implements low-latency debug I/O via RAM ring buffers. The <code>rtt:</code> node configures the RTT features and the RTT channel usage.</p>
-<ul>
-<li>
-<p>By default, RTT channel 0 is used for character I/O to the console (STDIO) of the host system that runs pyOCD. The setting <code>stdio: false</code> disables this console I/O.</p>
-</li>
-<li>
-<p>The <a href="#telnet"><code>telnet:</code></a> node maps any RTT channel to a TCP Telnet port. pyOCD starts a Telnet server on each port and connects the corresponding RTT channel.</p>
-</li>
-<li>
-<p>The <a href="#system-view"><code>system-view:</code></a> node maps any RTT channel to a core-specific <a href="https://www.segger.com/products/development-tools/systemview/">SystemView</a> data file.</p>
-</li>
-</ul>
+<p><a href="https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/">SEGGER RTT</a> implements low-latency debug I/O via RAM ring buffers. The <code>rtt:</code> node configures the RTT features and the RTT channel usage.
+At least one channel is required (for a specific) core to enable RTT on that core.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>RTT is only enabled when using the pyOCD <a href="#run">run command</a>.</p>
@@ -409,19 +399,9 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 <td style="text-align: left;">RTT control block configuration.</td>
 </tr>
 <tr>
-<td style="text-align: left;">    <code>stdio:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Route STDIO over RTT channel 0: <code>true</code>, <code>false</code> (default: <code>true</code>).</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <a href="#telnet"><code>telnet:</code></a></td>
-<td>Optional</td>
-<td style="text-align: left;">Map additional RTT channels to Telnet ports.</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <a href="#system-view"><code>system-view:</code></a></td>
-<td>Optional</td>
-<td style="text-align: left;">Capture SystemView data from a designated RTT channel to a file.</td>
+<td style="text-align: left;">    <a href="#channel"><code>channel:</code></a></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Channel configuration.</td>
 </tr>
 </tbody>
 </table>
@@ -462,53 +442,79 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 <li>When <code>control-block:</code> is empty or not specified, pyOCD checks the ELF file for the symbol <code>_SEGGER_RTT</code> that specifies the control block location.</li>
 </ol>
 <p>If the RTT control block cannot be found, RTT will be disabled for that core.</p>
-<h4 id="telnet"><code>telnet:</code></h4>
-<p>The <code>telnet:</code> node maps the individual RTT channels (upstream and downstream) to specific Telnet ports.</p>
+<h4 id="channel"><code>channel:</code></h4>
+<p>The <code>channel:</code> node selects the RTT channel mode.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;"><code>telnet:</code></th>
+<th style="text-align: left;"><code>channel:</code></th>
 <th></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>- channel:</code></td>
+<td style="text-align: left;"><code>- number:</code></td>
 <td><strong>Required</strong></td>
-<td style="text-align: left;">RTT channel that is connected to Telnet Server</td>
+<td style="text-align: left;">Channel number.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>mode:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Channel mode selection: <code>stdio</code>, <code>telnet</code>, <code>systemview</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>port:</code></td>
-<td><strong>Required</strong></td>
-<td style="text-align: left;">TCP port for the Telnet server.</td>
+<td>Optional</td>
+<td style="text-align: left;">TCP port (required for <code>telnet</code> mode).</td>
 </tr>
 </tbody>
 </table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Channel 0 configuration is available only when <code>stdio: false</code> is specified.</p>
-</div>
-<h4 id="system-view"><code>system-view:</code></h4>
-<p>The <code>system-view:</code> node configures the RTT channel data capturing for <a href="https://www.segger.com/products/development-tools/systemview/">SEGGER SystemView</a>.</p>
+<p><strong>Examples:</strong></p>
+<p>Enable RTT with STDIO on channel 0 and configure explicit control block:</p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  rtt:
+    - pname: Core0
+      control-block:
+        address: 0x20000000
+        size: 0x00020000
+      channel:
+        - number: 0
+          mode: stdio
+</code></pre>
+<p>Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port <code>4444</code> and channel 3 to a Telnet Server port <code>4445</code>:</p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  rtt:
+    - pname: Core0
+      channel:
+        - number: 0
+          mode: stdio
+        - number: 2
+          mode: telnet
+          port: 4444
+        - number: 3
+          mode: telnet
+          port: 4445
+</code></pre>
+<h3 id="systemview"><code>systemview:</code></h3>
+<p>The <code>systemview:</code> node configures the RTT channel data capturing for <a href="https://www.segger.com/products/development-tools/systemview/">SEGGER SystemView</a>.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;"><code>system-view:</code></th>
+<th style="text-align: left;"><code>systemview:</code></th>
 <th></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">    <code>channel:</code></td>
+<td style="text-align: left;">    <code>file:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">RTT channel used for SystemView (default: <code>1</code>). Disabled if used by <code>stdio</code> or <code>telnet</code>.</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <code>file-out:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">SystemView output data file. Default: <code>./out/&lt;solution-name&gt;+&lt;target-type&gt;.&lt;pname&gt;.SVDat</code> (derived from <a href="../YML-CBuild-Format/#run-and-debug-management"><code>*.cbuild-run.yml</code></a>).</td>
+<td style="text-align: left;">SystemView capture file. Default: <code>./out/&lt;solution-name&gt;+&lt;target-type&gt;.SVDat</code> (derived from <a href="../YML-CBuild-Format/#run-and-debug-management"><code>*.cbuild-run.yml</code></a>).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>auto-start:</code></td>
@@ -523,33 +529,19 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 </tbody>
 </table>
 <p><strong>Examples:</strong></p>
-<p>Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port <code>4444</code> and channel 3 to a Telnet Server port <code>4445</code>:</p>
+<p>Configure SystemView capture on channel 1:</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
   rtt:
     - pname: Core0
-      stdio: true
-      telnet:
-        - channel: 2
-          port: 4444
-        - channel: 3
-          port: 4445
-</code></pre>
-<p>Configure explicit control block and SystemView capture on channel 1:</p>
-<pre><code class="language-yml">debugger:
-  name: CMSIS-DAP@pyOCD
-  protocol: swd
-  rtt:
-    - pname: Core0
-      control-block:
-        address: 0x20000000
-        size: 0x00020000
-      system-view:
-        channel: 1
-        file-out: ./out/MyApp+MyBoard.Core0.SVDat
-        auto-start: true
-        auto-stop: true
+      channel:
+        - number: 1
+          mode: systemview
+  systemview:
+    file: ./out/MyApp+MyBoard.Core0.SVDat
+    auto-start: true
+    auto-stop: true
 </code></pre>
 <h3 id="trace"><code>trace:</code></h3>
 <div class="admonition note">
