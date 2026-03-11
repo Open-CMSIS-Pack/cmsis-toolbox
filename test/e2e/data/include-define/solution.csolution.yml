@@ -10,6 +10,9 @@ solution:
       device: ARMCM0
       add-path-asm:
         - ./project/target
+      define:
+        - RANDOM_CONFIG_FILE_1: <random_config1.h>
+        - RANDOM_CONFIG_FILE_2: \"random_config2.h\"
 
   build-types:
     - type: AC6
