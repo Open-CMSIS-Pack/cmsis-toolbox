@@ -61,3 +61,5 @@ project:
     - group: Headers
       files:
         - file: ./inc1/inc.h
+        - file: ./random_config1.h
+        - file: ./random_config2.h
