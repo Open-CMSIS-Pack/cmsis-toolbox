@@ -427,7 +427,7 @@ The options are added
 &nbsp;&nbsp;&nbsp; `type:`                              |**Required**| Type (enum: value list, number: value, string: name, file: name).
 &nbsp;&nbsp;&nbsp; `range:`                             |  Optional  | Value range for type int.
 &nbsp;&nbsp;&nbsp; `values:`                            |  Optional  | Value list for type enum.
-&nbsp;&nbsp;&nbsp; `path-type:`                         |  Optional  | Type of the path specified with `default:`. Possible values: `absolute` or `relative` (default). Only valid if `type:` is `file`.
+&nbsp;&nbsp;&nbsp; `path-type:`                         |  Optional  | Only valid if `type:` is `file`. Possible values: `absolute` or `relative` (default).
 &nbsp;&nbsp;&nbsp; `default:`                           |  Optional  | Default value (or enum name) for user interface when no value given in csolution.yml.
 &nbsp;&nbsp;&nbsp; `scale:`                             |  Optional  | The value in csolution.yml value is multiplied by the scale factor.
 
