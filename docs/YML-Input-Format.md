@@ -104,6 +104,7 @@ The fully resolved component name is shown in the [`*.cbuild.yml`](YML-CBuild-Fo
 
 - If a component is added more than once in the *csolution project files* and an *error* is issued.
 - An attempt to select multiple variants (using `Cvariant`) of a component results in an *error*.
+- Bundle consistency applies only to components with a `Cbundle`. For the same Cclass, all bundles must match. The `Cvendor` is ignored when comparing bundles.
 
 **Examples:**
 
