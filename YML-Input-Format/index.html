@@ -608,8 +608,9 @@ vendor::pack-name@~version       # With version equal or higher but the same maj
 </div>
 <p><strong>Multiple component definitions are rejected</strong></p>
 <ul>
-<li>If a component is added more than once in the <em>csolution project files</em> and an <em>error</em> is issued.</li>
-<li>An attempt to select multiple variants (using <code>Cvariant</code>) of a component results in an <em>error</em>.</li>
+<li>A component can only be added once in the <em>csolution project files</em>; duplicates cause an error.</li>
+<li>For components with a <code>Cvariant</code> only one variant of that component may be selected in the <em>csolution project files</em>; multiple variants cause an error.</li>
+<li>When selecting components with a <code>Cbundle</code>, all components of the same <code>Cclass</code> in the <em>csolution project files</em> must belong to the same bundle; violation of the bundle consistency cause an error.</li>
 </ul>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">- component: CMSIS:CORE                               # CMSIS Core component (vendor selected by `csolution` ARM)
