@@ -102,8 +102,9 @@ The fully resolved component name is shown in the [`*.cbuild.yml`](YML-CBuild-Fo
 
 **Multiple component definitions are rejected**
 
-- If a component is added more than once in the *csolution project files* and an *error* is issued.
-- An attempt to select multiple variants (using `Cvariant`) of a component results in an *error*.
+- A component can only be added once in the *csolution project files*; duplicates cause an error.
+- For components with a `Cvariant` only one variant of that component may be selected in the *csolution project files*; multiple variants cause an error.
+- When selecting components with a `Cbundle`, all components of the same `Cclass` in the *csolution project files* must belong to the same bundle; violation of the bundle consistency cause an error.
 
 **Examples:**
 
