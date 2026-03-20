@@ -21,17 +21,24 @@ The following tools support the creation of build information for embedded appli
 
 Tool           | Description
 :--------------|:-------------
-**cpackget**   | **Pack Manager:** install and manage software packs in the development environment.
-**cbuild**     | **Build Invocation:** orchestrate the build steps utilizing CMSIS tools and a CMake compilation process.
-**csolution**  | **Project Manager:** create build information for embedded applications that consist of one or more related projects.
+[**cpackget**](https://github.com/Open-CMSIS-Pack/cpackget) | **Pack Installer:** installs and manages software packs in the development environment.
+[**cbuild**](https://github.com/Open-CMSIS-Pack/cbuild) | **Build Invocation:** orchestrates the build steps utilizing CMSIS tools and a CMake compilation process.
+[**csolution**](https://github.com/Open-CMSIS-Pack/devtools) | **Project Manager:** creates build information for embedded applications that consist of one or more related projects.
+
+These tools extend the project creation workflow by enabling integration with external tools. They are typically used alongside the core tools above.
+
+Tool           | Description
+:--------------|:-------------
+[**cbuild2cmake**](https://github.com/Open-CMSIS-Pack/cbuild2cmake) | **CMake File Generator:** generates CMake scripts from CMSIS build information files.
+[**cbridge**](https://github.com/Open-CMSIS-Pack/generator-bridge) | **Generator Bridge:** integrates the code generator STM32CubeMX into the CMSIS-Toolbox build flow.
 
 ## Example Projects
 
 Repository            | Description
 :---------------------|:-------------------------------------
-[csolution-examples](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains several `Hello World` examples that show single-core, multi-core, and TrustZone setup.
-[vscode-get-started](https://github.com/Open-CMSIS-Pack/vscode-get-started) | Contains the setup for a VS Code development environment including an example project.
-[github.com/Arm-Examples](https://github.com/Arm-Examples) | Contains many examples that include CMSIS-Toolbox setup.
+[**csolution-examples**](https://github.com/Open-CMSIS-Pack/csolution-examples) | Contains several `Hello World` examples that show single-core, multi-core, and TrustZone setup.
+[**vscode-get-started**](https://github.com/Open-CMSIS-Pack/vscode-get-started) | Contains the setup for a VS Code development environment including an example project.
+[**github.com/Arm-Examples**](https://github.com/Arm-Examples) | Contains many examples that include CMSIS-Toolbox setup.
 
 ## Software Pack Creation
 
@@ -39,8 +46,9 @@ The following tools support the creation of Software Packs in [CMSIS-Pack format
 
 Tool           | Description
 :--------------|:-------------
-**packchk**    | **Pack Validation:** installs and manages software packs in the local development environment.
-**svdconv**    | **SVD Check / Convert:** validate and/or convert System View Description (SVD) files.
+[**packchk**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/packchk/README.md) | **Pack Verification:** installs and manages software packs in the local development environment.
+[**svdconv**](https://github.com/Open-CMSIS-Pack/devtools/tree/main/tools/svdconv/SVDConv) | **SVD Check / Convert:** validates and/or convert System View Description (SVD) files.
+[**vidx2pidx**](https://github.com/Open-CMSIS-Pack/vidx2pidx) | **Pack Index File Generator:** generates a CMSIS-Pack index file from a vendor index.
 
 In addition several scripts are provided that simplify pack creation with desktop or cloud workflows. This is described in several hands-on tutorials:
 
