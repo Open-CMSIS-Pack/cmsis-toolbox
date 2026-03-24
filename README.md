@@ -30,7 +30,7 @@ These tools extend the project creation workflow by enabling integration with ex
 
 Tool           | Description
 :--------------|:-------------
-[**cbridge**](https://github.com/Open-CMSIS-Pack/generator-bridge) | **Generator Bridge:** integrates external code generators into the CMSIS-Toolbox build flow. Provides native STM32CubeMX support and bridge scripts for MCUXpresso and Infineon Device Configurator.
+[**cbridge**](https://github.com/Open-CMSIS-Pack/generator-bridge/blob/main/README.md) | **Generator Bridge:** integrates external code generators into the CMSIS-Toolbox build flow. Provides native STM32CubeMX support and bridge scripts for MCUXpresso and Infineon Device Configurator.
 
 ## Example Projects
 
