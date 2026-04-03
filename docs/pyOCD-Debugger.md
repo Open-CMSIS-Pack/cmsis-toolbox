@@ -18,22 +18,99 @@ Other manual sections describe how to configure debuggers:
 
 The section [CSolution Project Format - pyOCD](YML-Input-Format.md#pyocd) contains the pyOCD configuration for typical systems.
 
-Extended YML options are required to configure specific use-cases or overwrite information that is typically provided in the [DFP](build-overview.md#overview-of-operation).
+Extended YAML options are required to configure specific use-cases or overwrite information that is typically provided in the [DFP](build-overview.md#overview-of-operation).
 
 CMSIS-DAP based Debug Adapters implement [debug access sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#pdsc_SequenceNameEnum_pg) that are configured in the [DFP for a device](build-overview.md#overview-of-operation).
+
+### `gdbserver:`
+
+`gdbserver:`                   |              | Content
+:------------------------------|:-------------|:------------------------------------
+`- port:`                      | **Required** | Set TCP/IP port number of GDB Server (default: 3333, 3334, ... incremented for each processor).
+&nbsp;&nbsp;&nbsp; `pname:`    |   Optional   | Identifies the processor (not required for single core system).
+
+!!! Note
+    - When no `gdbserver` node is applied, the default mechanism of incrementing port number starting with `3333` is used.
+
+### `telnet:`
+
+pyOCD can configure a Telnet service for each processor that runs an independent application. The Telnet service connects to character I/O functions (Semihosting or SEGGER RTT).
+The `telnet:` node configures:
+
+- Telnet port for connecting remote tools, for example the [Serial Monitor VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
+- Redirect the output to a `file`, `console`, `port`, or `monitor`. The setting `monitor` connects a telnet `port` to the Serial Monitor in VS Code. The default output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management) and uses the extension `<pname>.txt`, format: `<solution-name>+<target-type>.<pname>.out`
+
+`telnet:`                      |              | Description
+:------------------------------|:-------------|:------------------------------------
+`- mode:`                      | **Required** | Redirect output: `off`, `server`, `file`, `console`, `monitor`.
+&nbsp;&nbsp;&nbsp; `pname:`    |   Optional   | Identifies the processor (not required for single core system).
+&nbsp;&nbsp;&nbsp; `port:`     |   Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
+&nbsp;&nbsp;&nbsp; `file-in:`  |   Optional   | Explicit path and name of the telnet input file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.in`
+&nbsp;&nbsp;&nbsp; `file-out:` |   Optional   | Explicit path and name of the telnet output file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.out`
+
+Telnet Mode                    | Description
+:------------------------------|:--------------------------------------
+`server`                       | Serial I/O to Telnet server port.
+`file`                         | Serial I/O to text files. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.{in \| out}`
+`console`                      | Serial output to console (Debug console in VS Code).
+`monitor`                      | Serial I/O via TCP/IP port to VS Code Serial Monitor.
+`off`                          | Serial I/O disabled.
+
+!!! Note
+    - When no `telnet` node is applied, Serial I/O to all processors is disabled.
+
+**Examples:**
+
+Enable Telnet service for a single core system.
+
+```yml
+debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  telnet:
+    - mode: monitor          # Output via TCP/IP port to VS Code Serial Monitor
+```
+
+Enable Telnet service for a single core system.
+
+```yml
+debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  telnet:
+    - mode: server
+```
+
+Enable Telnet service for a multi core system.
+
+```yml
+debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  telnet:
+    - pname: Core0          # enable Telnet service with default settings
+      mode: server
+      port: 4444
+    - pname: Core1
+      mode: console         # route Telnet input/output to console 
+    - pname: Core2
+      mode: file            # route Telnet input/output to files
+      file-in: Blinky+MyTarget.Core2.in
+      file-out: Blinky+MyTarget.Core2.out
+```
 
 ### `connect:`
 
 Configures the behavior for connecting pyOCD to the hardware target.
 
 &nbsp;                                            |              | Description
-:-------------------------------------------------|--------------|:------------------------------------
+:-------------------------------------------------|:-------------|:------------------------------------
 `connect:`                                        |   Optional   | Selects the connect mode: `pre-reset`, `under-reset`, `attach` (default), `halt`.
 
 Connect Mode  | Description
 :-------------|:------------------------------------
 `pre-reset`   | Apply a hardware reset before connect. Sequence: [ResetHardware](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardware).
-`under-reset` | Asserts a hardware reset during connect and deasserts after core(s) are halted. Sequence: [ResetHardwareAssert](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareAssert), [ResetHardwareDeassert](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareDeassert).
+`under-reset` | Asserts a hardware reset (Sequence: [ResetHardwareAssert](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareAssert)) during connect and deasserts (Sequence: [ResetHardwareDeassert](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareDeassert)) after core(s) are halted.
 `attach`      | Do not change status of the core(s).
 `halt`        | Halt core(s) after connect.
 
@@ -42,7 +119,7 @@ Connect Mode  | Description
 Configures the reset behavior for each core when a reset is requested.
 
 `reset:`                                          |              | Description
-:-------------------------------------------------|--------------|:------------------------------------
+:-------------------------------------------------|:-------------|:------------------------------------
 `- pname:`                                        |   Optional   | Identifies the processor (not required for single core system).
 &nbsp;&nbsp;&nbsp; `type:`                        | **Required** | Selects the reset type: `hardware`, `system`, `core`. Default: specified in DFP.
 
@@ -99,17 +176,17 @@ debugger:
 
 ### `rtt:`
 
-[SEGGER RTT](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) implements low-latency debug I/O via RAM ring buffers. The `rtt:` node configures the RTT features and the RTT channel usage.
-At least one channel is required (for a specific) core to enable RTT on that core.
+[SEGGER RTT](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) implements low-latency debug I/O via RAM ring buffers.
+The `rtt:` node configures the RTT features and the RTT channel usage. At least one RTT channel must be configured for each core to enable RTT on that core.
 
 !!! Note
     RTT is only enabled when using the pyOCD [run command](#run).
 
-`rtt:`                                               |              | Description
-:----------------------------------------------------|--------------|:------------------------------------
-`- pname:`                                           |   Optional   | Processor identifier (not required for single-core systems).
-&nbsp;&nbsp;&nbsp; [`control-block:`](#control-block)|   Optional   | RTT control block configuration.
-&nbsp;&nbsp;&nbsp; [`channel:`](#channel)            | **Required** | Channel configuration.
+`rtt:`                                                |              | Description
+:-----------------------------------------------------|:-------------|:------------------------------------
+`- pname:`                                            |   Optional   | Processor identifier (not required for single-core systems).
+&nbsp;&nbsp;&nbsp; [`control-block:`](#control-block) |   Optional   | RTT control block configuration.
+&nbsp;&nbsp;&nbsp; [`channel:`](#channel)             | **Required** | Channel configuration.
 
 
 #### `control-block:`
@@ -117,7 +194,7 @@ At least one channel is required (for a specific) core to enable RTT on that cor
 The `control-block:` node configures the RTT control block discovery in pyOCD.
 
 `control-block:`                                    |              | Description
-:---------------------------------------------------|--------------|:------------------------------------
+:---------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `auto-detect:`                   |   Optional   | Scan default memory regions for the RTT control block signature: `true`, `false` (default: `false`).
 &nbsp;&nbsp;&nbsp; `address:`                       |   Optional   | Explicit control block address; when combined with `size`, acts as scan start address.
 &nbsp;&nbsp;&nbsp; `size:`                          |   Optional   | Scan length in bytes when `address` is provided.
@@ -128,7 +205,7 @@ pyOCD discovers the RTT control block using the prioritized steps for each core 
     a. `size:` is provided: pyOCD scans that memory range.  
     b. `size:` is not provided: pyOCD checks the provided explicit address.  
 2. When `auto-detect: true` pyOCD scans default memory region (RAM) for the RTT control block signature. If multiple regions are marked as default, the region with the lowest start address is selected.
-4. When `control-block:` is empty or not specified, pyOCD checks the ELF file for the symbol `_SEGGER_RTT` that specifies the control block location.
+3. When `control-block:` is empty or not specified, pyOCD checks the ELF file for the symbol `_SEGGER_RTT` that specifies the control block location.
 
 If the RTT control block cannot be found, RTT will be disabled for that core.
 
@@ -137,10 +214,17 @@ If the RTT control block cannot be found, RTT will be disabled for that core.
 The `channel:` node selects the RTT channel mode.
 
 `channel:`                                          |              | Description
-:---------------------------------------------------|--------------|:------------------------------------
+:---------------------------------------------------|:-------------|:------------------------------------
 `- number:`                                         | **Required** | Channel number.
-&nbsp;&nbsp;&nbsp; `mode:`                          | **Required** | Channel mode selection: `stdio`, `telnet`, `systemview`.
-&nbsp;&nbsp;&nbsp; `port:`                          |   Optional   | TCP port (required for `telnet` mode).
+&nbsp;&nbsp;&nbsp; `mode:`                          | **Required** | Channel mode selection: `stdio`, `server`, `systemview`, `systemview-server`.
+&nbsp;&nbsp;&nbsp; `port:`                          |   Optional   | TCP port number (required for `server` and `systemview-server`).
+
+Channel Mode                  | Description
+:-----------------------------|:------------------------------------
+`stdio`                       | Connects channel to standard input/output.
+`server`                      | Exposes channel over a TCP server.
+`systemview`                  | Saves channel data to *.SVDat file for SEGGER SystemView. Default: `./out/<solution-name>+<target-type>.SVDat`.
+`systemview-server`           | Streams live data to SEGGER SystemView.
 
 **Examples:**
 
@@ -171,10 +255,10 @@ debugger:
         - number: 0
           mode: stdio
         - number: 2
-          mode: telnet
+          mode: server
           port: 4444
         - number: 3
-          mode: telnet
+          mode: server
           port: 4445
 ```
 
@@ -182,8 +266,8 @@ debugger:
 
 The `systemview:` node configures the RTT channel data capturing for [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/).
 
-`systemview:`                                      |              | Description
-:---------------------------------------------------|--------------|:------------------------------------
+`systemview:`                                       |              | Description
+:---------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `file:`                          |   Optional   | SystemView capture file. Default: `./out/<solution-name>+<target-type>.SVDat` (derived from [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management)).
 &nbsp;&nbsp;&nbsp; `auto-start:`                    |   Optional   | Send SystemView start command automatically: `true`, `false` (default: `true`).
 &nbsp;&nbsp;&nbsp; `auto-stop:`                     |   Optional   | Send SystemView stop command automatically: `true`, `false` (default: `true`).
@@ -218,7 +302,7 @@ The default trace output file and location is derived from the [`cbuild-run.yml`
 and uses the extension `<pname>.txt`, format: `<solution-name>+<target-type>.trace`
 
 `trace:`                                                  |              | Description
-:---------------------------------------------------------|--------------|:------------------------------------
+:---------------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `mode:`                                | **Required** | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `clock:`                               | **Required** | Trace clock frequency in Hz.
 &nbsp;&nbsp;&nbsp; `port-type:`                           |   Optional   | Set Trace Port transport mode. Currently only `SWO-UART` is accepted.
@@ -250,17 +334,17 @@ solution:
             protocol: swd
 ```
 
-To generate the related `*.cbuild.yml` file for pyOCD run the following CMSIS-Toolbox commands:
+To generate the related `*.cbuild-run.yml` file for pyOCD run the following CMSIS-Toolbox commands:
 
 ```bash
 cpackget add Infineon::PSE8xxx_DFP@1.0.1
-cbuild setup MySetup.yml --active PSE8_Target
+cbuild setup MySetup.csolution.yml --active PSE8_Target
 ```
 This creates the file `out/MySetup+PSE8_Target.cbuild-run.yml` that can be used for the [command line invocation](#command-line-invocation).
 
 ## Command Line Invocation
 
-The CMSIS-Toolbox debugger setup is provided in the [file `*.cbuild-run.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-runyml). The `*.cbuild-run.yml` file is generated by the CMSIS-Toolbox build process and uses the [Debugger Configuration](YML-Input-Format.md#debugger-configuration) that is part of the *csolution project*. [Minimal Setup](#minimal-setup) shows how to create a setup for a stand-along image file.
+The CMSIS-Toolbox debugger setup is provided in the [file `*.cbuild-run.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-runyml). The `*.cbuild-run.yml` file is generated by the CMSIS-Toolbox build process and uses the [Debugger Configuration](YML-Input-Format.md#debugger-configuration) that is part of the *csolution project*. [Minimal Setup](#minimal-setup) shows how to create a setup for a stand-alone image file.
 
 Use the following command line syntax to leverage this information:
 
@@ -342,7 +426,7 @@ pyocd erase --chip --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
 
 ### `load`
 
-Program target with images listed under the [`output`](#output) node.
+Program target with images listed under the [`output:`](#output) node.
 
 **Example:**
 
@@ -352,7 +436,7 @@ pyocd load --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
 
 ### `reset`
 
-Reset target using selected [`reset`](#reset) type.
+Reset target using selected [`reset:`](#reset) type.
 
 **Example:**
 
@@ -360,16 +444,19 @@ Reset target using selected [`reset`](#reset) type.
 pyocd reset --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
 ```
 
-## Content of `cbuild-run.yml`
+---
+## Content of `*.cbuild-run.yml`
 
-This section details the content of `cbuild-run.yml` file and how it is used to configure pyOCD. The `cbuild-run.yml`
+This section details the content of `*.cbuild-run.yml` file and how it is used to configure pyOCD. The `*.cbuild-run.yml`
 file is generated by the CMSIS-Toolbox from the information provided in the *csolution project*.
 However, it is possible to create a `*.cbuild-run.yml` file manually and the following section explains
 the file structure.
 
 ### `cbuild-run:`
 
-The `cbuild-run:` node is the start of a `*.cbuild-run.yml` file. The table below is an excerpt of the [File Structure of `*.cbuild-run.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-runyml)
+The top-level `cbuild-run:` node identifies the file as a `*.cbuild-run.yml` file. All Run and Debug configuration nodes
+are nested under this node. The table below is an excerpt of the full [File Structure of `*.cbuild-run.yml`](YML-CBuild-Format.md#file-structure-of-cbuild-runyml)
+configuration and highlights the nodes relevant to pyOCD. The contents of each node are described in the following sections.
 
 `cbuild-run:`                                                     |              | Content
 :-----------------------------------------------------------------|:-------------|:------------------------------------
@@ -379,10 +466,11 @@ The `cbuild-run:` node is the start of a `*.cbuild-run.yml` file. The table belo
 &nbsp;&nbsp;&nbsp; [`output:`](#output)                           |   Optional   | Lists the images (ELF, HEX, BIN) in this solution.
 &nbsp;&nbsp;&nbsp; [`system-resources:`](#system-resources)       |   Optional   | Lists target system resources.
 &nbsp;&nbsp;&nbsp; [`system-descriptions:`](#system-descriptions) |   Optional   | Lists target's description files for peripherals and software components.
-&nbsp;&nbsp;&nbsp; [`programming:`](#programming)                 |   Optional   | Lists flash algorithms for programming.
 &nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)                       |   Optional   | Configures the debugger.
 &nbsp;&nbsp;&nbsp; [`debug-vars:`](#debug-vars)                   |   Optional   | Debug variables.
 &nbsp;&nbsp;&nbsp; [`debug-sequences:`](#debug-sequences)         |   Optional   | Debug sequences.
+&nbsp;&nbsp;&nbsp; [`programming:`](#programming)                 |   Optional   | Lists flash algorithms for programming.
+&nbsp;&nbsp;&nbsp; [`flash-info:`](#flash-info)                   |   Optional   | Lists flash information for flash programming using debug sequences.
 &nbsp;&nbsp;&nbsp; [`debug-topology:`](#debug-topology)           |   Optional   | Debug topology.
 
 ### `device:`
@@ -419,13 +507,13 @@ The `board-pack` (BSP) improves pyOCD's error reporting when a required file is 
 
 ### `output:`
 
-pyOCD uses the information from the `output` node to determine which images need to be loaded into the device's
-flash memory and at what addresses. The image file type is determined by the `type` node, and the load offset
-for binary image files is provided by the `load-offset` node. Only files with `image` in the `load:` node are
+pyOCD uses the information from the `output:` node to determine which images need to be loaded into the device's
+flash memory and at what addresses. The image file type is determined by the `type:` node, and the load offset
+for binary image files is provided by the `load-offset:` node. Only files with `image` in the `load:` node are
 programmed to the device.
 
 `output:`                                                 |              | Content
-:---------------------------------------------------------|--------------|:------------------------------------
+:---------------------------------------------------------|:-------------|:------------------------------------
 `- file:`                                                 | **Required** | Specifies the file name.
 &nbsp;&nbsp;&nbsp; [`type:`](YML-Input-Format.md#type)    | **Required** | Specifies the file type.
 &nbsp;&nbsp;&nbsp; `info:`                                |   Optional   | Brief description of the file.
@@ -466,11 +554,11 @@ as the baseline and is then updated with the information provided in the `memory
 pyOCD falls back to the default Cortex-M memory map.
 
 `system-resources:`                               |              | Content
-:-------------------------------------------------|--------------|:------------------------------------
+:-------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `memory:`                      |   Optional   | Identifies the section for memory.
 
 `memory:`                                         |              | Content
-:-------------------------------------------------|--------------|:------------------------------------
+:-------------------------------------------------|:-------------|:------------------------------------
 `- name:`                                         | **Required** | Name of the memory region (when PDSC contains id, it uses the id as name).
 &nbsp;&nbsp;&nbsp; `access:`                      | **Required** | Access attribute string for the memory ([see `access:` table here](YML-CBuild-Format.md#system-resources)).
 &nbsp;&nbsp;&nbsp; `start:`                       | **Required** | Base address of the memory.
@@ -554,7 +642,7 @@ Contains a list of system description files for the target's peripherals and sof
 processed by pyOCD to present debug views and decode register reads/writes.
 
 `system-descriptions:`                            |              | Content
-:-------------------------------------------------|--------------|:------------------------------------
+:-------------------------------------------------|:-------------|:------------------------------------
 `- file:`                                         | **Required** | Specifies the file name including the path.
 &nbsp;&nbsp;&nbsp; `type:`                        | **Required** | Specifies the file type (see table below).
 &nbsp;&nbsp;&nbsp; `info:`                        |   Optional   | Brief description of the file.
@@ -565,7 +653,7 @@ processed by pyOCD to present debug views and decode register reads/writes.
 `svd`   | [System View Description (`*.svd`) file](https://open-cmsis-pack.github.io/svd-spec/main/index.html) specified in the [DFP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debug).
 
 !!! Note
-    Currently pyOCD has a limitation of only processing the `svd` file for the processor listed in `start-pname`.
+    Currently pyOCD has a limitation of only processing the `svd` file for the processor listed in `start-pname:`.
 
 **Example:**
 
@@ -579,41 +667,11 @@ processed by pyOCD to present debug views and decode register reads/writes.
       pname: M55_HP
 ```
 
-### `programming:`
-
-Contains a list of the target's flash programming algorithms. pyOCD uses these algorithms to identify which
-memory regions should be treated as flash, and it will automatically select the appropriate algorithm when
-programming flash on the target.
-
-`programming:`                                    |              | Content
-:-------------------------------------------------|--------------|:------------------------------------
-`- algorithm:`                                    | **Required** | Programming algorithm file including the path.
-&nbsp;&nbsp;&nbsp; `start:`                       | **Required** | Start address of memory covered by the programming algorithm.
-&nbsp;&nbsp;&nbsp; `size:`                        | **Required** | Size of memory covered by the programming algorithm.
-&nbsp;&nbsp;&nbsp; `ram-start:`                   | **Required** | Start address of RAM where the algorithm will be executed from.
-&nbsp;&nbsp;&nbsp; `ram-size:`                    | **Required** | Maximum size of RAM available for executing the programming algorithm.
-&nbsp;&nbsp;&nbsp; `pname:`                       |   Optional   | Specifies the processor for the execution of the algorithm.
-
-**Example:**
-
-```yml
-  programming:
-    - algorithm: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Flash/algorithms/Ensemble.FLM
-      start: 0x80000000
-      size: 0x00580000
-      ram-start: 0x00000000
-      ram-size: 0x00020000
-    - algorithm: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Flash/algorithms/Ensemble_IS25WX256.FLM
-      start: 0xC0000000
-      size: 0x02000000
-      ram-start: 0x00000000
-      ram-size: 0x00040000
-```
-
 ### `debugger:`
 
 Contains the user's debugger configuration settings. The available options are described in detail in the
-CSolution Project Format section [Debugger Configuration - pyOCD](YML-Input-Format.md#debugger-for-pyocd).
+CSolution Project Format section [Debugger Configuration - pyOCD](YML-Input-Format.md#debugger-for-pyocd)
+and pyOCD Debugger [Extended Options](#extended-options).
 
 **Example:**
 
@@ -648,6 +706,10 @@ CSolution Project Format section [Debugger Configuration - pyOCD](YML-Input-Form
 Contains default values for debug sequence variables. These values can be overridden by explicit settings in a
 `*.dbgconf` file provided in the [`debugger:`](#debugger) node.
 
+`debug-vars:`                                             |              | Content
+:---------------------------------------------------------|--------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `vars:`                                |   Optional   | Initial values for variables used in [`debug-sequences:`](#debug-sequences).
+
 **Example:**
 
 ```yml
@@ -662,8 +724,25 @@ Contains default values for debug sequence variables. These values can be overri
 ### `debug-sequences:`
 
 Contains [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence)
-from the DFP for the target. A sequence with no `blocks` disables the default sequence; sequence names can override
+from the DFP for the target. A sequence with no `blocks:` disables the default sequence; sequence names can override
 default sequences from the DFP.
+
+`debug-sequences:`                                        |              | Content
+:---------------------------------------------------------|--------------|:------------------------------------
+`- name:`                                                 | **Required** | Name of the sequence.
+&nbsp;&nbsp;&nbsp; `info:`                                |   Optional   | Descriptive text to display for example for error diagnostics.
+&nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | A list of command blocks in order of execution.
+&nbsp;&nbsp;&nbsp; `pname:`                               |   Optional   | Executes sequence only for a specific processor; default is for all processors.
+
+`blocks:`                                                 |              | Content
+:---------------------------------------------------------|--------------|:------------------------------------
+`- info:`                                                 |   Optional   | Descriptive text to display for example for error diagnostics.
+&nbsp;&nbsp;&nbsp; `blocks:`                              |   Optional   | A list of command blocks in the order of execution.
+&nbsp;&nbsp;&nbsp; `execute:`                             |   Optional   | Commands for execution.
+&nbsp;&nbsp;&nbsp; `atomic:`                              |   Optional   | Atomic execution of commands; cannot be used with `blocks:`.
+&nbsp;&nbsp;&nbsp; `if:`                                  |   Optional   | Only executed when expression is true.
+&nbsp;&nbsp;&nbsp; `while:`                               |   Optional   | Executed in loop until while expression is true.
+&nbsp;&nbsp;&nbsp; `timeout:`                             |   Optional   | Timeout value (integer) in milliseconds for while loop.
 
 **Example:**
 
@@ -700,25 +779,98 @@ default sequences from the DFP.
           timeout: 500000
 ```
 
+### `programming:`
+
+Contains a list of the target's flash programming algorithms. pyOCD uses these algorithms to identify which
+memory regions should be treated as flash, and it will automatically select the appropriate algorithm when
+programming flash on the target.
+
+`programming:`                                    |              | Content
+:-------------------------------------------------|:-------------|:------------------------------------
+`- algorithm:`                                    | **Required** | Programming algorithm file including the path.
+&nbsp;&nbsp;&nbsp; `start:`                       | **Required** | Start address of memory covered by the programming algorithm.
+&nbsp;&nbsp;&nbsp; `size:`                        | **Required** | Size of memory covered by the programming algorithm.
+&nbsp;&nbsp;&nbsp; `ram-start:`                   | **Required** | Start address of RAM where the algorithm will be executed from.
+&nbsp;&nbsp;&nbsp; `ram-size:`                    | **Required** | Maximum size of RAM available for executing the programming algorithm.
+&nbsp;&nbsp;&nbsp; `pname:`                       |   Optional   | Specifies the processor for the execution of the algorithm.
+
+**Example:**
+
+```yml
+  programming:
+    - algorithm: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Flash/algorithms/Ensemble.FLM
+      start: 0x80000000
+      size: 0x00580000
+      ram-start: 0x00000000
+      ram-size: 0x00020000
+    - algorithm: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Flash/algorithms/Ensemble_IS25WX256.FLM
+      start: 0xC0000000
+      size: 0x02000000
+      ram-start: 0x00000000
+      ram-size: 0x00040000
+```
+
+### `flash-info:`
+
+Contains a list of target's flash memories information, which is used by pyOCD to determine which memory regions
+should be treated as flash and how to program them using flash debug sequences.
+
+`flash-info:`                                     |              | Content
+:-------------------------------------------------|--------------|:------------------------------------
+`- name:`                                         | **Required** | Name of the specified flash device.
+&nbsp;&nbsp;&nbsp; `start:`                       | **Required** | Base address of the memory.
+&nbsp;&nbsp;&nbsp; `page-size:`                   | **Required** | Page size. A page is the smallest unit that can be programmed.
+&nbsp;&nbsp;&nbsp; `blocks:`                      | **Required** | List of blocks. A block is the smallest unit that can be erased.
+&nbsp;&nbsp;&nbsp; `blank-val:`                   |   Optional   | 64-bit value in erased memory (default 0xFFFFFFFFFFFFFFFF). Value is truncated to match the access size.
+&nbsp;&nbsp;&nbsp; `fill-val:`                    |   Optional   | 64-bit value that a debugger uses to fill the remainder of a page (default 0xFFFFFFFFFFFFFFFF).  Value is truncated to match the access size.
+&nbsp;&nbsp;&nbsp; `ptime:`                       |   Optional   | Timeout in milliseconds for programming a page (default 300).
+&nbsp;&nbsp;&nbsp; `etime:`                       |   Optional   | Timeout in milliseconds for erasing a block (default 300).
+&nbsp;&nbsp;&nbsp; `pname:`                       |   Optional   | Executes programming only for a specific processor (default for all processors).
+
+`blocks:`                                         |              | Content
+:-------------------------------------------------|--------------|:------------------------------------
+`- count:`                                        | **Required** | Number of blocks.
+&nbsp;&nbsp;&nbsp; `size:`                        | **Required** | Block size in bytes. Total memory size (in bytes) is `size * count`.
+&nbsp;&nbsp;&nbsp; `arg:`                         |   Optional   | Optional value that a debugger writes to the pre-defined debug access variable `__FlashArg` at start of a flash operation (default 0).
+
+!!! Note
+    - The [`gap` element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_flashgap) is not used.
+
+**Example:**
+
+```yml
+  flash-info:
+    - name: Internal Flash (code) 64KB
+      start: 0x00000000
+      page-size: 0x00000040
+      blocks:
+        - count: 256
+          size: 0x00000100
+          arg: 0
+      blank-val: 0x00000000FFFFFFFF
+      ptime: 100000
+      etime: 1000000
+```
+
 ### `debug-topology:`
 
 Describes the properties of the system hardware for debug functionality. The information for this node is taken from
 the DFP. If the information is not provided in the `*.cbuild-run.yml` file, pyOCD will use the default values described below.
 
 `debug-topology:`                                 |              | Content
-:-------------------------------------------------|--------------|:------------------------------------
+:-------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `debugports:`                  |   Optional   | Describes the CoreSight debug ports of the device and its capabilities.
 &nbsp;&nbsp;&nbsp; `processors:`                  |   Optional   | Map of `pname` identifiers to access port IDs (mandatory for multi-processor devices).
 &nbsp;&nbsp;&nbsp; `swj:`                         |   Optional   | Device allows switching between Serial Wire Debug (SWD) and JTAG protocols (`true` or `false`).
 &nbsp;&nbsp;&nbsp; `dormant:`                     |   Optional   | Device requires the dormant state to switch debug protocols (`true` or `false`).
 
 `debugports:`                                     |              | Content
-:-------------------------------------------------|--------------|:------------------------------------
+:-------------------------------------------------|:-------------|:------------------------------------
 `- dpid:`                                         | **Required** | Unique ID of this debug port.
 &nbsp;&nbsp;&nbsp; `accessports:`                 |   Optional   | List of CoreSight access ports (APv1/APv2) (mandatory for multi-processor devices).
 
 `accessports:`                                    |              | Content
-:-------------------------------------------------|--------------|:------------------------------------
+:-------------------------------------------------|:-------------|:------------------------------------
 `- apid:`                                         | **Required** | Unique ID of this access port. If only `apid` is provided, access port (APv1) with index `0` will be implicitly used.
 &nbsp;&nbsp;&nbsp; `index:`                       |   Optional   | Index to select this access port (APv1) for a target access.
 &nbsp;&nbsp;&nbsp; `address:`                     |   Optional   | Address to select this access port (APv2) in its parent's address space for a target access.
@@ -727,7 +879,7 @@ the DFP. If the information is not provided in the `*.cbuild-run.yml` file, pyOC
     `index:` and `address:` cannot be specified at the same time.
 
 `processors:`                                     |              | Content
-:-------------------------------------------------|--------------|:------------------------------------
+:-------------------------------------------------|:-------------|:------------------------------------
 `- pname:`                                        | **Required** | Processor identifier (mandatory for multi-processor devices).
 &nbsp;&nbsp;&nbsp; `apid:`                        |   Optional   | Access port ID to use for this processor.
 &nbsp;&nbsp;&nbsp; `reset-sequence:`              |   Optional   | Name of debug sequence for reset operation (default: `ResetSystem` sequence).
