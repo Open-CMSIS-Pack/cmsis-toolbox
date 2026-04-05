@@ -45,7 +45,7 @@ jobs:
             pip install -r test/performance/requirements.txt
 
       - name: Setup vcpkg environment
-        uses: ARM-software/cmsis-actions/vcpkg@afc8e1a46fad8a5e1a08f8477b71050d442f60a7 # v1
+        uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1
         with:
           config: "./test/vcpkg-configuration.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
