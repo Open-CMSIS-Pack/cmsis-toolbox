@@ -404,7 +404,7 @@ jobs:
 
       - name: Setup vcpkg environment
         if: matrix.cmake_version == '3.31.5'
-        uses: ARM-software/cmsis-actions/vcpkg@afc8e1a46fad8a5e1a08f8477b71050d442f60a7 # v1
+        uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1
         with:
           config: "./test/vcpkg-configuration.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
@@ -412,7 +412,7 @@ jobs:
 
       - name: Setup vcpkg environment (without CMake)
         if: matrix.cmake_version != '3.31.5'
-        uses: ARM-software/cmsis-actions/vcpkg@afc8e1a46fad8a5e1a08f8477b71050d442f60a7 # v1
+        uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1
         with:
           config: "./test/vcpkg-configuration-temp.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
