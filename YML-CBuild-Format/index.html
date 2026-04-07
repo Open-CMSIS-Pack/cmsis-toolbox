@@ -2064,7 +2064,7 @@ The <code>output:</code> node also contains other required files that are added 
 </tbody>
 </table>
 <p>!!! Note:
-    - <code>protocol:</code> and <code>clock:</code> are required by pyOCD but optional for other debug adapters. The file <a href="../build-operation/#debug-adapter-integration"><code>./etc/debug-adatpers.yml</code></a> allows to specify default values for required options.
+    - <code>protocol:</code> and <code>clock:</code> are required by pyOCD but optional for other debug adapters. The file <a href="../build-operation/#debug-adapter-integration"><code>./etc/debug-adapters.yml</code></a> allows to specify default values for required options.
     - <code>start-pname:</code> is mandatory for multi-processor targets. If <code>start-pname:</code> is not configured using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file, the <code>pname:</code> of the first <code>*.cproject.yml</code> file is used.</p>
 <p>The information for the <code>debugger:</code> node may be configured using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file. If not present the values from BSP are used; if not present DFP values. The values in the <code>*.csolution.yml</code> file overwrites values from BSP or DFP as shown in the table below.</p>
 <table>
