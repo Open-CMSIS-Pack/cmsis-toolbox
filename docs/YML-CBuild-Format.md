@@ -961,7 +961,7 @@ This node contains connection information for a debugger with initial settings c
 &nbsp;&nbsp;&nbsp; `*:`                                   |  Optional   | Other debugger specific options specified under [target-set](YML-Input-Format.md#target-set).
 
 !!! Note:
-    - `protocol:` and `clock:` are required by pyOCD but optional for other debug adapters. The file [`./etc/debug-adatpers.yml`](build-operation.md#debug-adapter-integration) allows to specify default values for required options.
+    - `protocol:` and `clock:` are required by pyOCD but optional for other debug adapters. The file [`./etc/debug-adapters.yml`](build-operation.md#debug-adapter-integration) allows to specify default values for required options.
     - `start-pname:` is mandatory for multi-processor targets. If `start-pname:` is not configured using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file, the `pname:` of the first `*.cproject.yml` file is used.
 
 The information for the `debugger:` node may be configured using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file. If not present the values from BSP are used; if not present DFP values. The values in the `*.csolution.yml` file overwrites values from BSP or DFP as shown in the table below.

@@ -1,6 +1,6 @@
 # CMSIS-Toolbox
 
-[![License](https://img.shields.io/github/license/Open-CMSIS-Pack/cbuild2cmake?label)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/LICENSE)
+[![License Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-green?label=LICENSE)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/LICENSE)
 [![Dependency review](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/dependency-review.yml?logo=arm&logoColor=0091bd&label=Dependency%20review)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/dependency-review.yml)
 [![Markdown lint check](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/markdown.yml?logo=arm&logoColor=0091bd&label=Markdown%20lint%20check)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/markdown.yml)
 [![Build documentation](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/mkdocs.yml?logo=arm&logoColor=0091bd&label=Build%20documentation)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/mkdocs.yml)
