@@ -44,7 +44,7 @@ Element      |              | Description
 `@version`   |   Optional   | Software pack version number must exactly match, i.e. `@1.2.3`
 `@>=version` |   Optional   | Automatically update to any version higher or equal.
 `@^version`  |   Optional   | Automatically update minor/patch version, i.e. `@^1.2.3` uses releases from `1.2.3` to `< 2.0.0`.
-`@~version`  |   Optional   | Automatically update patch version, i.e. `@^1.2.3` uses releases from `1.2.3` to `< 1.3.0`.
+`@~version`  |   Optional   | Automatically update patch version, i.e. `@~1.2.3` uses releases from `1.2.3` to `< 1.3.0`.
 
 !!! Note
     - When no version is specified, the **`csolution` Project Manager** only loads the latest installed version of a software pack. This also applies when wildcards are used in the `pack-name`.
@@ -54,7 +54,7 @@ Element      |              | Description
 **Examples:**
 
 ```yml
-- pack:   ARM::CMSIS@5.9.0                 # 'CMSIS' Pack with version 5.5.0
+- pack:   ARM::CMSIS@5.9.0                 # 'CMSIS' Pack with version 5.9.0
 - pack:   Keil::MDK-Middleware@>=7.13.0    # latest version 7.13.0 or higher
 - pack:   Keil::MDK-Middleware@^7.13.0     # latest version 7.13.0 or higher, but lower than 8.0.0
 - pack:   Keil::TFM                        # 'TFM' Pack from vendor Keil, latest installed version
@@ -2612,7 +2612,7 @@ This section lists options that are specific for the [Segger J-Link](https://www
 
 debugger:                                                  |              | Description
 :----------------------------------------------------------|:-------------|:-----------------------------------------------
-&nbsp;&nbsp;&nbsp; `name:`                                 | **Required** | Identifies the debug adapter with `<adapter>@pyOCD`.
+&nbsp;&nbsp;&nbsp; `name:`                                 | **Required** | Identifies the debug adapter with `J-Link Server`.
 &nbsp;&nbsp;&nbsp; `clock:`                                |   Optional   | Debug clock speed in Hz.
 &nbsp;&nbsp;&nbsp; `protocol:`                             |   Optional   | Debug protocol (jtag or swd).
 &nbsp;&nbsp;&nbsp; [`telnet:`](JLink-Debugger.md#telnet)   |   Optional   | Extended Option: Telnet service configuration.

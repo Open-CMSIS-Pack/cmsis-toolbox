@@ -38,11 +38,11 @@ pyOCD can configure a Telnet service for each processor that runs an independent
 The `telnet:` node configures:
 
 - Telnet port for connecting remote tools, for example the [Serial Monitor VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
-- Redirect the output to a `file`, `console`, `port`, or `monitor`. The setting `monitor` connects a telnet `port` to the Serial Monitor in VS Code. The default output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management) and uses the extension `<pname>.txt`, format: `<solution-name>+<target-type>.<pname>.out`
+- Redirect the output to a `file`, `console`, `server`, or `monitor`. The setting `monitor` connects a telnet `port` to the Serial Monitor in VS Code. The default output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management) and uses the extension `<pname>.txt`, format: `<solution-name>+<target-type>.<pname>.out`
 
 `telnet:`                      |              | Description
 :------------------------------|:-------------|:------------------------------------
-`- mode:`                      | **Required** | Redirect output: `off`, `server`, `file`, `console`, `monitor`.
+`- mode:`                      | **Required** | Redirect output: `off` (default), `server`, `file`, `console`, `monitor`.
 &nbsp;&nbsp;&nbsp; `pname:`    |   Optional   | Identifies the processor (not required for single core system).
 &nbsp;&nbsp;&nbsp; `port:`     |   Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
 &nbsp;&nbsp;&nbsp; `file-in:`  |   Optional   | Explicit path and name of the telnet input file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.in`
@@ -195,7 +195,7 @@ The `control-block:` node configures the RTT control block discovery in pyOCD.
 
 `control-block:`                                    |              | Description
 :---------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `auto-detect:`                   |   Optional   | Scan default memory regions for the RTT control block signature: `true`, `false` (default: `false`).
+&nbsp;&nbsp;&nbsp; `auto-detect:`                   |   Optional   | Scan default memory regions for the RTT control block signature: `true`, `false` (default).
 &nbsp;&nbsp;&nbsp; `address:`                       |   Optional   | Explicit control block address; when combined with `size`, acts as scan start address.
 &nbsp;&nbsp;&nbsp; `size:`                          |   Optional   | Scan length in bytes when `address` is provided.
 
@@ -269,8 +269,8 @@ The `systemview:` node configures the RTT channel data capturing for [SEGGER Sys
 `systemview:`                                       |              | Description
 :---------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `file:`                          |   Optional   | SystemView capture file. Default: `./out/<solution-name>+<target-type>.SVDat` (derived from [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management)).
-&nbsp;&nbsp;&nbsp; `auto-start:`                    |   Optional   | Send SystemView start command automatically: `true`, `false` (default: `true`).
-&nbsp;&nbsp;&nbsp; `auto-stop:`                     |   Optional   | Send SystemView stop command automatically: `true`, `false` (default: `true`).
+&nbsp;&nbsp;&nbsp; `auto-start:`                    |   Optional   | Send SystemView start command automatically: `true` (default), `false`.
+&nbsp;&nbsp;&nbsp; `auto-stop:`                     |   Optional   | Send SystemView stop command automatically: `true` (default), `false`.
 
 **Examples:**
 
@@ -294,7 +294,7 @@ debugger:
 ### `trace:`
 
 !!! Note
-    The `trace:` feature will be implemented in the future. This section is only a preview.
+    The `trace:` feature is under development. This section provides a preview.
 
 CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific trace features are configured using the `*.dbgconf` file.
 
