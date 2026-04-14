@@ -2025,6 +2025,7 @@ Add software components to a project or a software layer. Used in `*.cproject.ym
 &nbsp;&nbsp;&nbsp; [`del-path:`](#del-path)                     |   Optional   | Remove specific include file paths.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                             |   Optional   | Literal tool-specific controls.
 &nbsp;&nbsp;&nbsp; [`instances:`](#instances)                   |   Optional   | Add multiple instances of component configuration files (default: 1)
+&nbsp;&nbsp;&nbsp; `build-scope:`                               |   Optional   | Control inclusion of component source files.<br>(default: `include` for executable builds, `exclude` for library builds)
 
 **Example:**
 
