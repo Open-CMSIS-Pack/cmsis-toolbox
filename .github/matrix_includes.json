@@ -32,7 +32,7 @@
         "arch": "arm64",
         "binary_extension":"",
         "runOnBranch":"always",
-        "runTests": false,
+        "runTests": true,
         "runsXCTestSuite": false
     },
     {
