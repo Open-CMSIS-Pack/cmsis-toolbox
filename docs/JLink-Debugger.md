@@ -17,13 +17,34 @@ Other manual sections describe how to configure debuggers:
 
 The section [Debugger Configuration - J-Link Server](YML-Input-Format.md#j-link-server) contains the J-Link configuration for typical systems.
 
+### `telnet:`
+
+J-Link supports a Telnet service that connects to character I/O functions. Character I/O is supported via Semihosting (or SEGGER RTT channel 0). Currently only semihosting is configured for the primary core.
+
+`telnet:`                     |              | Description
+:-----------------------------|:-------------|:------------------------------------
+`- mode:`                     | **Required** | Redirect output: `off` (default), `server`, `console`, `monitor`.
+&nbsp;&nbsp;&nbsp; `pname:`   |   Optional   | Identifies the processor (not required for single core system).
+&nbsp;&nbsp;&nbsp; `port:`    |   Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
+
+Telnet Mode   | Description
+:-------------|:--------------------------------------
+`server`      | Serial I/O to Telnet server port
+`console`     | Serial output to console (Debug console in VS Code). 
+`monitor`     | Serial I/O via TCP/IP port to VS Code Serial Monitor.
+`off`         | Serial I/O disabled.
+
+!!! Note
+    - The Telnet service is always enabled for the J-Link GDB Server. The mode `off` turns off the data source (semihosting, SEGGER RTT).
+    - When no `telnet` node is added then Serial I/O to all processors is set to mode `off`.
+
 ### `connect:`
 
 Configures the behavior for connecting J-Link to the hardware target for interactive debug.
 
-`connect:`                                                |             | Description
-:---------------------------------------------------------|-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `mode:`                                |**Required** | Selects the connect mode: `attach`, `halt` (default).
+`connect:`                                                |              | Description
+:---------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `mode:`                                | **Required** | Selects the connect mode: `attach`, `halt` (default).
 
 Connect Mode  | Description
 :-------------|:--------------------------------------
@@ -34,10 +55,10 @@ Connect Mode  | Description
 
 Configures the reset behavior for each core when a reset is requested during interactive debug.
 
-`reset:`                                                  |             | Description
-:---------------------------------------------------------|-------------|:------------------------------------
-`- pname:`                                                |  Optional   | Identifies the processor (not requried for single core system).
-&nbsp;&nbsp;&nbsp; `type:`                                |**Required** | Selects the reset type: `hardware`, `system` (default), `core`.
+`reset:`                                                  |              | Description
+:---------------------------------------------------------|:-------------|:------------------------------------
+`- pname:`                                                |   Optional   | Identifies the processor (not required for single core system).
+&nbsp;&nbsp;&nbsp; `type:`                                | **Required** | Selects the reset type: `hardware`, `system` (default), `core`.
 
 Reset Types   | Description
 :-------------|:--------------------------------------
@@ -70,3 +91,16 @@ debugger:
     - pname: Core1          # for Core1
       type: core            # use core reset
 ```
+
+### `trace:`
+
+!!! Note
+    The `trace:` feature is under development. This section provides a preview.
+  
+J-Link supports SWO Trace.
+
+`trace:`                      |              | Description
+:-----------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `clock:`   | **Required** | Trace clock frequency in Hz.
+&nbsp;&nbsp;&nbsp; `mode:`    |   Optional   | Set Trace Port transport mode. Currently only `SWO-UART` is accepted.
+&nbsp;&nbsp;&nbsp; `port:`    |   Optional   | Set TCP/IP port number of Trace output (default: 4444).

@@ -85,7 +85,7 @@ The operation is further controlled by options:
     - Generate [build information files](YML-CBuild-Format.md) `*.cbuild-idx.yml` and `*.cbuild.yml` with all relevant project information for the build process.
 - In the [**RTE Directory**](build-overview.md#rte-directory-structure):
     - Generate for each [context](YML-Input-Format.md#context) the [RTE_components.h](build-overview.md#rte_componentsh) file and pre-include files from the software pack (`*.pdsc`)  metadata.
-    - [Copy the configuration files](build-overview.md#plm-of-configuration-files) from selected software componentsand provide [PLM](build-overview.md#plm-of-configuration-files) information.
+    - [Copy the configuration files](build-overview.md#plm-of-configuration-files) from selected software components and provide [PLM](build-overview.md#plm-of-configuration-files) information.
 - In the [**base directory of the solution**](build-overview.md#project-area):
     - Generate the file `*.cbuild-pack.yml` that records all used *software packs*. With the option `--frozen-packs`, this file is used as input.
     - With the option `--context-set` the file `*.cbuild-set.yml` specifies the [context](build-overview.md#context) configuration of the application. When `--context` names are specified this file is updated with this selection.
@@ -326,7 +326,7 @@ generator:
 
 !!! Note
     The only argument to the `run:` command is the path to the [Generator Information Index File](YML-CBuild-Format.md#generator-information-files). There are no configurable parameters for this utility. The invocation is:
-    `cbrige <csolution-name>.cbuild-gen-idx.yml`
+    `cbridge <csolution-name>.cbuild-gen-idx.yml`
 
 ### Add Configuration Generator
 
@@ -372,7 +372,7 @@ debug-adapters:
       clock: 10000000
 
   - name: "ULINKplus"
-    template: CMSIS-DAP-pyOCD.adapter.json    # template file (initally same as CMSIS-DAP@pyOCD)
+    template: CMSIS-DAP-pyOCD.adapter.json    # template file (initially same as CMSIS-DAP@pyOCD)
     gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
     defaults:                                 # default values to use when nowhere specified
       port: 3333                              # default value of first gdbserver port

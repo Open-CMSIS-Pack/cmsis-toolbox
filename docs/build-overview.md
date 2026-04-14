@@ -979,7 +979,7 @@ Several DFP contain `*.dbgconf` files that configure device-specific debug and t
 The `.cmsis` directory in the *csolution project* directory contains for each target a default `*.dbgconf` configuration file. For example: `.\.cmsis\MyApplication+MyBoard`.
 This file can be configured to reflect user settings.
 
-An explict `*.dbgconf` configuration file can be specified using the [`debugger:` node](YML-Input-Format.md#debugger) in the `*.csolution.yml` file.
+An explicit `*.dbgconf` configuration file can be specified using the [`debugger:` node](YML-Input-Format.md#debugger) in the `*.csolution.yml` file.
 
 ## West Build System Integration
 
