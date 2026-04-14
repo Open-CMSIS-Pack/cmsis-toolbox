@@ -1,4 +1,5 @@
-.wy-table-responsive table td, .wy-table-responsive table th {
+.wy-table-responsive table th,
+.wy-table-responsive table td {
     white-space: normal !important;
 }
 
@@ -14,16 +15,6 @@
     padding: 0px 0px 8px 0px;
 }
 
-/* Do not wrap hyphenated tokens (e.g., system-view:) in first-column code */
-.md-typeset table th:first-child code,
-.md-typeset table td:first-child code {
-    white-space: nowrap !important;
-    overflow-wrap: normal !important;
-    word-break: keep-all !important;
-    hyphens: none !important;
-    display: inline-block;
-}
-
 /* ReadTheDocs-style responsive tables: prevent first-column code wrapping */
 .wy-table-responsive table th:first-child code,
 .wy-table-responsive table td:first-child code {
@@ -32,4 +23,9 @@
     word-break: keep-all !important;
     hyphens: none !important;
     display: inline-block;
+}
+
+/* ReadTheDocs-style responsive tables: prevent first-column leading indentation wrapping */
+.wy-table-responsive table td:first-child {
+    white-space: pre !important;
 }
