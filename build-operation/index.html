@@ -272,7 +272,7 @@
 </li>
 <li>In the <a href="../build-overview/#rte-directory-structure"><strong>RTE Directory</strong></a>:<ul>
 <li>Generate for each <a href="../YML-Input-Format/#context">context</a> the <a href="../build-overview/#rte_componentsh">RTE_components.h</a> file and pre-include files from the software pack (<code>*.pdsc</code>)  metadata.</li>
-<li><a href="../build-overview/#plm-of-configuration-files">Copy the configuration files</a> from selected software componentsand provide <a href="../build-overview/#plm-of-configuration-files">PLM</a> information.</li>
+<li><a href="../build-overview/#plm-of-configuration-files">Copy the configuration files</a> from selected software components and provide <a href="../build-overview/#plm-of-configuration-files">PLM</a> information.</li>
 </ul>
 </li>
 <li>In the <a href="../build-overview/#project-area"><strong>base directory of the solution</strong></a>:<ul>
@@ -679,7 +679,7 @@ add_custom_command(OUTPUT ${OUTPUT} DEPENDS ${INPUT}
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The only argument to the <code>run:</code> command is the path to the <a href="../YML-CBuild-Format/#generator-information-files">Generator Information Index File</a>. There are no configurable parameters for this utility. The invocation is:
-<code>cbrige &lt;csolution-name&gt;.cbuild-gen-idx.yml</code></p>
+<code>cbridge &lt;csolution-name&gt;.cbuild-gen-idx.yml</code></p>
 </div>
 <h3 id="add-configuration-generator">Add Configuration Generator</h3>
 <p>The following steps add a new generator to the CMSIS-Toolbox:</p>
@@ -753,7 +753,7 @@ add_custom_command(OUTPUT ${OUTPUT} DEPENDS ${INPUT}
       clock: 10000000
 
   - name: &quot;ULINKplus&quot;
-    template: CMSIS-DAP-pyOCD.adapter.json    # template file (initally same as CMSIS-DAP@pyOCD)
+    template: CMSIS-DAP-pyOCD.adapter.json    # template file (initially same as CMSIS-DAP@pyOCD)
     gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
     defaults:                                 # default values to use when nowhere specified
       port: 3333                              # default value of first gdbserver port

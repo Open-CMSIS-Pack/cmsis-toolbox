@@ -97,6 +97,10 @@
 <ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="#extended-options">Extended Options</a>
 <ul>
+<li class="toctree-l3"><a class="reference internal" href="#gdbserver">gdbserver:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#telnet">telnet:</a>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#connect">connect:</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#reset">reset:</a>
@@ -121,7 +125,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-invocation">Command Line Invocation</a>
 <ul>
-<li class="toctree-l3"><a class="reference internal" href="#gdbserver">gdbserver</a>
+<li class="toctree-l3"><a class="reference internal" href="#gdbserver_1">gdbserver</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#run">run</a>
 </li>
@@ -133,7 +137,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#content-of-cbuild-runyml">Content of cbuild-run.yml</a>
+<li class="toctree-l2"><a class="reference internal" href="#content-of-cbuild-runyml">Content of *.cbuild-run.yml</a>
 <ul>
 <li class="toctree-l3"><a class="reference internal" href="#cbuild-run">cbuild-run:</a>
 </li>
@@ -149,13 +153,15 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#system-descriptions">system-descriptions:</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#programming">programming:</a>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#debugger">debugger:</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#debug-vars">debug-vars:</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#debug-sequences">debug-sequences:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#programming">programming:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#flash-info">flash-info:</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#debug-topology">debug-topology:</a>
 </li>
@@ -224,22 +230,159 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 </ul>
 <h2 id="extended-options">Extended Options</h2>
 <p>The section <a href="../YML-Input-Format/#pyocd">CSolution Project Format - pyOCD</a> contains the pyOCD configuration for typical systems.</p>
-<p>Extended YML options are required to configure specific use-cases or overwrite information that is typically provided in the <a href="../build-overview/#overview-of-operation">DFP</a>.</p>
+<p>Extended YAML options are required to configure specific use-cases or overwrite information that is typically provided in the <a href="../build-overview/#overview-of-operation">DFP</a>.</p>
 <p>CMSIS-DAP based Debug Adapters implement <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#pdsc_SequenceNameEnum_pg">debug access sequences</a> that are configured in the <a href="../build-overview/#overview-of-operation">DFP for a device</a>.</p>
+<h3 id="gdbserver"><code>gdbserver:</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>gdbserver:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- port:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Set TCP/IP port number of GDB Server (default: 3333, 3334, ... incremented for each processor).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>pname:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Identifies the processor (not required for single core system).</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>When no <code>gdbserver</code> node is applied, the default mechanism of incrementing port number starting with <code>3333</code> is used.</li>
+</ul>
+</div>
+<h3 id="telnet"><code>telnet:</code></h3>
+<p>pyOCD can configure a Telnet service for each processor that runs an independent application. The Telnet service connects to character I/O functions (Semihosting or SEGGER RTT).
+The <code>telnet:</code> node configures:</p>
+<ul>
+<li>Telnet port for connecting remote tools, for example the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor">Serial Monitor VS Code extension</a>.</li>
+<li>Redirect the output to a <code>file</code>, <code>console</code>, <code>server</code>, or <code>monitor</code>. The setting <code>monitor</code> connects a telnet <code>port</code> to the Serial Monitor in VS Code. The default output file and location is derived from the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a> and uses the extension <code>&lt;pname&gt;.txt</code>, format: <code>&lt;solution-name&gt;+&lt;target-type&gt;.&lt;pname&gt;.out</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>telnet:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- mode:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Redirect output: <code>off</code> (default), <code>server</code>, <code>file</code>, <code>console</code>, <code>monitor</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>pname:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Identifies the processor (not required for single core system).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>port:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>file-in:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Explicit path and name of the telnet input file. Default: <code>./out/\&lt;solution-name\&gt;+\&lt;target-type\&gt;.\&lt;pname\&gt;.in</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>file-out:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Explicit path and name of the telnet output file. Default: <code>./out/\&lt;solution-name\&gt;+\&lt;target-type\&gt;.\&lt;pname\&gt;.out</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Telnet Mode</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>server</code></td>
+<td style="text-align: left;">Serial I/O to Telnet server port.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>file</code></td>
+<td style="text-align: left;">Serial I/O to text files. Default: <code>./out/\&lt;solution-name\&gt;+\&lt;target-type\&gt;.\&lt;pname\&gt;.{in \| out}</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>console</code></td>
+<td style="text-align: left;">Serial output to console (Debug console in VS Code).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>monitor</code></td>
+<td style="text-align: left;">Serial I/O via TCP/IP port to VS Code Serial Monitor.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>off</code></td>
+<td style="text-align: left;">Serial I/O disabled.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>When no <code>telnet</code> node is applied, Serial I/O to all processors is disabled.</li>
+</ul>
+</div>
+<p><strong>Examples:</strong></p>
+<p>Enable Telnet service for a single core system.</p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  telnet:
+    - mode: monitor          # Output via TCP/IP port to VS Code Serial Monitor
+</code></pre>
+<p>Enable Telnet service for a single core system.</p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  telnet:
+    - mode: server
+</code></pre>
+<p>Enable Telnet service for a multi core system.</p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  telnet:
+    - pname: Core0          # enable Telnet service with default settings
+      mode: server
+      port: 4444
+    - pname: Core1
+      mode: console         # route Telnet input/output to console 
+    - pname: Core2
+      mode: file            # route Telnet input/output to files
+      file-in: Blinky+MyTarget.Core2.in
+      file-out: Blinky+MyTarget.Core2.out
+</code></pre>
 <h3 id="connect"><code>connect:</code></h3>
 <p>Configures the behavior for connecting pyOCD to the hardware target.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"> </th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>connect:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Selects the connect mode: <code>pre-reset</code>, <code>under-reset</code>, <code>attach</code> (default), <code>halt</code>.</td>
 </tr>
 </tbody>
@@ -258,7 +401,7 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 </tr>
 <tr>
 <td style="text-align: left;"><code>under-reset</code></td>
-<td style="text-align: left;">Asserts a hardware reset during connect and deasserts after core(s) are halted. Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareAssert">ResetHardwareAssert</a>, <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareDeassert">ResetHardwareDeassert</a>.</td>
+<td style="text-align: left;">Asserts a hardware reset (Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareAssert">ResetHardwareAssert</a>) during connect and deasserts (Sequence: <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#resetHardwareDeassert">ResetHardwareDeassert</a>) after core(s) are halted.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>attach</code></td>
@@ -276,19 +419,19 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 <thead>
 <tr>
 <th style="text-align: left;"><code>reset:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- pname:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Identifies the processor (not required for single core system).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>type:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Selects the reset type: <code>hardware</code>, <code>system</code>, <code>core</code>. Default: specified in DFP.</td>
 </tr>
 </tbody>
@@ -373,8 +516,8 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
     post-reset: off         # no reset after load
 </code></pre>
 <h3 id="rtt"><code>rtt:</code></h3>
-<p><a href="https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/">SEGGER RTT</a> implements low-latency debug I/O via RAM ring buffers. The <code>rtt:</code> node configures the RTT features and the RTT channel usage.
-At least one channel is required (for a specific) core to enable RTT on that core.</p>
+<p><a href="https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/">SEGGER RTT</a> implements low-latency debug I/O via RAM ring buffers.
+The <code>rtt:</code> node configures the RTT features and the RTT channel usage. At least one RTT channel must be configured for each core to enable RTT on that core.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>RTT is only enabled when using the pyOCD <a href="#run">run command</a>.</p>
@@ -383,24 +526,24 @@ At least one channel is required (for a specific) core to enable RTT on that cor
 <thead>
 <tr>
 <th style="text-align: left;"><code>rtt:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- pname:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Processor identifier (not required for single-core systems).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <a href="#control-block"><code>control-block:</code></a></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">RTT control block configuration.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <a href="#channel"><code>channel:</code></a></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Channel configuration.</td>
 </tr>
 </tbody>
@@ -411,24 +554,24 @@ At least one channel is required (for a specific) core to enable RTT on that cor
 <thead>
 <tr>
 <th style="text-align: left;"><code>control-block:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">    <code>auto-detect:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Scan default memory regions for the RTT control block signature: <code>true</code>, <code>false</code> (default: <code>false</code>).</td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Scan default memory regions for the RTT control block signature: <code>true</code>, <code>false</code> (default).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>address:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Explicit control block address; when combined with <code>size</code>, acts as scan start address.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>size:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Scan length in bytes when <code>address</code> is provided.</td>
 </tr>
 </tbody>
@@ -448,25 +591,51 @@ At least one channel is required (for a specific) core to enable RTT on that cor
 <thead>
 <tr>
 <th style="text-align: left;"><code>channel:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- number:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Channel number.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>mode:</code></td>
-<td><strong>Required</strong></td>
-<td style="text-align: left;">Channel mode selection: <code>stdio</code>, <code>telnet</code>, <code>systemview</code>.</td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Channel mode selection: <code>stdio</code>, <code>server</code>, <code>systemview</code>, <code>systemview-server</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>port:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">TCP port (required for <code>telnet</code> mode).</td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">TCP port number (required for <code>server</code> and <code>systemview-server</code>).</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Channel Mode</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>stdio</code></td>
+<td style="text-align: left;">Connects channel to standard input/output.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>server</code></td>
+<td style="text-align: left;">Exposes channel over a TCP server.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>systemview</code></td>
+<td style="text-align: left;">Saves channel data to *.SVDat file for SEGGER SystemView. Default: <code>./out/&lt;solution-name&gt;+&lt;target-type&gt;.SVDat</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>systemview-server</code></td>
+<td style="text-align: left;">Streams live data to SEGGER SystemView.</td>
 </tr>
 </tbody>
 </table>
@@ -494,10 +663,10 @@ At least one channel is required (for a specific) core to enable RTT on that cor
         - number: 0
           mode: stdio
         - number: 2
-          mode: telnet
+          mode: server
           port: 4444
         - number: 3
-          mode: telnet
+          mode: server
           port: 4445
 </code></pre>
 <h3 id="systemview"><code>systemview:</code></h3>
@@ -506,25 +675,25 @@ At least one channel is required (for a specific) core to enable RTT on that cor
 <thead>
 <tr>
 <th style="text-align: left;"><code>systemview:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">    <code>file:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">SystemView capture file. Default: <code>./out/&lt;solution-name&gt;+&lt;target-type&gt;.SVDat</code> (derived from <a href="../YML-CBuild-Format/#run-and-debug-management"><code>*.cbuild-run.yml</code></a>).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>auto-start:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Send SystemView start command automatically: <code>true</code>, <code>false</code> (default: <code>true</code>).</td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Send SystemView start command automatically: <code>true</code> (default), <code>false</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>auto-stop:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Send SystemView stop command automatically: <code>true</code>, <code>false</code> (default: <code>true</code>).</td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Send SystemView stop command automatically: <code>true</code> (default), <code>false</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -546,7 +715,7 @@ At least one channel is required (for a specific) core to enable RTT on that cor
 <h3 id="trace"><code>trace:</code></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code>trace:</code> feature will be implemented in the future. This section is only a preview.</p>
+<p>The <code>trace:</code> feature is under development. This section provides a preview.</p>
 </div>
 <p>CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific trace features are configured using the <code>*.dbgconf</code> file.</p>
 <p>The default trace output file and location is derived from the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a>
@@ -555,39 +724,39 @@ and uses the extension <code>&lt;pname&gt;.txt</code>, format: <code>&lt;solutio
 <thead>
 <tr>
 <th style="text-align: left;"><code>trace:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">    <code>mode:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Trace: <code>off</code> (default), <code>server</code>, <code>file</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>clock:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Trace clock frequency in Hz.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>port-type:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Set Trace Port transport mode. Currently only <code>SWO-UART</code> is accepted.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>baudrate:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Maximum baudrate for <code>SWO-UART</code> mode.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>port:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Set TCP/IP port number of Trace server (default: 5555).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>file:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Explicit path and name of the trace output file. Default: <code>&lt;solution-name&gt;+&lt;target-type&gt;.trace</code>.</td>
 </tr>
 </tbody>
@@ -611,13 +780,13 @@ and uses the extension <code>&lt;pname&gt;.txt</code>, format: <code>&lt;solutio
             clock: 10000000
             protocol: swd
 </code></pre>
-<p>To generate the related <code>*.cbuild.yml</code> file for pyOCD run the following CMSIS-Toolbox commands:</p>
+<p>To generate the related <code>*.cbuild-run.yml</code> file for pyOCD run the following CMSIS-Toolbox commands:</p>
 <pre><code class="language-bash">cpackget add Infineon::PSE8xxx_DFP@1.0.1
-cbuild setup MySetup.yml --active PSE8_Target
+cbuild setup MySetup.csolution.yml --active PSE8_Target
 </code></pre>
 <p>This creates the file <code>out/MySetup+PSE8_Target.cbuild-run.yml</code> that can be used for the <a href="#command-line-invocation">command line invocation</a>.</p>
 <h2 id="command-line-invocation">Command Line Invocation</h2>
-<p>The CMSIS-Toolbox debugger setup is provided in the <a href="../YML-CBuild-Format/#file-structure-of-cbuild-runyml">file <code>*.cbuild-run.yml</code></a>. The <code>*.cbuild-run.yml</code> file is generated by the CMSIS-Toolbox build process and uses the <a href="../YML-Input-Format/#debugger-configuration">Debugger Configuration</a> that is part of the <em>csolution project</em>. <a href="#minimal-setup">Minimal Setup</a> shows how to create a setup for a stand-along image file.</p>
+<p>The CMSIS-Toolbox debugger setup is provided in the <a href="../YML-CBuild-Format/#file-structure-of-cbuild-runyml">file <code>*.cbuild-run.yml</code></a>. The <code>*.cbuild-run.yml</code> file is generated by the CMSIS-Toolbox build process and uses the <a href="../YML-Input-Format/#debugger-configuration">Debugger Configuration</a> that is part of the <em>csolution project</em>. <a href="#minimal-setup">Minimal Setup</a> shows how to create a setup for a stand-alone image file.</p>
 <p>Use the following command line syntax to leverage this information:</p>
 <pre><code class="language-bash">&gt;pyocd &lt;command&gt; [--probe &lt;probe&gt;] [--uid &lt;uid&gt;] [options] --cbuild-run &lt;cbuild-run.yml file&gt;
 </code></pre>
@@ -677,7 +846,7 @@ cbuild setup MySetup.yml --active PSE8_Target
 <p>Connect to a specific probe on the host computer.</p>
 <pre><code class="language-bash">pyocd load --probe cmsisdap: --uid XP0GA4C42ZQAA --cbuild-run c:\Test\Dec11\DualCore\out\DualCore+FRDM-MCXN947.cbuild-run.yml
 </code></pre>
-<h3 id="gdbserver"><code>gdbserver</code></h3>
+<h3 id="gdbserver_1"><code>gdbserver</code></h3>
 <p>Start GDB servers for each target device core, used for debugging the applications.</p>
 <table>
 <thead>
@@ -751,22 +920,25 @@ cbuild setup MySetup.yml --active PSE8_Target
 <pre><code class="language-bash">pyocd erase --chip --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
 </code></pre>
 <h3 id="load"><code>load</code></h3>
-<p>Program target with images listed under the <a href="#output"><code>output</code></a> node.</p>
+<p>Program target with images listed under the <a href="#output"><code>output:</code></a> node.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">pyocd load --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
 </code></pre>
 <h3 id="reset_1"><code>reset</code></h3>
-<p>Reset target using selected <a href="#reset"><code>reset</code></a> type.</p>
+<p>Reset target using selected <a href="#reset"><code>reset:</code></a> type.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-bash">pyocd reset --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
 </code></pre>
-<h2 id="content-of-cbuild-runyml">Content of <code>cbuild-run.yml</code></h2>
-<p>This section details the content of <code>cbuild-run.yml</code> file and how it is used to configure pyOCD. The <code>cbuild-run.yml</code>
+<hr/>
+<h2 id="content-of-cbuild-runyml">Content of <code>*.cbuild-run.yml</code></h2>
+<p>This section details the content of <code>*.cbuild-run.yml</code> file and how it is used to configure pyOCD. The <code>*.cbuild-run.yml</code>
 file is generated by the CMSIS-Toolbox from the information provided in the <em>csolution project</em>.
 However, it is possible to create a <code>*.cbuild-run.yml</code> file manually and the following section explains
 the file structure.</p>
 <h3 id="cbuild-run"><code>cbuild-run:</code></h3>
-<p>The <code>cbuild-run:</code> node is the start of a <code>*.cbuild-run.yml</code> file. The table below is an excerpt of the <a href="../YML-CBuild-Format/#file-structure-of-cbuild-runyml">File Structure of <code>*.cbuild-run.yml</code></a></p>
+<p>The top-level <code>cbuild-run:</code> node identifies the file as a <code>*.cbuild-run.yml</code> file. All Run and Debug configuration nodes
+are nested under this node. The table below is an excerpt of the full <a href="../YML-CBuild-Format/#file-structure-of-cbuild-runyml">File Structure of <code>*.cbuild-run.yml</code></a>
+configuration and highlights the nodes relevant to pyOCD. The contents of each node are described in the following sections.</p>
 <table>
 <thead>
 <tr>
@@ -807,11 +979,6 @@ the file structure.</p>
 <td style="text-align: left;">Lists target's description files for peripherals and software components.</td>
 </tr>
 <tr>
-<td style="text-align: left;">    <a href="#programming"><code>programming:</code></a></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Lists flash algorithms for programming.</td>
-</tr>
-<tr>
 <td style="text-align: left;">    <a href="#debugger"><code>debugger:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Configures the debugger.</td>
@@ -825,6 +992,16 @@ the file structure.</p>
 <td style="text-align: left;">    <a href="#debug-sequences"><code>debug-sequences:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Debug sequences.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#programming"><code>programming:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Lists flash algorithms for programming.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#flash-info"><code>flash-info:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Lists flash information for flash programming using debug sequences.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <a href="#debug-topology"><code>debug-topology:</code></a></td>
@@ -851,47 +1028,47 @@ is an empty string.</p>
 <pre><code class="language-yml">  board-pack: AlifSemiconductor::Ensemble@2.0.4
 </code></pre>
 <h3 id="output"><code>output:</code></h3>
-<p>pyOCD uses the information from the <code>output</code> node to determine which images need to be loaded into the device's
-flash memory and at what addresses. The image file type is determined by the <code>type</code> node, and the load offset
-for binary image files is provided by the <code>load-offset</code> node. Only files with <code>image</code> in the <code>load:</code> node are
+<p>pyOCD uses the information from the <code>output:</code> node to determine which images need to be loaded into the device's
+flash memory and at what addresses. The image file type is determined by the <code>type:</code> node, and the load offset
+for binary image files is provided by the <code>load-offset:</code> node. Only files with <code>image</code> in the <code>load:</code> node are
 programmed to the device.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"><code>output:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- file:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Specifies the file name.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <a href="../YML-Input-Format/#type"><code>type:</code></a></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Specifies the file type.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>info:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Brief description of the file.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <a href="../YML-Input-Format/#load"><code>load:</code></a></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Load mode of the image file for programmers and debug tools.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>load-offset:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Offset applied in <code>*.csolution.yml</code> when loading the binary image file.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>pname:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Image belongs to processor in a multi-core system.</td>
 </tr>
 </tbody>
@@ -927,14 +1104,14 @@ pyOCD falls back to the default Cortex-M memory map.</p>
 <thead>
 <tr>
 <th style="text-align: left;"><code>system-resources:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">    <code>memory:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Identifies the section for memory.</td>
 </tr>
 </tbody>
@@ -943,39 +1120,39 @@ pyOCD falls back to the default Cortex-M memory map.</p>
 <thead>
 <tr>
 <th style="text-align: left;"><code>memory:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- name:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Name of the memory region (when PDSC contains id, it uses the id as name).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>access:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Access attribute string for the memory (<a href="../YML-CBuild-Format/#system-resources">see <code>access:</code> table here</a>).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>start:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Base address of the memory.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>size:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Size of the memory.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>pname:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Only accessible by a specific processor.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>alias:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Name of identical memory exposed at a different address.</td>
 </tr>
 </tbody>
@@ -1051,29 +1228,29 @@ processed by pyOCD to present debug views and decode register reads/writes.</p>
 <thead>
 <tr>
 <th style="text-align: left;"><code>system-descriptions:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- file:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Specifies the file name including the path.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>type:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Specifies the file type (see table below).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>info:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Brief description of the file.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>pname:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">File is used only for a specific processor; default is for all processors.</td>
 </tr>
 </tbody>
@@ -1094,7 +1271,7 @@ processed by pyOCD to present debug views and decode register reads/writes.</p>
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Currently pyOCD has a limitation of only processing the <code>svd</code> file for the processor listed in <code>start-pname</code>.</p>
+<p>Currently pyOCD has a limitation of only processing the <code>svd</code> file for the processor listed in <code>start-pname:</code>.</p>
 </div>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  system-descriptions:
@@ -1105,67 +1282,10 @@ processed by pyOCD to present debug views and decode register reads/writes.</p>
       type: svd
       pname: M55_HP
 </code></pre>
-<h3 id="programming"><code>programming:</code></h3>
-<p>Contains a list of the target's flash programming algorithms. pyOCD uses these algorithms to identify which
-memory regions should be treated as flash, and it will automatically select the appropriate algorithm when
-programming flash on the target.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>programming:</code></th>
-<th></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>- algorithm:</code></td>
-<td><strong>Required</strong></td>
-<td style="text-align: left;">Programming algorithm file including the path.</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <code>start:</code></td>
-<td><strong>Required</strong></td>
-<td style="text-align: left;">Start address of memory covered by the programming algorithm.</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <code>size:</code></td>
-<td><strong>Required</strong></td>
-<td style="text-align: left;">Size of memory covered by the programming algorithm.</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <code>ram-start:</code></td>
-<td><strong>Required</strong></td>
-<td style="text-align: left;">Start address of RAM where the algorithm will be executed from.</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <code>ram-size:</code></td>
-<td><strong>Required</strong></td>
-<td style="text-align: left;">Maximum size of RAM available for executing the programming algorithm.</td>
-</tr>
-<tr>
-<td style="text-align: left;">    <code>pname:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Specifies the processor for the execution of the algorithm.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Example:</strong></p>
-<pre><code class="language-yml">  programming:
-    - algorithm: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Flash/algorithms/Ensemble.FLM
-      start: 0x80000000
-      size: 0x00580000
-      ram-start: 0x00000000
-      ram-size: 0x00020000
-    - algorithm: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Flash/algorithms/Ensemble_IS25WX256.FLM
-      start: 0xC0000000
-      size: 0x02000000
-      ram-start: 0x00000000
-      ram-size: 0x00040000
-</code></pre>
 <h3 id="debugger"><code>debugger:</code></h3>
 <p>Contains the user's debugger configuration settings. The available options are described in detail in the
-CSolution Project Format section <a href="../YML-Input-Format/#debugger-for-pyocd">Debugger Configuration - pyOCD</a>.</p>
+CSolution Project Format section <a href="../YML-Input-Format/#debugger-for-pyocd">Debugger Configuration - pyOCD</a>
+and pyOCD Debugger <a href="#extended-options">Extended Options</a>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  debugger:
     name: CMSIS-DAP@pyOCD
@@ -1194,6 +1314,22 @@ CSolution Project Format section <a href="../YML-Input-Format/#debugger-for-pyoc
 <h3 id="debug-vars"><code>debug-vars:</code></h3>
 <p>Contains default values for debug sequence variables. These values can be overridden by explicit settings in a
 <code>*.dbgconf</code> file provided in the <a href="#debugger"><code>debugger:</code></a> node.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>debug-vars:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">    <code>vars:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Initial values for variables used in <a href="#debug-sequences"><code>debug-sequences:</code></a>.</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  debug-vars:
     vars: |
@@ -1204,8 +1340,85 @@ CSolution Project Format section <a href="../YML-Input-Format/#debugger-for-pyoc
 </code></pre>
 <h3 id="debug-sequences"><code>debug-sequences:</code></h3>
 <p>Contains <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence">debug sequences</a>
-from the DFP for the target. A sequence with no <code>blocks</code> disables the default sequence; sequence names can override
+from the DFP for the target. A sequence with no <code>blocks:</code> disables the default sequence; sequence names can override
 default sequences from the DFP.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>debug-sequences:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Name of the sequence.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Descriptive text to display for example for error diagnostics.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>blocks:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">A list of command blocks in order of execution.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Executes sequence only for a specific processor; default is for all processors.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>blocks:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- info:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Descriptive text to display for example for error diagnostics.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>blocks:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">A list of command blocks in the order of execution.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>execute:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Commands for execution.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>atomic:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Atomic execution of commands; cannot be used with <code>blocks:</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>if:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Only executed when expression is true.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>while:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Executed in loop until while expression is true.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>timeout:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Timeout value (integer) in milliseconds for while loop.</td>
+</tr>
+</tbody>
+</table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  debug-sequences:
     - name: DisableWarmResetHandshake
@@ -1238,6 +1451,168 @@ default sequences from the DFP.</p>
         - while: (Read32(DHCSR_Addr) &amp; 0x02000000)
           timeout: 500000
 </code></pre>
+<h3 id="programming"><code>programming:</code></h3>
+<p>Contains a list of the target's flash programming algorithms. pyOCD uses these algorithms to identify which
+memory regions should be treated as flash, and it will automatically select the appropriate algorithm when
+programming flash on the target.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>programming:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- algorithm:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Programming algorithm file including the path.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>start:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Start address of memory covered by the programming algorithm.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>size:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Size of memory covered by the programming algorithm.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>ram-start:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Start address of RAM where the algorithm will be executed from.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>ram-size:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Maximum size of RAM available for executing the programming algorithm.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>pname:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Specifies the processor for the execution of the algorithm.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  programming:
+    - algorithm: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Flash/algorithms/Ensemble.FLM
+      start: 0x80000000
+      size: 0x00580000
+      ram-start: 0x00000000
+      ram-size: 0x00020000
+    - algorithm: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4/Flash/algorithms/Ensemble_IS25WX256.FLM
+      start: 0xC0000000
+      size: 0x02000000
+      ram-start: 0x00000000
+      ram-size: 0x00040000
+</code></pre>
+<h3 id="flash-info"><code>flash-info:</code></h3>
+<p>Contains a list of target's flash memories information, which is used by pyOCD to determine which memory regions
+should be treated as flash and how to program them using flash debug sequences.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>flash-info:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Name of the specified flash device.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>start:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Base address of the memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>page-size:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Page size. A page is the smallest unit that can be programmed.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>blocks:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">List of blocks. A block is the smallest unit that can be erased.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>blank-val:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">64-bit value in erased memory (default 0xFFFFFFFFFFFFFFFF). Value is truncated to match the access size.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>fill-val:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">64-bit value that a debugger uses to fill the remainder of a page (default 0xFFFFFFFFFFFFFFFF).  Value is truncated to match the access size.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>ptime:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Timeout in milliseconds for programming a page (default 300).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>etime:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Timeout in milliseconds for erasing a block (default 300).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Executes programming only for a specific processor (default for all processors).</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>blocks:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- count:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Number of blocks.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>size:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Block size in bytes. Total memory size (in bytes) is <code>size * count</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>arg:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Optional value that a debugger writes to the pre-defined debug access variable <code>__FlashArg</code> at start of a flash operation (default 0).</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_flashgap"><code>gap</code> element</a> is not used.</li>
+</ul>
+</div>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  flash-info:
+    - name: Internal Flash (code) 64KB
+      start: 0x00000000
+      page-size: 0x00000040
+      blocks:
+        - count: 256
+          size: 0x00000100
+          arg: 0
+      blank-val: 0x00000000FFFFFFFF
+      ptime: 100000
+      etime: 1000000
+</code></pre>
 <h3 id="debug-topology"><code>debug-topology:</code></h3>
 <p>Describes the properties of the system hardware for debug functionality. The information for this node is taken from
 the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code> file, pyOCD will use the default values described below.</p>
@@ -1245,29 +1620,29 @@ the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code>
 <thead>
 <tr>
 <th style="text-align: left;"><code>debug-topology:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">    <code>debugports:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Describes the CoreSight debug ports of the device and its capabilities.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>processors:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Map of <code>pname</code> identifiers to access port IDs (mandatory for multi-processor devices).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>swj:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Device allows switching between Serial Wire Debug (SWD) and JTAG protocols (<code>true</code> or <code>false</code>).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>dormant:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Device requires the dormant state to switch debug protocols (<code>true</code> or <code>false</code>).</td>
 </tr>
 </tbody>
@@ -1276,19 +1651,19 @@ the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code>
 <thead>
 <tr>
 <th style="text-align: left;"><code>debugports:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- dpid:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Unique ID of this debug port.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>accessports:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">List of CoreSight access ports (APv1/APv2) (mandatory for multi-processor devices).</td>
 </tr>
 </tbody>
@@ -1297,24 +1672,24 @@ the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code>
 <thead>
 <tr>
 <th style="text-align: left;"><code>accessports:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- apid:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Unique ID of this access port. If only <code>apid</code> is provided, access port (APv1) with index <code>0</code> will be implicitly used.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>index:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Index to select this access port (APv1) for a target access.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>address:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Address to select this access port (APv2) in its parent's address space for a target access.</td>
 </tr>
 </tbody>
@@ -1327,24 +1702,24 @@ the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code>
 <thead>
 <tr>
 <th style="text-align: left;"><code>processors:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Content</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- pname:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Processor identifier (mandatory for multi-processor devices).</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>apid:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Access port ID to use for this processor.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>reset-sequence:</code></td>
-<td>Optional</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Name of debug sequence for reset operation (default: <code>ResetSystem</code> sequence).</td>
 </tr>
 </tbody>

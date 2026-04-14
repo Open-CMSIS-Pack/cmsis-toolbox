@@ -103,9 +103,13 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#extended-options">Extended Options</a>
         <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#telnet">telnet:</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#connect">connect:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#reset">reset:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#trace">trace:</a>
     </li>
         </ul>
     </li>
@@ -163,20 +167,81 @@ This chapter explains the usage of the <a href="https://kb.segger.com/J-Link_GDB
 </ul>
 <h2 id="extended-options">Extended Options</h2>
 <p>The section <a href="../YML-Input-Format/#j-link-server">Debugger Configuration - J-Link Server</a> contains the J-Link configuration for typical systems.</p>
+<h3 id="telnet"><code>telnet:</code></h3>
+<p>J-Link supports a Telnet service that connects to character I/O functions. Character I/O is supported via Semihosting (or SEGGER RTT channel 0). Currently only semihosting is configured for the primary core.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>telnet:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- mode:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Redirect output: <code>off</code> (default), <code>server</code>, <code>console</code>, <code>monitor</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Identifies the processor (not required for single core system).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Telnet Mode</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>server</code></td>
+<td style="text-align: left;">Serial I/O to Telnet server port</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>console</code></td>
+<td style="text-align: left;">Serial output to console (Debug console in VS Code).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>monitor</code></td>
+<td style="text-align: left;">Serial I/O via TCP/IP port to VS Code Serial Monitor.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>off</code></td>
+<td style="text-align: left;">Serial I/O disabled.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>The Telnet service is always enabled for the J-Link GDB Server. The mode <code>off</code> turns off the data source (semihosting, SEGGER RTT).</li>
+<li>When no <code>telnet</code> node is added then Serial I/O to all processors is set to mode <code>off</code>.</li>
+</ul>
+</div>
 <h3 id="connect"><code>connect:</code></h3>
 <p>Configures the behavior for connecting J-Link to the hardware target for interactive debug.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"><code>connect:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Selects the connect mode: <code>attach</code>, <code>halt</code> (default).</td>
 </tr>
 </tbody>
@@ -205,19 +270,19 @@ This chapter explains the usage of the <a href="https://kb.segger.com/J-Link_GDB
 <thead>
 <tr>
 <th style="text-align: left;"><code>reset:</code></th>
-<th></th>
+<th style="text-align: left;"></th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>- pname:</code></td>
-<td>Optional</td>
-<td style="text-align: left;">Identifies the processor (not requried for single core system).</td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Identifies the processor (not required for single core system).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
-<td><strong>Required</strong></td>
+<td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Selects the reset type: <code>hardware</code>, <code>system</code> (default), <code>core</code>.</td>
 </tr>
 </tbody>
@@ -263,6 +328,38 @@ This chapter explains the usage of the <a href="https://kb.segger.com/J-Link_GDB
     - pname: Core1          # for Core1
       type: core            # use core reset
 </code></pre>
+<h3 id="trace"><code>trace:</code></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>trace:</code> feature is under development. This section provides a preview.</p>
+</div>
+<p>J-Link supports SWO Trace.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>trace:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Trace clock frequency in Hz.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set Trace Port transport mode. Currently only <code>SWO-UART</code> is accepted.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Set TCP/IP port number of Trace output (default: 4444).</td>
+</tr>
+</tbody>
+</table>
               
             </div>
           </div><footer>

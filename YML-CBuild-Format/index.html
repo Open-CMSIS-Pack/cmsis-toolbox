@@ -172,8 +172,6 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#flash-info">flash-info:</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#blocks">blocks:</a>
-    </li>
     <li class="toctree-l4"><a class="reference internal" href="#debug-topology">debug-topology:</a>
     </li>
         </ul>
@@ -1996,9 +1994,7 @@ The <code>output:</code> node also contains other required files that are added 
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<ul>
-<li>The <code>pname:</code> specifier applies a description file only to a specific processor core. The same description file may therefore appear more than once with different <code>pname:</code> specifiers.</li>
-</ul>
+<p>The <code>pname:</code> specifier applies a description file only to a specific processor core. The same description file may therefore appear more than once with different <code>pname:</code> specifiers.</p>
 </div>
 <h4 id="debugger"><code>debugger:</code></h4>
 <p>This node contains connection information for a debugger with initial settings coming from the board support pack (BSP) or device family pack (DFP).</p>
@@ -2052,6 +2048,31 @@ The <code>output:</code> node also contains other required files that are added 
 <td style="text-align: left;">Telnet service configuration.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>connect:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Connect mode to hardware.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>reset:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Reset type configuration for various cores.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>load-setup:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Reset type and Halt configuration for Load command.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>rtt:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Segger RTT configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>systemview:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Segger SystemView configuration.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>trace:</code></td>
 <td>Future</td>
 <td style="text-align: left;">Trace port of the debugger.</td>
@@ -2063,9 +2084,13 @@ The <code>output:</code> node also contains other required files that are added 
 </tr>
 </tbody>
 </table>
-<p>!!! Note:
-    - <code>protocol:</code> and <code>clock:</code> are required by pyOCD but optional for other debug adapters. The file <a href="../build-operation/#debug-adapter-integration"><code>./etc/debug-adapters.yml</code></a> allows to specify default values for required options.
-    - <code>start-pname:</code> is mandatory for multi-processor targets. If <code>start-pname:</code> is not configured using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file, the <code>pname:</code> of the first <code>*.cproject.yml</code> file is used.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li><code>protocol:</code> and <code>clock:</code> are required by pyOCD but optional for other debug adapters. The file <a href="../build-operation/#debug-adapter-integration"><code>./etc/debug-adapters.yml</code></a> allows to specify default values for required options.</li>
+<li><code>start-pname:</code> is mandatory for multi-processor targets. If <code>start-pname:</code> is not configured using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file, the <code>pname:</code> of the first <code>*.cproject.yml</code> file is used.</li>
+</ul>
+</div>
 <p>The information for the <code>debugger:</code> node may be configured using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file. If not present the values from BSP are used; if not present DFP values. The values in the <code>*.csolution.yml</code> file overwrites values from BSP or DFP as shown in the table below.</p>
 <table>
 <thead>
@@ -2418,7 +2443,7 @@ These initial values are overwritten by explicit settings in the <code>*.dbgconf
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>When <code>pname:</code> is specified the memory can only be programmed using the specified processor.  Otherwise any processor in a multi-processor system can execute the programming algorithm.</p>
+<p>When <code>pname:</code> is specified the memory can only be programmed using the specified processor. Otherwise any processor in a multi-processor system can execute the programming algorithm.</p>
 </div>
 <h4 id="flash-info"><code>flash-info:</code></h4>
 <p><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_flashinfo">Flash information</a> is used for memory that cannot be programmed using <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html">flash algorithms</a>. For such NVM memory the debugger uses JTAG/SWD sequences to program an image.</p>
@@ -2447,9 +2472,9 @@ These initial values are overwritten by explicit settings in the <code>*.dbgconf
 <td style="text-align: left;">Page size. A page is the smallest unit that can be programmed.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#blocks"><code>blocks:</code></a></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>blocks:</code></td>
 <td><strong>Required</strong></td>
-<td style="text-align: left;">List of blocks. A block is smallest unit that can be erased.</td>
+<td style="text-align: left;">List of blocks. A block is the smallest unit that can be erased.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>blank-val:</code></td>
@@ -2478,8 +2503,6 @@ These initial values are overwritten by explicit settings in the <code>*.dbgconf
 </tr>
 </tbody>
 </table>
-<h4 id="blocks"><code>blocks:</code></h4>
-<p>List of NVM memory blocks that are available.</p>
 <table>
 <thead>
 <tr>
