@@ -312,6 +312,14 @@ jobs:
           fi
           echo "Toolbox version: $TOOLBOX_VERSION"
 
+          # Print badge to GitHub Actions summary only for linux-amd64
+          if [[ "${{ matrix.target }}-${{ matrix.arch }}" == "linux-amd64" ]]; then
+            echo "### Toolbox Build" >> $GITHUB_STEP_SUMMARY
+            # Replace dashes with double dashes for shields.io
+            TOOLBOX_VERSION_BADGE=${TOOLBOX_VERSION//-/--}
+            echo "![Toolbox Version](https://img.shields.io/badge/version-${TOOLBOX_VERSION_BADGE}-blue)" >> $GITHUB_STEP_SUMMARY
+          fi
+
           # Set binary extension (default to empty string if not set)
           BINARY_EXTENSION=${{ matrix.binary_extension }}
           [ -z "$BINARY_EXTENSION" ] && BINARY_EXTENSION=""
