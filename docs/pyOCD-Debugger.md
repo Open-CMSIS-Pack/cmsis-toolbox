@@ -576,9 +576,11 @@ configuration and highlights the nodes relevant to pyOCD. The contents of each n
 
 `cbuild-run:`                                                     |              | Content
 :-----------------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; [`board-pack:`](#board-pack)                   |   Optional   | Identifies the board pack used.
+&nbsp;&nbsp;&nbsp; [`board-pack-path:`](#board-pack-path)         |   Optional   | Path to the board pack on the host computer.
 &nbsp;&nbsp;&nbsp; [`device:`](#device)                           | **Required** | Identifies the device.
 &nbsp;&nbsp;&nbsp; [`device-pack:`](#device-pack)                 |   Optional   | Identifies the device pack used.
-&nbsp;&nbsp;&nbsp; [`board-pack:`](#board-pack)                   |   Optional   | Identifies the board pack used.
+&nbsp;&nbsp;&nbsp; [`device-pack-path:`](#device-pack-path)       |   Optional   | Path to the device pack on the host computer.
 &nbsp;&nbsp;&nbsp; [`output:`](#output)                           |   Optional   | Lists the images (ELF, HEX, BIN) in this solution.
 &nbsp;&nbsp;&nbsp; [`system-resources:`](#system-resources)       |   Optional   | Lists target system resources.
 &nbsp;&nbsp;&nbsp; [`system-descriptions:`](#system-descriptions) |   Optional   | Lists target's description files for peripherals and software components.
@@ -588,6 +590,26 @@ configuration and highlights the nodes relevant to pyOCD. The contents of each n
 &nbsp;&nbsp;&nbsp; [`programming:`](#programming)                 |   Optional   | Lists flash algorithms for programming.
 &nbsp;&nbsp;&nbsp; [`flash-info:`](#flash-info)                   |   Optional   | Lists flash information for flash programming using debug sequences.
 &nbsp;&nbsp;&nbsp; [`debug-topology:`](#debug-topology)           |   Optional   | Debug topology.
+
+### `board-pack:`
+
+The `board-pack` (BSP) improves pyOCD's error reporting when a required file is provided by the board pack.
+
+**Example:**
+
+```yml
+  board-pack: Keil::B-U585I-IOT02A_BSP@2.1.0
+```
+
+### `board-pack-path:`
+
+The `board-pack-path` defines the path to the board pack (BSP) on the host computer.
+
+**Example:**
+
+```yml
+  board-pack-path: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.1.0
+```
 
 ### `device:`
 
@@ -611,14 +633,14 @@ The `device-pack` (DFP) improves pyOCD's error reporting when a required file is
   device-pack: AlifSemiconductor::Ensemble@2.0.4
 ```
 
-### `board-pack:`
+### `device-pack-path:`
 
-The `board-pack` (BSP) improves pyOCD's error reporting when a required file is provided by the board pack.
+The `device-pack-path` defines the path to the device pack (DFP) on the host computer.
 
 **Example:**
 
 ```yml
-  board-pack: AlifSemiconductor::Ensemble@2.0.4
+  device-pack-path: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4
 ```
 
 ### `output:`
@@ -681,6 +703,7 @@ pyOCD falls back to the default Cortex-M memory map.
 &nbsp;&nbsp;&nbsp; `size:`                        | **Required** | Size of the memory.
 &nbsp;&nbsp;&nbsp; `pname:`                       |   Optional   | Only accessible by a specific processor.
 &nbsp;&nbsp;&nbsp; `alias:`                       |   Optional   | Name of identical memory exposed at a different address.
+&nbsp;&nbsp;&nbsp; `default:`                     |   Optional   | Indicates a general purpose memory region.
 
 **Default Cortex-M memory map:**
 
@@ -742,6 +765,7 @@ pyOCD falls back to the default Cortex-M memory map.
         access: rx
         start: 0x80000000
         size: 0x00580000
+        default: true
       - name: SRAM2
         access: rwx
         start: 0x50000000

@@ -873,12 +873,15 @@ The following describes the overall structure of the `*.cbuild-run.yml` file.  W
 &nbsp;&nbsp;&nbsp; `compiler:`                                            |  Optional  | [Compiler toolchain](YML-Input-Format.md#compiler) used for code generation.
 &nbsp;&nbsp;&nbsp; `board:`                                               |  Optional  | [Board name](YML-Input-Format.md#board) used for this target.
 &nbsp;&nbsp;&nbsp; `board-pack:`                                          |  Optional  | BSP that is defining the [Board name](YML-Input-Format.md#board) used for this target.
+&nbsp;&nbsp;&nbsp; `board-pack-path:`                                     |  Optional  | Path to the BSP on the host computer.
 &nbsp;&nbsp;&nbsp; `device:`                                              |  Optional  | [Device name](YML-Input-Format.md#device) used in this target.
 &nbsp;&nbsp;&nbsp; `device-pack:`                                         |  Optional  | DFP that is defining the [Device](YML-Input-Format.md#device) used in this target.
+&nbsp;&nbsp;&nbsp; `device-pack-path:`                                    |  Optional  | Path to the DFP on the host computer.
 &nbsp;&nbsp;&nbsp; [`output:`](#output)                                   |**Required**| List of the image (ELF, HEX, BIN) files generated.
 &nbsp;&nbsp;&nbsp; [`system-resources:`](#system-resources)               |  Optional  | List of the system resources available in target.
 &nbsp;&nbsp;&nbsp; [`system-descriptions:`](#system-descriptions)         |  Optional  | List of description files for peripherals and software components.
 &nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)                               |**Required**| Configuration information for the debug connection.
+&nbsp;&nbsp;&nbsp; [`debug-vars:`](#debug-vars)                           |  Optional  | Pass user settings to debug access sequences.
 &nbsp;&nbsp;&nbsp; [`debug-sequences:`](#debug-sequences)                 |  Optional  | Tool actions for debugging, tracing, or programming.
 &nbsp;&nbsp;&nbsp; [`debug-sequences-conf:`](#debug-sequences-conf)       |  Optional  | Configuration information for how to use debug sequences.
 &nbsp;&nbsp;&nbsp; [`programming:`](#programming)                         |  Optional  | Algorithms for flash download.
@@ -941,6 +944,7 @@ The `system-resources:` node lists the resources of a target system. It includes
 &nbsp;&nbsp;&nbsp; `size:`                                |**Required** | Size of the memory.
 &nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Only accessible by a specific processor.
 &nbsp;&nbsp;&nbsp; `alias:`                               |  Optional   | Name of identical memory exposed at a different address.
+&nbsp;&nbsp;&nbsp; `default:`                             |  Optional   | Indicates a general purpose memory region.
 &nbsp;&nbsp;&nbsp; `from-pack:`                           |  Optional   | Pack that defines this memory.
 
 The table lists the letters and their meaning for use in the access attribute string.
