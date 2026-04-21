@@ -1,5 +1,7 @@
 # pyOCD Debugger
 
+<!-- markdownlint-disable MD033 -->
+
 The pyOCD Debugger connects to CMSIS-DAP (for example ULINKplus) or ST-Link debug adapters.
 The CMSIS-Toolbox defines the [debug configuration](YML-Input-Format.md#debugger-configuration) as part of the *csolution project*, ensuring consistent debug sessions across development teams, CI/CD environments, and different host platforms.
 This chapter describes how to use the [pyOCD](https://pyocd.io/) Debugger with the CMSIS-Toolbox.
@@ -34,7 +36,10 @@ CMSIS-DAP based Debug Adapters implement [debug access sequences](https://open-c
 
 ### `telnet:`
 
-pyOCD can configure a Telnet service for each processor that runs an independent application. The Telnet service connects to character I/O functions (Semihosting or SEGGER RTT).
+pyOCD integrates a Telnet service for character I/O functions via Semihosting or [SEGGER RTT](#rtt). Each processor that runs an independent application can be controlled individually. 
+
+![Telnet Modes](./images/telnet.png "Telnet modes")
+
 The `telnet:` node configures:
 
 - Telnet port for connecting remote tools, for example the [Serial Monitor VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
@@ -58,6 +63,10 @@ Telnet Mode                    | Description
 
 !!! Note
     - When no `telnet` node is applied, Serial I/O to all processors is disabled.
+
+The [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension for VS Code simplifies the configuration and the examples below show the setup in a `*.csolution.yml` file.
+
+![Telnet Configuration Dialog](./images/telnet-dialog.png "Telnet modes")
 
 **Examples:**
 
@@ -176,18 +185,20 @@ debugger:
 
 ### `rtt:`
 
-[SEGGER RTT](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) implements low-latency debug I/O via RAM ring buffers.
-The `rtt:` node configures the RTT features and the RTT channel usage. At least one RTT channel must be configured for each core to enable RTT on that core.
+[RTT](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) is a software component that implements real-time transfer channels from the target system to the pyOCD Debugger for multiple processors.
+
+![Telnet Modes](./images/rtt.png "Telnet modes")
+
+The `rtt:` node configures the RTT features and the RTT channel usage. At least one RTT channel must be configured for each processor to enable the RTT capturing in pyOCD.
 
 !!! Note
-    RTT is only enabled when using the pyOCD [run command](#run).
+    RTT is currently only enabled when using the pyOCD [run command](#run). It will be added in future pyOCD versions to the [gdbserver](#gdbserver).
 
 `rtt:`                                                |              | Description
 :-----------------------------------------------------|:-------------|:------------------------------------
 `- pname:`                                            |   Optional   | Processor identifier (not required for single-core systems).
 &nbsp;&nbsp;&nbsp; [`control-block:`](#control-block) |   Optional   | RTT control block configuration.
 &nbsp;&nbsp;&nbsp; [`channel:`](#channel)             | **Required** | Channel configuration.
-
 
 #### `control-block:`
 
@@ -221,10 +232,10 @@ The `channel:` node selects the RTT channel mode.
 
 Channel Mode                  | Description
 :-----------------------------|:------------------------------------
-`stdio`                       | Connects channel to standard input/output.
-`server`                      | Exposes channel over a TCP server.
-`systemview`                  | Saves channel data to *.SVDat file for SEGGER SystemView. Default: `./out/<solution-name>+<target-type>.SVDat`.
-`systemview-server`           | Streams live data to SEGGER SystemView.
+`stdio`                       | Connects channel to standard input/output service that is configured via the [`telnet:`](#telnet) node.
+`server`                      | Exposes channel over a TCP server port.
+`systemview`                  | Saves channel data to *.SVDat file for [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/) tool.<br/>Default file: `./out/<solution-name>+<target-type>.SVDat`; see [`systemview:`](#systemview) node.
+`systemview-server`           | Streams live data to [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/) tool over a "IP Recorder host" TCP port. Refer to the SEGGER SystemView user guide, IP Recorder.
 
 **Examples:**
 
@@ -243,6 +254,7 @@ debugger:
         - number: 0
           mode: stdio
 ```
+
 Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port `4444` and channel 3 to a Telnet Server port `4445`:
 
 ```yml
@@ -264,7 +276,7 @@ debugger:
 
 ### `systemview:`
 
-The `systemview:` node configures the RTT channel data capturing for [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/).
+The `systemview:` node configures the *.SVDat file capturing for [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/) tool for analyzing the runtime behavior of embedded systems.
 
 `systemview:`                                       |              | Description
 :---------------------------------------------------|:-------------|:------------------------------------
@@ -285,10 +297,8 @@ debugger:
       channel:
         - number: 1
           mode: systemview
-  systemview:
-    file: ./out/MyApp+MyBoard.Core0.SVDat
-    auto-start: true
-    auto-stop: true
+  systemview:                      # explicit SystemView output file
+    file: ./out/MyFile.SVDat
 ```
 
 ### `trace:`
@@ -340,6 +350,7 @@ To generate the related `*.cbuild-run.yml` file for pyOCD run the following CMSI
 cpackget add Infineon::PSE8xxx_DFP@1.0.1
 cbuild setup MySetup.csolution.yml --active PSE8_Target
 ```
+
 This creates the file `out/MySetup+PSE8_Target.cbuild-run.yml` that can be used for the [command line invocation](#command-line-invocation).
 
 ## Command Line Invocation
@@ -444,7 +455,6 @@ Reset target using selected [`reset:`](#reset) type.
 pyocd reset --cbuild-run out/DualCore+Alif-AppKit-E7.cbuild-run.yml
 ```
 
----
 ## Content of `*.cbuild-run.yml`
 
 This section details the content of `*.cbuild-run.yml` file and how it is used to configure pyOCD. The `*.cbuild-run.yml`
