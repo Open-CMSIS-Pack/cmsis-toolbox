@@ -709,9 +709,12 @@ second copy is an unmodified  backup file with the format `<configfile>.<ext>.ba
 #### **Upgrade**
 
 When upgrading (or downgrading) a software component, the version information of the configuration file is considered.
+If a configuration file does not explicitly specify a version in its PDSC description, it inherits the version from its parent component.
 
-- If the version of the unmodified backup file is identical, no operation is performed.
-- If the version differs, the new configuration file is copied with the format `<configfile>.<ext>.update@version`.
+- If the version of the unmodified backup file `<configfile>.<ext>.base@<version>` is identical, no operation is performed.
+- If the version differs, the new configuration file is copied with the format `<configfile>.<ext>.update@<version>`.
+
+In addition to version comparison, the contents of the `base` file and the corresponding file from the pack are compared. If both files are identical, the `base` file is automatically updated to the new version. In this case, no `update` file is created. This automatic rebase mechanism prevents configuration files without an explicit version from being incorrectly marked as out-of-date when using newer pack releases.
 
 **Example:** after updating the configuration file `ConfigFile.h` to version `1.3.0`, the directory contains these files:
 
@@ -725,8 +728,8 @@ When upgrading (or downgrading) a software component, the version information of
 `csolution` displays a user notification to indicate that configuration files have changed:
 
 ```text
-./RTE/component_class/ConfigFile.h - warning: component 'name' upgrade for configuration file version '1.3.0'
-                                              added, but file inactive
+warning csolution: update recommended for file './RTE/component_class/RTX_Config.h' from component 'Cclass:Cgroup&Cvariant'.
+Merge content from update file, rename update file to base file and remove previous base file
 ```
 
 **User action to complete upgrade**
