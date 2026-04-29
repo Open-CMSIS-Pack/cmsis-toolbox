@@ -82,6 +82,7 @@ Usage:
   csolution <command> [<name>.csolution.yml] [options]
 
 Commands:
+  check pack-updates            Check existing project for potential pack updates
   convert                       Convert user input *.yml files to *.cprj files
   list boards                   Print list of available board names
   list configs                  Print list of configuration files
@@ -95,6 +96,7 @@ Commands:
   list templates                Print list of templates
   list generators               Print list of code generators of a given context
   list layers                   Print list of available, referenced and compatible layers
+  list npus                     Print list of available NPUs
   list packs                    Print list of used packs from the pack repository
   list target-sets              Print list of target-sets in a <name>.csolution.yml
   list toolchains               Print list of supported toolchains
@@ -108,7 +110,7 @@ Options:
   -d, --debug                   Enable debug messages
   -D, --dry-run                 Enable dry-run
   -e, --export arg              Set suffix for exporting <context><suffix>.cprj retaining only specified versions
-  -f, --filter arg              Filter words
+  -f, --filter arg [...]        Filter words, repeat options or quote for words
   -g, --generator arg           Code generator identifier
   -l, --load arg                Set policy for packs loading [latest | all | required]
   -L, --clayer-path arg         Set search path for external clayers
@@ -245,12 +247,20 @@ cpackget add Arm::CMSIS
 cpackget add Arm::CMSIS@6.1.0     # optional with version specification
 ```
 
+### Check for Pack Version Updates
+
+Print the available updates for packs used by an existing project. With the option `--verbose`, the output includes release notes for newer versions and the local path of project-specified packs, when available. The list can be filtered by words provided with the option `--filter`:
+
+```
+csolution check pack-updates mysolution.csolution.yml -v [-f "WORDS" | -f WORD [-f WORD]...]
+```
+
 ### List Installed Packs
 
 Print a list of installed packs. The list can be filtered by words provided with the option `--filter`:
 
-```shell
-csolution list packs [-f "<filter words>"]
+```
+csolution list packs [-f "WORDS" | -f WORD [-f WORD]...]
 ```
 
 Print a list of packs that are required by the `example.csolution.yml`.
@@ -270,21 +280,22 @@ cpackget update-index               # optional to ensure that pack index is up-t
 cpackget add -f packs.txt
 ```
 
-### List Devices or Boards
+### List Devices, Boards or NPUs
 
-Print a list of available device or board names. The list can be filtered by words provided with the option `--filter`:
+Print a list of available device, board or NPU names. The list can be filtered by words provided with the option `--filter`:
 
 ```shell
 csolution list devices
 csolution list boards --filter NXP
+csolution list npus --filter Ethos-U55 --filter 128MACs
 ```
 
 ### List Unresolved Dependencies
 
-Device, board, and software components are specified as part of the `*.csolution.yml` and `*.cproject.yml` files. Print a list of unresolved project dependencies. The list may be filtered by words provided with the option `--filter`:
+Device, board, and software components are specified as part of the `*.csolution.yml` and `*.cproject.yml` files. Print a list of unresolved project dependencies. The list can be filtered by words provided with the option `--filter`:
 
-```shell
-csolution list dependencies mysolution.csolution.yml [-f "<filter words>"]
+```
+csolution list dependencies mysolution.csolution.yml [-f "WORDS" | -f WORD [-f WORD]...]
 ```
 
 ### Create Build Information
