@@ -81,12 +81,15 @@ jobs:
         id: get_run_id
         shell: bash
         run: |
-          RUN_ID=$(gh run list --limit 10 --workflow nightly --repo Open-CMSIS-Pack/devtools \
+          UTC_DATE_FILTER=$(date -u +%Y-%m-%d)
+          UTC_DATE_DISPLAY=$(date -u +%d.%m.%Y)
+          LATEST_RUN=$(gh run list --limit 1 --workflow nightly --branch main --repo Open-CMSIS-Pack/devtools \
             --json databaseId,createdAt \
-            --jq "[.[] | select(.createdAt | startswith(\"$(date -u +%Y-%m-%d)\"))] | .[0].databaseId")
-
-          if [ -z "$RUN_ID" ]; then
-            ERR_MSG="No nightly run found for Open-CMSIS-Pack/devtools on $(date -u +%d.%m.%Y)."
+            --jq '.[0] // {}')
+          RUN_ID=$(echo "$LATEST_RUN" | jq -r '.databaseId // empty')
+          RUN_CREATED_AT=$(echo "$LATEST_RUN" | jq -r '.createdAt // empty')
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ] || [[ "$RUN_CREATED_AT" != "$UTC_DATE_FILTER"* ]]; then
+            ERR_MSG="No nightly run found for Open-CMSIS-Pack/devtools on $UTC_DATE_DISPLAY."
             echo "$ERR_MSG"
             echo "### :x: $ERR_MSG" >> $GITHUB_STEP_SUMMARY
             exit 1
