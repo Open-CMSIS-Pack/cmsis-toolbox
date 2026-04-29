@@ -82,7 +82,7 @@ Usage:
   csolution <command> [<name>.csolution.yml] [options]
 
 Commands:
-  check                         Check existing project for potential pack updates
+  check pack-updates            Check existing project for potential pack updates
   convert                       Convert user input *.yml files to *.cprj files
   list boards                   Print list of available board names
   list configs                  Print list of configuration files
@@ -247,6 +247,14 @@ cpackget add Arm::CMSIS
 cpackget add Arm::CMSIS@6.1.0     # optional with version specification
 ```
 
+### Check for Pack Version Updates
+
+Print the available updates for packs used by an existing project. With the option `--verbose`, the output includes release notes for newer versions and the local path of project-specified packs, when available. The list can be filtered by words provided with the option `--filter`:
+
+```
+csolution check pack-updates mysolution.csolution.yml -v [-f "WORDS" | -f WORD [-f WORD]...]
+```
+
 ### List Installed Packs
 
 Print a list of installed packs. The list can be filtered by words provided with the option `--filter`:
@@ -284,7 +292,7 @@ csolution list npus --filter Ethos-U55 --filter 128MACs
 
 ### List Unresolved Dependencies
 
-Device, board, and software components are specified as part of the `*.csolution.yml` and `*.cproject.yml` files. Print a list of unresolved project dependencies. The list may be filtered by words provided with the option `--filter`:
+Device, board, and software components are specified as part of the `*.csolution.yml` and `*.cproject.yml` files. Print a list of unresolved project dependencies. The list can be filtered by words provided with the option `--filter`:
 
 ```
 csolution list dependencies mysolution.csolution.yml [-f "WORDS" | -f WORD [-f WORD]...]
