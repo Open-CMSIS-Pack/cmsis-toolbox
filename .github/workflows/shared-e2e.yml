@@ -59,7 +59,6 @@ jobs:
     name: Create toolbox [${{ matrix.target }}-${{ matrix.arch }}]
     needs: [ matrix_prep ]
     runs-on: ${{ matrix.runs_on }}
-    continue-on-error: true
     strategy:
       matrix: ${{ fromJson(needs.matrix_prep.outputs.build) }}
     steps:
@@ -78,11 +77,23 @@ jobs:
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
 
-      - name: Get latest nightly Run ID
+      - name: Get latest nightly Run ID for Open-CMSIS-Pack/devtools
         id: get_run_id
         shell: bash
         run: |
-          RUN_ID=$(gh run list --limit 1 --workflow nightly --repo Open-CMSIS-Pack/devtools --json databaseId --jq '.[0].databaseId')
+          UTC_DATE_FILTER=$(date -u +%Y-%m-%d)
+          UTC_DATE_DISPLAY=$(date -u +%d.%m.%Y)
+          LATEST_RUN=$(gh run list --limit 1 --workflow nightly --branch main --repo Open-CMSIS-Pack/devtools \
+            --json databaseId,createdAt \
+            --jq '.[0] // {}')
+          RUN_ID=$(echo "$LATEST_RUN" | jq -r '.databaseId // empty')
+          RUN_CREATED_AT=$(echo "$LATEST_RUN" | jq -r '.createdAt // empty')
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ] || [[ "$RUN_CREATED_AT" != "$UTC_DATE_FILTER"* ]]; then
+            ERR_MSG="No nightly run found for Open-CMSIS-Pack/devtools on $UTC_DATE_DISPLAY."
+            echo "$ERR_MSG"
+            echo "### :x: $ERR_MSG" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
           echo "NIGHTLY_RUN_ID=$RUN_ID" >> $GITHUB_OUTPUT
 
       # Clean Go mod cache
@@ -311,6 +322,14 @@ jobs:
             TOOLBOX_VERSION="untagged"
           fi
           echo "Toolbox version: $TOOLBOX_VERSION"
+
+          # Print badge to GitHub Actions summary only for linux-amd64
+          if [[ "${{ matrix.target }}-${{ matrix.arch }}" == "linux-amd64" ]]; then
+            echo "### Toolbox Build" >> $GITHUB_STEP_SUMMARY
+            # Replace dashes with double dashes for shields.io
+            TOOLBOX_VERSION_BADGE=${TOOLBOX_VERSION//-/--}
+            echo "![Toolbox Version](https://img.shields.io/badge/version-${TOOLBOX_VERSION_BADGE}-blue)" >> $GITHUB_STEP_SUMMARY
+          fi
 
           # Set binary extension (default to empty string if not set)
           BINARY_EXTENSION=${{ matrix.binary_extension }}
