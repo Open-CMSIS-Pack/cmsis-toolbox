@@ -2471,7 +2471,7 @@ Debug Adapter `name:`                     | Description
 [`<adapter>@pyOCD`](#pyocd)               | Debug Adapters that interface via pyOCD ([CMSIS-DAP](https://arm-software.github.io/CMSIS-DAP/latest/index.html) and ST-Link).
 [`<adapter>@Arm-Debugger`](#arm-debugger) | Debug Adapters that interface via the Arm-Debugger.
 [`Arm-FVP`](#arm-fvp)                     | [FVP](https://arm-software.github.io/AVH/main/simulation/html/index.html) simulation models that represent processor sub-systems.
-[`Keil uVision`](#keil-uvision)           | [uVision Debugger](http://developer.arm.com/documentation/101407/0543/Debugging) that is integrated in the Keil uVision IDE. 
+[`Keil uVision`](#keil-uvision)           | [uVision Debugger](https://developer.arm.com/documentation/101407/0543/Debugging) that is integrated in the Keil uVision IDE. 
 [`J-Link Server`](#j-link-server)         | [Segger J-Link](https://www.segger.com/products/debug-probes/j-link/) debug probes that connect using the J-Link Server.
 
 The [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) VS Code extension uses the `debugger:` node to create entries in the files `.vscode/tasks.json` and `.vscode/launch.json` for running and debugging using the specified debug adapter. [`pyOCD`](#pyocd) supports a command-line mode that uses the [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management) file which is created by the CMSIS-Toolbox.

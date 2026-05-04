@@ -388,7 +388,7 @@ cpackget add Vendor.PackName --pack-root ./MyLocal/Packs
 ### Initialize CMSIS-Pack root directory
 
 CMSIS-Packs are typically distributed via a public web service that offers a
-[**Pack Index File**](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packIndexFile.html)
+[**Pack Index File**](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#packIndexFile)
 of available software packs. To initialize the CMSIS-Pack root directory, run the command:
 
 ```shell
@@ -399,7 +399,7 @@ This command creates in the CMSIS-PACK root directory the following sub-director
 
 Sub-Directory   | Content
 :---------------|:------------------------
-`.Web`          | [**Pack Index File**](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/packIndexFile.html) of a public web service and `*.PDSC` files.
+`.Web`          | [**Pack Index File**](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#packIndexFile) of a public web service and `*.PDSC` files.
 `.Download`     | Packs that are installed from a web service. Stores `*.PDSC` pack description file, `*.pack` content file, and related license information.
 `.Local`        | Index file `local_repository.pidx` that points to local installations for the development of a software pack. Contains also the `*.PDSC` files from private software packs.
 
