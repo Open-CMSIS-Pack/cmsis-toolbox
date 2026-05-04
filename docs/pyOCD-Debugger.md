@@ -334,7 +334,7 @@ For more complex multi-core systems, the clock is normally derived from the syst
 #### Debug Access Variables
 
 The above configurations are passed to debug sequence implementations through [pre-defined debug access variables](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#DebugVars). The following mapping is expected:
-- `input-clock` directly mapps to variable `__traceclockin`.
+- `input-clock` directly maps to variable `__traceclockin`.
 - If `output-clock` is provided or has a value other than `0`, then the value directly maps to variable `__traceclockout`.
 - If `output-clock` is not provided or has the value `0`, then the highest achievable output clock frequency supported by the debug unit is written to `__traceclockout`.
 - `port-type` maps to bits `0..2` of variable `__traceout`.
@@ -352,7 +352,7 @@ The above configurations are passed to debug sequence implementations through [p
 Device-specific sequence settings like for debug and trace connections are usually configured through the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file. The `debug-vars-set:` node provides an alternative way to configure such settings
 together with other pyOCD debugger settings in a single place.
 
-The contents of the `debug-var-set:` node is a string of the same format as used in the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
+The value of the `debug-vars-set:` node is a string of the same format as used in the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
 
 !!! Note
     - Settings that are not listed under this node default to their assignment in a provided [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
