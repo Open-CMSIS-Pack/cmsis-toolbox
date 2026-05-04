@@ -575,7 +575,7 @@ solution:
 
 !!! Tip
     - Several [examples for Arm Virtual Hardware (AVH) FVP simulation models](https://github.com/Arm-Examples#avh-fvp-examples) show usage of *csolution projects* in CI workflows.
-    - The project [AVH-MLOps-Main](https://github.com/ARM-software/AVH-MLOps/tree/main/AVH-MLOps-main) is a test project that shows retargeting to different processors using a layer.
+    - The project [AVH-MLOps-Main](https://github.com/Arm-Examples/AVH-MLOps_Examples/tree/main/AVH-MLOps-main) is a test project that shows retargeting to different processors using a layer.
     - The project [AWS_MQTT_Demo](https://github.com/Arm-Examples/AWS_MQTT_Demo) extends this concept with retargeting of an IP communication to virtual or physical hardware.
 
 ### Configuration Settings
