@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/markdown.yml'
-      - '.github/markdownlint-link-check.json'
+      - '.github/lychee.toml'
       - '**/*.md'
 
 concurrency:
@@ -26,8 +26,8 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Check markdown links
-        uses: tcort/github-action-markdown-link-check@e7c7a18363c842693fadde5d41a3bd3573a7a225 # v1.1.2
+        uses: lycheeverse/lychee-action@8646ba30535128ac92d33dfc9133794bfdd9b411 # v2.8.0
         with:
-          use-quiet-mode: 'no'
-          use-verbose-mode: 'yes'
-          config-file: '.github/markdown-link-check.json'
+          args: --config .github/lychee.toml './**/*.md'
+          fail: true
+          jobSummary: true
