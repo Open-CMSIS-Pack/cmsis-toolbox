@@ -1,0 +1,42 @@
+# For all options, see <https://lychee.cli.rs/usage/config/>
+
+# Verbose program output
+# Accepts log level: "error", "warn", "info", "debug", "trace"
+verbose = "info"
+
+# Interactive progress bar while checking links.
+# Disabled for CI usage
+no_progress = true
+
+# Enable link caching. This can be helpful to avoid checking the same links on
+# multiple runs.
+cache = true
+
+accept = [
+  "200"
+]
+
+# Maximum number of allowed redirects.
+max_redirects = 2
+
+# Maximum number of allowed retries before a link is declared dead.
+max_retries = 2
+
+# Only test links with the given schemes
+# Omit to check links with any other scheme.
+scheme = ["http", "https", "file"]
+
+# Exclude links
+exclude = [
+  # Exclude links as cookies needed to be accepted
+  'https://developer.arm.com',
+  'http://www.keil.com/pack'
+]
+
+# Exclude paths from getting checked. The values are treated as regular expressions
+exclude_path = [
+    "\\.txt$",      # skip .txt extensions
+    "\\.html$",      # skip .html extensions
+    "(^|/)test/",   # skip directories named "test"
+    "external/",    # skip external directories
+]
