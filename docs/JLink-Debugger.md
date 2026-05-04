@@ -103,10 +103,11 @@ J-Link supports SWO Trace.
 :--------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `input-clock:`            | **Required** | Trace input clock frequency in Hz.
 &nbsp;&nbsp;&nbsp; `port-type:`              |   Optional   | Set trace port transport mode. Currently only `SWO-UART` is accepted.
+&nbsp;&nbsp;&nbsp; `output-clock:`           |   Optional   | Trace output clock for the selected port type. For `SWO-UART` mode this is the baudrate.
 &nbsp;&nbsp;&nbsp; `server-port:`            |   Optional   | Set TCP/IP port number of Trace server (default: 5555).
 
 #### Trace Clocks
 
 1. Trace `input-clock` is the frequency of the clock signal that goes into the trace port component. It equals the CPU clock frequency for the majority of systems with trace from a single core.
-For more complex multi-core systems, the clock can is normally derived from the system clock. Refer to the device manual and setup to find the exact value.
+For more complex multi-core systems, the clock is normally derived from the system clock. Refer to the device manual and setup to find the exact value.
 2. Trace `output-clock` is the clock frequency of the trace output signal. It is used to configure trace capture of the debug unit, and to calculate trace port prescaler values that need to be programmed. If not provided or if the value is `0`, then a best matching output frequency is automatically calculated based on `input-clock` and supported trace capture frequencies/baudrates of the debug unit.
