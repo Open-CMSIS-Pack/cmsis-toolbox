@@ -108,6 +108,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#versioning">Versioning</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pack-distribution">Pack Distribution</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#project-examples">Project Examples</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#support-multiple-compilers">Support Multiple Compilers</a>
@@ -483,6 +485,18 @@ packchk &lt;workdir&gt;/BSP-Pack-Handson/ACME.ACME_BSP.pdsc -i &lt;workdir&gt;/D
 <li>During the development of a pack <code>+build</code> information may be used. This <code>+build</code> information is ignored by the CMSIS-Toolbox and should be not part of a public released pack.</li>
 </ul>
 </div>
+<h2 id="pack-distribution">Pack Distribution</h2>
+<p>The section <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html">Publish a CMSIS-Pack</a> in the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec">Open-CMSIS-Pack specification</a> describes the pack distribution process. There are multiple distribution options, ranging from <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_LocalInstallation">local installation</a> to publishing via <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_WebDownload">web services</a>.</p>
+<p>Several vendors use GitHub for pack distribution today. <a href="https://www.keil.arm.com/packs/?q=Alif&amp;pack">Alif Semiconductor</a> is a good example:</p>
+<ul>
+<li><a href="https://github.com/alifsemi/alif_cmsis_packs">github.com/alifsemi/alif_cmsis_packs</a> contains the <code>*.pidx</code> index file that references all public packs (including versions) provided by Alif.<ul>
+<li>This index file is submitted <strong>once by email</strong> to the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_KeilComPack">pack index service</a> for the relevant tools (mailto:cmsis@arm.com for Arm Tools, mailto:cmsis@iar.com for IAR Tools).</li>
+<li>Update this <code>*.pidx</code> file to publish new packs or new versions. Arm scans vendor <code>*.pidx</code> index files once per day and updates the web content.</li>
+</ul>
+</li>
+<li>The packs themselves are located in separate GitHub repositories. The <code>*.pdsc</code> file of a pack contains the <code>url</code> and <code>repo</code> elements that tools use to update the pack or consume it as a <a href="../build-tools/#install-a-repository">repository during development</a>.</li>
+</ul>
+<p>Refer to <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_GitHubHosting">GitHub-hosted packs</a> in the  <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec">Open-CMSIS-Pack specification</a> for details on the <code>*.pidx</code> and <code>*.pdsc</code> file content.</p>
 <h2 id="project-examples">Project Examples</h2>
 <p>Project examples help to get started with new devices, boards, and middleware software components. The CMSIS-Pack format supports, therefore, different types of project examples:</p>
 <ul>
