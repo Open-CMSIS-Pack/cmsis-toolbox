@@ -236,6 +236,19 @@ Product Lifecycle Management (PLM) and versioning are closely connected. Version
 !!! Note
     - During the development of a pack `+build` information may be used. This `+build` information is ignored by the CMSIS-Toolbox and should be not part of a public released pack.
 
+## Pack Distribution
+
+The section [Publish a CMSIS-Pack](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html) in the [Open-CMSIS-Pack specification](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec) describes the pack distribution process. There are multiple distribution options, ranging from [local installation](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_LocalInstallation) to publishing via [web services](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_WebDownload).
+
+Several vendors use GitHub for pack distribution today. [Alif Semiconductor](https://www.keil.arm.com/packs/?q=Alif&pack) is a good example:
+
+- [github.com/alifsemi/alif_cmsis_packs](https://github.com/alifsemi/alif_cmsis_packs) contains the `*.pidx` index file that references all public packs (including versions) provided by Alif.
+    - This index file is submitted **once by email** to the [pack index service](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_KeilComPack) for the relevant tools (mailto:cmsis@arm.com for Arm Tools, mailto:cmsis@iar.com for IAR Tools).
+    - Update this `*.pidx` file to publish new packs or new versions. Arm scans vendor `*.pidx` index files once per day and updates the web content.
+- The packs themselves are located in separate GitHub repositories. The `*.pdsc` file of a pack contains the `url` and `repo` elements that tools use to update the pack or consume it as a [repository during development](build-tools.md#install-a-repository).
+
+Refer to [GitHub-hosted packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_GitHubHosting) in the  [Open-CMSIS-Pack specification](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec) for details on the `*.pidx` and `*.pdsc` file content.
+
 ## Project Examples
 
 Project examples help to get started with new devices, boards, and middleware software components. The CMSIS-Pack format supports, therefore, different types of project examples:
