@@ -18,6 +18,10 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
+  markdown-link-checker:
+    if: github.repository == 'Open-CMSIS-Pack/cmsis-toolbox'
+    uses: ./.github/workflows/markdown.yml
+
   test:
     if: github.repository == 'Open-CMSIS-Pack/cmsis-toolbox'
     uses: ./.github/workflows/shared-e2e.yml
