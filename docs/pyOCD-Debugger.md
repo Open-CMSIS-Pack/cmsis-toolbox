@@ -306,19 +306,80 @@ debugger:
 !!! Note
     The `trace:` feature is under development. This section provides a preview.
 
-CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific trace features are configured using the `*.dbgconf` file.
+CMSIS-DAP supports the SWO trace output of Cortex-M devices.
+The often device-specific trace capture capabilities are configured using the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
+Such device-specific settings can also be individually overridden under [`debug-vars-set:`](#debug-vars-set) node of the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management).
+This allows to pass changed settings in a single configuration file.
+Refer to the [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section in the device PDSC file to learn about settings available for a device.
 
 The default trace output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management)
-and uses the extension `<pname>.txt`, format: `<solution-name>+<target-type>.trace`
+and uses the format `<solution-name>+<target-type>.trace`.
 
 `trace:`                                                  |              | Description
 :---------------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `mode:`                                | **Required** | Trace: `off` (default), `server`, `file`.
-&nbsp;&nbsp;&nbsp; `clock:`                               | **Required** | Trace clock frequency in Hz.
-&nbsp;&nbsp;&nbsp; `port-type:`                           |   Optional   | Set Trace Port transport mode. Currently only `SWO-UART` is accepted.
-&nbsp;&nbsp;&nbsp; `baudrate:`                            |   Optional   | Maximum baudrate for `SWO-UART` mode.
-&nbsp;&nbsp;&nbsp; `port:`                                |   Optional   | Set TCP/IP port number of Trace server (default: 5555).
+&nbsp;&nbsp;&nbsp; `input-clock:`                         | **Required** | Trace input clock frequency in Hz.
+&nbsp;&nbsp;&nbsp; `port-type:`                           |   Optional   | Set trace port transport mode. Currently only `SWO-UART` is accepted.
+&nbsp;&nbsp;&nbsp; `port-width:`                          |   Optional   | Width of the trace port. Currently only the value '1' is accepted for `SWO-UART`.
+&nbsp;&nbsp;&nbsp; `output-clock:`                        |   Optional   | Trace output clock for the selected port type. For `SWO-UART` mode this is the baudrate.
+&nbsp;&nbsp;&nbsp; `server-port:`                         |   Optional   | Set TCP/IP port number of Trace server (default: 5555).
 &nbsp;&nbsp;&nbsp; `file:`                                |   Optional   | Explicit path and name of the trace output file. Default: `<solution-name>+<target-type>.trace`.
+
+#### Trace Clocks
+
+1. Trace `input-clock` is the frequency of the clock signal that goes into the trace port component. It equals the CPU clock frequency for the majority of systems with trace from a single core.
+For more complex multi-core systems, the clock is normally derived from the system clock. Refer to the device manual and setup to find the exact value.
+2. Trace `output-clock` is the clock frequency of the trace output signal. It is used to configure trace capture of the debug unit, and to calculate trace port prescaler values that need to be programmed. If not provided or if the value is `0`, then a best matching output frequency is automatically calculated based on `input-clock`, supported trace capture frequencies/baudrates of the debug unit, and other potentially known device-specific constraints like pin characteristics.
+
+#### Debug Access Variables
+
+The above configurations are passed to debug sequence implementations through [pre-defined debug access variables](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#DebugVars). The following mapping is expected:
+- `input-clock` directly maps to variable `__traceclockin`.
+- If `output-clock` is provided or has a value other than `0`, then the value directly maps to variable `__traceclockout`.
+- If `output-clock` is not provided or has the value `0`, then the highest achievable output clock frequency supported by the debug unit is written to `__traceclockout`.
+- `port-type` maps to bits `0..2` of variable `__traceout`.
+- `port-width` maps to bits `16..21` of variable `__traceout` if the selected `port-type` is a synchronous trace port.
+
+!!! Note
+    The linked description of pre-defined debug access variables needs to be updated to include the proposed new variables
+    `__traceclockin` and `__traceclockout`.
+
+### `debug-vars-set:`
+
+!!! Note
+    The `debug-vars-set:` feature is under development. This section provides a preview.
+
+Device-specific sequence settings like for debug and trace connections are usually configured through the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file. The `debug-vars-set:` node provides an alternative way to configure such settings
+together with other pyOCD debugger settings in a single place.
+
+The value of the `debug-vars-set:` node is a string of the same format as used in the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
+
+!!! Note
+    - Settings that are not listed under this node default to their assignment in a provided [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
+    - If no [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file is provided, or if a setting isn't assigned in this file, then it defaults to the value assigned in the device [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section of the PDSC file.
+
+**Example:**
+```yml
+  debugger:
+    name: ST-Link@pyOCD
+    protocol: swd
+    clock: 10000000
+    dbgconf: .cmsis/Blinky+STM32H747I-EVAL.dbgconf
+    start-pname: CM7
+    gdbserver:
+      - port: 3333
+        pname: CM7
+      - port: 3334
+        pname: CM4
+    debug-vars-set: |
+      // DBGMCU configuration register (DBGMCU_CR)
+      DbgMCU_CR    = 0x00000007;
+      // TPIU Pin Routing (TRACECLK fixed on Pin PE2)
+      TraceD0_Pin  = 0x00040003;  // Pin PE3
+      TraceD1_Pin  = 0x00040004;  // Pin PE4
+      TraceD2_Pin  = 0x00040005;  // Pin PE5
+      TraceD3_Pin  = 0x00040006;  // Pin PE6
+```
 
 ## Minimal Setup
 
