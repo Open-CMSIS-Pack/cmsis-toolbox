@@ -118,6 +118,14 @@
 <li class="toctree-l3"><a class="reference internal" href="#systemview">systemview:</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#trace">trace:</a>
+<ul>
+<li class="toctree-l4"><a class="reference internal" href="#trace-clocks">Trace Clocks</a>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#debug-access-variables">Debug Access Variables</a>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-vars-set">debug-vars-set:</a>
 </li>
 </ul>
 </li>
@@ -720,9 +728,13 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 <p class="admonition-title">Note</p>
 <p>The <code>trace:</code> feature is under development. This section provides a preview.</p>
 </div>
-<p>CMSIS-DAP supports the SWO trace output of Cortex-M devices. The device-specific trace features are configured using the <code>*.dbgconf</code> file.</p>
+<p>CMSIS-DAP supports the SWO trace output of Cortex-M devices.
+The often device-specific trace capture capabilities are configured using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf"><code>*.dbgconf</code></a> file.
+Such device-specific settings can also be individually overridden under <a href="#debug-vars-set"><code>debug-vars-set:</code></a> node of the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a>.
+This allows to pass changed settings in a single configuration file.
+Refer to the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars"><code>&lt;debugvars&gt;</code></a> section in the device PDSC file to learn about settings available for a device.</p>
 <p>The default trace output file and location is derived from the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a>
-and uses the extension <code>&lt;pname&gt;.txt</code>, format: <code>&lt;solution-name&gt;+&lt;target-type&gt;.trace</code></p>
+and uses the format <code>&lt;solution-name&gt;+&lt;target-type&gt;.trace</code>.</p>
 <table>
 <thead>
 <tr>
@@ -738,22 +750,27 @@ and uses the extension <code>&lt;pname&gt;.txt</code>, format: <code>&lt;solutio
 <td style="text-align: left;">Trace: <code>off</code> (default), <code>server</code>, <code>file</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">    <code>clock:</code></td>
+<td style="text-align: left;">    <code>input-clock:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Trace clock frequency in Hz.</td>
+<td style="text-align: left;">Trace input clock frequency in Hz.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>port-type:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Set Trace Port transport mode. Currently only <code>SWO-UART</code> is accepted.</td>
+<td style="text-align: left;">Set trace port transport mode. Currently only <code>SWO-UART</code> is accepted.</td>
 </tr>
 <tr>
-<td style="text-align: left;">    <code>baudrate:</code></td>
+<td style="text-align: left;">    <code>port-width:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Maximum baudrate for <code>SWO-UART</code> mode.</td>
+<td style="text-align: left;">Width of the trace port. Currently only the value '1' is accepted for <code>SWO-UART</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">    <code>port:</code></td>
+<td style="text-align: left;">    <code>output-clock:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Trace output clock for the selected port type. For <code>SWO-UART</code> mode this is the baudrate.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>server-port:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Set TCP/IP port number of Trace server (default: 5555).</td>
 </tr>
@@ -764,6 +781,60 @@ and uses the extension <code>&lt;pname&gt;.txt</code>, format: <code>&lt;solutio
 </tr>
 </tbody>
 </table>
+<h4 id="trace-clocks">Trace Clocks</h4>
+<ol>
+<li>Trace <code>input-clock</code> is the frequency of the clock signal that goes into the trace port component. It equals the CPU clock frequency for the majority of systems with trace from a single core.
+For more complex multi-core systems, the clock is normally derived from the system clock. Refer to the device manual and setup to find the exact value.</li>
+<li>Trace <code>output-clock</code> is the clock frequency of the trace output signal. It is used to configure trace capture of the debug unit, and to calculate trace port prescaler values that need to be programmed. If not provided or if the value is <code>0</code>, then a best matching output frequency is automatically calculated based on <code>input-clock</code>, supported trace capture frequencies/baudrates of the debug unit, and other potentially known device-specific constraints like pin characteristics.</li>
+</ol>
+<h4 id="debug-access-variables">Debug Access Variables</h4>
+<p>The above configurations are passed to debug sequence implementations through <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#DebugVars">pre-defined debug access variables</a>. The following mapping is expected:
+- <code>input-clock</code> directly maps to variable <code>__traceclockin</code>.
+- If <code>output-clock</code> is provided or has a value other than <code>0</code>, then the value directly maps to variable <code>__traceclockout</code>.
+- If <code>output-clock</code> is not provided or has the value <code>0</code>, then the highest achievable output clock frequency supported by the debug unit is written to <code>__traceclockout</code>.
+- <code>port-type</code> maps to bits <code>0..2</code> of variable <code>__traceout</code>.
+- <code>port-width</code> maps to bits <code>16..21</code> of variable <code>__traceout</code> if the selected <code>port-type</code> is a synchronous trace port.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The linked description of pre-defined debug access variables needs to be updated to include the proposed new variables
+<code>__traceclockin</code> and <code>__traceclockout</code>.</p>
+</div>
+<h3 id="debug-vars-set"><code>debug-vars-set:</code></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>debug-vars-set:</code> feature is under development. This section provides a preview.</p>
+</div>
+<p>Device-specific sequence settings like for debug and trace connections are usually configured through the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf"><code>*.dbgconf</code></a> file. The <code>debug-vars-set:</code> node provides an alternative way to configure such settings
+together with other pyOCD debugger settings in a single place.</p>
+<p>The value of the <code>debug-vars-set:</code> node is a string of the same format as used in the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf"><code>*.dbgconf</code></a> file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>Settings that are not listed under this node default to their assignment in a provided <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf"><code>*.dbgconf</code></a> file.</li>
+<li>If no <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf"><code>*.dbgconf</code></a> file is provided, or if a setting isn't assigned in this file, then it defaults to the value assigned in the device <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars"><code>&lt;debugvars&gt;</code></a> section of the PDSC file.</li>
+</ul>
+</div>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  debugger:
+    name: ST-Link@pyOCD
+    protocol: swd
+    clock: 10000000
+    dbgconf: .cmsis/Blinky+STM32H747I-EVAL.dbgconf
+    start-pname: CM7
+    gdbserver:
+      - port: 3333
+        pname: CM7
+      - port: 3334
+        pname: CM4
+    debug-vars-set: |
+      // DBGMCU configuration register (DBGMCU_CR)
+      DbgMCU_CR    = 0x00000007;
+      // TPIU Pin Routing (TRACECLK fixed on Pin PE2)
+      TraceD0_Pin  = 0x00040003;  // Pin PE3
+      TraceD1_Pin  = 0x00040004;  // Pin PE4
+      TraceD2_Pin  = 0x00040005;  // Pin PE5
+      TraceD3_Pin  = 0x00040006;  // Pin PE6
+</code></pre>
 <h2 id="minimal-setup">Minimal Setup</h2>
 <p>pyOCD uses the information from the CMSIS system as explained under <a href="../YML-CBuild-Format/#run-and-debug-management">Build Information Files - Run and Debug Management</a>. The following section shows a minimal setup for configuring pyOCD using a <code>*.cbuild-run.yml</code> file.</p>
 <p><strong>Example:</strong> MySetup.csolution.yml</p>
