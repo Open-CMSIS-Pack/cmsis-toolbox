@@ -313,7 +313,7 @@ This allows to pass changed settings in a single configuration file.
 Refer to the [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section in the device PDSC file to learn about settings available for a device.
 
 The default trace output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management)
-and uses the extension `<pname>.txt`, format: `<solution-name>+<target-type>.trace`
+and uses the format `<solution-name>+<target-type>.trace`.
 
 `trace:`                                                  |              | Description
 :---------------------------------------------------------|:-------------|:------------------------------------
