@@ -2486,21 +2486,22 @@ This section lists the options that are specific to pyOCD that connects to [CMSI
 
 #### `debugger:` for pyOCD
 
-debugger:                                                        |              | Description
-:----------------------------------------------------------------|:-------------|:-----------------------------------------------
-&nbsp;&nbsp;&nbsp; `name:`                                       | **Required** | Identifies the debug adapter with `<adapter>@pyOCD`.
-&nbsp;&nbsp;&nbsp; `clock:`                                      |   Optional   | Debug clock speed in Hz.
-&nbsp;&nbsp;&nbsp; `protocol:`                                   |   Optional   | Debug protocol (jtag or swd).
-&nbsp;&nbsp;&nbsp; `dbgconf:`                                    |   Optional   | Configuration file for device settings such as trace pins and option bytes.
-&nbsp;&nbsp;&nbsp; `start-pname:`                                |   Optional   | Debugger connects at start to this processor.
-&nbsp;&nbsp;&nbsp; [`gdbserver:`](pyOCD-Debugger.md#gdbserver)   |   Optional   | Extended Option: GDB Server configuration.
-&nbsp;&nbsp;&nbsp; [`telnet:`](pyOCD-Debugger.md#telnet)         |   Optional   | Extended Option: Telnet service configuration.
-&nbsp;&nbsp;&nbsp; [`connect:`](pyOCD-Debugger.md#connect)       |   Optional   | Extended Option: Connect mode to hardware.
-&nbsp;&nbsp;&nbsp; [`reset:`](pyOCD-Debugger.md#reset)           |   Optional   | Extended Option: Reset type configuration for various cores.
-&nbsp;&nbsp;&nbsp; [`load-setup:`](pyOCD-Debugger.md#load-setup) |   Optional   | Extended Option: Reset type and Halt configuration for Load command.
-&nbsp;&nbsp;&nbsp; [`rtt:`](pyOCD-Debugger.md#rtt)               |   Optional   | Extended Option: Segger RTT configuration.
-&nbsp;&nbsp;&nbsp; [`systemview:`](pyOCD-Debugger.md#systemview) |   Optional   | Extended Option: Segger SystemView configuration.
-&nbsp;&nbsp;&nbsp; [`trace:`](pyOCD-Debugger.md#trace)           |   Optional   | Extended Option: Trace configuration.
+debugger:                                                                 |              | Description
+:-------------------------------------------------------------------------|:-------------|:-----------------------------------------------
+&nbsp;&nbsp;&nbsp; `name:`                                                | **Required** | Identifies the debug adapter with `<adapter>@pyOCD`.
+&nbsp;&nbsp;&nbsp; `clock:`                                               |   Optional   | Debug clock speed in Hz.
+&nbsp;&nbsp;&nbsp; `protocol:`                                            |   Optional   | Debug protocol (jtag or swd).
+&nbsp;&nbsp;&nbsp; `dbgconf:`                                             |   Optional   | [Configuration file](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) for device settings such as trace pins and option bytes.
+&nbsp;&nbsp;&nbsp; `start-pname:`                                         |   Optional   | Debugger connects at start to this processor.
+&nbsp;&nbsp;&nbsp; [`gdbserver:`](pyOCD-Debugger.md#gdbserver)            |   Optional   | Extended Option: GDB Server configuration.
+&nbsp;&nbsp;&nbsp; [`telnet:`](pyOCD-Debugger.md#telnet)                  |   Optional   | Extended Option: Telnet service configuration.
+&nbsp;&nbsp;&nbsp; [`connect:`](pyOCD-Debugger.md#connect)                |   Optional   | Extended Option: Connect mode to hardware.
+&nbsp;&nbsp;&nbsp; [`reset:`](pyOCD-Debugger.md#reset)                    |   Optional   | Extended Option: Reset type configuration for various cores.
+&nbsp;&nbsp;&nbsp; [`load-setup:`](pyOCD-Debugger.md#load-setup)          |   Optional   | Extended Option: Reset type and Halt configuration for Load command.
+&nbsp;&nbsp;&nbsp; [`rtt:`](pyOCD-Debugger.md#rtt)                        |   Optional   | Extended Option: Segger RTT configuration.
+&nbsp;&nbsp;&nbsp; [`systemview:`](pyOCD-Debugger.md#systemview)          |   Optional   | Extended Option: Segger SystemView configuration.
+&nbsp;&nbsp;&nbsp; [`trace:`](pyOCD-Debugger.md#trace)                    |   Optional   | Extended Option: Trace configuration.
+&nbsp;&nbsp;&nbsp; [`debug-vars-set:`](pyOCD-Debugger.md#debug-vars-set)  |   Optional   | Extended Option: Overrides for device-specific [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) settings.
 
 **Examples:**
 
