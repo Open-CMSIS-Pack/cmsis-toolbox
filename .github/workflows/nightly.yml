@@ -2,8 +2,16 @@ name: Nightly
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 2 * * *'
+    inputs:
+      build_solution_extn:
+        description: 'Trigger cmsis solution extension Nightly Workflow'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'true'
+          - 'false'
+
   pull_request:
     paths:
       - '.github/workflows/nightly.yml'
@@ -221,3 +229,18 @@ jobs:
             -r ref_benchmark_results.json \
             -c curr_benchmark_results.json \
             -p 1.10
+
+  # Triggers the cmsis solution extension nightly workflow in the separate repository
+  trigger-solution-extn:
+    needs: [ performance-check ]
+    if: success() && github.repository == 'Open-CMSIS-Pack/cmsis-toolbox' && (github.event_name == 'schedule' || github.event.inputs.build_solution_extn == 'true')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger vscode-cmsis-solution workflow
+        run: |
+          curl --fail-with-body --show-error --silent -X POST \
+            -H "Authorization: Bearer ${{ secrets.CROSS_REPO_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Content-Type: application/json" \
+            https://api.github.com/repos/Open-CMSIS-Pack/vscode-cmsis-solution/actions/workflows/nightly.yml/dispatches \
+            -d '{"ref":"main"}'
