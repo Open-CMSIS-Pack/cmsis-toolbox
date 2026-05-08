@@ -10,6 +10,11 @@ on:
         required: false
         type: number
         default: 7
+      include_nightly:
+        description: 'Include nightly dependencies when set to true; use latest when false'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   matrix_prep:
@@ -82,23 +87,30 @@ jobs:
         id: get_run_id
         shell: bash
         run: |
-          UTC_DATE_FILTER=$(date -u +%Y-%m-%d)
-          UTC_DATE_DISPLAY=$(date -u +%d.%m.%Y)
-          LATEST_RUN=$(gh run list --limit 20 --workflow nightly --branch main --event workflow_dispatch --repo Open-CMSIS-Pack/devtools \
-            --json databaseId,createdAt,status,conclusion,event \
-            --jq '[ .[]
-              | select(.createdAt | startswith("'"$UTC_DATE_FILTER"'"))
-              | select(.status == "completed" and .conclusion == "success")
-              | select(.event == "workflow_dispatch")
-            ]
-            | sort_by(.createdAt)
-            | last // {}')
-          RUN_ID=$(echo "$LATEST_RUN" | jq -r '.databaseId // empty')
-          if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
-            ERR_MSG="No successful completed nightly workflow_dispatch run found for Open-CMSIS-Pack/devtools on $UTC_DATE_DISPLAY."
-            echo "$ERR_MSG"
-            echo "### :x: $ERR_MSG" >> $GITHUB_STEP_SUMMARY
-            exit 1
+          if [ "${{ inputs.include_nightly }}" == "true" ]; then
+            RUN_ID=$(gh run list --limit 1 --workflow nightly --repo Open-CMSIS-Pack/devtools --json databaseId --jq '.[0].databaseId')
+          else
+            UTC_DATE_FILTER=$(date -u +%Y-%m-%d)
+            UTC_DATE_DISPLAY=$(date -u +%d.%m.%Y)
+            FILTER_EVENT="schedule"
+
+            LATEST_RUN=$(gh run list --limit 10 --workflow nightly --branch main --repo Open-CMSIS-Pack/devtools \
+              --json databaseId,createdAt,status,conclusion,event \
+              --jq '[ .[]
+                | select(.createdAt | startswith("'"$UTC_DATE_FILTER"'"))
+                | select(.status == "completed" and .conclusion == "success")
+                | select(.event == "'"$FILTER_EVENT"'")
+              ]
+              | sort_by(.createdAt)
+              | last // {}')
+
+            RUN_ID=$(echo "$LATEST_RUN" | jq -r '.databaseId // empty')
+            if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
+              ERR_MSG="No successful completed nightly run found for Open-CMSIS-Pack/devtools on $UTC_DATE_DISPLAY."
+              echo "$ERR_MSG"
+              echo "### :x: $ERR_MSG" >> $GITHUB_STEP_SUMMARY
+              exit 1
+            fi
           fi
           echo "NIGHTLY_RUN_ID=$RUN_ID" >> $GITHUB_OUTPUT
 
