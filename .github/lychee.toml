@@ -20,7 +20,7 @@ accept = [
 max_redirects = 2
 
 # Maximum number of allowed retries before a link is declared dead.
-max_retries = 2
+max_retries = 4
 
 # Only test links with the given schemes
 # Omit to check links with any other scheme.
