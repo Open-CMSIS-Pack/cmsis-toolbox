@@ -78,11 +78,28 @@ jobs:
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | gh auth login --with-token
 
-      - name: Get latest nightly Run ID
+      - name: Get latest nightly Run ID for Open-CMSIS-Pack/devtools
         id: get_run_id
         shell: bash
         run: |
-          RUN_ID=$(gh run list --limit 1 --workflow nightly --repo Open-CMSIS-Pack/devtools --json databaseId --jq '.[0].databaseId')
+          UTC_DATE_FILTER=$(date -u +%Y-%m-%d)
+          UTC_DATE_DISPLAY=$(date -u +%d.%m.%Y)
+          LATEST_RUN=$(gh run list --limit 20 --workflow nightly --branch main --event workflow_dispatch --repo Open-CMSIS-Pack/devtools \
+            --json databaseId,createdAt,status,conclusion,event \
+            --jq '[ .[]
+              | select(.createdAt | startswith("'"$UTC_DATE_FILTER"'"))
+              | select(.status == "completed" and .conclusion == "success")
+              | select(.event == "workflow_dispatch")
+            ]
+            | sort_by(.createdAt)
+            | last // {}')
+          RUN_ID=$(echo "$LATEST_RUN" | jq -r '.databaseId // empty')
+          if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
+            ERR_MSG="No successful completed nightly workflow_dispatch run found for Open-CMSIS-Pack/devtools on $UTC_DATE_DISPLAY."
+            echo "$ERR_MSG"
+            echo "### :x: $ERR_MSG" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
           echo "NIGHTLY_RUN_ID=$RUN_ID" >> $GITHUB_OUTPUT
 
       # Clean Go mod cache
