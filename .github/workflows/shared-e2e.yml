@@ -10,8 +10,8 @@ on:
         required: false
         type: number
         default: 7
-      include_nightly:
-        description: 'Include nightly dependencies when set to true; use latest when false'
+      use_nightly_devtools:
+        description: 'Use latest nightly devtools artifacts, otherwise use the latest stable build'
         required: false
         type: boolean
         default: false
@@ -87,7 +87,7 @@ jobs:
         id: get_run_id
         shell: bash
         run: |
-          if [ "${{ inputs.include_nightly }}" == "true" ]; then
+          if [ "${{ inputs.use_nightly_devtools }}" == "false" ]; then
             RUN_ID=$(gh run list --limit 1 --workflow nightly --repo Open-CMSIS-Pack/devtools --json databaseId --jq '.[0].databaseId')
           else
             UTC_DATE_FILTER=$(date -u +%Y-%m-%d)
