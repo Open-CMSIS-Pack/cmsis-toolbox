@@ -3,13 +3,13 @@ name: Nightly
 on:
   workflow_dispatch:
     inputs:
-      build_solution_extn:
-        description: 'Trigger cmsis solution extension Nightly Workflow'
+      trigger_extension_build:
+        description: 'Trigger the CMSIS solution extension build as part of this workflow'
         required: false
         default: false
         type: boolean
-      include_nightly:
-        description: 'Include nightly dependencies when set to true; use latest when false'
+      use_nightly_devtools:
+        description: 'Use latest nightly devtools artifacts, otherwise use the latest stable build'
         required: false
         default: false
         type: boolean
@@ -36,7 +36,7 @@ jobs:
     if: github.repository == 'Open-CMSIS-Pack/cmsis-toolbox'
     uses: ./.github/workflows/shared-e2e.yml
     with:
-      include_nightly: ${{ github.event_name == 'workflow_dispatch' && inputs.include_nightly || false }}
+      use_nightly_devtools: ${{ github.event_name == 'workflow_dispatch' && inputs.use_nightly_devtools || false }}
     secrets:
       IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
 
@@ -241,7 +241,7 @@ jobs:
       success() &&
       github.repository == 'Open-CMSIS-Pack/cmsis-toolbox' &&
       github.event_name == 'workflow_dispatch' &&
-      inputs.build_solution_extn
+      inputs.trigger_extension_build
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
