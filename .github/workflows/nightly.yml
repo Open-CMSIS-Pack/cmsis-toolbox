@@ -290,3 +290,33 @@ jobs:
             -H "Content-Type: application/json" \
             https://api.github.com/repos/Open-CMSIS-Pack/vscode-cmsis-solution/actions/workflows/nightly.yml/dispatches \
             -d '{"ref":"main"}'
+
+  # Automatically recover from transient infra/network issues by rerunning
+  # only failed jobs once
+  rerun-failed-jobs:
+    needs: [ markdown-link-checker, test, performance-check, trigger-solution-extn ]
+    if: >-
+      failure() &&
+      github.repository == 'Open-CMSIS-Pack/cmsis-toolbox' &&
+      github.event_name == 'workflow_dispatch' &&
+      github.run_attempt == 1
+    permissions:
+      actions: write
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@a5ad31d6a139d249332a2605b85202e8c0b78450 # v2.19.1
+        with:
+          egress-policy: audit
+
+      - name: Re-run failed jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl --fail-with-body --show-error --silent -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/rerun-failed-jobs
