@@ -688,7 +688,7 @@ An IDE may use the following `cbuild` command to build the overall application.
 cbuild example.csolution.yml --active target-set [--packs] [--quite] [--rebuild]
 ```
 
-- The option `--activce` selects a target along with projects and debugger configuration.
+- The option `--active` selects a target along with projects and debugger configuration.
 - The option `--packs` can be enable the download missing software packs that are public.
 - The option `--quite` suppresses details about the build process.
 - The option `--rebuild` may be used to force a complete rebuild of the output files.
