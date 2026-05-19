@@ -42,8 +42,8 @@ def write_test_environment(test_env_file:str):
     for index in range(0, len(toolList)):
         version = "unknown"
         tool = toolList[index]
-        versionCmd = tool + ' -V'
-        output = subprocess.run(versionCmd, shell=True, universal_newlines=True, capture_output=True)
+        versionCmd = [tool, "-V"]
+        output = subprocess.run(versionCmd, universal_newlines=True, capture_output=True)
         if output.stdout != "":
             result = re.search(r"(\d+\.\d+\.\d+.*) \(C\)", output.stdout)
             if result:
