@@ -13,6 +13,7 @@ This chapter outlines the structure of *csolution project files* that contain th
 - [Generator Support](#generator-support) integrates configuration tools such as STM32CubeMX or MCUXpresso Config.
 - [Run and Debug Configuration](#run-and-debug-configuration) explains how to configure debug adapters such as CMSIS-DAP or J-Link.
 - [West Build System Integration](#west-build-system-integration) allows to manage Zephyr applications in context with a *csolution project*.
+- [MLOps Information](#mlops-information) describes how to generate ML model and NPU parameters for MLOps systems.
 
 ## Overview of Operation
 
@@ -44,6 +45,7 @@ Output Files             | Description
 [*.cbuild-idx.yml](YML-CBuild-Format.md#cbuild-idxyml)  | Index file of all `*.cbuild.yml` build descriptions; contains also overall information for the application.
 [*.cbuild.yml](YML-CBuild-Format.md#cbuild-idxyml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file for each context.
 [*.cbuild-run.yml](YML-CBuild-Format.md#run-and-debug-management)      | Configuration file of a *csolution project* to run and debug an application on a target.
+[*.cbuild-mlops.yml](YML-CBuild-Format.md#cbuild-mlopsyml)     | Information file for [MLOps systems](#mlops-information) that is enabled with [`mlops:`](YML-Input-Format.md#mlops) in the `*.csolution.yml` file.
 [Run-Time Environment (RTE)](#rte-directory-structure) | Contains the user-configured files of a project along with the `RTE_Components.h` inventory file.
 [Linker Script Files](#automatic-linker-script-generation) | Header file that describes the memory resources.
 
@@ -104,7 +106,7 @@ A minimal application requires two files:
 
 - `Sample.csolution.yml` that defines a [target type](YML-Input-Format.md#target-types) with [board](YML-Input-Format.md#board) or [device](YML-Input-Format.md#device). It includes a [project](YML-Input-Format.md#projects) and selects a [compiler](YML-Input-Format.md#compiler).
 
-- `Sample.cproject.yml` defines the files and software components that are translated into an image or library archive.
+- `Sample.cproject.yml` defines the files and software components that are translated into an image.
 
 !!! Note
     When no [`packs:`](YML-Input-Format.md#packs) are specified in *csolution project files*, the tools use the latest version of the installed packs.
@@ -166,7 +168,7 @@ Sample.Debug+FRDM-K32L3A6
 
 The [context](YML-Input-Format.md#context-name-conventions) allows you to refer to each possible build combination that, by default, uses a different [output directory](#output-directory-structure). A context may be partly specified in many places.
 
-The [context-set](#working-with-context-set) defines a combination of projects and is useful when an application is composed of [multiple related projects](#configure-related-projects).
+The [target-set](#working-with-target-set) defines a combination of projects (that belong to the same target type) along with debug configuration and is useful when an application is composed of [multiple related projects](#configure-related-projects).
 
 ### Toolchain Agnostic Project
 
@@ -177,7 +179,7 @@ Generic [**Translation Control**](YML-Input-Format.md#translation-control) setti
 The `cdefault.yml` file contains a common set of compiler-specific settings that select reasonable defaults with [`misc:`](YML-Input-Format.md#misc) controls for each compiler. The [`cdefault:`](YML-Input-Format.md#cdefault) node in the `*.csolution.yml` file enables the usage of this file. The directory [`<cmsis-toolbox-installation-dir>/etc`](installation.md) contains a `cdefault.yml` file that is used when no local copy of the `cdefault.yml` file is provided.
 
 !!! Note
-    It is recommended that a local copy of the `cdefault.yml` file be provided in the same directory that stores the `*.csolution.yml` file.
+    It is recommended that a local copy of the `cdefault.yml` file is provided in the same directory that stores the `*.csolution.yml` file.
 
 **Example:**
 
@@ -197,8 +199,7 @@ default:
         - -masm=auto
       Link:
         - --entry=Reset_Handler
-        - --map
-        - --info summarysizes
+        - --info=summarysizes
         - --summary_stderr
         - --diag_suppress=L6314W
 
@@ -213,7 +214,7 @@ default:
       Link:
         - --specs=nano.specs
         - --specs=nosys.specs
-        - -Wl,-Map=$elf()$.map
+        - -Wl,-print-memory-usage
         - -Wl,--gc-sections
         - -Wl,--no-warn-rwx-segments   # suppress incorrect linker warning
 
@@ -225,15 +226,13 @@ default:
       C:
         - -std=gnu11
       Link:
-        - -lcrt0
-        - -Wl,-Map=$elf()$.map
+        - -Wl,-print-memory-usage
         - -Wl,--gc-sections
 
     - for-compiler: IAR
-      C-CPP:
+      C-CPP: 
+        - -e
         - --dlib_config DLib_Config_Full.h
-      Link:
-        - --map=$elf()$.map
 ```
 
 #### Compiler Selection
@@ -390,6 +389,35 @@ cbuild iot-product.csolution.yml -a Production-HW           # target-type Produc
 cbuild iot-product.csolution.yml -a Production-HW@Debug     # target-type Production-HW with Debug set
 ```
 
+#### Load Attributes
+
+Load attributes are typically used when testing a bootloader or a bank-swapping mechanism. In such cases, often only symbol information is required. Using `load-offset:` (supported by pyOCD) allows loading the content of a binary image at a different physical address.
+
+The example [STM32_LiveUpdate](https://github.com/Arm-Examples/STM32_LiveUpdate) uses swappable Flash banks to switch to a new firmware version that is initially programmed into the inactive Flash bank. The binary image of the new firmware version uses `load-offset:` (pyOCD only). The ELF symbol information is loaded separately without the offset so that the symbolic information is available for debugging.
+
+```yml
+solution:
+  compiler: AC6
+  target-types:
+    - type: Version_1
+      device: STM32L476RGTx
+      target-set:
+        - set:
+          images:
+            - image: $bin(test_v1)$       # binary file of project test_v1
+              load: image
+              load-offset: 0x08080000     # load with an offset into Flash
+            - project-context: test_v1    # load from project test_v1
+              load: symbols               # load only symbol information
+          debugger:
+            name: ST-Link@pyOCD
+            port: 3333
+            protocol: swd
+            clock: 4000000
+  projects:
+    - project: test_v1.cproject.yml
+```
+
 ### Working with context-set
 
 !!! Note
@@ -459,6 +487,68 @@ project:                                 # Non-secure project
       files:
         - file: $cmse-lib(Project_S)$    # Secure part of an application
 ```
+
+### Generate Library
+
+A library is a collection of pre-build source code that is stored in a single archive file. A library is typically used by many applications and is compiled for a series of devices that share the same processor. It uses fixed compiler options and does not expose source code. It keeps projects smaller and reduces build time by avoiding repeated compilation of the same sources.
+
+A library may use APIs from other software components. In this case, you typically want to use the component header files, but exclude the component source files from the generated library archive. The `build-scope:` attribute of a [`component:`](YML-Input-Format.md#components) to controls whether component source files are compiled as part of the current build (default: `include` for image builds, `exclude` for library builds).
+
+**Example:**
+
+The `Library.csolution.yml` file selects the toolchain (`compiler: AC6`), the target processor and a the build options.
+The related `Library.cproject.yml` file sets the output to a library archive (`output: type: lib`), declares the required packs/components, and lists the source files that are compiled into the library.
+
+`Library.csolution.yml` file:
+
+```yml
+solution:
+  cdefault:                              # Default compiler configuration
+  packs:
+    - pack: ARM::Cortex_DFP              # Generic Device Pack
+
+  compiler: AC6
+
+  target-types:
+    - type: Cortex-M4                    # Create for Cortex-M4 processor with FPU
+      device: ARMCM4
+
+  build-types:
+    - type: Library
+      optimize: size
+      debug: off
+
+  projects:
+    - project: Library.cproject.yml
+```
+
+`Library.cproject.yml` file:
+
+```yml
+project:
+  output:
+    type: lib    # generate library
+
+# List packs and components that the library depends on
+  packs:
+    - pack: ARM::CMSIS
+    - pack: ARM::CMSIS-RTX
+
+  components:
+    - component: CMSIS:CORE
+    - component: CMSIS:RTOS2:Keil RTX5&Source
+      build-scope: include              # include RTX source code in library
+
+# List source files that are included in the library
+  groups:
+    - group: Library
+      files:
+        - file: myfile1.c
+        - file: myfile2.c
+```
+
+!!! Tip
+    The [CMSIS-RTX](https://github.com/ARM-software/CMSIS-RTX) project includes a [Library directory](https://github.com/ARM-software/CMSIS-RTX/blob/main/Library) with the setup for multiple library variants. The software pack uses conditions in the [pack description file (`*.pdsc`)](https://github.com/ARM-software/CMSIS-RTX/blob/main/ARM.CMSIS-RTX.pdsc) to select the correct library variant for Arm Cortex processors and compiler variants.
 
 ## Software Layers
 
@@ -672,6 +762,29 @@ Optionally, configurable source and header files are provided to allow the setti
     - The `csolution` command `update-rte` only updates the configuration files in the `RTE` directory.
     - Using the option `--verbose` outputs additional version details.
 
+### PLM of Software Packs
+
+Software packs evolve over time (bug fixes, new features, dependency and component updates). Checking the installed vs. available software pack versions helps you decide when to upgrade (or stay pinned) to keep builds reproducible and to avoid unexpected behavior changes caused by a pack update.
+
+In the example below, `csolution check pack-updates` reports that `Keil::MDK-Middleware` can be updated from `8.1.0` to `8.2.0` (shown as `8.1.0 -> 8.2.0`). Using the option `--verbose` prints the relevant release notes. The option `--filter "USB"` narrows the output to USB-related entries.
+
+**Example:**
+
+```shell
+>csolution check pack-updates SDS.csolution.yml --verbose --filter "USB"
+Keil::MDK-Middleware@8.1.0 -> 8.2.0
+  Release notes for v8.2.0:
+      Network Component Version 8.2.0
+      - fixed conversion from Unix time to HTTP-date format
+      - added netHandleError system error handler to the user API
+      - improved BSD socket control with enhanced setsockopt and getsockopt functions
+      - modified File System interface functions to be weakly linked, allowing user overrides
+      FileSystem Component Version 8.0.2 (unchanged)
+      USB Component Version 8.0.1
+      - USB Device: updated USB transfer handling to use only buffers from USB data buffers memory section
+      - USB Device: improved USB MSC compliance
+```
+
 ### PLM of Configuration Files
 
 Configurable source and header files have a piece of version information that is required during Project Lifetime Management
@@ -709,7 +822,7 @@ second copy is an unmodified  backup file with the format `<configfile>.<ext>.ba
 #### **Upgrade**
 
 When upgrading (or downgrading) a software component, the version information of the configuration file is considered.
-If a configuration file does not explicitly specify a version in its PDSC description, it inherits the version from its parent component.
+If a configuration file does not explicitly specify a version in the pack description file (`*.pdsc`), it uses the version of its parent component.
 
 - If the version of the unmodified backup file `<configfile>.<ext>.base@<version>` is identical, no operation is performed.
 - If the version differs, the new configuration file is copied with the format `<configfile>.<ext>.update@<version>`.
@@ -826,6 +939,10 @@ A standard C preprocessor is used for the Linker Script file when:
 - the [`linker:`](YML-Input-Format.md#linker) node contains a `regions:` header file or a `define:`.
 
 Otherwise, no preprocessor is used, and the Linker Script file is directly passed to the linker.
+
+!!! Note
+    - If the [`linker:`](YML-Input-Format.md#linker) specifies a `script:` or `regions:` files, the [automatic Linker Script generation](#automatic-linker-script-generation) is disabled.
+    - Some toolchains (for example GNU ld) support splitting a linker script into multiple files using an `INCLUDE` directive. Ensure that these included files are reachable by the linker (recommended is the use of relative paths in the `INCLUDE` directive). For portable projects, prefer a preprocessed linker script (`*.src`) and include a `regions:` header.
 
 ### Automatic Linker Script generation
 
@@ -1044,4 +1161,193 @@ solution:
         app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_hp
         board: $west-board$_hp
         device: :M55_HP
+```
+
+## MLOps Information
+
+An MLOps (Machine Learning Operations) system automates the process of generating and maintaining machine learning (ML) models. Often described as "DevOps for ML", it bridges the gap between data scientists who build ML models and embedded developers that integrate these models into real-world applications.
+
+The CMSIS-Toolbox can generate the file [`*.cbuild-mlops.yml`](YML-CBuild-Format.md#cbuild-mlopsyml) with information for MLOps system about the NPU accelerator, test environment and integration of the ML model into the build. To achieve that, the CMSIS-Toolbox combines DFP information (about NPU hardware configuration and processor) and *csolution project* configuration as shown in the following diagram.
+
+![MLOps Information](./images/mlops.png "MLOps Information")
+
+The `*.cbuild-mlops.yml` file provides information about:
+
+- Processor type
+- NPU type with MAC configuration
+- Vela INI file and parameters (only for Ethos-U NPUs)
+- Location of the `*.clayer.yml` file that contains the ML model under development
+- Build information (using `cbuild` with hardware target) for testing on hardware
+- Build information (using `cbuild` with simulator target) for testing on FVP simulation models along with information for FVP invocation
+
+The [`*.cbuild-mlops.yml`](YML-CBuild-Format.md#cbuild-mlopsyml) file is designed for applications that use one or more ML models and optional NPUs. It is assumed that the MLOps system creates **only one ML model at a time** and therefore needs information about the ML model to target. The [`mlops:`](YML-Input-Format.md#mlops) node in the `*.csolution.yml` file specifies these parameters. When this node is used, the CMSIS-Toolbox generates the `*.cbuild-mlops.yml` file with the base name of the `*.csolution.yml` file (in the same folder).
+
+**Example:**
+
+`MyApp.csolution.yml` input:
+
+```yml
+solution:
+   :
+  mlops:
+    description: ML model for detecting Rock/Paper/Scissors images
+    npu:
+      type: Ethos-U85           # Select NPU as the Alif E8 Device has multiple NPUs
+    vela:
+      system: RTSS_HE_SRAM_MRAM # Choose system configuration from Vela.ini file
+      memory: Shared_Sram       # Choose memory configuration from Vela.ini file
+    model:
+      clayer: $AI-Layer$        # Layer that contains the ML model
+      name: RPS                 # Name for the ML model (default Algorithm)
+    :
+  # List different hardware targets that are used to deploy the solution.
+  target-types:
+    - type: AppKit-E8-U85
+      device: AE822FA0E5597BS0
+      board: AppKit-E8-AIML
+      variables:
+        - Board-Layer: $SolutionDir()$/Board/AppKit-E8_M55_HP/Board_HP-U85.clayer.yml
+        - SDSIO-Layer: $SolutionDir()$/sdsio/usb/sdsio_usb.clayer.yml
+        - AI-Layer: $SolutionDir()$/ai_layer/ai_layer.clayer.yml
+      target-set:
+        - set: J-Link           # Debug setup for desktop (IDE workflow)
+          debugger:
+            name: J-Link Server
+            clock: 4000000
+            protocol: swd
+            start-pname: M55_HP
+          images:
+            - project-context: AlgorithmTest.Debug
+        - set: HIL              # Debug setup for test automation (HIL workflow)
+          debugger:
+            name: ULINKplus@pyOCD
+            clock: 10000000
+            protocol: swd
+            start-pname: M55_HP
+            telnet:
+              - pname: M55_HP
+                mode: console
+          images:
+            - project-context: AlgorithmTest.Debug
+
+    - type: SSE-320-U85 # Simulator (Cortex-M85 + Ethos-U85)
+      board: SSE-320
+      device: SSE-320-FVP
+      define:
+        - SIMULATOR
+      variables:
+        - Board-Layer: $SolutionDir()$/Board/Corstone-320/Board-U85.clayer.yml
+        - SDSIO-Layer: $SolutionDir()$/sdsio/fvp/sdsio_fvp.clayer.yml
+        - AI-Layer: $SolutionDir()$/ai_layer/ai_layer.clayer.yml
+      target-set:
+        - set: FVP-Test          # Debug setup for test automation (FVP simulation)
+          debugger:
+            name: Arm-FVP
+            model: FVP_Corstone_SSE-320
+            config-file: Board/Corstone-320/fvp_config.txt
+          images:
+            - project-context: AlgorithmTest.Debug
+```
+
+`MyApp.cbuild-mlops.yml` output. Paths are relative to the location of the `*.cbuild-mlops.yml` file (which is in the same directory as the `*.csolution.yml` file).
+
+```yml
+cbuild-mlops:
+  description: ML model for detecting Rock/Paper/Scissors images
+  processor:
+    type: Cortex-M55
+  npu:
+    type: Ethos-U85
+    macs: 256
+  vela:
+    ini: .cmsis/ensemble_vela.ini
+    options: --accelerator-config ethos-u85-256 --system-config RTSS_HE_SRAM_MRAM --memory-mode Shared_Sram
+  model:
+    clayer: ai_layer/ai_layer.clayer.yml
+    name: RPS
+  hardware:
+    active: AppKit-E8-U85@HIL
+    cbuild-run: out/MyApp+AppKit-E8-U85.cbuild-run.yml
+    output:
+      - file: out/AlgorithmTest/AppKit-E8-U85/Debug/AlgorithmTest.axf
+        type: elf
+  simulator:
+    active: SSE-320-U85@FVP-Test
+    cbuild-run: out/MyApp+SSE-320-U85.cbuild-run.yml
+    output:
+      - file: out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf
+        type: elf
+    model: FVP_Corstone_SSE-320
+    config-file: Board/Corstone-320/fvp_config.txt
+```
+
+Using the information in the `*.cbuild-mlops.yml` file, the MLOps system can build the ML model and execute tests on hardware or simulation targets.
+
+### Generate ML Model with Vela
+
+The Vela invocation uses:
+
+- `cbuild-mlops.vela.ini` as the Vela configuration file.
+- `cbuild-mlops.vela.options` as the (device-specific) option string.
+
+Generate ML Model from quantized `*.tflite` flatbuffer file using the LiteRT (TensorFlow) framework:
+
+```bash
+>vela --config .cmsis/ensemble_vela.ini --accelerator-config ethos-u85-256 --system-config RTSS_HE_SRAM_MRAM --memory-mode Shared_Sram RPS.tflite --output-dir ai_layer
+```
+
+Generate ML Model with ExecuTorch (PyTorch) framework:
+
+ExecuTorch model generation is typically done by a project-specific Python export script that produces an ExecuTorch program (commonly `*.pte`) and places it into the ML model layer.
+
+```bash
+>python export_executorch_model.py --model RPS --output ai_layer/RPS.pte
+```
+
+In this Python export script, Vela can be called like this (values typically come from `*.cbuild-mlops.yml`):
+
+```py
+from pathlib import Path
+import shlex
+import subprocess
+
+
+def run_vela(*, tflite_in: Path, out_dir: Path, vela_ini: Path, vela_options: str) -> None:
+    cmd = [
+        "vela",
+        "--config",
+        str(vela_ini),
+        *shlex.split(vela_options),
+        str(tflite_in),
+        "--output-dir",
+        str(out_dir),
+    ]
+    subprocess.run(cmd, check=True)
+
+
+run_vela(
+    tflite_in=Path("RPS.tflite"),
+    out_dir=Path("ai_layer"),
+    vela_ini=Path(".cmsis/ensemble_vela.ini"),
+    vela_options="--accelerator-config ethos-u85-256 --system-config RTSS_HE_SRAM_MRAM --memory-mode Shared_Sram",
+)
+```
+
+### Test on Hardware
+
+Build and test the ML model (in context with the application) with these commands.
+
+```bash
+>cbuild MyApp.csolution.yml --active AppKit-E8-U85@HIL --packs
+>pyOCD load --cbuild-run out/MyApp+AppKit-E8-U85.cbuild-run.yml
+>pyOCD run --cbuild-run out/MyApp+AppKit-E8-U85.cbuild-run.yml --eot --timelimit 30
+```
+
+### Test on Simulator
+
+Build and test the ML model (in context with the application) with these commands.
+
+```bash
+>cbuild MyApp.csolution.yml --active SSE-320-U85@FVP-Test --packs
+>FVP_Corstone_SSE-320 -f Board/Corstone-320/fvp_config.txt -a out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.elf --simlimit 30
 ```

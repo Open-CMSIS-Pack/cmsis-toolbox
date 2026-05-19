@@ -30,7 +30,7 @@ J-Link supports a Telnet service that connects to character I/O functions. Chara
 Telnet Mode   | Description
 :-------------|:--------------------------------------
 `server`      | Serial I/O to Telnet server port
-`console`     | Serial output to console (Debug console in VS Code). 
+`console`     | Serial output to console (Debug console in VS Code).
 `monitor`     | Serial I/O via TCP/IP port to VS Code Serial Monitor.
 `off`         | Serial I/O disabled.
 

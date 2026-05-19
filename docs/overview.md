@@ -67,7 +67,7 @@ The overall benefits of the CMSIS-Toolbox are:
 
 - Target types allow application deployment to different hardware (test board, production hardware, virtual simulation models, etc.).
 
-- Build types support software testing and verification (debug build, test build, release build, ect.).
+- Build types support software testing and verification (debug build, test build, release build, etc.).
 
 - Software layers enable code reuse across similar applications with a pre-configured set of source files and software components.
 
@@ -78,3 +78,5 @@ The overall benefits of the CMSIS-Toolbox are:
 - [Product lifecycle management (PLM)](build-overview.md#plm-of-configuration-files) with versioned *software packs* that ease update and management for configuration files.
 
 - Provides a [list of software licenses](YML-CBuild-Format.md#nodes-for-license-information) used by the various software packs and software components.
+
+- Generates information for [MLOps systems](build-overview.md#mlops-information) for generating and testing of machine learning models that optionally use an NPU.
