@@ -223,7 +223,7 @@ The `context` name is also used in [`for-context:`](#for-context) and [`not-for-
 ## Access Sequences
 
 The **access sequences** export values from the CMSIS Project Manager for the
-`*.yml` file nodes [`define:`](#define), [`define-asm:`](#define-asm), [`add-path:`](#add-path), [`misc:`](#misc), [`files:`](#files), [`executes:`](#executes), and [`variables:`](#variables). The **access sequences**
+`*.yml` file nodes [`define:`](#define), [`define-asm:`](#define-asm), [`add-path:`](#add-path), [`misc:`](#misc), [`files:`](#files), [`linker:`](#linker), [`executes:`](#executes), and [`variables:`](#variables). The **access sequences**
 can specify a different project and describe, therefore, project dependencies.
 
 !!! Note
@@ -726,8 +726,9 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 !!! Note
     - The `linker:` node must have at least `regions:`, `script:`, `auto:`, or `define:`.
     - If no `script:` file is specified, compiler-specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
-    - A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`.
+    - A Linker Script file is preprocessed when `regions:` or `define:` is specified, or when the file extension is `*.src`.
     - If both `auto:` and `script:` is specified, a warning is issued, and [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation) is performed, and the specified `script:` is ignored.
+    - The `script:` and `regions:` paths may use [access sequences](#access-sequences) such as `$Dname$` and `$Pname$` to select device/core-specific files.
 
 **Examples:**
 
@@ -735,6 +736,12 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 linker:
   - script:   MyLinker.scf.src   # linker script file
     regions:  MyRegions.h        # pre-processed using header file
+```
+
+```yml
+linker:
+  - script:   RTE/Device/$Dname$_$Pname$/linker_gnu.ld.src        # example device/core-specific path
+    regions:  RTE/Device/$Dname$_$Pname$/regions_$Dname$_$Pname$.h # (adjust to your RTE/Device layout)
 ```
 
 ```yml

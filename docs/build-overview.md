@@ -914,6 +914,10 @@ A standard C preprocessor is used for the Linker Script file when:
 
 Otherwise, no preprocessor is used, and the Linker Script file is directly passed to the linker.
 
+!!! Note
+    - If the [`linker:`](YML-Input-Format.md#linker) specifies a `script:` or `regions:` files, the [automatic Linker Script generation](#automatic-linker-script-generation) is disabled.
+    - Some toolchains (for example GNU ld) support splitting a linker script into multiple files using an `INCLUDE` directive. Ensure that these included files are reachable by the linker (recommended is the use of relative paths in the `INCLUDE` directive). For portable projects, prefer a preprocessed linker script (`*.src`) and include a `regions:` header.
+
 ### Automatic Linker Script generation
 
 The automatic Linker Script generation uses a Linker Script template and generates a `<regions>.h` file based on information from the software packs using the:
