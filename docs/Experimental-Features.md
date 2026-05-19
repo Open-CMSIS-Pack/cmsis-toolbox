@@ -121,3 +121,21 @@ The `resources:` node specifies the resources required by a project. It is used 
 The `csolution` tool supports the command line argument `rpc` to initiate a server mode. With this mode [rpc commands](https://github.com/Open-CMSIS-Pack/csolution-rpc/blob/main/api/csolution-openapi.yml) can be initiated. The first set of commands will be used by the VS Code CMSIS Solution extension to select components and packs for projects and layers.
 
 Refer to [github.com/Open-CMSIS-Pack/csolution-rpc](https://github.com/Open-CMSIS-Pack/csolution-rpc) for more information.
+
+## Zephyr Module Export
+
+This is work in progress and the intended usage is initially for ML models generated for ExecuTorch. However the concept is flexible enough so that it can extend to other software components. 
+
+The CMSIS-Toolbox 2.14 allows to export a software layer (defined in `*.clayer.yml`) into a Zephyr module so that software delivered as CMSIS-Packs can be integrated in Zephyr builds.
+
+A layer is converted to a Zephyr module with the standard Zephyr entry points:
+
+- `zephyr/module.yml` to declare the module and connect it to CMake/Kconfig integration.
+- `Kconfig` options that expose the available CMSIS-Pack components and allow enabling/disabling them via `CONFIG_...` defines.
+- `CMakeLists.txt` / `sources.cmake` that map the selected CMSIS-Pack sources and include paths into the Zephyr build.
+- Generated compatibility headers (for example `RTE_Components.h` / `Pre_Include_Global.h`) to bridge CMSIS component configuration into the consuming build.
+
+The exported module can then be consumed by a Zephyr application by adding the module path to `ZEPHYR_EXTRA_MODULES` (or through a west manifest) and enabling the desired `CONFIG_...` symbols in `prj.conf`.
+
+Example: the [cmsis-to-zephyr-concept `ml_inference` example](https://github.com/brondani/cmsis-to-zephyr-concept/tree/main/ml_inference) shows a minimal end-to-end flow: exporting a layer as a Zephyr module and consuming it from a Zephyr application.
+
