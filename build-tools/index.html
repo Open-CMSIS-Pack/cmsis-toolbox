@@ -34,7 +34,7 @@
           <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a>
         <div class="version">
-          2.13.0
+          2.14.0
         </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -78,7 +78,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#add-software-packs">Add Software Packs</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#check-for-pack-version-updates">Check for Pack Version Updates</a>
+    <li class="toctree-l3"><a class="reference internal" href="#check-for-pack-updates">Check for Pack Updates</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#list-installed-packs">List Installed Packs</a>
     </li>
@@ -239,7 +239,7 @@
 </ul>
 <h2 id="cbuild-invocation"><code>cbuild</code> Invocation</h2>
 <p>Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.</p>
-<pre><code class="language-txt">cbuild: Build Invocation 2.13.0 (C) 2022-2026 Arm Ltd. and Contributors
+<pre><code class="language-txt">cbuild: Build Invocation 2.14.0 (C) 2022-2026 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] &lt;name&gt;.csolution.yml [options]
@@ -255,16 +255,10 @@ Options:
   -C, --clean              Remove intermediate and output directories
   -c, --context arg [...]  Input context names [&lt;project-name&gt;][.&lt;build-type&gt;][+&lt;target-type&gt;]
   -S, --context-set        Select the context names from cbuild-set.yml for generating the target application
-  -d, --debug              Enable debug messages
+  -d, --debug              Enable debug messages of the cmsis build tools
       --frozen-packs       Pack list and versions from cbuild-pack.yml are fixed and raises errors if it changes
   -g, --generator arg      Select build system generator (default &quot;Ninja&quot;)
   -h, --help               Print usage
-  -j, --jobs int           Number of job slots for parallel execution (default 8)
-  -l, --load arg           Set policy for packs loading [latest | all | required] (default &quot;required&quot;)
-      --log arg            Save output messages in a log file
-  -n, --no-schema-check    Skip schema check
-  -O, --output arg         Base folder for output files, 'outdir' and 'tmpdir' (default &quot;Same as '*.csolution.yml'&quot;)
-  -p, --packs              Download missing software packs with cpackget
   -j, --jobs int           Number of job slots for parallel execution (default 8)
   -l, --load arg           Set policy for packs loading [latest | all | required] (default &quot;required&quot;)
       --log arg            Save output messages in a log file
@@ -289,14 +283,11 @@ Use &quot;cbuild [command] --help&quot; for more information about a command.
 </div>
 <h2 id="csolution-invocation"><code>csolution</code> Invocation</h2>
 <p>Create build information for embedded applications that consist of one or more related projects.</p>
-<pre><code class="language-text">csolution: Project Manager 2.13.0 (C) 2022-2026 Arm Ltd. and Contributors
-
-Usage:
-  csolution &lt;command&gt; [&lt;name&gt;.csolution.yml] [options]
+<pre><code class="language-text">csolution: Project Manager 2.14.0 (C) 2022-2026 Arm Ltd. and Contributors
 
 Commands:
   check pack-updates            Check existing project for potential pack updates
-  convert                       Convert user input *.yml files to *.cprj files
+  convert                       Convert user input *.yml files to *.cbuild.yml files
   list boards                   Print list of available board names
   list configs                  Print list of configuration files
   list contexts                 Print list of contexts in a &lt;name&gt;.csolution.yml
@@ -323,7 +314,7 @@ Options:
   -d, --debug                   Enable debug messages
   -D, --dry-run                 Enable dry-run
   -e, --export arg              Set suffix for exporting &lt;context&gt;&lt;suffix&gt;.cprj retaining only specified versions
-  -f, --filter arg [...]        Filter words, repeat options or quote for words
+  -f, --filter arg [...]        Filter output by word or &quot;string&quot;; repeat the option for multiple filters
   -g, --generator arg           Code generator identifier
   -l, --load arg                Set policy for packs loading [latest | all | required]
   -L, --clayer-path arg         Set search path for external clayers
@@ -335,14 +326,14 @@ Options:
   -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
   -t, --toolchain arg           Selection of the toolchain used in the project optionally with version
   -v, --verbose                 Enable verbose messages
-  -V, --version                 Print version
-
+  -V, --version                 Print version|
+c
 Use 'csolution &lt;command&gt; -h' for more information about a command.
 </code></pre>
 <h2 id="cpackget-invocation"><code>cpackget</code> Invocation</h2>
 <p>Manage the installation of <em>software packs</em> on the host computer.</p>
-<pre><code class="language-txt">cpackget version 2.1.9
- (C) 2021-2023 Linaro, 2024-2025 Arm Ltd.
+<pre><code class="language-txt">cpackget version 2.2.0
+ (C) 2021-2023 Linaro, 2024-2026 Arm Ltd.
 
 Usage:
   cpackget [command] [flags]
@@ -420,13 +411,13 @@ cbuild example.csolution.yml --toolchain GCC --output outGCC
 <pre><code class="language-shell">cpackget add Arm::CMSIS
 cpackget add Arm::CMSIS@6.1.0     # optional with version specification
 </code></pre>
-<h3 id="check-for-pack-version-updates">Check for Pack Version Updates</h3>
+<h3 id="check-for-pack-updates">Check for Pack Updates</h3>
 <p>Print the available updates for packs used by an existing project. With the option <code>--verbose</code>, the output includes release notes for newer versions and the local path of project-specified packs, when available. The list can be filtered by words provided with the option <code>--filter</code>:</p>
-<pre><code>csolution check pack-updates mysolution.csolution.yml -v [-f &quot;WORDS&quot; | -f WORD [-f WORD]...]
+<pre><code class="language-shell">csolution check pack-updates mysolution.csolution.yml --verbose --filter &quot;USB&quot;
 </code></pre>
 <h3 id="list-installed-packs">List Installed Packs</h3>
 <p>Print a list of installed packs. The list can be filtered by words provided with the option <code>--filter</code>:</p>
-<pre><code>csolution list packs [-f &quot;WORDS&quot; | -f WORD [-f WORD]...]
+<pre><code class="language-shell">csolution list packs [--filter &quot;string&quot; ]
 </code></pre>
 <p>Print a list of packs that are required by the <code>example.csolution.yml</code>.</p>
 <pre><code class="language-shell">csolution list packs example.csolution.yml
@@ -446,7 +437,7 @@ csolution list npus --filter Ethos-U55 --filter 128MACs
 </code></pre>
 <h3 id="list-unresolved-dependencies">List Unresolved Dependencies</h3>
 <p>Device, board, and software components are specified as part of the <code>*.csolution.yml</code> and <code>*.cproject.yml</code> files. Print a list of unresolved project dependencies. The list can be filtered by words provided with the option <code>--filter</code>:</p>
-<pre><code>csolution list dependencies mysolution.csolution.yml [-f &quot;WORDS&quot; | -f WORD [-f WORD]...]
+<pre><code class="language-shell">csolution list dependencies mysolution.csolution.yml [-f &quot;WORDS&quot; | -f WORD [-f WORD]...]
 </code></pre>
 <h3 id="create-build-information">Create Build Information</h3>
 <p>Convert <code>example.csolution.yml</code> into build information files.</p>
@@ -468,6 +459,10 @@ csolution list npus --filter Ethos-U55 --filter 128MACs
 <pre><code class="language-shell">csolution run -g CubeMX mysolution.csolution.yml -c Blinky.Debug+STM32L4
 </code></pre>
 <h3 id="use-context-set">Use context set</h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A context set is no longer recommended. Use a <a href="../build-overview/#working-with-target-set">target-set</a> instead.</p>
+</div>
 <p>When working with <a href="../build-overview/#configure-related-projects">multiple related projects</a>, it might be necessary to combine different build types for debugging and downloading in the target hardware. The option <code>--context-set</code> allows you to save and reuse the selected <code>--context</code> options.</p>
 <p>Write the selected <code>--context</code> options to the file <code>SimpleTZ.cbuild-set.yml</code>. Refer to <a href="../YML-CBuild-Format/#cbuild-setyml">file structure of <code>*.cbuild-set.yml</code></a> for details.</p>
 <pre><code class="language-shell">cbuild SimpleTZ.csolution.yml -S -c CM33_s.Release -c CM33_ns.Debug
@@ -657,9 +652,9 @@ cpackget rm Vendor::PackName
 <h2 id="devops-usage">DevOps Usage</h2>
 <p>The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The <code>./out</code> directory contains all build artifacts of an application for execution on physical hardware or simulation models. <a href="https://github.com/ARM-software/AVH">Arm Virtual Hardware - Fixed Virtual Platforms (AVH FVP)</a> enables unit tests and integration tests with simulation models and various virtual interfaces. Using <a href="../build-overview/#software-layers">software layers</a> allows, for example, to test on physical hardware or AVH-FVP simulation models. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.</p>
 <p>The commands below show typical builds in a CI system. Using <code>--packs</code> installs all public packs with implicit acceptance of licenses. This command builds all projects, target-types, and build-types. Using <a href="../build-overview/#context"><code>--context</code></a> reduces the scope of the build. Using <a href="../build-overview/#reproducible-builds"><code>--frozen-packs</code></a> uses exactly the packs that are specified in the file <code>*.cbuild-pack.yml</code>.</p>
-<pre><code class="language-shell">cbuild Hello.csolution.yml --packs                          # install packs and build all
-cbuild Hello.csolution.yml --packs --context +AVH-SSE-300   # only build target +AVH-SSE-300
-cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack versions
+<pre><code class="language-shell">cbuild Hello.csolution.yml --packs                          # install packs and build all targets
+cbuild Hello.csolution.yml --packs --active AVH-SSE-300     # build target-set AVH-SSE-300
+cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack versions of *.cbuild-pack.yml
 </code></pre>
 <p>Packs that are not public are installed using <code>cpackget</code>.  The following commands use the MDK-Middleware development repository to install a pre-release pack in a GitHub Actions CI workflow.</p>
 <pre><code class="language-yml">    - name: Checkout MDK-Middleware
@@ -708,11 +703,11 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
 </table>
 <h2 id="ide-usage">IDE Usage</h2>
 <p>An IDE may use the following <code>cbuild setup</code> command to set up the project outline view and get information about components and software layers.</p>
-<pre><code class="language-shell">cbuild setup example.csolution.yml --context-set [--packs] [--update-rte]
+<pre><code class="language-shell">cbuild setup example.csolution.yml --active target-set [--packs] [--update-rte]
 </code></pre>
 <p>The command above is used when the IDE starts:</p>
 <ul>
-<li>The option <code>--context-set</code> uses one <code>target-type</code> and optionally multiple related projects that are selected by a user in the file <code>*.cbuild-set.yml</code>. If this file is missing, it is created with the first <code>target-type</code> and the first <code>build-type</code> which are defined in the <code>*.csolution.yml</code> file.</li>
+<li>The option <code>--active</code> uses one <code>target-set</code> that may specify multiple related projects.</li>
 <li>The option <code>--packs</code> can enable the download of missing software packs that are public.</li>
 <li>The option <code>--update-rte</code> is used when the IDE changes <code>device:</code>, <code>board:</code> or <code>component:</code> settings.</li>
 </ul>
@@ -721,7 +716,6 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
 <p>The project outline view in an IDE may utilize the project files as described below:</p>
 <ul>
 <li>The file <code>*.csolution.yml</code> contains the overall structure of projects, <code>build-types</code>, and <code>target-types</code>.</li>
-<li>The file <code>*cbuild-set.yml</code> specifies the selected contexts; if it does not exist, the IDE may select the first project, first <code>build-type</code>, and first <code>target-type</code> from the file <code>*.csolution.yml</code>.</li>
 <li>The file <code>*.cproject.yml</code> provides the source groups, source files, and the list of components (but without source files).</li>
 <li>The files <code>*.clayer.yml</code> or <code>*.cgen.yml</code> contain software layers with additional source groups, source files, and components. The <code>*.cbuild.&lt;context&gt;.yml</code> files provide the exact location of these files, for example, when variables are used.</li>
 </ul>
@@ -729,10 +723,10 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
 <p>The <code>cbuild-idx.yml</code> file provides the exact location of all <code>*.cbuild.&lt;context&gt;.yml</code> files that are used in this context-set. The <code>*.cbuild.&lt;context&gt;.yml</code> files contain for the components source files, configuration file information, API header files, user code templates, generator information, and links to documentation. The project outline view may provide access to this information.</p>
 <h3 id="build-process">Build Process</h3>
 <p>An IDE may use the following <code>cbuild</code> command to build the overall application.</p>
-<pre><code class="language-shell">cbuild example.csolution.yml --context-set [--packs] [--quite] [--rebuild]
+<pre><code class="language-shell">cbuild example.csolution.yml --active target-set [--packs] [--quite] [--rebuild]
 </code></pre>
 <ul>
-<li>The option <code>--context-set</code> selects the projects along with <code>target-type</code> and <code>build-type</code> for the application.</li>
+<li>The option <code>--active</code> selects a target along with projects and debugger configuration.</li>
 <li>The option <code>--packs</code> can be enable the download missing software packs that are public.</li>
 <li>The option <code>--quite</code> suppresses details about the build process.</li>
 <li>The option <code>--rebuild</code> may be used to force a complete rebuild of the output files.</li>

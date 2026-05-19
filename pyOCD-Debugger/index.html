@@ -31,7 +31,7 @@
 <a class="icon icon-home" href=".."> CMSIS-Toolbox
         </a>
 <div class="version">
-          2.13.0
+          2.14.0
         </div><div role="search">
 <form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
 <input aria-label="Search docs" name="q" placeholder="Search docs" title="Type search term here" type="text"/>
@@ -270,7 +270,7 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 </ul>
 </div>
 <h3 id="telnet"><code>telnet:</code></h3>
-<p>pyOCD integrates a Telnet service for character I/O functions via Semihosting or <a href="#rtt">SEGGER RTT</a>. Each processor that runs an independent application can be controlled individually. </p>
+<p>pyOCD integrates a Telnet service for character I/O functions via Semihosting or <a href="#rtt">SEGGER RTT</a>. Each processor that runs an independent application can be controlled individually.</p>
 <p><img alt="Telnet Modes" src="../images/telnet.png" title="Telnet modes"/></p>
 <p>The <code>telnet:</code> node configures:</p>
 <ul>
@@ -788,12 +788,14 @@ For more complex multi-core systems, the clock is normally derived from the syst
 <li>Trace <code>output-clock</code> is the clock frequency of the trace output signal. It is used to configure trace capture of the debug unit, and to calculate trace port prescaler values that need to be programmed. If not provided or if the value is <code>0</code>, then a best matching output frequency is automatically calculated based on <code>input-clock</code>, supported trace capture frequencies/baudrates of the debug unit, and other potentially known device-specific constraints like pin characteristics.</li>
 </ol>
 <h4 id="debug-access-variables">Debug Access Variables</h4>
-<p>The above configurations are passed to debug sequence implementations through <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#DebugVars">pre-defined debug access variables</a>. The following mapping is expected:
-- <code>input-clock</code> directly maps to variable <code>__traceclockin</code>.
-- If <code>output-clock</code> is provided or has a value other than <code>0</code>, then the value directly maps to variable <code>__traceclockout</code>.
-- If <code>output-clock</code> is not provided or has the value <code>0</code>, then the highest achievable output clock frequency supported by the debug unit is written to <code>__traceclockout</code>.
-- <code>port-type</code> maps to bits <code>0..2</code> of variable <code>__traceout</code>.
-- <code>port-width</code> maps to bits <code>16..21</code> of variable <code>__traceout</code> if the selected <code>port-type</code> is a synchronous trace port.</p>
+<p>The above configurations are passed to debug sequence implementations through <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#DebugVars">pre-defined debug access variables</a>. The following mapping is expected:</p>
+<ul>
+<li><code>input-clock</code> directly maps to variable <code>__traceclockin</code>.</li>
+<li>If <code>output-clock</code> is provided or has a value other than <code>0</code>, then the value directly maps to variable <code>__traceclockout</code>.</li>
+<li>If <code>output-clock</code> is not provided or has the value <code>0</code>, then the highest achievable output clock frequency supported by the debug unit is written to <code>__traceclockout</code>.</li>
+<li><code>port-type</code> maps to bits <code>0..2</code> of variable <code>__traceout</code>.</li>
+<li><code>port-width</code> maps to bits <code>16..21</code> of variable <code>__traceout</code> if the selected <code>port-type</code> is a synchronous trace port.</li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The linked description of pre-defined debug access variables needs to be updated to include the proposed new variables

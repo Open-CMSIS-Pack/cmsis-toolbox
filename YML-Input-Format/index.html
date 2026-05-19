@@ -34,7 +34,7 @@
           <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a>
         <div class="version">
-          2.13.0
+          2.14.0
         </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -330,6 +330,22 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mlops-management">MLOps Management</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#mlops">mlops:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#npu">npu:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#vela">vela:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#model">model:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hardware">hardware:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#simulator">simulator:</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -402,6 +418,7 @@
                 <h1 id="csolution-project-format">CSolution Project Format</h1>
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD060 -->
 
@@ -762,7 +779,7 @@ Demo.Release+WiFi
 <p>The <code>context</code> name is also used in <a href="#for-context"><code>for-context:</code></a> and <a href="#not-for-context"><code>not-for-context:</code></a> nodes that allow to include or exclude items depending on the <code>context</code>. In many cases, the <code>project-name</code> can be omitted as the <code>context</code> name is within a specific <code>*.cproject.yml</code> file or applied to a specific <code>*.cproject.yml</code> file.</p>
 <h2 id="access-sequences">Access Sequences</h2>
 <p>The <strong>access sequences</strong> export values from the CMSIS Project Manager for the
-<code>*.yml</code> file nodes <a href="#define"><code>define:</code></a>, <a href="#define-asm"><code>define-asm:</code></a>, <a href="#add-path"><code>add-path:</code></a>, <a href="#misc"><code>misc:</code></a>, <a href="#files"><code>files:</code></a>, <a href="#executes"><code>executes:</code></a>, and <a href="#variables"><code>variables:</code></a>. The <strong>access sequences</strong>
+<code>*.yml</code> file nodes <a href="#define"><code>define:</code></a>, <a href="#define-asm"><code>define-asm:</code></a>, <a href="#add-path"><code>add-path:</code></a>, <a href="#misc"><code>misc:</code></a>, <a href="#files"><code>files:</code></a>, <a href="#linker"><code>linker:</code></a>, <a href="#executes"><code>executes:</code></a>, and <a href="#variables"><code>variables:</code></a>. The <strong>access sequences</strong>
 can specify a different project and describe, therefore, project dependencies.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1067,6 +1084,11 @@ the compiler with specific default controls. The search order for this file is:<
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#packs"><code>packs:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Defines local packs and/or scope of packs that are used.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#mlops"><code>mlops:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Parameters for MLOps systems; generates <code>*.cbuild-mlops.yml</code> with ML model and NPU parameters.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#target-types"><code>target-types:</code></a></td>
@@ -1735,14 +1757,19 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 <ul>
 <li>The <code>linker:</code> node must have at least <code>regions:</code>, <code>script:</code>, <code>auto:</code>, or <code>define:</code>.</li>
 <li>If no <code>script:</code> file is specified, compiler-specific <a href="../build-overview/#linker-script-templates">Linker Script template files</a> are used.</li>
-<li>A Linker Script file is preprocessed when <code>regions:</code> or a <code>define:</code> is or the file extension is <code>*.src</code>.</li>
+<li>A Linker Script file is preprocessed when <code>regions:</code> or <code>define:</code> is specified, or when the file extension is <code>*.src</code>.</li>
 <li>If both <code>auto:</code> and <code>script:</code> is specified, a warning is issued, and <a href="../build-overview/#automatic-linker-script-generation">automatic Linker Script generation</a> is performed, and the specified <code>script:</code> is ignored.</li>
+<li>The <code>script:</code> and <code>regions:</code> paths may use <a href="#access-sequences">access sequences</a> such as <code>$Dname$</code> and <code>$Pname$</code> to select device/core-specific files.</li>
 </ul>
 </div>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">linker:
   - script:   MyLinker.scf.src   # linker script file
     regions:  MyRegions.h        # pre-processed using header file
+</code></pre>
+<pre><code class="language-yml">linker:
+  - script:   RTE/Device/$Dname$_$Pname$/linker_gnu.ld.src        # example device/core-specific path
+    regions:  RTE/Device/$Dname$_$Pname$/regions_$Dname$_$Pname$.h # (adjust to your RTE/Device layout)
 </code></pre>
 <pre><code class="language-yml">linker:
   - regions:  MyRegions.h        # Default linker script is used and pre-processed using header file
@@ -3018,7 +3045,7 @@ Refer to the section <a href="../build-overview/#configure-related-projects">"Co
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>load-offset:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Offset applied when loading a image file with <code>type: bin</code> (pyOCD only).</td>
+<td style="text-align: left;">Offset applied when loading a image file with <code>type: bin</code> (for pyOCD only).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#device"><code>device:</code></a></td>
@@ -3063,6 +3090,22 @@ Refer to the section <a href="../build-overview/#configure-related-projects">"Co
 </tr>
 </tbody>
 </table>
+<p><strong>Example:</strong></p>
+<p>On devices with two flash banks that can be swapped (for example some STM32 devices), you may want to program a new firmware version into the inactive bank while keeping the link address at the normal execution base (so symbols match after a bank swap). With pyOCD this can be achieved by loading a <code>.bin</code> with a <code>load-offset:</code> while loading only symbols from the related <code>project-context:</code>.</p>
+<pre><code class="language-yml">target-types:
+  - type: Version_1
+    device: STM32L476RGTx
+    target-set:
+      - set:
+        images:
+          - image: $bin(test_v1)$
+            load: image
+            load-offset: 0x08080000     # program inactive flash bank (pyOCD only)
+          - project-context: test_v1
+            load: symbols               # do not re-program; use ELF symbols for debug
+        debugger:
+          name: ST-Link@pyOCD
+</code></pre>
 <h4 id="type"><code>type:</code></h4>
 <p>With <code>type:</code> an explicit file type can be specified which is required for unknown file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.</p>
 <table>
@@ -3679,7 +3722,10 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>It is also possible to specify a <a href="../build-overview/#linker-script-management">Linker Script</a>. Files with the extension <code>.sct</code>, <code>.scf</code>, <code>.ld</code>, and <code>.icf</code> are recognized as Linker Script files.</p>
+<ul>
+<li>It is also possible to specify a <a href="../build-overview/#linker-script-management">Linker Script</a>. Files with the extension <code>.sct</code>, <code>.scf</code>, <code>.ld</code>, and <code>.icf</code> are recognized as Linker Script files.</li>
+<li><em>Symbol definition</em> files (sometimes called “symdefs”) that provide ROM function addresses to the linker are typically <strong>object files</strong>. If such a file has no filename extension (for example <code>rom_symbol_mbedtls</code>), set <a href="#filename-extensions"><code>category:</code></a> to <code>object</code>.</li>
+</ul>
 </div>
 <p><strong>Example:</strong></p>
 <p>Add source files to a project or a software layer. Used in <code>*.cproject.yml</code> and <code>*.clayer.yml</code> files.</p>
@@ -3750,6 +3796,12 @@ target-type and/or build-type using <a href="#for-context"><code>for-context:</c
    files:
      - file: MyDefinitions.h
        category: preIncludeLocal
+</code></pre>
+<p>Some toolchains use <em>symbol definition</em> files (sometimes called “symdefs”) to provide ROM function addresses to the linker. These files are typically passed to the linker as <strong>object files</strong>. If such a file has no filename extension (for example <code>rom_symbol_mbedtls_20200709</code>), set <a href="#filename-extensions"><code>category:</code></a> to <code>object</code> so it is passed to the linker correctly:</p>
+<pre><code class="language-yml">  - group: symdefs
+    files:
+      - file: rom_symbol_mbedtls_20200709
+        category: object
 </code></pre>
 <h3 id="layers"><code>layers:</code></h3>
 <p>Add a software layer to a project. Used in <code>*.cproject.yml</code> files.</p>
@@ -4910,6 +4962,198 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
           start: 0x40000000
           size: 0x200000
           algorithm: Flash/Ext-Flash.flm       # Programming algorithm
+</code></pre>
+<h2 id="mlops-management">MLOps Management</h2>
+<p>The <code>mlops:</code> node can be specified in the <code>*.csolution.yml</code> file to provide parameters for an <a href="../build-overview/#mlops-information">MLOps system</a>.</p>
+<p>When <code>mlops:</code> is present, the CMSIS-Toolbox generates an additional information file <code>*.cbuild-mlops.yml</code> (in the same folder as the <code>*.csolution.yml</code> file) that contains parameters such as processor/NPU configuration, Vela options (for Ethos-U), and information required for building and running tests.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This node is intended for workflows where an MLOps system creates <strong>only one ML model at a time</strong>.</p>
+</div>
+<h3 id="mlops"><code>mlops:</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>mlops:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>description:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Descriptive text of the ML model under development.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#npu"><code>npu:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Select the NPU type and MAC configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#vela"><code>vela:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Vela configuration (only applicable for Ethos-U NPUs).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#model"><code>model:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Location and name of the ML model layer.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#hardware"><code>hardware:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Select the hardware target-set used for tests.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#simulator"><code>simulator:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Select the simulator target-set used for tests.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="npu"><code>npu:</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>npu:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">NPU type name (default: first NPU from the selected device features).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>macs:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">MAC configuration (default: first MAC configuration from the selected device features).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="vela"><code>vela:</code></h3>
+<p>The <code>vela:</code> node is only relevant for Ethos-U NPUs.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>vela:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ini:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Explicit Vela INI file (default: use INI file provided by the device/DFP).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>system:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">System configuration selector from the Vela INI file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>memory:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Memory configuration selector from the Vela INI file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>misc:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Additional Vela command-line options (literal string).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="model"><code>model:</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>model:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clayer:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Path to the layer (or variable) that contains the ML model under development.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>name:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Optional model name (default: <code>Algorithm</code>); serves as a namespace.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hardware"><code>hardware:</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>hardware:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target-type:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Explicit target-type name (default: first <code>target-types:</code> entry).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target-set:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Explicit target-set name (default: first <code>target-set:</code> entry for the selected target-type).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="simulator"><code>simulator:</code></h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>simulator:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target-type:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Explicit target-type name (default: last <code>target-types:</code> entry; typically a target-type using an Arm FVP debugger).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target-set:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Explicit target-set name (default: first <code>target-set:</code> entry for the selected target-type).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">solution:
+  mlops:
+    description: ML model for detecting Rock/Paper/Scissors images
+    npu:
+      type: Ethos-U85
+      macs: 256
+    vela:
+      ini: .cmsis/ensemble_vela.ini
+      system: RTSS_HE_SRAM_MRAM
+      memory: Shared_Sram
+      misc: --verbose
+    model:
+      clayer: $AI-Layer$
+      name: RPS
+    hardware:
+      target-type: AppKit-E8-U85
+      target-set: HIL
+    simulator:
+      target-type: SSE-320-U85
+      target-set: FVP-Test
 </code></pre>
               
             </div>

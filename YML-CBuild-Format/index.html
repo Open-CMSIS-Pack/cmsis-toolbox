@@ -34,7 +34,7 @@
           <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a>
         <div class="version">
-          2.13.0
+          2.14.0
         </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -91,6 +91,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#cbuild-packyml">*.cbuild-pack.yml</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#cbuild-setyml">*.cbuild-set.yml</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#cbuild-mlopsyml">*.cbuild-mlops.yml</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#nodes-for-project-management">Nodes for Project Management</a>
         <ul>
@@ -157,6 +159,8 @@
     <li class="toctree-l4"><a class="reference internal" href="#output">output:</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#system-resources">system-resources:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#processors">processors:</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#system-descriptions">system-descriptions:</a>
     </li>
@@ -273,6 +277,10 @@
 <td style="text-align: left;"><a href="../build-overview/#working-with-context-set">Context selection</a> for the build process, enabled with option <a href="../build-tools/#use-context-set">--context-set:</a>.</td>
 </tr>
 <tr>
+<td style="text-align: left;"><a href="#cbuild-mlopsyml"><code>*.cbuild-mlops.yml</code></a></td>
+<td style="text-align: left;">MLOps parameters generated when <a href="../YML-Input-Format/#mlops"><code>mlops:</code></a> is specified in <code>*.csolution.yml</code>; provides ML model and NPU parameters and test target information.</td>
+</tr>
+<tr>
 <td style="text-align: left;"><a href="#run-and-debug-management"><code>*.cbuild-run.yml</code></a></td>
 <td style="text-align: left;">Contains the information required to <a href="#run-and-debug-management">download and debug</a> a <em>csolution project</em> to a target.</td>
 </tr>
@@ -307,6 +315,7 @@
  ┣ myapp.cbuild-idx.yml
  ┣ myapp.cbuild-pack.yml
  ┣ myapp.cbuild-set.yml
+ ┣ myapp.cbuild-mlops.yml
  ┣ 📂 project1
  ┃  ┣  mypro1.cproject.yml                 # file references are relative to directory project1
  ┣ 📂 project2
@@ -729,6 +738,69 @@
   contexts:
     - context: CM33_s.Release+AVH
     - context: CM33_ns.Debug+AVH
+</code></pre>
+<h3 id="cbuild-mlopsyml"><code>*.cbuild-mlops.yml</code></h3>
+<p>The <code>&lt;solution-name&gt;.cbuild-mlops.yml</code> file contains parameters for an <a href="../build-overview/#mlops-information">MLOps system</a>. This file is generated when the <a href="../YML-Input-Format/#mlops"><code>mlops:</code></a> node is present in the <code>*.csolution.yml</code> file. The intent is to provide ML model and NPU parameters (including Vela configuration for Ethos-U) and information for build and test environments.</p>
+<p>Refer to <a href="../build-overview/#mlops-information">MLOps Information</a> for more information.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>cbuild-mlops:</code></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>description:</code></td>
+<td style="text-align: left;">Descriptive text of the ML model under development.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>processor:</code></td>
+<td style="text-align: left;">Processor information for the ML model.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>npu:</code></td>
+<td style="text-align: left;">NPU type and MAC configuration (only present for devices with NPU).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>vela:</code></td>
+<td style="text-align: left;">Vela INI file and option string (only present for Ethos-U NPUs).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>model:</code></td>
+<td style="text-align: left;">Location of the ML model layer and optional model name.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>hardware:</code></td>
+<td style="text-align: left;">Hardware test configuration (active target-set, <code>cbuild-run</code> file, and output image list).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>simulator:</code></td>
+<td style="text-align: left;">Simulator test configuration (active target-set, output image list, and FVP invocation details).</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">cbuild-mlops:
+  description: ML model for detecting Rock/Paper/Scissors images
+  processor:
+    type: Cortex-M55
+  npu:
+    type: Ethos-U85
+    macs: 256
+  vela:
+    ini: .cmsis/ensemble_vela.ini
+    options: --accelerator-config ethos-u85-256 --system-config RTSS_HE_SRAM_MRAM --memory-mode Shared_Sram
+  model:
+    clayer: ai_layer/ai_layer.clayer.yml
+    name: RPS
+  hardware:
+    active: AppKit-E8-U85@HIL
+    cbuild-run: out/MyApp+AppKit-E8-U85.cbuild-run.yml
+  simulator:
+    active: SSE-320-U85@FVP-Test
+    model: FVP_Corstone_SSE-320
+    config-file: Board/Corstone-320/fvp_config.txt
 </code></pre>
 <h3 id="nodes-for-project-management">Nodes for Project Management</h3>
 <h4 id="configurations"><code>configurations:</code></h4>
@@ -1821,7 +1893,7 @@ The <code>output:</code> node also contains other required files that are added 
 <p><code>info: generate by &lt;context&gt;</code> indicates that an image is generated by a context of the <em>csolution project</em>.</p>
 </div>
 <h4 id="system-resources"><code>system-resources:</code></h4>
-<p>The <code>system-resources:</code> node lists the resources of a target system.  It includes memory from the DFP, BSP, and <code>memory:</code> definitions from the <code>csolution.yml</code> file.</p>
+<p>The <code>system-resources:</code> node lists the resources of a target system. It includes memory from the DFP, BSP, and <code>memory:</code> definitions from the <code>csolution.yml</code> file. It also provides processor capabilities that are extracted from the DFP.</p>
 <table>
 <thead>
 <tr>
@@ -1835,6 +1907,11 @@ The <code>output:</code> node also contains other required files that are added 
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>memory:</code></td>
 <td>Optional</td>
 <td style="text-align: left;">Identifies the section for memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>processors:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">List of processor capabilities extracted from the DFP.</td>
 </tr>
 </tbody>
 </table>
@@ -1935,6 +2012,104 @@ The <code>output:</code> node also contains other required files that are added 
       access: rx
       start: 0x40000000
       size: 0x200000
+</code></pre>
+<h4 id="processors"><code>processors:</code></h4>
+<p>The <code>processors:</code> node collects the information of all <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_processor">processors</a> of the device (as specified in the DFP).</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>processors:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- core:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Specifies the core type. Use predefined values as listed in the table <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#DcoreEnum">Device Cores</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>max-clock:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Specifies the max clock frequency of the processor subsystem.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>revision:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Hardware revision of the processor core.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Processor identifier. Mandatory for devices that embed multiple processors.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>punits:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies the number of processor units in a symmetric multi-processor core (MPCore) (default: <code>1</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>endian:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies the endianess of the processor: <code>little</code>, <code>big</code>, <code>configurable</code> (default: <code>little</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>fpu:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies whether a hardware Floating Point Unit is present: <code>sp</code>, <code>dp</code>, <code>none</code> (default: <code>none</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mpu:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies whether an Arm-based Memory Protection Unit is present: <code>present</code>, <code>none</code> (default: <code>none</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>dsp:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies whether the device supports the DSP instruction set: <code>present</code>, <code>none</code> (default: <code>none</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>trustzone:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies whether an Armv8-M based device implements TrustZone: <code>present</code>, <code>none</code> (default: <code>none</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mve:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies whether the device supports the M-Profile Vector extension: <code>int</code>, <code>fp</code>, <code>none</code> (default: <code>none</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>cdecp:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies Custom Datapath Extension Coprocessors and usable coprocessor interfaces (default: <code>0</code>). See <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#DcdecpEnum">Custom Datapath Extensions</a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pacbti:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Specifies whether the device implements PAC/BTI instructions: <code>present</code>, <code>none</code> (default: <code>none</code>).</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This node does not reuse <code>processors:</code> under <a href="#debug-topology"><code>debug-topology:</code></a> to keep a separation of concerns between processor capabilities and debug access properties.</p>
+</div>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">system-resources:
+  processors:
+    - core: CM33
+      max-clock: 160000000
+      revision: r1p1
+      pname: cm33
+      endian: little
+      fpu: sp
+      mpu: present
+      dsp: present
+      trustzone: present
+      mve: none
+      cdecp: 0
+      pacbti: none
 </code></pre>
 <h4 id="system-descriptions"><code>system-descriptions:</code></h4>
 <p>List of the description files for peripherals and software components used in this project target.</p>
