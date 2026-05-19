@@ -389,6 +389,35 @@ cbuild iot-product.csolution.yml -a Production-HW           # target-type Produc
 cbuild iot-product.csolution.yml -a Production-HW@Debug     # target-type Production-HW with Debug set
 ```
 
+#### Load Attributes
+
+Load attributes are typically used when testing a bootloader or a bank-swapping mechanism. In such cases, often only symbol information is required. Using `load-offset:` (supported by pyOCD) allows loading the content of a binary image at a different physical address.
+
+The example [STM32_LiveUpdate](https://github.com/Arm-Examples/STM32_LiveUpdate) uses swappable Flash banks to switch to a new firmware version that is initially programmed into the inactive Flash bank. The binary image of the new firmware version uses `load-offset:` (pyOCD only). The ELF symbol information is loaded separately without the offset so that the symbolic information is available for debugging.
+
+```yml
+solution:
+  compiler: AC6
+  target-types:
+    - type: Version_1
+      device: STM32L476RGTx
+      target-set:
+        - set:
+          images:
+            - image: $bin(test_v1)$       # binary file of project test_v1
+              load: image
+              load-offset: 0x08080000     # load with an offset into Flash
+            - project-context: test_v1    # load from project test_v1
+              load: symbols               # load only symbol information
+          debugger:
+            name: ST-Link@pyOCD
+            port: 3333
+            protocol: swd
+            clock: 4000000
+  projects:
+    - project: test_v1.cproject.yml
+```
+
 ### Working with context-set
 
 !!! Note

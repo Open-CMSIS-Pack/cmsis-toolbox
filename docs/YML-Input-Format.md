@@ -1480,6 +1480,26 @@ Specifies the load mode for an image file. This information is used by programme
 &nbsp;&nbsp;&nbsp; `image`           | Load only the binary image (default `image` for other file types).
 &nbsp;&nbsp;&nbsp; `none`            | No content is loaded for this image, however it is part of the build process.
 
+**Example:**
+
+On devices with two flash banks that can be swapped (for example some STM32 devices), you may want to program a new firmware version into the inactive bank while keeping the link address at the normal execution base (so symbols match after a bank swap). With pyOCD this can be achieved by loading a `.bin` with a `load-offset:` while loading only symbols from the related `project-context:`.
+
+```yml
+target-types:
+  - type: Version_1
+    device: STM32L476RGTx
+    target-set:
+      - set:
+        images:
+          - image: $bin(test_v1)$
+            load: image
+            load-offset: 0x08080000     # program inactive flash bank (pyOCD only)
+          - project-context: test_v1
+            load: symbols               # do not re-program; use ELF symbols for debug
+        debugger:
+          name: ST-Link@pyOCD
+```
+
 #### `type:`
 
 With `type:` an explicit file type can be specified which is required for unknown file extensions. The explicit file type overwrites the auto-detection of file types based on the file extension.
