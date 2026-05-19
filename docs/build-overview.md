@@ -179,7 +179,7 @@ Generic [**Translation Control**](YML-Input-Format.md#translation-control) setti
 The `cdefault.yml` file contains a common set of compiler-specific settings that select reasonable defaults with [`misc:`](YML-Input-Format.md#misc) controls for each compiler. The [`cdefault:`](YML-Input-Format.md#cdefault) node in the `*.csolution.yml` file enables the usage of this file. The directory [`<cmsis-toolbox-installation-dir>/etc`](installation.md) contains a `cdefault.yml` file that is used when no local copy of the `cdefault.yml` file is provided.
 
 !!! Note
-    It is recommended that a local copy of the `cdefault.yml` file be provided in the same directory that stores the `*.csolution.yml` file.
+    It is recommended that a local copy of the `cdefault.yml` file is provided in the same directory that stores the `*.csolution.yml` file.
 
 **Example:**
 
@@ -199,8 +199,7 @@ default:
         - -masm=auto
       Link:
         - --entry=Reset_Handler
-        - --map
-        - --info summarysizes
+        - --info=summarysizes
         - --summary_stderr
         - --diag_suppress=L6314W
 
@@ -215,7 +214,7 @@ default:
       Link:
         - --specs=nano.specs
         - --specs=nosys.specs
-        - -Wl,-Map=$elf()$.map
+        - -Wl,-print-memory-usage
         - -Wl,--gc-sections
         - -Wl,--no-warn-rwx-segments   # suppress incorrect linker warning
 
@@ -227,15 +226,13 @@ default:
       C:
         - -std=gnu11
       Link:
-        - -lcrt0
-        - -Wl,-Map=$elf()$.map
+        - -Wl,-print-memory-usage
         - -Wl,--gc-sections
 
     - for-compiler: IAR
-      C-CPP:
+      C-CPP: 
+        - -e
         - --dlib_config DLib_Config_Full.h
-      Link:
-        - --map=$elf()$.map
 ```
 
 #### Compiler Selection
