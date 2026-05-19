@@ -923,11 +923,12 @@ For files that are the output of a `cproject.yml` project, the `output:` node li
 
 #### `system-resources:`
 
-The `system-resources:` node lists the resources of a target system.  It includes memory from the DFP, BSP, and `memory:` definitions from the `csolution.yml` file.
+The `system-resources:` node lists the resources of a target system. It includes memory from the DFP, BSP, and `memory:` definitions from the `csolution.yml` file. It also provides processor capabilities that are extracted from the DFP.
 
 `system-resources:`                                       |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `memory:`                              |  Optional   | Identifies the section for memory.
+&nbsp;&nbsp;&nbsp; `processors:`                          |  Optional   | List of processor capabilities extracted from the DFP.
 
 `memory:`                                                 |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
@@ -965,6 +966,48 @@ system-resources:
       access: rx
       start: 0x40000000
       size: 0x200000
+```
+
+#### `processors:`
+
+The `processors:` node collects the information of all [processors](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_processor) of the device (as specified in the DFP).
+
+`processors:`                                            |             | Content
+:--------------------------------------------------------|-------------|:------------------------------------
+`- core:`                                                |**Required** | Specifies the core type. Use predefined values as listed in the table [Device Cores](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#DcoreEnum).
+&nbsp;&nbsp;&nbsp; `max-clock:`                          |**Required** | Specifies the max clock frequency of the processor subsystem.
+&nbsp;&nbsp;&nbsp; `revision:`                           |  Optional   | Hardware revision of the processor core.
+&nbsp;&nbsp;&nbsp; `pname:`                              |  Optional   | Processor identifier. Mandatory for devices that embed multiple processors.
+&nbsp;&nbsp;&nbsp; `punits:`                             |  Optional   | Specifies the number of processor units in a symmetric multi-processor core (MPCore) (default: `1`).
+&nbsp;&nbsp;&nbsp; `endian:`                             |  Optional   | Specifies the endianess of the processor: `little`, `big`, `configurable` (default: `little`).
+&nbsp;&nbsp;&nbsp; `fpu:`                                |  Optional   | Specifies whether a hardware Floating Point Unit is present: `sp`, `dp`, `none` (default: `none`).
+&nbsp;&nbsp;&nbsp; `mpu:`                                |  Optional   | Specifies whether an Arm-based Memory Protection Unit is present: `present`, `none` (default: `none`).
+&nbsp;&nbsp;&nbsp; `dsp:`                                |  Optional   | Specifies whether the device supports the DSP instruction set: `present`, `none` (default: `none`).
+&nbsp;&nbsp;&nbsp; `trustzone:`                          |  Optional   | Specifies whether an Armv8-M based device implements TrustZone: `present`, `none` (default: `none`).
+&nbsp;&nbsp;&nbsp; `mve:`                                |  Optional   | Specifies whether the device supports the M-Profile Vector extension: `int`, `fp`, `none` (default: `none`).
+&nbsp;&nbsp;&nbsp; `cdecp:`                              |  Optional   | Specifies Custom Datapath Extension Coprocessors and usable coprocessor interfaces (default: `0`). See [Custom Datapath Extensions](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#DcdecpEnum).
+&nbsp;&nbsp;&nbsp; `pacbti:`                             |  Optional   | Specifies whether the device implements PAC/BTI instructions: `present`, `none` (default: `none`).
+
+!!! Note
+    This node does not reuse `processors:` under [`debug-topology:`](#debug-topology) to keep a separation of concerns between processor capabilities and debug access properties.
+
+**Example:**
+
+```yml
+system-resources:
+  processors:
+    - core: CM33
+      max-clock: 160000000
+      revision: r1p1
+      pname: cm33
+      endian: little
+      fpu: sp
+      mpu: present
+      dsp: present
+      trustzone: present
+      mve: none
+      cdecp: 0
+      pacbti: none
 ```
 
 #### `system-descriptions:`
