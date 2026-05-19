@@ -306,7 +306,7 @@ debugger:
 !!! Note
     The `trace:` feature is under development. This section provides a preview.
 
-CMSIS-DAP supports the SWO trace output of Cortex-M devices.
+CMSIS-DAP supports the SWO trace output of Cortex-M devices. The raw trace data are made available from pyOCD through a TCP connection.
 The often device-specific trace capture capabilities are configured using the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
 Such device-specific settings can also be individually overridden under [`debug-vars-set:`](#debug-vars-set) node of the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management).
 This allows to pass changed settings in a single configuration file.
@@ -320,10 +320,9 @@ and uses the format `<solution-name>+<target-type>.trace`.
 &nbsp;&nbsp;&nbsp; `mode:`                                | **Required** | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `input-clock:`                         | **Required** | Trace input clock frequency in Hz.
 &nbsp;&nbsp;&nbsp; `port-type:`                           |   Optional   | Set trace port transport mode. Currently only `SWO-UART` is accepted.
-&nbsp;&nbsp;&nbsp; `port-width:`                          |   Optional   | Width of the trace port. Currently only the value '1' is accepted for `SWO-UART`.
 &nbsp;&nbsp;&nbsp; `output-clock:`                        |   Optional   | Trace output clock for the selected port type. For `SWO-UART` mode this is the baudrate.
-&nbsp;&nbsp;&nbsp; `server-port:`                         |   Optional   | Set TCP/IP port number of Trace server (default: 5555).
-&nbsp;&nbsp;&nbsp; `file:`                                |   Optional   | Explicit path and name of the trace output file. Default: `<solution-name>+<target-type>.trace`.
+&nbsp;&nbsp;&nbsp; `server-port:`                         |   Optional   | Set TCP/IP port number of Trace server in `server` mode (default: 5555).
+&nbsp;&nbsp;&nbsp; `file:`                                |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>.trace`.
 
 #### Trace Clocks
 
