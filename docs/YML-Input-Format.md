@@ -2,6 +2,7 @@
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD060 -->
 
@@ -222,7 +223,7 @@ The `context` name is also used in [`for-context:`](#for-context) and [`not-for-
 ## Access Sequences
 
 The **access sequences** export values from the CMSIS Project Manager for the
-`*.yml` file nodes [`define:`](#define), [`define-asm:`](#define-asm), [`add-path:`](#add-path), [`misc:`](#misc), [`files:`](#files), [`executes:`](#executes), and [`variables:`](#variables). The **access sequences**
+`*.yml` file nodes [`define:`](#define), [`define-asm:`](#define-asm), [`add-path:`](#add-path), [`misc:`](#misc), [`files:`](#files), [`linker:`](#linker), [`executes:`](#executes), and [`variables:`](#variables). The **access sequences**
 can specify a different project and describe, therefore, project dependencies.
 
 !!! Note
@@ -400,6 +401,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`output-dirs:`](#output-dirs)         |   Optional   | Control the output directories for the build output.
 &nbsp;&nbsp;&nbsp; [`generators:`](#generators)           |   Optional   | Control the directory structure for generator output.
 &nbsp;&nbsp;&nbsp; [`packs:`](#packs)                     |   Optional   | Defines local packs and/or scope of packs that are used.
+&nbsp;&nbsp;&nbsp; [`mlops:`](#mlops)                     |   Optional   | Parameters for MLOps systems; generates `*.cbuild-mlops.yml` with ML model and NPU parameters.
 &nbsp;&nbsp;&nbsp; [`target-types:`](#target-types)       | **Required** | List of target-types that define the target system (device or board).
 &nbsp;&nbsp;&nbsp; [`build-types:`](#build-types)         |   Optional   | List of build-types (i.e. Release, Debug, Test).
 &nbsp;&nbsp;&nbsp; [`projects:`](#projects)               | **Required** | List of projects that belong to the solution.
@@ -724,8 +726,9 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 !!! Note
     - The `linker:` node must have at least `regions:`, `script:`, `auto:`, or `define:`.
     - If no `script:` file is specified, compiler-specific [Linker Script template files](build-overview.md#linker-script-templates) are used.
-    - A Linker Script file is preprocessed when `regions:` or a `define:` is or the file extension is `*.src`.
+    - A Linker Script file is preprocessed when `regions:` or `define:` is specified, or when the file extension is `*.src`.
     - If both `auto:` and `script:` is specified, a warning is issued, and [automatic Linker Script generation](build-overview.md#automatic-linker-script-generation) is performed, and the specified `script:` is ignored.
+    - The `script:` and `regions:` paths may use [access sequences](#access-sequences) such as `$Dname$` and `$Pname$` to select device/core-specific files.
 
 **Examples:**
 
@@ -733,6 +736,12 @@ Refer to [Linker Script Management](build-overview.md#linker-script-management) 
 linker:
   - script:   MyLinker.scf.src   # linker script file
     regions:  MyRegions.h        # pre-processed using header file
+```
+
+```yml
+linker:
+  - script:   RTE/Device/$Dname$_$Pname$/linker_gnu.ld.src        # example device/core-specific path
+    regions:  RTE/Device/$Dname$_$Pname$/regions_$Dname$_$Pname$.h # (adjust to your RTE/Device layout)
 ```
 
 ```yml
@@ -1452,7 +1461,7 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 &nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode of the image file for programmers and debug tools.
 &nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the image file.
 &nbsp;&nbsp;&nbsp; [`type:`](#type)                   |   Optional   | Specifies an explicit file of the image type.
-&nbsp;&nbsp;&nbsp; `load-offset:`                     |   Optional   | Offset applied when loading a image file with `type: bin` (pyOCD only).
+&nbsp;&nbsp;&nbsp; `load-offset:`                     |   Optional   | Offset applied when loading a image file with `type: bin` (for pyOCD only).
 &nbsp;&nbsp;&nbsp; [`device:`](#device)               |   Optional   | For image files a pname can be specified to denote the processor that runs the image.
 
 !!! Note
@@ -1470,6 +1479,26 @@ Specifies the load mode for an image file. This information is used by programme
 &nbsp;&nbsp;&nbsp; `symbols`         | Load only the debug symbol information.
 &nbsp;&nbsp;&nbsp; `image`           | Load only the binary image (default `image` for other file types).
 &nbsp;&nbsp;&nbsp; `none`            | No content is loaded for this image, however it is part of the build process.
+
+**Example:**
+
+On devices with two flash banks that can be swapped (for example some STM32 devices), you may want to program a new firmware version into the inactive bank while keeping the link address at the normal execution base (so symbols match after a bank swap). With pyOCD this can be achieved by loading a `.bin` with a `load-offset:` while loading only symbols from the related `project-context:`.
+
+```yml
+target-types:
+  - type: Version_1
+    device: STM32L476RGTx
+    target-set:
+      - set:
+        images:
+          - image: $bin(test_v1)$
+            load: image
+            load-offset: 0x08080000     # program inactive flash bank (pyOCD only)
+          - project-context: test_v1
+            load: symbols               # do not re-program; use ELF symbols for debug
+        debugger:
+          name: ST-Link@pyOCD
+```
 
 #### `type:`
 
@@ -1866,7 +1895,8 @@ Add source files to a project.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                             |   Optional   | Literal tool-specific controls.
 
 !!! Note
-    It is also possible to specify a [Linker Script](build-overview.md#linker-script-management). Files with the extension `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
+    - It is also possible to specify a [Linker Script](build-overview.md#linker-script-management). Files with the extension `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
+    - *Symbol definition* files (sometimes called “symdefs”) that provide ROM function addresses to the linker are typically **object files**. If such a file has no filename extension (for example `rom_symbol_mbedtls`), set [`category:`](#filename-extensions) to `object`.
 
 **Example:**
 
@@ -1946,6 +1976,15 @@ Using `category:` allows to specify pre-include files that are project-wide or r
    files:
      - file: MyDefinitions.h
        category: preIncludeLocal
+```
+
+Some toolchains use *symbol definition* files (sometimes called “symdefs”) to provide ROM function addresses to the linker. These files are typically passed to the linker as **object files**. If such a file has no filename extension (for example `rom_symbol_mbedtls_20200709`), set [`category:`](#filename-extensions) to `object` so it is passed to the linker correctly:
+
+```yml
+  - group: symdefs
+    files:
+      - file: rom_symbol_mbedtls_20200709
+        category: object
 ```
 
 ### `layers:`
@@ -2672,4 +2711,88 @@ solution:
           start: 0x40000000
           size: 0x200000
           algorithm: Flash/Ext-Flash.flm       # Programming algorithm
+```
+
+## MLOps Management
+
+The `mlops:` node can be specified in the `*.csolution.yml` file to provide parameters for an [MLOps system](build-overview.md#mlops-information).
+
+When `mlops:` is present, the CMSIS-Toolbox generates an additional information file `*.cbuild-mlops.yml` (in the same folder as the `*.csolution.yml` file) that contains parameters such as processor/NPU configuration, Vela options (for Ethos-U), and information required for building and running tests.
+
+!!! Note
+    This node is intended for workflows where an MLOps system creates **only one ML model at a time**.
+
+### `mlops:`
+
+`mlops:`                                                 |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `description:`                        |   Optional   | Descriptive text of the ML model under development.
+&nbsp;&nbsp;&nbsp; [`npu:`](#npu)                        |   Optional   | Select the NPU type and MAC configuration.
+&nbsp;&nbsp;&nbsp; [`vela:`](#vela)                      |   Optional   | Vela configuration (only applicable for Ethos-U NPUs).
+&nbsp;&nbsp;&nbsp; [`model:`](#model)                    |   Optional   | Location and name of the ML model layer.
+&nbsp;&nbsp;&nbsp; [`hardware:`](#hardware)              |   Optional   | Select the hardware target-set used for tests.
+&nbsp;&nbsp;&nbsp; [`simulator:`](#simulator)            |   Optional   | Select the simulator target-set used for tests.
+
+### `npu:`
+
+`npu:`                                                   |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `type:`                               |   Optional   | NPU type name (default: first NPU from the selected device features).
+&nbsp;&nbsp;&nbsp; `macs:`                               |   Optional   | MAC configuration (default: first MAC configuration from the selected device features).
+
+### `vela:`
+
+The `vela:` node is only relevant for Ethos-U NPUs.
+
+`vela:`                                                  |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `ini:`                                |   Optional   | Explicit Vela INI file (default: use INI file provided by the device/DFP).
+&nbsp;&nbsp;&nbsp; `system:`                             |   Optional   | System configuration selector from the Vela INI file.
+&nbsp;&nbsp;&nbsp; `memory:`                             |   Optional   | Memory configuration selector from the Vela INI file.
+&nbsp;&nbsp;&nbsp; `misc:`                               |   Optional   | Additional Vela command-line options (literal string).
+
+### `model:`
+
+`model:`                                                 |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `clayer:`                             |   Optional   | Path to the layer (or variable) that contains the ML model under development.
+&nbsp;&nbsp;&nbsp; `name:`                               |   Optional   | Optional model name (default: `Algorithm`); serves as a namespace.
+
+### `hardware:`
+
+`hardware:`                                              |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `target-type:`                        |   Optional   | Explicit target-type name (default: first `target-types:` entry).
+&nbsp;&nbsp;&nbsp; `target-set:`                         |   Optional   | Explicit target-set name (default: first `target-set:` entry for the selected target-type).
+
+### `simulator:`
+
+`simulator:`                                             |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `target-type:`                        |   Optional   | Explicit target-type name (default: last `target-types:` entry; typically a target-type using an Arm FVP debugger).
+&nbsp;&nbsp;&nbsp; `target-set:`                         |   Optional   | Explicit target-set name (default: first `target-set:` entry for the selected target-type).
+
+**Example:**
+
+```yml
+solution:
+  mlops:
+    description: ML model for detecting Rock/Paper/Scissors images
+    npu:
+      type: Ethos-U85
+      macs: 256
+    vela:
+      ini: .cmsis/ensemble_vela.ini
+      system: RTSS_HE_SRAM_MRAM
+      memory: Shared_Sram
+      misc: --verbose
+    model:
+      clayer: $AI-Layer$
+      name: RPS
+    hardware:
+      target-type: AppKit-E8-U85
+      target-set: HIL
+    simulator:
+      target-type: SSE-320-U85
+      target-set: FVP-Test
 ```
