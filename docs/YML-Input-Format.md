@@ -1461,7 +1461,7 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 &nbsp;&nbsp;&nbsp; [`load:`](#load)                   |   Optional   | Load mode of the image file for programmers and debug tools.
 &nbsp;&nbsp;&nbsp; `info:`                            |   Optional   | Brief description of the image file.
 &nbsp;&nbsp;&nbsp; [`type:`](#type)                   |   Optional   | Specifies an explicit file of the image type.
-&nbsp;&nbsp;&nbsp; `load-offset:`                     |   Optional   | Offset applied when loading a image file with `type: bin` (pyOCD only).
+&nbsp;&nbsp;&nbsp; `load-offset:`                     |   Optional   | Offset applied when loading a image file with `type: bin` (for pyOCD only).
 &nbsp;&nbsp;&nbsp; [`device:`](#device)               |   Optional   | For image files a pname can be specified to denote the processor that runs the image.
 
 !!! Note
@@ -1875,7 +1875,8 @@ Add source files to a project.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                             |   Optional   | Literal tool-specific controls.
 
 !!! Note
-    It is also possible to specify a [Linker Script](build-overview.md#linker-script-management). Files with the extension `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
+    - It is also possible to specify a [Linker Script](build-overview.md#linker-script-management). Files with the extension `.sct`, `.scf`, `.ld`, and `.icf` are recognized as Linker Script files.
+    - *Symbol definition* files (sometimes called “symdefs”) that provide ROM function addresses to the linker are typically **object files**. If such a file has no filename extension (for example `rom_symbol_mbedtls`), set [`category:`](#filename-extensions) to `object`.
 
 **Example:**
 
@@ -1955,6 +1956,15 @@ Using `category:` allows to specify pre-include files that are project-wide or r
    files:
      - file: MyDefinitions.h
        category: preIncludeLocal
+```
+
+Some toolchains use *symbol definition* files (sometimes called “symdefs”) to provide ROM function addresses to the linker. These files are typically passed to the linker as **object files**. If such a file has no filename extension (for example `rom_symbol_mbedtls_20200709`), set [`category:`](#filename-extensions) to `object` so it is passed to the linker correctly:
+
+```yml
+  - group: symdefs
+    files:
+      - file: rom_symbol_mbedtls_20200709
+        category: object
 ```
 
 ### `layers:`
