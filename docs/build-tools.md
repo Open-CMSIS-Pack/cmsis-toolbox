@@ -354,9 +354,6 @@ List all configuration files that belong to software components and are stored i
 csolution list configs SimpleTZ.csolution.yml -S
 ```
 
-### List potential updates
-
-
 ### Setup Project (for IDE)
 
 In an IDE environment, this command downloads missing packs creates [build information files](YML-CBuild-Format.md), and generates the file `compile_commands.json` for IntelliSense. Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
