@@ -2,6 +2,7 @@
 
 <!-- markdownlint-disable MD009 -->
 <!-- markdownlint-disable MD013 -->
+<!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD060 -->
 
@@ -400,6 +401,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`output-dirs:`](#output-dirs)         |   Optional   | Control the output directories for the build output.
 &nbsp;&nbsp;&nbsp; [`generators:`](#generators)           |   Optional   | Control the directory structure for generator output.
 &nbsp;&nbsp;&nbsp; [`packs:`](#packs)                     |   Optional   | Defines local packs and/or scope of packs that are used.
+&nbsp;&nbsp;&nbsp; [`mlops:`](#mlops)                     |   Optional   | Parameters for MLOps systems; generates `*.cbuild-mlops.yml` with ML model and NPU parameters.
 &nbsp;&nbsp;&nbsp; [`target-types:`](#target-types)       | **Required** | List of target-types that define the target system (device or board).
 &nbsp;&nbsp;&nbsp; [`build-types:`](#build-types)         |   Optional   | List of build-types (i.e. Release, Debug, Test).
 &nbsp;&nbsp;&nbsp; [`projects:`](#projects)               | **Required** | List of projects that belong to the solution.
@@ -2672,4 +2674,88 @@ solution:
           start: 0x40000000
           size: 0x200000
           algorithm: Flash/Ext-Flash.flm       # Programming algorithm
+```
+
+## MLOps Management
+
+The `mlops:` node can be specified in the `*.csolution.yml` file to provide parameters for an [MLOps system](build-overview.md#mlops-information).
+
+When `mlops:` is present, the CMSIS-Toolbox generates an additional information file `*.cbuild-mlops.yml` (in the same folder as the `*.csolution.yml` file) that contains parameters such as processor/NPU configuration, Vela options (for Ethos-U), and information required for building and running tests.
+
+!!! Note
+    This node is intended for workflows where an MLOps system creates **only one ML model at a time**.
+
+### `mlops:`
+
+`mlops:`                                                 |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `description:`                        |   Optional   | Descriptive text of the ML model under development.
+&nbsp;&nbsp;&nbsp; [`npu:`](#npu)                        |   Optional   | Select the NPU type and MAC configuration.
+&nbsp;&nbsp;&nbsp; [`vela:`](#vela)                      |   Optional   | Vela configuration (only applicable for Ethos-U NPUs).
+&nbsp;&nbsp;&nbsp; [`model:`](#model)                    |   Optional   | Location and name of the ML model layer.
+&nbsp;&nbsp;&nbsp; [`hardware:`](#hardware)              |   Optional   | Select the hardware target-set used for tests.
+&nbsp;&nbsp;&nbsp; [`simulator:`](#simulator)            |   Optional   | Select the simulator target-set used for tests.
+
+### `npu:`
+
+`npu:`                                                   |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `type:`                               |   Optional   | NPU type name (default: first NPU from the selected device features).
+&nbsp;&nbsp;&nbsp; `macs:`                               |   Optional   | MAC configuration (default: first MAC configuration from the selected device features).
+
+### `vela:`
+
+The `vela:` node is only relevant for Ethos-U NPUs.
+
+`vela:`                                                  |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `ini:`                                |   Optional   | Explicit Vela INI file (default: use INI file provided by the device/DFP).
+&nbsp;&nbsp;&nbsp; `system:`                             |   Optional   | System configuration selector from the Vela INI file.
+&nbsp;&nbsp;&nbsp; `memory:`                             |   Optional   | Memory configuration selector from the Vela INI file.
+&nbsp;&nbsp;&nbsp; `misc:`                               |   Optional   | Additional Vela command-line options (literal string).
+
+### `model:`
+
+`model:`                                                 |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `clayer:`                             |   Optional   | Path to the layer (or variable) that contains the ML model under development.
+&nbsp;&nbsp;&nbsp; `name:`                               |   Optional   | Optional model name (default: `Algorithm`); serves as a namespace.
+
+### `hardware:`
+
+`hardware:`                                              |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `target-type:`                        |   Optional   | Explicit target-type name (default: first `target-types:` entry).
+&nbsp;&nbsp;&nbsp; `target-set:`                         |   Optional   | Explicit target-set name (default: first `target-set:` entry for the selected target-type).
+
+### `simulator:`
+
+`simulator:`                                             |              | Content
+:--------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `target-type:`                        |   Optional   | Explicit target-type name (default: last `target-types:` entry; typically a target-type using an Arm FVP debugger).
+&nbsp;&nbsp;&nbsp; `target-set:`                         |   Optional   | Explicit target-set name (default: first `target-set:` entry for the selected target-type).
+
+**Example:**
+
+```yml
+solution:
+  mlops:
+    description: ML model for detecting Rock/Paper/Scissors images
+    npu:
+      type: Ethos-U85
+      macs: 256
+    vela:
+      ini: .cmsis/ensemble_vela.ini
+      system: RTSS_HE_SRAM_MRAM
+      memory: Shared_Sram
+      misc: --verbose
+    model:
+      clayer: $AI-Layer$
+      name: RPS
+    hardware:
+      target-type: AppKit-E8-U85
+      target-set: HIL
+    simulator:
+      target-type: SSE-320-U85
+      target-set: FVP-Test
 ```
