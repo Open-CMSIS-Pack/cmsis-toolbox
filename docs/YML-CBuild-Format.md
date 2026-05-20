@@ -16,6 +16,7 @@ File                                            | Description
 [`*.cbuild.yml`](#cbuildyml)                    | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file; contains all information for the build step for a specific [context](build-overview.md#context) including references to the content used from software packs.
 [`*.cbuild-pack.yml`](#cbuild-packyml)          | Software packs recorded for all input files ([`*.csolution.yml`](YML-Input-Format.md#project-file-structure), `cproject.yml`, and `.clayer.yml`); used as input file to ensure [reproducible builds](build-overview.md#reproducible-builds) that use the same software packs and pack versions.
 [`*.cbuild-set.yml`](#cbuild-setyml)            | [Context selection](build-overview.md#working-with-context-set) for the build process, enabled with option [--context-set:](build-tools.md#use-context-set).
+[`*.cbuild-mlops.yml`](#cbuild-mlopsyml)        | MLOps parameters generated when [`mlops:`](YML-Input-Format.md#mlops) is specified in `*.csolution.yml`; provides ML model and NPU parameters and test target information.
 [`*.cbuild-run.yml`](#run-and-debug-management) | Contains the information required to [download and debug](#run-and-debug-management) a *csolution project* to a target.
 
 !!! Note
@@ -42,6 +43,7 @@ A typical directory structure of a `csolution` based application that uses commo
  ┣ myapp.cbuild-idx.yml
  ┣ myapp.cbuild-pack.yml
  ┣ myapp.cbuild-set.yml
+ ┣ myapp.cbuild-mlops.yml
  ┣ 📂 project1
  ┃  ┣  mypro1.cproject.yml                 # file references are relative to directory project1
  ┣ 📂 project2
@@ -336,6 +338,47 @@ cbuild-set:
   contexts:
     - context: CM33_s.Release+AVH
     - context: CM33_ns.Debug+AVH
+```
+
+### `*.cbuild-mlops.yml`
+
+The `<solution-name>.cbuild-mlops.yml` file contains parameters for an [MLOps system](build-overview.md#mlops-information). This file is generated when the [`mlops:`](YML-Input-Format.md#mlops) node is present in the `*.csolution.yml` file. The intent is to provide ML model and NPU parameters (including Vela configuration for Ethos-U) and information for build and test environments.
+
+Refer to [MLOps Information](build-overview.md#mlops-information) for more information.
+
+`cbuild-mlops:`                                             | Content
+:-----------------------------------------------------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `description:`                           | Descriptive text of the ML model under development.
+&nbsp;&nbsp;&nbsp; `processor:`                             | Processor information for the ML model.
+&nbsp;&nbsp;&nbsp; `npu:`                                   | NPU type and MAC configuration (only present for devices with NPU).
+&nbsp;&nbsp;&nbsp; `vela:`                                  | Vela INI file and option string (only present for Ethos-U NPUs).
+&nbsp;&nbsp;&nbsp; `model:`                                 | Location of the ML model layer and optional model name.
+&nbsp;&nbsp;&nbsp; `hardware:`                              | Hardware test configuration (active target-set, `cbuild-run` file, and output image list).
+&nbsp;&nbsp;&nbsp; `simulator:`                             | Simulator test configuration (active target-set, output image list, and FVP invocation details).
+
+**Example:**
+
+```yml
+cbuild-mlops:
+  description: ML model for detecting Rock/Paper/Scissors images
+  processor:
+    type: Cortex-M55
+  npu:
+    type: Ethos-U85
+    macs: 256
+  vela:
+    ini: .cmsis/ensemble_vela.ini
+    options: --accelerator-config ethos-u85-256 --system-config RTSS_HE_SRAM_MRAM --memory-mode Shared_Sram
+  model:
+    clayer: ai_layer/ai_layer.clayer.yml
+    name: RPS
+  hardware:
+    active: AppKit-E8-U85@HIL
+    cbuild-run: out/MyApp+AppKit-E8-U85.cbuild-run.yml
+  simulator:
+    active: SSE-320-U85@FVP-Test
+    model: FVP_Corstone_SSE-320
+    config-file: Board/Corstone-320/fvp_config.txt
 ```
 
 ### Nodes for Project Management
@@ -880,11 +923,12 @@ For files that are the output of a `cproject.yml` project, the `output:` node li
 
 #### `system-resources:`
 
-The `system-resources:` node lists the resources of a target system.  It includes memory from the DFP, BSP, and `memory:` definitions from the `csolution.yml` file.
+The `system-resources:` node lists the resources of a target system. It includes memory from the DFP, BSP, and `memory:` definitions from the `csolution.yml` file. It also provides processor capabilities that are extracted from the DFP.
 
 `system-resources:`                                       |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `memory:`                              |  Optional   | Identifies the section for memory.
+&nbsp;&nbsp;&nbsp; `processors:`                          |  Optional   | List of processor capabilities extracted from the DFP.
 
 `memory:`                                                 |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
@@ -922,6 +966,48 @@ system-resources:
       access: rx
       start: 0x40000000
       size: 0x200000
+```
+
+#### `processors:`
+
+The `processors:` node collects the information of all [processors](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_processor) of the device (as specified in the DFP).
+
+`processors:`                                            |             | Content
+:--------------------------------------------------------|-------------|:------------------------------------
+`- core:`                                                |**Required** | Specifies the core type. Use predefined values as listed in the table [Device Cores](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#DcoreEnum).
+&nbsp;&nbsp;&nbsp; `max-clock:`                          |**Required** | Specifies the max clock frequency of the processor subsystem.
+&nbsp;&nbsp;&nbsp; `revision:`                           |  Optional   | Hardware revision of the processor core.
+&nbsp;&nbsp;&nbsp; `pname:`                              |  Optional   | Processor identifier. Mandatory for devices that embed multiple processors.
+&nbsp;&nbsp;&nbsp; `punits:`                             |  Optional   | Specifies the number of processor units in a symmetric multi-processor core (MPCore) (default: `1`).
+&nbsp;&nbsp;&nbsp; `endian:`                             |  Optional   | Specifies the endianess of the processor: `little`, `big`, `configurable` (default: `little`).
+&nbsp;&nbsp;&nbsp; `fpu:`                                |  Optional   | Specifies whether a hardware Floating Point Unit is present: `sp`, `dp`, `none` (default: `none`).
+&nbsp;&nbsp;&nbsp; `mpu:`                                |  Optional   | Specifies whether an Arm-based Memory Protection Unit is present: `present`, `none` (default: `none`).
+&nbsp;&nbsp;&nbsp; `dsp:`                                |  Optional   | Specifies whether the device supports the DSP instruction set: `present`, `none` (default: `none`).
+&nbsp;&nbsp;&nbsp; `trustzone:`                          |  Optional   | Specifies whether an Armv8-M based device implements TrustZone: `present`, `none` (default: `none`).
+&nbsp;&nbsp;&nbsp; `mve:`                                |  Optional   | Specifies whether the device supports the M-Profile Vector extension: `int`, `fp`, `none` (default: `none`).
+&nbsp;&nbsp;&nbsp; `cdecp:`                              |  Optional   | Specifies Custom Datapath Extension Coprocessors and usable coprocessor interfaces (default: `0`). See [Custom Datapath Extensions](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#DcdecpEnum).
+&nbsp;&nbsp;&nbsp; `pacbti:`                             |  Optional   | Specifies whether the device implements PAC/BTI instructions: `present`, `none` (default: `none`).
+
+!!! Note
+    This node does not reuse `processors:` under [`debug-topology:`](#debug-topology) to keep a separation of concerns between processor capabilities and debug access properties.
+
+**Example:**
+
+```yml
+system-resources:
+  processors:
+    - core: CM33
+      max-clock: 160000000
+      revision: r1p1
+      pname: cm33
+      endian: little
+      fpu: sp
+      mpu: present
+      dsp: present
+      trustzone: present
+      mve: none
+      cdecp: 0
+      pacbti: none
 ```
 
 #### `system-descriptions:`
@@ -1218,7 +1304,6 @@ The algorithm in the DFP and BSP must have the attribute `default="1"` set. If i
 
 !!! Note
     - The [`gap` element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_flashgap) is not used.
-
 
 #### `debug-topology:`
 

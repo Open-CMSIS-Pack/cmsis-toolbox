@@ -2,6 +2,7 @@
 
 <!-- markdownlint-disable MD036 -->
 <!-- markdownlint-disable MD060 -->
+<!-- markdownlint-disable MD055 -->
 
 This chapter explains the setup of the CMSIS-Toolbox along with a build environment.
 

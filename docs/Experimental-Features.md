@@ -7,151 +7,6 @@
 
 Experimental features are implemented to iterate on new functionality. Experimental features have limited test coverage and the functionality may change in future versions of the CMSIS-Toolbox without further notice.
 
-## MLOps Management
-
-These are proposed features for managing MLOps systems.
-
-These features are designed for systems that contain one or more ML models and optional Ethos-U NPUs. It is assumed that the MLOps system creates **only one ML model at a time** and therefore needs information about which ML model to target and which Ethos-U NPU to use.
-
-The CMSIS-Toolbox allows you to specify parameters for an MLOps system using the `mlops:` node in the `*.csolution.yml` file. When this node is used, the CMSIS-Toolbox generates an additional information file with the extension `*.cbuild-mlops.yml` that contains the parameters for the MLOps system. The `*.cbuild-mlops.yml` file is generated in the same folder as the `*.csolution.yml` file.
-
-The following information is provided in the `*.cbuild-mlops.yml` file:
-
-- Processor type
-- NPU type with MAC configuration
-- Vela INI file and parameters (only for Ethos-U NPUs)
-- Location of the `*.clayer.yml` file that contains the ML model under development
-- `cbuild` active target for testing on hardware
-- `cbuild` active target for testing on FVP simulation models along with information for FVP invocation
-
-Example:
-
-`*.csolution.yml` input:
-
-```yml
-solution:
-  description: SDS recorder/player reference example
-  created-for: CMSIS-Toolbox@2.12.0
-  cdefault:
-
-  mlops:                      # enable *.cbuild-mlops.yml
-    description: ML model for detecting Rock/Paper/Scissors images
-    npu:
-      type: Ethos-U85         # specify NPU (default: first NPU from DFP device features)
-      macs: 256               # specify MACs (default: first NPU from DFP device features)
-    vela: 
-      ini: <file>.ini         # explicit INI file (default: use INI file from DFP)
-      system: <selector>      # system configuration from INI file
-      memory: <selector>      # memory configuration from INI file
-      misc:                   # string with additional options for Vela
-    model:
-      clayer: $AI-Layer$      # path to layer or variable
-      name: <name>            # optional model name (default Algorithm), serves as namespace
-    hardware:                 # hardware target for testing
-      target-type:            # explicit target-type name (default: first target-type)
-      target-set:             # explicit target-set name (default: first target-type, first set)
-    simulator:                # simulator target for testing
-      target-type:            # explicit target-type name (default: last target-type, check if debugger name: Arm-FVP)
-      target-set:             # explicit target-type name (default: last target-type, first set: check if debugger name: Arm-FVP)
-
-    :
-  target-types:
-    - type: AppKit-E8-U85  # hardware
-      device: AE822FA0E5597BS0
-      board: AppKit-E8-AIML
-      variables:
-        - Board-Layer: $SolutionDir()$/Board/AppKit-E8_M55_HP/Board_HP-U85.clayer.yml
-        - SDSIO-Layer: $SolutionDir()$/sdsio/usb/sdsio_usb.clayer.yml
-        - AI-Layer: $SolutionDir()$/ai_layer/ai_layer.clayer.yml
-      target-set:
-        - set:
-    :
-    - type: SSE-320-U85  # Simulator (Cortex-M85 + Ethos-U85)
-      board: SSE-320
-      device: SSE-320-FVP
-      define:
-        - SIMULATOR
-      variables:
-        - Board-Layer: $SolutionDir()$/Board/Corstone-320/Board-U85.clayer.yml
-        - SDSIO-Layer: $SolutionDir()$/sdsio/fvp/sdsio_fvp.clayer.yml
-        - AI-Layer: $SolutionDir()$/ai_layer/ai_layer.clayer.yml
-      target-set:
-        - set: FVP-Test
-          debugger:
-            name: Arm-FVP
-            model: FVP_Corstone_SSE-320
-            config-file: Board/Corstone-320/fvp_config.txt
-```
-
-`*.cbuild-mlops.yml` output (example). Paths are relative to the location of the `*.cbuild-mlops.yml` file (which is in the same directory as the `*.csolution.yml` file).
-
-```yml
-cbuild-mlops:
-  description:                      # descriptive text from *.csolution.yml mlops section
-  processor:
-    type: Cortex-M55
-
-  npu:                              # this node is only there for devices with NPU
-    type: Ethos-U85
-    macs: 256
-
-  vela:                             # this node is only there for devices with NPU type Ethos-U
-    ini:  path/file.ini             # relative path and file name of INI file, i.e. ".cmsis/ensemble_vela.ini"
-    options:                        # option string, i.e. "--accelerator-config ethos-u85-256 --system-config SYSTEM_CONFIG --memory-mode MEMORY_MODE"
-
-  model:
-    clayer: /ai_layer/ai_layer.clayer.yml
-    name: Algorithm                 # model name
-
-  hardware:                         # for testing on hardware
-    active: AppKit-E8-U85           # target-set name passed to cbuild with option --active, i.e. cbuild my.csolution.yml --active AppKit-E8-U85
-    cbuild-run: out/SDS-ml.AppKit-E8-U85.cbuild-run.yml        # cbuild-run file for execution on hardware using pyOCD (JLink needs command-line derived from output: node)
-    output:
-      - file: out/AppKit-E8-U85/Debug/AlgorithmTest.axf
-        type: elf
-
-  simulator:                        # for testing with simulation Models
-    active: SSE-320-U85@FVP-Test    # target-set name passed to cbuild with option --active
-    cbuild-run: out/SDS-ml.SSE-320-U85.cbuild-run.yml        # cbuild-run file for execution on simulation (currently not used as there is no translator for FVP models).
-    output:
-      - file: out/SSE-320_U85/Debug/AlgorithmTest.axf
-        type: elf
-    model: FVP_Corstone_SSE-320     # name of the FVP model to use
-    config-file: Board/Corstone-320/fvp_config.txt   # configuration file for the ML model
-```
-
-Using the information in the `*.cbuild-mlops.yml` file, the MLOps system knows:
-
-- How to call `vela`
-- How to call `cbuild` to build for hardware or simulator tests, including the location of output files
-- How to use the hardware output files to call pyOCD
-- How to invoke the simulation model
-
-Pseudocode for running an ML algorithm on a target (hardware or simulation) using the default name `Algorithm`
-
-```c
-void AlgorithmThread() {
-  InitEnvironment();     // Initialize for Input/Output interfaces
-  InitAlgorithm();       // Initialize for ExecuteAlgorithm processing
-
-  for (;;) {
-    GetInputData(in_buf, sizeof(in_buf));
-    // SDS input capturing here (as ExecuteAlgorithm may change in_buf)
-    ExecuteAlgorithm(in_buf, sizeof(in_buf), out_buf, sizeof(out_buf));
-    // SDS output capturing here (as ProcessOutputData may change out_buf)
-    ProcessOutputData(out_buf, sizeof(out_buf));
-  }
-}
-```
-
-### ToDo's
-
-- define clearly the invocation lines for vela, cbuild, pyocd, and FVPs
-- clayer is only for CMSIS projects, need a defined path to Zephyr (ExecuTorch is giving this, but LiteRT is missing)
-- Need templates for clayer's
-- pseudocode does not specify expected file names; the files should have also a namespace and must ensure that no symbol duplicates are exposed; there should be also a C++ version of the pseudocode
-- memory configuration may have implications on linker script and section names
-
 ## Resource Management
 
 The CMSIS-Toolbox version 2.7 implements the experimental features for:
@@ -266,3 +121,20 @@ The `resources:` node specifies the resources required by a project. It is used 
 The `csolution` tool supports the command line argument `rpc` to initiate a server mode. With this mode [rpc commands](https://github.com/Open-CMSIS-Pack/csolution-rpc/blob/main/api/csolution-openapi.yml) can be initiated. The first set of commands will be used by the VS Code CMSIS Solution extension to select components and packs for projects and layers.
 
 Refer to [github.com/Open-CMSIS-Pack/csolution-rpc](https://github.com/Open-CMSIS-Pack/csolution-rpc) for more information.
+
+## Zephyr Module Export
+
+This is work in progress and the intended usage is initially for ML models generated for ExecuTorch. However the concept is flexible enough so that it can extend to other software components. 
+
+The CMSIS-Toolbox 2.14 allows to export a software layer (defined in `*.clayer.yml`) into a Zephyr module so that software delivered as CMSIS-Packs can be integrated in Zephyr builds.
+
+A layer is converted to a Zephyr module with the standard Zephyr entry points:
+
+- `zephyr/module.yml` to declare the module and connect it to CMake/Kconfig integration.
+- `Kconfig` options that expose the available CMSIS-Pack components and allow enabling/disabling them via `CONFIG_...` defines.
+- `CMakeLists.txt` / `sources.cmake` that map the selected CMSIS-Pack sources and include paths into the Zephyr build.
+- Generated compatibility headers (for example `RTE_Components.h` / `Pre_Include_Global.h`) to bridge CMSIS component configuration into the consuming build.
+
+The exported module can then be consumed by a Zephyr application by adding the module path to `ZEPHYR_EXTRA_MODULES` (or through a west manifest) and enabling the desired `CONFIG_...` symbols in `prj.conf`.
+
+Example: the [cmsis-to-zephyr-concept `ml_inference` example](https://github.com/brondani/cmsis-to-zephyr-concept/tree/main/ml_inference) shows a minimal end-to-end flow: exporting a layer as a Zephyr module and consuming it from a Zephyr application.

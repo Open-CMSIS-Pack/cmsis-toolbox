@@ -36,7 +36,7 @@ CMSIS-DAP based Debug Adapters implement [debug access sequences](https://open-c
 
 ### `telnet:`
 
-pyOCD integrates a Telnet service for character I/O functions via Semihosting or [SEGGER RTT](#rtt). Each processor that runs an independent application can be controlled individually. 
+pyOCD integrates a Telnet service for character I/O functions via Semihosting or [SEGGER RTT](#rtt). Each processor that runs an independent application can be controlled individually.
 
 ![Telnet Modes](./images/telnet.png "Telnet modes")
 
@@ -334,6 +334,7 @@ For more complex multi-core systems, the clock is normally derived from the syst
 #### Debug Access Variables
 
 The above configurations are passed to debug sequence implementations through [pre-defined debug access variables](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#DebugVars). The following mapping is expected:
+
 - `input-clock` directly maps to variable `__traceclockin`.
 - If `output-clock` is provided or has a value other than `0`, then the value directly maps to variable `__traceclockout`.
 - If `output-clock` is not provided or has the value `0`, then the highest achievable output clock frequency supported by the debug unit is written to `__traceclockout`.
@@ -359,6 +360,7 @@ The value of the `debug-vars-set:` node is a string of the same format as used i
     - If no [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file is provided, or if a setting isn't assigned in this file, then it defaults to the value assigned in the device [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section of the PDSC file.
 
 **Example:**
+
 ```yml
   debugger:
     name: ST-Link@pyOCD
