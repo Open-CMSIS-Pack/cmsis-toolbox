@@ -16,6 +16,9 @@ on:
         type: boolean
         default: false
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   matrix_prep:
     runs-on: ubuntu-latest
