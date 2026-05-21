@@ -281,6 +281,13 @@ Use &quot;cbuild [command] --help&quot; for more information about a command.
 <p class="admonition-title">Note</p>
 <p>By default, the <code>cbuild</code> invocation does not update the <a href="../build-overview/#rte-directory-structure"><strong>RTE Directory</strong></a>. If required, use the option <code>--update-rte</code>.</p>
 </div>
+<p><strong>Verbosity Levels</strong>
+| Mode | Description |
+|------|-------------|
+| quiet | Show only errors or fatal conditions |
+| normal | Include build steps and warnings |
+| verbose | Include command-line invocation and info messages |
+| debug | Include internal process steps and debug messages |</p>
 <h2 id="csolution-invocation"><code>csolution</code> Invocation</h2>
 <p>Create build information for embedded applications that consist of one or more related projects.</p>
 <pre><code class="language-text">csolution: Project Manager 2.14.0 (C) 2022-2026 Arm Ltd. and Contributors
