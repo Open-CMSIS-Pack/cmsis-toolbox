@@ -65,6 +65,14 @@ Use "cbuild [command] --help" for more information about a command.
 !!! Note
     By default, the `cbuild` invocation does not update the [**RTE Directory**](build-overview.md#rte-directory-structure). If required, use the option `--update-rte`.
 
+**Verbosity Levels**
+| Mode | Description |
+|------|-------------|
+| quiet | Show only errors or fatal conditions |
+| normal | Include build steps and warnings |
+| verbose | Include command-line invocation and info messages |
+| debug | Include internal process steps and debug messages |
+
 ## `csolution` Invocation
 
 Create build information for embedded applications that consist of one or more related projects.
