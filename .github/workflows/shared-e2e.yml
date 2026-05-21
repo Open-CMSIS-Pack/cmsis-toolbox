@@ -19,6 +19,9 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+permissions:
+  contents: read
+
 jobs:
   matrix_prep:
     runs-on: ubuntu-latest
@@ -529,7 +532,9 @@ jobs:
     needs: [test]
     runs-on: ubuntu-latest
     if: always() && needs.test.result != 'skipped'
-    permissions: write-all
+    permissions:
+      contents: read
+      actions: read
 
     steps:
     - name: Harden Runner
