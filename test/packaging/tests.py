@@ -25,6 +25,8 @@ def test_check_archive(base_path):
         "cbuild-gen.schema.json",
         "cbuild-gen-idx.schema.json",
         "cbuild-pack.schema.json",
+        "cbuild-mlops.schema.json",
+        "cbuild-run.schema.json",
         "cbuild-set.schema.json",
         "cdefault.schema.json",
         "cdefault.yml",
