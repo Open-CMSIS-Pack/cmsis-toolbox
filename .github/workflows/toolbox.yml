@@ -26,6 +26,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -490,6 +493,8 @@ jobs:
     needs: [ tests ]
     runs-on: ubuntu-22.04
     timeout-minutes: 15
+    permissions:
+      contents: write
 
     steps:
       - name: Download cmsis toolbox windows amd64 zip
