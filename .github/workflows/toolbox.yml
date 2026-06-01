@@ -221,7 +221,7 @@ jobs:
           ./cbuild_install.sh -x buildmgr
         working-directory: toolbox
 
-      - name: Unzip files Linux Darwin
+      - name: Unzip files Linux or Darwin
         if: ${{ matrix.target == 'linux' || matrix.target == 'darwin'}}
         shell: bash
         run: |
@@ -270,8 +270,14 @@ jobs:
           tar -xvf vidx2pidx_*_${{ matrix.target }}_amd64.tar.gz -C vidx2pidx_amd64
         working-directory: toolbox
 
+      - name: Check Dir Content
+        shell: bash
+        run: |
+          ls -lR
+        working-directory: toolbox
+
       - name: Copy Files amd64
-        if: ${{ matrix.arch == 'arm64'}}
+        if: ${{ matrix.arch == 'amd64'}}
         shell: bash
         run: |
           mkdir -p cmsis-toolbox-${{ matrix.target }}-amd64/bin
@@ -638,7 +644,7 @@ jobs:
         with:
           name: reports-${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }}
           path: ./test/reports-${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }}
-          retention-days: ${{ inputs.retention-days }}
+          retention-days: 1
 
       - name: Fail job if Robot tests failed
         if: steps.run_robot.outputs.exit_code != '0'
