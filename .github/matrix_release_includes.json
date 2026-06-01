@@ -6,25 +6,9 @@
         "binary_extension": "",
         "temp_extension": ".mac",
         "archive_extension": ".tar.gz",
-        "runOnBranch":"always"
-    },
-    {
-        "runs_on":"ubuntu-22.04",
-        "target":"linux",
-        "arch": "amd64",
-        "binary_extension":"",
-        "temp_extension": ".lin",
-        "archive_extension": ".tar.gz",
-        "runOnBranch":"always"
-    },
-    {
-        "runs_on":"windows-2022",
-        "target":"windows",
-        "arch": "amd64",
-        "binary_extension":".exe",
-        "temp_extension": ".exe",
-        "archive_extension": ".zip",
-        "runOnBranch":"always"
+        "runOnBranch":"always",
+        "runTests": false,
+        "runsXCTestSuite": false
     },
     {
         "runs_on":"macos-15",
@@ -33,16 +17,42 @@
         "binary_extension": "",
         "temp_extension": ".mac",
         "archive_extension": ".tar.gz",
-        "runOnBranch":"always"
+        "runOnBranch":"always",
+        "runTests": false,
+        "runsXCTestSuite": false
     },
     {
         "runs_on":"ubuntu-22.04",
+        "target":"linux",
+        "arch": "amd64",
+        "binary_extension":"",
+        "temp_extension": ".lin",
+        "archive_extension": ".tar.gz",
+        "runOnBranch":"always",
+        "runTests": true,
+        "runsXCTestSuite": true
+    },
+    {
+        "runs_on":"ubuntu-22.04-arm",
         "target":"linux",
         "arch": "arm64",
         "binary_extension":"",
         "temp_extension": ".lin",
         "archive_extension": ".tar.gz",
-        "runOnBranch":"always"
+        "runOnBranch":"always",
+        "runTests": false,
+        "runsXCTestSuite": false
+    },
+    {
+        "runs_on":"windows-2022",
+        "target":"windows",
+        "arch": "amd64",
+        "binary_extension":".exe",
+        "temp_extension": ".exe",
+        "archive_extension": ".zip",
+        "runOnBranch":"always",
+        "runTests": true,
+        "runsXCTestSuite": true
     },
     {
         "runs_on":"windows-2022",
@@ -51,6 +61,8 @@
         "binary_extension":".exe",
         "temp_extension": ".exe",
         "archive_extension": ".zip",
-        "runOnBranch":"always"
+        "runOnBranch":"always",
+        "runTests": false,
+        "runsXCTestSuite": false
     }
 ]

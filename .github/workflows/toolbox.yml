@@ -37,7 +37,8 @@ jobs:
   matrix_prep:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      build: ${{ steps.build-matrix.outputs.matrix }}
+      test: ${{ steps.test-matrix.outputs.matrix }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
@@ -45,11 +46,36 @@ jobs:
           egress-policy: audit
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
       - uses: JoshuaTheMiller/conditional-build-matrix@81b51eb8d89e07b86404934b5fecde1cea1163a5 # v2.0.1
-        id: set-matrix
+        id: build-matrix
         with:
-          inputFile: '.github/matrix_release_includes.json'
+          inputFile: '.github/matrix_includes.json'
           filter: '[?runOnBranch==`always`]'
+
+      - uses: JoshuaTheMiller/conditional-build-matrix@81b51eb8d89e07b86404934b5fecde1cea1163a5 # v2.0.1
+        id: test-matrix-base
+        with:
+          inputFile: '.github/matrix_includes.json'
+          filter: '[?runTests==`true`]'
+
+      - name: Generate matrix with cmake versions
+        id: test-matrix
+        shell: bash
+        run: |
+          base_matrix='${{ steps.test-matrix-base.outputs.matrix }}'
+          # Read CMake version from vcpkg config
+          vcpkg_cmake_version=$(jq -r '.requires."arm:tools/kitware/cmake"' ./test/vcpkg-configuration.json)
+          echo "CMake version from vcpkg config: $vcpkg_cmake_version"
+          cmake_versions="[\"$vcpkg_cmake_version\", \"4.2.1\"]"
+          # base_matrix is expected to be: { "include": [ ... ] }
+          # produce: { "include": [ {..config.., cmake_version: ..}, ... ] }
+          result=$(jq -nc \
+            --argjson base "$base_matrix" \
+            --argjson cmake "$cmake_versions" '
+              { include: [ $base.include[] as $cfg | $cmake[] as $ver | ($cfg + {cmake_version: $ver}) ] }
+            ')
+          echo "matrix=$result" >> $GITHUB_OUTPUT
 
   create_archives:
     if: |
@@ -58,7 +84,7 @@ jobs:
     needs: [ matrix_prep ]
     runs-on: ${{ matrix.runs_on }}
     strategy:
-      matrix: ${{ fromJson(needs.matrix_prep.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.matrix_prep.outputs.build) }}
 
     steps:
       - name: Harden Runner
@@ -393,7 +419,7 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
-  tests:
+  release-package-tests:
     if: |
       ${{ github.event_name == 'pull_request' || github.event_name == 'release' }}
     needs: [ create_archives ]
@@ -464,7 +490,7 @@ jobs:
   publish-test-results:
     if: github.event_name != 'release'
     name: "Publish Tests Results"
-    needs: [ tests ]
+    needs: [ release-package-tests ]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -485,13 +511,144 @@ jobs:
       - name: publish test results
         uses: EnricoMi/publish-unit-test-result-action/linux@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2.23.0
         with:
-          commit: ${{ github.event.workflow_run.head_sha }}
           report_individual_runs: true
           files: "artifacts/**/test-results-*.xml"
 
+  e2e-tests:
+    name: test(${{ matrix.runs_on }},${{ matrix.arch }},CMake ${{ matrix.cmake_version }})
+    needs: [ matrix_prep, create_archives ]
+    runs-on: ${{ matrix.runs_on }}
+    continue-on-error: true
+    strategy:
+      matrix: ${{ fromJson(needs.matrix_prep.outputs.test) }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout toolbox repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install pip dependencies
+        shell: bash
+        run: |
+            python -m pip install --upgrade pip
+            pip install -r test/e2e/requirements.txt
+
+      - name: Create vcpkg config without CMake
+        if: matrix.cmake_version != '3.31.5'
+        shell: bash
+        run: |
+          jq 'del(.requires."arm:tools/kitware/cmake")' ./test/vcpkg-configuration.json > ./test/vcpkg-configuration-temp.json
+
+      - name: Setup vcpkg environment
+        if: matrix.cmake_version == '3.31.5'
+        uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1
+        with:
+          config: "./test/vcpkg-configuration.json"
+          vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
+          cache: "-"
+
+      - name: Setup vcpkg environment (without CMake)
+        if: matrix.cmake_version != '3.31.5'
+        uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1
+        with:
+          config: "./test/vcpkg-configuration-temp.json"
+          vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
+          cache: "-"
+
+      # Overlay CMake for non-vcpkg runs (no need to mutate the vcpkg config)
+      - name: Install CMake ${{ matrix.cmake_version }} (amd64)
+        if: matrix.cmake_version != '3.31.5' && matrix.arch == 'amd64'
+        uses: jwlawson/actions-setup-cmake@0d6a7d60b009d01c9e7523be22153ff8f19460d3 # v2.2.0
+        with:
+          cmake-version: '${{ matrix.cmake_version }}'
+
+      - name: Install CMake ${{ matrix.cmake_version }} (arm64)
+        if: matrix.cmake_version != '3.31.5' && matrix.arch == 'arm64'
+        shell: bash
+        run: |
+          # Install CMake via pip for ARM64 compatibility
+          pip install cmake==${{ matrix.cmake_version }}
+
+      - name: Confirm CMake selected
+        shell: bash
+        run: |
+          echo "cmake_version matrix value: ${{ matrix.cmake_version }}"
+          which cmake || true
+          cmake --version
+
+      - name: Activate Arm tool license
+        shell: bash
+        run: |
+          armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
+        working-directory: ./test
+
+      - name: Setup XC toolchain
+        if: ${{ matrix.runsXCTestSuite == true }}
+        uses: ./.github/setup_xc/
+        with:
+          os: ${{ matrix.target }}
+          version: '5.00'
+
+      - name: Download cmsis toolbox ${{ matrix.target }} ${{ matrix.arch }}
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+          path: cmsis-toolbox
+
+      - name: Set execution permissions
+        run: |
+          chmod -R +x ./cmsis-toolbox/bin/*
+
+      - name: Get toolbox path
+        if: always()
+        id: toolbox_path
+        shell: bash
+        run: |
+          echo "path=$(echo "$(pwd)/cmsis-toolbox/bin")" >> $GITHUB_OUTPUT
+
+      - name: Run Test
+        id: run_robot
+        shell: bash
+        continue-on-error: true
+        working-directory: ./test
+        env:
+          IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_LMS_BEARER_TOKEN }}
+        run: |
+          export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
+          robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }} \
+            --variable TEST_ENV_FILE:test-env-${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }}.md \
+            --consolewidth=150 --settag ${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }} \
+            --name ${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }} \
+            ./e2e
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+      - name: Archive test results
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reports-${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }}
+          path: ./test/reports-${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }}
+          retention-days: ${{ inputs.retention-days }}
+
+      - name: Fail job if Robot tests failed
+        if: steps.run_robot.outputs.exit_code != '0'
+        run: |
+          echo "Robot tests failed"
+          exit 1
+
   release:
     if: ${{ github.event_name == 'release' }}
-    needs: [ tests ]
+    needs: [ release-package-tests, e2e-tests ]
     runs-on: ubuntu-22.04
     timeout-minutes: 15
     permissions:
