@@ -33,6 +33,10 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   matrix_prep:
     runs-on: ubuntu-latest
@@ -50,18 +54,17 @@ jobs:
       - uses: JoshuaTheMiller/conditional-build-matrix@81b51eb8d89e07b86404934b5fecde1cea1163a5 # v2.0.1
         id: build-matrix
         with:
-          inputFile: '.github/matrix_includes.json'
+          inputFile: '.github/matrix_release_includes.json'
           filter: '[?runOnBranch==`always`]'
 
       - uses: JoshuaTheMiller/conditional-build-matrix@81b51eb8d89e07b86404934b5fecde1cea1163a5 # v2.0.1
         id: test-matrix-base
         with:
-          inputFile: '.github/matrix_includes.json'
+          inputFile: '.github/matrix_release_includes.json'
           filter: '[?runTests==`true`]'
 
       - name: Generate matrix with cmake versions
         id: test-matrix
-        shell: bash
         run: |
           base_matrix='${{ steps.test-matrix-base.outputs.matrix }}'
           # Read CMake version from vcpkg config
@@ -102,7 +105,7 @@ jobs:
           mkdir -p toolbox
 
       - name: Download buildmgr release asset
-        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/devtools"
           version: tags/tools/buildmgr/2.14.0
@@ -111,7 +114,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download projmgr release asset
-        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/devtools"
           version: tags/tools/projmgr/2.14.0
@@ -120,7 +123,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download cbridge release assets
-        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/generator-bridge"
           version: tags/v0.10.0
@@ -130,7 +133,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download cbuild release assets
-        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/cbuild"
           version: tags/v2.14.0
@@ -140,7 +143,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download cbuild2cmake release assets
-        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/cbuild2cmake"
           version: tags/v0.11.0
@@ -150,7 +153,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download cpackget release assets
-        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/cpackget"
           version: tags/v2.2.1
@@ -160,7 +163,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download packchk release assets
-        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/devtools"
           version: tags/tools/packchk/1.4.5
@@ -170,7 +173,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download svdconv release assets
-        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/devtools"
           version: tags/tools/svdconv/3.3.50
@@ -180,7 +183,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download vidx2pidx release assets
-        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # master
+        uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/vidx2pidx"
           version: tags/v0.0.5
@@ -190,7 +193,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Directories
-        shell: bash
         run: |
           mkdir -p buildmgr
           mkdir -p projmgr
@@ -208,7 +210,6 @@ jobs:
 
       - name: Unzip files Windows
         if: ${{ matrix.target == 'windows'}}
-        shell: bash
         run: |
           unzip cbridge_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d cbridge
           unzip cbuild_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d cbuild
@@ -223,7 +224,6 @@ jobs:
 
       - name: Unzip files Linux or Darwin
         if: ${{ matrix.target == 'linux' || matrix.target == 'darwin'}}
-        shell: bash
         run: |
           tar -xvf cbridge_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C cbridge
           tar -xvf cbuild_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C cbuild
@@ -237,70 +237,52 @@ jobs:
         working-directory: toolbox
 
       - name: Unzip files Windows & amd64
-        if: ${{ matrix.target == 'windows' && matrix.arch == 'arm64' }}
-        shell: bash
+        if: ${{ matrix.target == 'windows' }}
         run: |
-          unzip cbridge_\*_${{ matrix.target }}_amd64.zip -d cbridge_amd64
-          unzip cbuild_\*_${{ matrix.target }}_amd64.zip -d cbuild_amd64
-          unzip cbuild2cmake_\*_${{ matrix.target }}_amd64.zip -d cbuild2cmake_amd64
-          unzip cpackget_\*_${{ matrix.target }}_amd64.zip -d cpackget_amd64
-          unzip packchk\*-${{ matrix.target }}-amd64.zip -d packchk_amd64
-          unzip svdconv-\*-${{ matrix.target }}-amd64.zip -d svdconv_amd64
-          unzip vidx2pidx_\*_${{ matrix.target }}_amd64.zip -d vidx2pidx_amd64
+          unzip cbridge_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d cbridge_${{ matrix.arch }}
+          unzip cbuild_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d cbuild_${{ matrix.arch }}
+          unzip cbuild2cmake_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d cbuild2cmake_${{ matrix.arch }}
+          unzip cpackget_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d cpackget_${{ matrix.arch }}
+          unzip packchk\*-${{ matrix.target }}-${{ matrix.arch }}.zip -d packchk_${{ matrix.arch }}
+          unzip svdconv-\*-${{ matrix.target }}-${{ matrix.arch }}.zip -d svdconv_${{ matrix.arch }}
+          unzip vidx2pidx_\*_${{ matrix.target }}_${{ matrix.arch }}.zip -d vidx2pidx_${{ matrix.arch }}
         working-directory: toolbox
 
       - name: Unzip files Linux Darwin & amd64
-        if: ${{ (matrix.target == 'linux' || matrix.target == 'darwin') && matrix.arch == 'arm64'}}
-        shell: bash
+        if: ${{ (matrix.target == 'linux' || matrix.target == 'darwin')}}
         run: |
-          mkdir -p projmgr_amd64
-          mkdir -p cbridge_amd64
-          mkdir -p cbuild_amd64
-          mkdir -p cbuild2cmake_amd64
-          mkdir -p cpackget_amd64
-          mkdir -p packchk_amd64
-          mkdir -p svdconv_amd64
-          mkdir -p vidx2pidx_amd64
-          tar -xvf cbridge_*_${{ matrix.target }}_amd64.tar.gz -C cbridge_amd64
-          tar -xvf cbuild_*_${{ matrix.target }}_amd64.tar.gz -C cbuild_amd64
-          tar -xvf cbuild2cmake_*_${{ matrix.target }}_amd64.tar.gz -C cbuild2cmake_amd64
-          tar -xvf cpackget_*_${{ matrix.target }}_amd64.tar.gz -C cpackget_amd64
-          tar -xvf packchk-*-${{ matrix.target }}-amd64.tbz2 -C packchk_amd64
-          tar -xvf svdconv-*-${{ matrix.target }}-amd64.tbz2 -C svdconv_amd64
-          tar -xvf vidx2pidx_*_${{ matrix.target }}_amd64.tar.gz -C vidx2pidx_amd64
+          mkdir -p projmgr_${{ matrix.arch }}
+          mkdir -p cbridge_${{ matrix.arch }}
+          mkdir -p cbuild_${{ matrix.arch }}
+          mkdir -p cbuild2cmake_${{ matrix.arch }}
+          mkdir -p cpackget_${{ matrix.arch }}
+          mkdir -p packchk_${{ matrix.arch }}
+          mkdir -p svdconv_${{ matrix.arch }}
+          mkdir -p vidx2pidx_${{ matrix.arch }}
+          tar -xvf cbridge_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C cbridge_${{ matrix.arch }}
+          tar -xvf cbuild_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C cbuild_${{ matrix.arch }}
+          tar -xvf cbuild2cmake_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C cbuild2cmake_${{ matrix.arch }}
+          tar -xvf cpackget_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C cpackget_${{ matrix.arch }}
+          tar -xvf packchk-*-${{ matrix.target }}-${{ matrix.arch }}.tbz2 -C packchk_${{ matrix.arch }}
+          tar -xvf svdconv-*-${{ matrix.target }}-${{ matrix.arch }}.tbz2 -C svdconv_${{ matrix.arch }}
+          tar -xvf vidx2pidx_*_${{ matrix.target }}_${{ matrix.arch }}.tar.gz -C vidx2pidx_${{ matrix.arch }}
         working-directory: toolbox
-
-      - name: Check Dir Content
-        shell: bash
-        run: |
-          ls -lR
-        working-directory: toolbox
-
-      - name: Copy Files amd64
-        if: ${{ matrix.arch == 'amd64'}}
-        shell: bash
-        run: |
-          mkdir -p cmsis-toolbox-${{ matrix.target }}-amd64/bin
-          cp ./buildmgr/bin/cbuildgen${{ matrix.temp_extension }}-amd64                        ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/cbuildgen${{ matrix.binary_extension }}
-          cp ./projmgr/bin/${{ matrix.target }}-amd64/csolution${{ matrix.binary_extension }}  ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/csolution${{ matrix.binary_extension }}
-          cp ./cbridge_amd64/*/cbridge${{ matrix.binary_extension }}                           ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/cbridge${{ matrix.binary_extension }}
-          cp ./cbuild_amd64/*/cbuild${{ matrix.binary_extension }}                             ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/cbuild${{ matrix.binary_extension }}
-          cp ./cbuild2cmake_amd64/*/cbuild2cmake${{ matrix.binary_extension }}                 ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/cbuild2cmake${{ matrix.binary_extension }}
-          cp ./cpackget_amd64/*/cpackget${{ matrix.binary_extension }}                         ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/cpackget${{ matrix.binary_extension }}
-          cp ./packchk_amd64/packchk${{ matrix.binary_extension }}                             ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/packchk${{ matrix.binary_extension }}
-          cp ./svdconv_amd64/svdconv${{ matrix.binary_extension }}                             ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/svdconv${{ matrix.binary_extension }}
-          cp ./vidx2pidx_amd64/*/vidx2pidx${{ matrix.binary_extension }}                       ./cmsis-toolbox-${{ matrix.target }}-amd64/bin/vidx2pidx${{ matrix.binary_extension }}
-        working-directory: toolbox
-
-      - name: Add execution permission to the binaries and set files ownership
-        if: ${{ (matrix.target == 'linux' || matrix.target == 'darwin') && matrix.arch == 'arm64'}}
-        run: |
-          sudo chmod -R +x bin/*
-          sudo chown -R root: *
-        working-directory: toolbox/cmsis-toolbox-${{ matrix.target }}-amd64
 
       - name: Copy Files
-        shell: bash
+        run: |
+          mkdir -p cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}/bin
+          cp ./buildmgr/bin/cbuildgen${{ matrix.temp_extension }}-${{ matrix.arch }}                        ./cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}/bin/cbuildgen${{ matrix.binary_extension }}
+          cp ./projmgr/bin/${{ matrix.target }}-${{ matrix.arch }}/csolution${{ matrix.binary_extension }}  ./cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}/bin/csolution${{ matrix.binary_extension }}
+          cp ./cbridge_${{ matrix.arch }}/*/cbridge${{ matrix.binary_extension }}                           ./cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}/bin/cbridge${{ matrix.binary_extension }}
+          cp ./cbuild_${{ matrix.arch }}/*/cbuild${{ matrix.binary_extension }}                             ./cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}/bin/cbuild${{ matrix.binary_extension }}
+          cp ./cbuild2cmake_${{ matrix.arch }}/*/cbuild2cmake${{ matrix.binary_extension }}                 ./cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}/bin/cbuild2cmake${{ matrix.binary_extension }}
+          cp ./cpackget_${{ matrix.arch }}/*/cpackget${{ matrix.binary_extension }}                         ./cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}/bin/cpackget${{ matrix.binary_extension }}
+          cp ./packchk_${{ matrix.arch }}/packchk${{ matrix.binary_extension }}                             ./cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}/bin/packchk${{ matrix.binary_extension }}
+          cp ./svdconv_${{ matrix.arch }}/svdconv${{ matrix.binary_extension }}                             ./cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}/bin/svdconv${{ matrix.binary_extension }}
+          cp ./vidx2pidx_${{ matrix.arch }}/*/vidx2pidx${{ matrix.binary_extension }}                       ./cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}/bin/vidx2pidx${{ matrix.binary_extension }}
+        working-directory: toolbox
+
+      - name: Copy Files
         run: |
           curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.57/schema/PACK.xsd --output distribution/etc/PACK.xsd
           curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.57/schema/PackIndex.xsd --output distribution/etc/PackIndex.xsd
@@ -324,7 +306,6 @@ jobs:
 
       - name: Update toolchain config files
         if: ${{ matrix.target == 'windows' }}
-        shell: bash
         run: |
           sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/AC6.6.16.2.cmake
           sed -i '/set(EXT/c\  set(EXT .exe)' ./distribution/etc/GCC.10.3.1.cmake
@@ -336,7 +317,7 @@ jobs:
 
       - name: Create output folders
         run: |
-          mkdir cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
+          mkdir -p cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           cp -r distribution/* cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
         working-directory: toolbox
 
@@ -359,7 +340,6 @@ jobs:
             pip install pyyaml
 
       - name: Generate manifest file
-        shell: bash
         run: |
           # Get the toolbox version
           TOOLBOX_VERSION=$(git describe --tags || echo "untagged")
@@ -383,6 +363,7 @@ jobs:
 
       - name: Zip folders Windows
         if: ${{ matrix.target == 'windows'}}
+        shell: pwsh
         run: |
           Compress-Archive -Path cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }} -Destination cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}${{ matrix.archive_extension }}
         working-directory: toolbox
@@ -431,7 +412,7 @@ jobs:
     needs: [ create_archives ]
     timeout-minutes: 15
     runs-on: ${{ matrix.config.os }}
-    name: 'Test (${{ matrix.config.target }}, ${{ matrix.config.arch }})'
+    name: 'Release Package Test (${{ matrix.config.target }}, ${{ matrix.config.arch }})'
     strategy:
       fail-fast: true
       matrix:
@@ -521,7 +502,7 @@ jobs:
           files: "artifacts/**/test-results-*.xml"
 
   e2e-tests:
-    name: test(${{ matrix.runs_on }},${{ matrix.arch }},CMake ${{ matrix.cmake_version }})
+    name: "E2E Test (${{ matrix.runs_on }}, ${{ matrix.arch }}, CMake ${{ matrix.cmake_version }})"
     needs: [ matrix_prep, create_archives ]
     runs-on: ${{ matrix.runs_on }}
     continue-on-error: true
@@ -544,14 +525,12 @@ jobs:
           cache: 'pip'
 
       - name: Install pip dependencies
-        shell: bash
         run: |
             python -m pip install --upgrade pip
             pip install -r test/e2e/requirements.txt
 
       - name: Create vcpkg config without CMake
         if: matrix.cmake_version != '3.31.5'
-        shell: bash
         run: |
           jq 'del(.requires."arm:tools/kitware/cmake")' ./test/vcpkg-configuration.json > ./test/vcpkg-configuration-temp.json
 
@@ -580,20 +559,17 @@ jobs:
 
       - name: Install CMake ${{ matrix.cmake_version }} (arm64)
         if: matrix.cmake_version != '3.31.5' && matrix.arch == 'arm64'
-        shell: bash
         run: |
           # Install CMake via pip for ARM64 compatibility
           pip install cmake==${{ matrix.cmake_version }}
 
       - name: Confirm CMake selected
-        shell: bash
         run: |
           echo "cmake_version matrix value: ${{ matrix.cmake_version }}"
           which cmake || true
           cmake --version
 
       - name: Activate Arm tool license
-        shell: bash
         run: |
           armlm activate --server https://mdk-preview.keil.arm.com --product KEMDK-COM0
         working-directory: ./test
@@ -611,6 +587,18 @@ jobs:
           name: cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
           path: cmsis-toolbox
 
+      - name: Extract cmsis toolbox Windows
+        if: ${{ matrix.target == 'windows' }}
+        run: |
+          unzip cmsis-toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}.zip -d cmsis-toolbox_tmp
+          cp -r cmsis-toolbox_tmp/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}/. cmsis-toolbox/
+          rm -rf cmsis-toolbox_tmp
+
+      - name: Extract cmsis toolbox Linux Darwin
+        if: ${{ matrix.target == 'linux' || matrix.target == 'darwin' }}
+        run: |
+          tar -xzf cmsis-toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}.tar.gz -C cmsis-toolbox --strip-components 1
+
       - name: Set execution permissions
         run: |
           chmod -R +x ./cmsis-toolbox/bin/*
@@ -618,17 +606,15 @@ jobs:
       - name: Get toolbox path
         if: always()
         id: toolbox_path
-        shell: bash
         run: |
           echo "path=$(echo "$(pwd)/cmsis-toolbox/bin")" >> $GITHUB_OUTPUT
 
       - name: Run Test
         id: run_robot
-        shell: bash
         continue-on-error: true
         working-directory: ./test
         env:
-          IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_LMS_BEARER_TOKEN }}
+          IAR_LMS_BEARER_TOKEN: ${{ secrets.IAR_TOKEN }}
         run: |
           export PATH="${{steps.toolbox_path.outputs.path}}:$PATH"
           robot --outputdir reports-${{ matrix.target }}-${{ matrix.arch }}-cmake${{ matrix.cmake_version }} \
@@ -661,6 +647,11 @@ jobs:
       contents: write
 
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
       - name: Download cmsis toolbox windows amd64 zip
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
