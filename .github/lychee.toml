@@ -33,7 +33,8 @@ exclude = [
   'https://www.keil.com/',
   'https://www.st.com/',
   'https://www.nxp.com/configtools',
-  'https://www.microchip.com/en-us/tools-resources'
+  'https://www.microchip.com/en-us/tools-resources',
+  'https://www.segger.com/products'
 ]
 
 # Exclude paths from getting checked. The values are treated as regular expressions

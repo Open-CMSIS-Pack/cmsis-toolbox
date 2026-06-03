@@ -152,7 +152,7 @@ jobs:
           GOOS=${{ matrix.target }} \
           GOARCH=${{ matrix.arch }} \
           GOMODCACHE=$ABS_CBUILD_GOMODCACHE \
-          go build -ldflags "-X main.version=$(git describe --tags)" \
+          go build -ldflags "-X main.version=$(git describe --tags --always 2>/dev/null || git rev-parse --short HEAD)" \
             -o build/cbuild${{ matrix.binary_extension }} ./cmd/cbuild
 
       # Download and build cpackget executable
@@ -178,7 +178,7 @@ jobs:
           GOOS=${{ matrix.target }} \
           GOARCH=${{ matrix.arch }} \
           GOMODCACHE=$ABS_CPACKGET_GOMODCACHE \
-          go build -ldflags "-X main.version=$(git describe --tags)" \
+          go build -ldflags "-X main.version=$(git describe --tags --always 2>/dev/null || git rev-parse --short HEAD)" \
             -o build/cpackget${{ matrix.binary_extension }} ./cmd
 
       # Download and build cbuild2cmake executable
@@ -203,7 +203,7 @@ jobs:
           GOOS=${{ matrix.target }} \
           GOARCH=${{ matrix.arch }} \
           GOMODCACHE=$ABS_CBUILD2CMAKE_GOMODCACHE \
-          go build -ldflags "-X main.version=$(git describe --tags)" \
+          go build -ldflags "-X main.version=$(git describe --tags --always 2>/dev/null || git rev-parse --short HEAD)" \
             -o build/cbuild2cmake${{ matrix.binary_extension }} ./cmd/cbuild2cmake
 
       # Download and build vidx2pidx executable
@@ -228,7 +228,7 @@ jobs:
           GOOS=${{ matrix.target }} \
           GOARCH=${{ matrix.arch }} \
           GOMODCACHE=$ABS_VIDX2PIDX_GOMODCACHE \
-          go build -ldflags "-X main.version=$(git describe --tags)" \
+          go build -ldflags "-X main.version=$(git describe --tags --always 2>/dev/null || git rev-parse --short HEAD)" \
             -o build/vidx2pidx${{ matrix.binary_extension }} ./cmd
 
       # Download and build cbridge executable
@@ -253,7 +253,7 @@ jobs:
           GOOS=${{ matrix.target }} \
           GOARCH=${{ matrix.arch }} \
           GOMODCACHE=$ABS_CBRIDGE_GOMODCACHE \
-          go build -ldflags "-X main.version=$(git describe --tags)" \
+          go build -ldflags "-X main.version=$(git describe --tags --always 2>/dev/null || git rev-parse --short HEAD)" \
             -o build/cbridge${{ matrix.binary_extension }} ./cmd
 
       # Download projmgr and cbuildgen from nightly
@@ -339,11 +339,25 @@ jobs:
       - name: Generate manifest file
         shell: bash
         run: |
+          set -x
+          echo "[debug] Start manifest generation"
+          echo "[debug] Working directory: $(pwd)"
+          echo "[debug] Current commit: $(git rev-parse HEAD)"
+          echo "[debug] Tags reachable from HEAD (first 20):"
+          git tag --merged HEAD | sort -V | tail -20 || true
+
           # Get the toolbox version from the latest semantic version tag
           BASE_TAG=$(git tag | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1)
+          echo "[debug] BASE_TAG candidate: ${BASE_TAG:-<none>}"
           if [ -n "$BASE_TAG" ]; then
-            TOOLBOX_VERSION=$(git describe --tags --match "$BASE_TAG")
+            echo "[debug] Attempt git describe using BASE_TAG match"
+            TOOLBOX_VERSION=$(git describe --tags --match "$BASE_TAG" 2>/dev/null || true)
+            if [ -z "$TOOLBOX_VERSION" ]; then
+              echo "[debug] git describe returned no value; falling back to BASE_TAG"
+              TOOLBOX_VERSION="$BASE_TAG"
+            fi
           else
+            echo "[debug] No semantic BASE_TAG found; using untagged"
             TOOLBOX_VERSION="untagged"
           fi
           echo "Toolbox version: $TOOLBOX_VERSION"
@@ -351,12 +365,15 @@ jobs:
           # Set binary extension (default to empty string if not set)
           BINARY_EXTENSION=${{ matrix.binary_extension }}
           [ -z "$BINARY_EXTENSION" ] && BINARY_EXTENSION=""
+          echo "[debug] BINARY_EXTENSION: ${BINARY_EXTENSION:-<empty>}"
 
           # Get absolute path to the toolbox directory
           TOOLBOX_ABS_PATH=$(pwd)/cmsis-toolbox
+          echo "[debug] TOOLBOX_ABS_PATH: $TOOLBOX_ABS_PATH"
 
           # Get host machine configuration
           HOST=${{ matrix.target }}-${{ matrix.arch }}
+          echo "[debug] HOST: $HOST"
 
           # Run the Python script to generate the manifest file
           python ./scripts/generate_manifest.py \
@@ -383,9 +400,13 @@ jobs:
       - name: Create Debian Package
         if: ${{ matrix.target == 'linux' && matrix.arch == 'amd64' }}
         run: |
+            set -x
+            echo "[debug] Start Debian package generation"
             git fetch
+            echo "[debug] Current commit: $(git rev-parse HEAD)"
+            echo "[debug] Latest tag (abbrev=0) candidate: $(git describe --tags --abbrev=0 2>/dev/null || echo 0.0.0)"
             mkdir -p ./debian/build
-            cmake -G Ninja -S ./debian -B ./debian/build -DTOOLBOX_ROOT=$(realpath ./cmsis-toolbox) -DTOOLBOX_VERSION=$(git describe --tags --abbrev=0)+nightly-$(date +%Y%m%d%H%M)
+            cmake -G Ninja -S ./debian -B ./debian/build -DTOOLBOX_ROOT=$(realpath ./cmsis-toolbox) -DTOOLBOX_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo 0.0.0)+nightly-$(date +%Y%m%d%H%M)
             cd ./debian/build
             cpack -G DEB
 
