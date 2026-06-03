@@ -70,8 +70,8 @@ jobs:
     name: Create toolbox [${{ matrix.target }}-${{ matrix.arch }}]
     needs: [ matrix_prep ]
     runs-on: ${{ matrix.runs_on }}
-    continue-on-error: true
     strategy:
+      fail-fast: false
       matrix: ${{ fromJson(needs.matrix_prep.outputs.build) }}
     steps:
       - name: Harden Runner
