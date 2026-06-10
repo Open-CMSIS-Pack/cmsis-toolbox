@@ -34,9 +34,9 @@ class Utils:
     @staticmethod
     def run_command(exe_path, args):
         try:
-            command = exe_path + ' ' + ' '.join(args)
-            logger.info('Running Command: %s' % command)
-            processOut = subprocess.run(command, check=True, shell=True, universal_newlines=True, capture_output=True, timeout=300)
+            command = [exe_path, *args]
+            logger.info('Running Command: %s' % ' '.join(command))
+            processOut = subprocess.run(command, check=True, universal_newlines=True, capture_output=True, timeout=300)
             return True, processOut.stdout
         except subprocess.CalledProcessError as e:
             logger.error(f"Error executing command: {e}")
