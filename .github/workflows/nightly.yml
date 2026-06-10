@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       trigger_extension_build:
-        description: 'Trigger the CMSIS solution extension build as part of this workflow'
+        description: 'Trigger the CMSIS solution extension build as part of this workflow.'
         required: false
         default: false
         type: boolean
       use_nightly_devtools:
-        description: 'Use latest nightly devtools artifacts, otherwise use the latest stable build'
+        description: 'Use the latest nightly devtools artifacts, otherwise use the latest stable build.'
         required: false
         default: false
         type: boolean
@@ -273,7 +273,7 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@a5ad31d6a139d249332a2605b85202e8c0b78450 # v2.19.1
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
 
