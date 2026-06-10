@@ -97,14 +97,15 @@ debugger:
 !!! Note
     The `trace:` feature is under development. This section provides a preview.
   
-J-Link supports SWO Trace.
+J-Link supports the SWO trace output of Cortex-M devices. The raw trace data are made available from the J-Link GDB Server through a TCP connection.
 
 `trace:`                                     |              | Description
 :--------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `mode:`                   | **Required** | Trace: `off` (default), `server`.
 &nbsp;&nbsp;&nbsp; `input-clock:`            | **Required** | Trace input clock frequency in Hz.
-&nbsp;&nbsp;&nbsp; `port-type:`              |   Optional   | Set trace port transport mode. Currently only `SWO-UART` is accepted.
-&nbsp;&nbsp;&nbsp; `output-clock:`           |   Optional   | Trace output clock for the selected port type. For `SWO-UART` mode this is the baudrate.
-&nbsp;&nbsp;&nbsp; `server-port:`            |   Optional   | Set TCP/IP port number of Trace server (default: 5555).
+&nbsp;&nbsp;&nbsp; `port-type:`              |   Optional   | Set trace port transport mode. Currently only `swo-uart` is accepted (default: `swo-uart`).
+&nbsp;&nbsp;&nbsp; `output-clock:`           |   Optional   | Trace output clock for the selected port type. For `swo-uart` mode this is the baudrate.
+&nbsp;&nbsp;&nbsp; `server-port:`            |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 
 #### Trace Clocks
 
