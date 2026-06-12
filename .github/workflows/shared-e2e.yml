@@ -53,7 +53,7 @@ jobs:
         shell: bash
         run: |
           base_matrix='${{ steps.test-matrix-base.outputs.matrix }}'
-          # Test with both CMake 3.31.12 and 4.3.3 (installed externally, not via vcpkg)
+          # Test both CMake versions via workflow matrix
           cmake_versions="[\"3.31.12\", \"4.3.3\"]"
           # base_matrix is expected to be: { "include": [ ... ] }
           # produce: { "include": [ {..config.., cmake_version: ..}, ... ] }
@@ -424,26 +424,18 @@ jobs:
             python -m pip install --upgrade pip
             pip install -r test/e2e/requirements.txt
 
+      - name: Prepare vcpkg config with CMake ${{ matrix.cmake_version }}
+        shell: bash
+        run: |
+          jq '.requires."arm:tools/kitware/cmake" = "${{ matrix.cmake_version }}"' \
+            ./test/vcpkg-configuration.json > ./test/vcpkg-configuration-temp.json
+
       - name: Setup vcpkg environment
         uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1
         with:
-          config: "./test/vcpkg-configuration.json"
+          config: "./test/vcpkg-configuration-temp.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
           cache: "-"
-
-      # Install CMake (both 3.31.12 and 4.3.3 installed externally, not via vcpkg)
-      - name: Install CMake ${{ matrix.cmake_version }} (amd64)
-        if: matrix.arch == 'amd64'
-        uses: jwlawson/actions-setup-cmake@0d6a7d60b009d01c9e7523be22153ff8f19460d3 # v2.2.0
-        with:
-          cmake-version: '${{ matrix.cmake_version }}'
-
-      - name: Install CMake ${{ matrix.cmake_version }} (arm64)
-        if: matrix.arch == 'arm64'
-        shell: bash
-        run: |
-          # Install CMake via pip for ARM64 compatibility
-          pip install cmake==${{ matrix.cmake_version }}
 
       - name: Confirm CMake selected
         shell: bash
