@@ -1,0 +1,38 @@
+name: Re-run Failed Jobs
+
+on:
+  workflow_run:
+    workflows: [ Nightly ]
+    types: [ completed ]
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  rerun-failed-jobs:
+    if: >-
+      github.repository == 'Open-CMSIS-Pack/cmsis-toolbox' &&
+      github.event.workflow_run.event == 'workflow_dispatch' &&
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.run_attempt == 1
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Re-run failed jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          API_URL="https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/rerun-failed-jobs"
+          echo "Requesting rerun of failed jobs for run ${{ github.event.workflow_run.id }}"
+
+          curl --fail-with-body --show-error --silent \
+            -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "${API_URL}"
