@@ -53,10 +53,8 @@ jobs:
         shell: bash
         run: |
           base_matrix='${{ steps.test-matrix-base.outputs.matrix }}'
-          # Read CMake version from vcpkg config
-          vcpkg_cmake_version=$(jq -r '.requires."arm:tools/kitware/cmake"' ./test/vcpkg-configuration.json)
-          echo "CMake version from vcpkg config: $vcpkg_cmake_version"
-          cmake_versions="[\"$vcpkg_cmake_version\", \"4.2.1\"]"
+          # Test both CMake versions via workflow matrix
+          cmake_versions="[\"3.31.12\", \"4.3.3\"]"
           # base_matrix is expected to be: { "include": [ ... ] }
           # produce: { "include": [ {..config.., cmake_version: ..}, ... ] }
           result=$(jq -nc \
@@ -426,41 +424,18 @@ jobs:
             python -m pip install --upgrade pip
             pip install -r test/e2e/requirements.txt
 
-      - name: Create vcpkg config without CMake
-        if: matrix.cmake_version != '3.31.5'
+      - name: Prepare vcpkg config with CMake ${{ matrix.cmake_version }}
         shell: bash
         run: |
-          jq 'del(.requires."arm:tools/kitware/cmake")' ./test/vcpkg-configuration.json > ./test/vcpkg-configuration-temp.json
+          jq '.requires."arm:tools/kitware/cmake" = "${{ matrix.cmake_version }}"' \
+            ./test/vcpkg-configuration.json > ./test/vcpkg-configuration-temp.json
 
       - name: Setup vcpkg environment
-        if: matrix.cmake_version == '3.31.5'
-        uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1
-        with:
-          config: "./test/vcpkg-configuration.json"
-          vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
-          cache: "-"
-
-      - name: Setup vcpkg environment (without CMake)
-        if: matrix.cmake_version != '3.31.5'
         uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1
         with:
           config: "./test/vcpkg-configuration-temp.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
           cache: "-"
-
-      # Overlay CMake for non-vcpkg runs (no need to mutate the vcpkg config)
-      - name: Install CMake ${{ matrix.cmake_version }} (amd64)
-        if: matrix.cmake_version != '3.31.5' && matrix.arch == 'amd64'
-        uses: jwlawson/actions-setup-cmake@0d6a7d60b009d01c9e7523be22153ff8f19460d3 # v2.2.0
-        with:
-          cmake-version: '${{ matrix.cmake_version }}'
-
-      - name: Install CMake ${{ matrix.cmake_version }} (arm64)
-        if: matrix.cmake_version != '3.31.5' && matrix.arch == 'arm64'
-        shell: bash
-        run: |
-          # Install CMake via pip for ARM64 compatibility
-          pip install cmake==${{ matrix.cmake_version }}
 
       - name: Confirm CMake selected
         shell: bash
@@ -570,10 +545,10 @@ jobs:
         python -m robot.rebot --name Collective_Robot_Results \
             --outputdir collective_robot_results \
             --output output.xml \
-            ./reports-windows-amd64-cmake3.31.5/output.xml \
-            ./reports-windows-amd64-cmake4.2.1/output.xml \
-            ./reports-linux-amd64-cmake3.31.5/output.xml \
-            ./reports-linux-amd64-cmake4.2.1/output.xml
+            ./reports-windows-amd64-cmake3.31.12/output.xml \
+            ./reports-windows-amd64-cmake4.3.3/output.xml \
+            ./reports-linux-amd64-cmake3.31.12/output.xml \
+            ./reports-linux-amd64-cmake4.3.3/output.xml
 
     - name: Generate Summary report
       if: always()
