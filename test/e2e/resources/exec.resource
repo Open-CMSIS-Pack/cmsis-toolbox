@@ -111,8 +111,18 @@ Run Csolution Project
     ${filecontexts}=                Convert And Filter Contexts    ${contexts}
     @{args_ex}                      Create List                    @{args}    @{filecontexts}
 
+    # For SimpleTZ solution, explicitly build the TrustZone contexts in order
+    ${file_name}=    Evaluate    os.path.basename(r'''${input_file}''')    modules=os
+    @{args_cbuildgen}=    Copy List    ${args_ex}
+    IF    '${file_name}' == 'SimpleTZ.csolution.yml'
+        Append To List    ${args_cbuildgen}    -c    CM33_s.Debug+AVH
+        Append To List    ${args_cbuildgen}    -c    CM33_ns.Debug+AVH
+        Append To List    ${args_cbuildgen}    -c    CM33_s.Release+AVH
+        Append To List    ${args_cbuildgen}    -c    CM33_ns.Release+AVH
+    END
+
     ${res_cbuildgen}=       Run Keyword And Ignore Error
-    ...    Build Example With cbuildgen      ${input_file}    ${expect}    ${args_ex}
+    ...    Build Example With cbuildgen      ${input_file}    ${expect}    ${args_cbuildgen}
     ${res_cbuild2cmake}=    Run Keyword And Ignore Error
     ...    Build Example with cbuild2cmake    ${input_file}    ${expect}    ${args_ex}
 
