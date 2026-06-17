@@ -308,7 +308,7 @@ debugger:
 
 CMSIS-DAP supports the SWO trace output of Cortex-M devices. The raw trace data are made available from pyOCD through a TCP connection or a binary file.
 The often device-specific trace capture capabilities are configured using the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
-Such device-specific settings can also be individually overridden under [`debug-vars-set:`](#debug-vars-set) node of the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management).
+Such device-specific settings can also be individually overridden under the [`debug-vars-set:`](#debug-vars-set) node under the [`debugger:`](#debugger) node.
 This allows to pass changed settings in a single configuration file.
 Refer to the [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section in the device PDSC file to learn about settings available for a device.
 
@@ -346,12 +346,12 @@ The above configurations are passed to debug sequence implementations through [p
 ### `debug-vars-set:`
 
 !!! Note
-    The `debug-vars-set:` feature is under development. This section provides a preview.
+    The `debug-vars-set:` feature to change settings is under development. This section provides a preview.
 
-Device-specific sequence settings like for debug and trace connections are usually configured through the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file. The `debug-vars-set:` node provides an alternative way to configure such settings
-together with other pyOCD debugger settings in a single place.
+Device-specific sequence settings like for debug and trace connections are usually configured through the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file. The `debug-vars-set:` node under `debugger:` provides an alternative way to configure such
+settings together with other pyOCD debugger settings in a single place.
 
-The value of the `debug-vars-set:` node is a string of the same format as used in the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
+The `debug-vars-set:` node can contain a list of child nodes which are key-value pairs. The keys are the debug access variables as defined in the [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section of the PDSC file.
 
 !!! Note
     - Settings that are not listed under this node default to their assignment in a provided [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
@@ -371,14 +371,14 @@ The value of the `debug-vars-set:` node is a string of the same format as used i
         pname: CM7
       - port: 3334
         pname: CM4
-    debug-vars-set: |
-      // DBGMCU configuration register (DBGMCU_CR)
-      DbgMCU_CR    = 0x00000007;
-      // TPIU Pin Routing (TRACECLK fixed on Pin PE2)
-      TraceD0_Pin  = 0x00040003;  // Pin PE3
-      TraceD1_Pin  = 0x00040004;  // Pin PE4
-      TraceD2_Pin  = 0x00040005;  // Pin PE5
-      TraceD3_Pin  = 0x00040006;  // Pin PE6
+    debug-vars-set:
+      # DBGMCU configuration register (DBGMCU_CR)
+      DbgMCU_CR: 0x00000007
+      # TPIU Pin Routing (TRACECLK fixed on Pin PE2)
+      TraceD0_Pin: 0x00040003  # Pin PE3
+      TraceD1_Pin: 0x00040004  # Pin PE4
+      TraceD2_Pin: 0x00040005  # Pin PE5
+      TraceD3_Pin: 0x00040006  # Pin PE6
 ```
 
 ## Minimal Setup
