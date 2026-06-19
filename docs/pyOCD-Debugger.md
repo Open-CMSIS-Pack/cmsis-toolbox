@@ -307,8 +307,7 @@ debugger:
     The `trace:` feature is under development. This section provides a preview.
 
 CMSIS-DAP supports the SWO trace output of Cortex-M devices. The raw trace data are made available from pyOCD through a TCP connection or a binary file.
-Device-specific trace capture capabilities are configured using the [`device-settings`](#device-settings) node under `debugger:`. Such settings are based
-on the device's [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section in the PDSC file.
+Device-specific trace capture capabilities are configured using the [`device-settings`](#device-settings) node under `debugger:`.
 
 The default trace output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management)
 and uses the format `<solution-name>+<target-type>.trace`.
@@ -346,7 +345,11 @@ The above configurations are passed to debug sequence implementations through [p
 !!! Note
     The `device-settings:` feature is under development. This section provides a preview.
 
-Device-specific debug and trace connections can be configured via the `device-settings` node under `debugger:`. It contains a list of child nodes with editable key-value pairs which are based on debug access variable defined in the device's [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section of the PDSC file. Alternatively, the path of a [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file can be used in the `*.csolution.yml` file which gets expanded to key-value pairs while generating the `*.cbuild-run.yml` file.
+Debug and trace connection sequences are often device-specific and can be configured. This node contains a list of editable key-value pairs which are based on debug access variables defined in the device [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section in a PDSC file.
+
+The `device-settings:` node has higher precedence than the `dbgconf:` node, i.e. if `device-settings:` is present then an also specified [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file is ignored.
+
+If a `*.csolution.yml` specifies a `dbgconf:` node instead of a `device-settings:` node, then the referenced `*.dbgconf` file gets parsed and its contents is converted into a `device-settings:` node in the `*.cbuild-run.yml` file.
 
 !!! Note
     - Settings that are not assigned under the `device-settings:` node or the referenced `*.dbgconf` file default to the values assigned in the device's [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section of the PDSC file.
@@ -367,7 +370,7 @@ Device-specific debug and trace connections can be configured via the `device-se
         pname: CM4
 ```
 
-**Example:** MySetup.cbuild-run.yml
+**Example:** MySetup.cbuild-run.yml generated from MySetup.csolution.yml
 
 ```yml
   debugger:
