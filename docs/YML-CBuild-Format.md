@@ -1065,6 +1065,10 @@ The information for the `debugger:` node may be configured using the [`debugger:
 
 If no input (`*.csolution.yml`, BSP or DFP) provides debugger option values, the CMSIS-Toolbox uses the values under `defaults:` from the file [`./etc/debug-adapters.yml`](build-operation.md#debug-adapter-integration).
 
+!!! Note
+    Device-specific connection and trace settings are usually based on the device's [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) element in the PDSC file. This element can also specify a `*.dbgconf` file to enable modifications of these settings in a solution.  
+    Support for this editable file remains with the `dbgconf:` node. However, the preference for storing such settings in `*.cbuild-run.yml` is the [`device-settings:`](pyOCD-Debugger.md#device-settings) node for pyOCD, or similar nodes for other debug adapters. This shall ensure that all solution settings are stored in a single, self-contained configuration file that debuggers consume.
+
 **Example:**
 
 ```yml
