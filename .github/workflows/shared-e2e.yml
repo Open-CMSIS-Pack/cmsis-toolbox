@@ -34,7 +34,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - uses: JoshuaTheMiller/conditional-build-matrix@81b51eb8d89e07b86404934b5fecde1cea1163a5 # v2.0.1
         id: build-matrix
@@ -78,7 +78,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout cmsis-toolbox repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -130,7 +130,7 @@ jobs:
 
       # Download and build cbuild executable
       - name: Checkout cbuild repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: Open-CMSIS-PACK/cbuild
           path: cbuild
@@ -155,7 +155,7 @@ jobs:
 
       # Download and build cpackget executable
       - name: Checkout cpackget repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: Open-CMSIS-PACK/cpackget
           path: cpackget
@@ -181,7 +181,7 @@ jobs:
 
       # Download and build cbuild2cmake executable
       - name: Checkout cbuild2cmake repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: Open-CMSIS-PACK/cbuild2cmake
           path: cbuild2cmake
@@ -206,7 +206,7 @@ jobs:
 
       # Download and build vidx2pidx executable
       - name: Checkout vidx2pidx repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: Open-CMSIS-PACK/vidx2pidx
           path: vidx2pidx
@@ -231,7 +231,7 @@ jobs:
 
       # Download and build cbridge executable
       - name: Checkout cbridge repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: Open-CMSIS-PACK/generator-bridge
           path: cbridge
@@ -279,7 +279,7 @@ jobs:
           fi
 
       - name: Checkout Open-CMSIS-PACK/devtools repo
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: Open-CMSIS-PACK/devtools
           path: devtools
@@ -410,7 +410,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout toolbox repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -518,7 +518,7 @@ jobs:
       with:
         egress-policy: audit
 
-    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+    - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
     - name: Set up Python
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
