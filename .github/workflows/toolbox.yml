@@ -493,7 +493,7 @@ jobs:
           path: artifacts
 
       - name: publish test results
-        uses: EnricoMi/publish-unit-test-result-action/linux@c950f6fb443cb5af20a377fd0dfaa78838901040 # v2.23.0
+        uses: EnricoMi/publish-unit-test-result-action/linux@d0a4676d0e0b938bc201470d88276b7c74c712b3 # v2.24.0
         with:
           report_individual_runs: true
           files: "artifacts/**/test-results-*.xml"
@@ -532,7 +532,7 @@ jobs:
             ./test/vcpkg-configuration.json > ./test/vcpkg-configuration-temp.json
 
       - name: Setup vcpkg environment
-        uses: ARM-software/cmsis-actions/vcpkg@1ab1da03e6e9787dc903bcf041ba541e59b5739f # v1
+        uses: ARM-software/cmsis-actions/vcpkg@8a50b77681a484568e08f31fb7c2285c4735f682 # v1
         with:
           config: "./test/vcpkg-configuration-temp.json"
           vcpkg-downloads: "${{ github.workspace }}/.vcpkg/downloads"
