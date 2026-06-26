@@ -1094,7 +1094,7 @@ With the VS Code extension [CMSIS Solution](https://marketplace.visualstudio.com
 
 ### Device Configuration
 
-Several DFP contain `*.dbgconf` files that configure device-specific debug and trace parameters. The CMSIS-Toolbox provides this configuration information in the `*.build-run.yml` file for [debuggers with Debug Access Sequence support](YML-CBuild-Format.md#run-and-debug-management).
+Several DFP contain `*.dbgconf` files that configure device-specific debug and trace parameters. The CMSIS-Toolbox provides this configuration information in the `*.cbuild-run.yml` file for [debuggers with Debug Access Sequence support](YML-CBuild-Format.md#run-and-debug-management).
 
 The `.cmsis` directory in the *csolution project* directory contains for each target a default `*.dbgconf` configuration file. For example: `.\.cmsis\MyApplication+MyBoard`.
 This file can be configured to reflect user settings.

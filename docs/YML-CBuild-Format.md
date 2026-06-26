@@ -879,6 +879,7 @@ The following describes the overall structure of the `*.cbuild-run.yml` file.  W
 &nbsp;&nbsp;&nbsp; [`system-descriptions:`](#system-descriptions)         |  Optional  | List of description files for peripherals and software components.
 &nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)                               |**Required**| Configuration information for the debug connection.
 &nbsp;&nbsp;&nbsp; [`debug-sequences:`](#debug-sequences)                 |  Optional  | Tool actions for debugging, tracing, or programming.
+&nbsp;&nbsp;&nbsp; [`debug-sequences-conf:`](#debug-sequences-conf)       |  Optional  | Configuration information for how to use debug sequences.
 &nbsp;&nbsp;&nbsp; [`programming:`](#programming)                         |  Optional  | Algorithms for flash download.
 &nbsp;&nbsp;&nbsp; [`flash-info:`](#flash-info)                           |  Optional  | Memory where the debugger uses JTAG/SWD sequences for programming.
 &nbsp;&nbsp;&nbsp; [`debug-topology:`](#debug-topology)                   |  Optional  | Properties of the system hardware for debug functionality.
@@ -1265,6 +1266,26 @@ debug-sequences:
       // Read DPIDR to enable SWD interface (SW-DPv1 and SW-DPv2)
       ReadDP(0x0);
 ```
+
+#### `debug-sequences-conf:`
+
+This node contains configuration information for how [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence) are expected to be used by a debugger.
+
+`debug-sequences-conf:`              |              | Content
+:------------------------------------|--------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `traceSetup:`     |   Optional   | Configure how to use trace sequences. Can be `full` or `legacy` (default: `legacy`).
+
+Value `full` for `traceSetup:` informs the debugger that all trace component setup is done by the trace sequences. Opposed to that, the `legacy` mode expected debuggers to program the CoreSight trace components as per built-in support knowledge. Going forward, `full` is the preferred mode to allow new CoreSight component support without debug tool updates.
+
+```yml
+debug-sequences:
+  - name: TraceStart
+       :
+
+debug-sequences-conf:
+  traceSetup: full
+```
+
 
 #### `programming:`
 
