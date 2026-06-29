@@ -172,6 +172,8 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#debug-sequences">debug-sequences:</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#debug-sequences-conf">debug-sequences-conf:</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#programming">programming:</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#flash-info">flash-info:</a>
@@ -1809,6 +1811,11 @@
 <td>Tool actions for debugging, tracing, or programming.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug-sequences-conf"><code>debug-sequences-conf:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td>Configuration information for how to use debug sequences.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#programming"><code>programming:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td>Algorithms for flash download.</td>
@@ -2266,6 +2273,11 @@ The <code>output:</code> node also contains other required files that are added 
 <li><code>start-pname:</code> is mandatory for multi-processor targets. If <code>start-pname:</code> is not configured using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file, the <code>pname:</code> of the first <code>*.cproject.yml</code> file is used.</li>
 </ul>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Device-specific connection and trace settings are usually based on the device <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars"><code>&lt;debugvars&gt;</code></a> element in the PDSC file. This element can also specify a <code>*.dbgconf</code> file to enable modifications of these settings in a solution.<br />
+Support for this file remains via the <code>dbgconf:</code> node. However, it is preferred in <code>*.cbuild-run.yml</code> to store such settings in the <a href="../pyOCD-Debugger/#device-settings"><code>device-settings:</code></a> node for pyOCD, or in similar nodes for other debug adapters. This ensures that all solution settings are stored in a single, self-contained configuration file for a debug adapter.</p>
+</div>
 <p>The information for the <code>debugger:</code> node may be configured using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file. If not present the values from BSP are used; if not present DFP values. The values in the <code>*.csolution.yml</code> file overwrites values from BSP or DFP as shown in the table below.</p>
 <table>
 <thead>
@@ -2571,6 +2583,32 @@ These initial values are overwritten by explicit settings in the <code>*.dbgconf
     - execute:  |
       // Read DPIDR to enable SWD interface (SW-DPv1 and SW-DPv2)
       ReadDP(0x0);
+</code></pre>
+<h4 id="debug-sequences-conf"><code>debug-sequences-conf:</code></h4>
+<p>This node contains configuration information for how <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence">debug sequences</a> are expected to be used by a debugger.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>debug-sequences-conf:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>traceSetup:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Configure how to use trace sequences. Can be <code>full</code> or <code>legacy</code> (default: <code>legacy</code>).</td>
+</tr>
+</tbody>
+</table>
+<p>Value <code>full</code> for <code>traceSetup:</code> informs the debugger that all trace component setup is done by the trace sequences. Opposed to that, the <code>legacy</code> mode expected debuggers to program the CoreSight trace components as per built-in support knowledge. Going forward, <code>full</code> is the preferred mode to allow new CoreSight component support without debug tool updates.</p>
+<pre><code class="language-yml">debug-sequences:
+  - name: TraceStart
+       :
+
+debug-sequences-conf:
+  traceSetup: full
 </code></pre>
 <h4 id="programming"><code>programming:</code></h4>
 <p>The <code>programming:</code> node collects the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html">flash algorithms</a> of device memory (specified in DFP) and board memory (specified in BSP), and <a href="../YML-Input-Format/#memory"><code>memory:</code></a> specified the <code>*.csolution.yml</code> file.</p>

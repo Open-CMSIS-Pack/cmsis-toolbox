@@ -1406,7 +1406,7 @@ pyocd gdbserver --cbuild-run MyApplication+MyBoard.cbuild-run.yml         # star
 <h3 id="using-vs-code">Using VS Code</h3>
 <p>With the VS Code extension <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">CMSIS Solution</a> version 1.54 or higher use the <strong>Manage Solution</strong> view to configure the debugger. You may then use the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger">CMSIS Debugger</a> extension for interactive debug or <a href="https://pyocd.io">pyOCD</a> in command line mode.</p>
 <h3 id="device-configuration">Device Configuration</h3>
-<p>Several DFP contain <code>*.dbgconf</code> files that configure device-specific debug and trace parameters. The CMSIS-Toolbox provides this configuration information in the <code>*.build-run.yml</code> file for <a href="../YML-CBuild-Format/#run-and-debug-management">debuggers with Debug Access Sequence support</a>.</p>
+<p>Several DFP contain <code>*.dbgconf</code> files that configure device-specific debug and trace parameters. The CMSIS-Toolbox provides this configuration information in the <code>*.cbuild-run.yml</code> file for <a href="../YML-CBuild-Format/#run-and-debug-management">debuggers with Debug Access Sequence support</a>.</p>
 <p>The <code>.cmsis</code> directory in the <em>csolution project</em> directory contains for each target a default <code>*.dbgconf</code> configuration file. For example: <code>.\.cmsis\MyApplication+MyBoard</code>.
 This file can be configured to reflect user settings.</p>
 <p>An explicit <code>*.dbgconf</code> configuration file can be specified using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code> node</a> in the <code>*.csolution.yml</code> file.</p>

@@ -337,7 +337,7 @@ This chapter explains the usage of the <a href="https://kb.segger.com/J-Link_GDB
 <p class="admonition-title">Note</p>
 <p>The <code>trace:</code> feature is under development. This section provides a preview.</p>
 </div>
-<p>J-Link supports SWO Trace.</p>
+<p>J-Link supports the SWO trace output of Cortex-M devices. The raw trace data are made available from the J-Link GDB Server through a TCP connection.</p>
 <table>
 <thead>
 <tr>
@@ -348,6 +348,11 @@ This chapter explains the usage of the <a href="https://kb.segger.com/J-Link_GDB
 </thead>
 <tbody>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Trace: <code>off</code> (default), <code>server</code>.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>input-clock:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Trace input clock frequency in Hz.</td>
@@ -355,17 +360,17 @@ This chapter explains the usage of the <a href="https://kb.segger.com/J-Link_GDB
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port-type:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Set trace port transport mode. Currently only <code>SWO-UART</code> is accepted.</td>
+<td style="text-align: left;">Set trace port transport mode. Currently only <code>swo-uart</code> is accepted (default: <code>swo-uart</code>).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>output-clock:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Trace output clock for the selected port type. For <code>SWO-UART</code> mode this is the baudrate.</td>
+<td style="text-align: left;">Trace output clock for the selected port type. For <code>swo-uart</code> mode this is the baudrate.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>server-port:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Set TCP/IP port number of Trace server (default: 5555).</td>
+<td style="text-align: left;">Set TCP/IP port number of trace server in <code>server</code> mode (default: 5555).</td>
 </tr>
 </tbody>
 </table>
