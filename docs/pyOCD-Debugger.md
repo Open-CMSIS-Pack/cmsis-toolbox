@@ -306,11 +306,8 @@ debugger:
 !!! Note
     The `trace:` feature is under development. This section provides a preview.
 
-CMSIS-DAP supports the SWO trace output of Cortex-M devices.
-The often device-specific trace capture capabilities are configured using the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
-Such device-specific settings can also be individually overridden under [`debug-vars-set:`](#debug-vars-set) node of the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management).
-This allows to pass changed settings in a single configuration file.
-Refer to the [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section in the device PDSC file to learn about settings available for a device.
+CMSIS-DAP supports the SWO trace output of Cortex-M devices. The raw trace data are made available from pyOCD through a TCP connection or a binary file.
+Device-specific trace capture capabilities are configured using the [`device-settings`](#device-settings) node under `debugger:`.
 
 The default trace output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management)
 and uses the format `<solution-name>+<target-type>.trace`.
@@ -319,11 +316,10 @@ and uses the format `<solution-name>+<target-type>.trace`.
 :---------------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `mode:`                                | **Required** | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `input-clock:`                         | **Required** | Trace input clock frequency in Hz.
-&nbsp;&nbsp;&nbsp; `port-type:`                           |   Optional   | Set trace port transport mode. Currently only `SWO-UART` is accepted.
-&nbsp;&nbsp;&nbsp; `port-width:`                          |   Optional   | Width of the trace port. Currently only the value '1' is accepted for `SWO-UART`.
-&nbsp;&nbsp;&nbsp; `output-clock:`                        |   Optional   | Trace output clock for the selected port type. For `SWO-UART` mode this is the baudrate.
-&nbsp;&nbsp;&nbsp; `server-port:`                         |   Optional   | Set TCP/IP port number of Trace server (default: 5555).
-&nbsp;&nbsp;&nbsp; `file:`                                |   Optional   | Explicit path and name of the trace output file. Default: `<solution-name>+<target-type>.trace`.
+&nbsp;&nbsp;&nbsp; `port-type:`                           |   Optional   | Set trace port transport mode. Currently only `swo-uart` is accepted (default: `swo-uart`).
+&nbsp;&nbsp;&nbsp; `output-clock:`                        |   Optional   | Trace output clock for the selected port type. For `swo-uart` mode this is the baudrate.
+&nbsp;&nbsp;&nbsp; `server-port:`                         |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
+&nbsp;&nbsp;&nbsp; `file:`                                |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>.trace`.
 
 #### Trace Clocks
 
@@ -339,27 +335,26 @@ The above configurations are passed to debug sequence implementations through [p
 - If `output-clock` is provided or has a value other than `0`, then the value directly maps to variable `__traceclockout`.
 - If `output-clock` is not provided or has the value `0`, then the highest achievable output clock frequency supported by the debug unit is written to `__traceclockout`.
 - `port-type` maps to bits `0..2` of variable `__traceout`.
-- `port-width` maps to bits `16..21` of variable `__traceout` if the selected `port-type` is a synchronous trace port.
 
 !!! Note
     The linked description of pre-defined debug access variables needs to be updated to include the proposed new variables
     `__traceclockin` and `__traceclockout`.
 
-### `debug-vars-set:`
+### `device-settings:`
 
 !!! Note
-    The `debug-vars-set:` feature is under development. This section provides a preview.
+    The `device-settings:` feature is under development. This section provides a preview.
 
-Device-specific sequence settings like for debug and trace connections are usually configured through the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file. The `debug-vars-set:` node provides an alternative way to configure such settings
-together with other pyOCD debugger settings in a single place.
+Debug and trace connection sequences are often device-specific and can be configured. This node contains a list of editable key-value pairs which are based on debug access variables defined in the device [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section in a PDSC file.
 
-The value of the `debug-vars-set:` node is a string of the same format as used in the [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
+The `device-settings:` node has higher precedence than the `dbgconf:` node, i.e. if `device-settings:` is present then an also specified [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file is ignored.
+
+If a `*.csolution.yml` specifies a `dbgconf:` node instead of a `device-settings:` node, then the referenced `*.dbgconf` file gets parsed and its contents is converted into a `device-settings:` node in the `*.cbuild-run.yml` file.
 
 !!! Note
-    - Settings that are not listed under this node default to their assignment in a provided [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file.
-    - If no [`*.dbgconf`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) file is provided, or if a setting isn't assigned in this file, then it defaults to the value assigned in the device [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section of the PDSC file.
-
-**Example:**
+    - Settings that are not assigned under the `device-settings:` node or the referenced `*.dbgconf` file default to the values assigned in the device's [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section of the PDSC file.
+    
+**Example:** MySetup.csolution.yml
 
 ```yml
   debugger:
@@ -373,14 +368,29 @@ The value of the `debug-vars-set:` node is a string of the same format as used i
         pname: CM7
       - port: 3334
         pname: CM4
-    debug-vars-set: |
-      // DBGMCU configuration register (DBGMCU_CR)
-      DbgMCU_CR    = 0x00000007;
-      // TPIU Pin Routing (TRACECLK fixed on Pin PE2)
-      TraceD0_Pin  = 0x00040003;  // Pin PE3
-      TraceD1_Pin  = 0x00040004;  // Pin PE4
-      TraceD2_Pin  = 0x00040005;  // Pin PE5
-      TraceD3_Pin  = 0x00040006;  // Pin PE6
+```
+
+**Example:** MySetup.cbuild-run.yml generated from MySetup.csolution.yml
+
+```yml
+  debugger:
+    name: ST-Link@pyOCD
+    protocol: swd
+    clock: 10000000
+    start-pname: CM7
+    gdbserver:
+      - port: 3333
+        pname: CM7
+      - port: 3334
+        pname: CM4
+    device-settings:
+      # DBGMCU configuration register (DBGMCU_CR)
+      DbgMCU_CR: 0x00000007
+      # TPIU Pin Routing (TRACECLK fixed on Pin PE2)
+      TraceD0_Pin: 0x00040003  # Pin PE3
+      TraceD1_Pin: 0x00040004  # Pin PE4
+      TraceD2_Pin: 0x00040005  # Pin PE5
+      TraceD3_Pin: 0x00040006  # Pin PE6
 ```
 
 ## Minimal Setup
@@ -776,8 +786,7 @@ and pyOCD Debugger [Extended Options](#extended-options).
 
 ### `debug-vars:`
 
-Contains default values for debug sequence variables. These values can be overridden by explicit settings in a
-`*.dbgconf` file provided in the [`debugger:`](#debugger) node.
+Contains the definition and default values for debug sequence variables. The default values can be overridden by corresponding key-value pairs under the `device-settings:` node under [`debugger:`](#debugger).
 
 `debug-vars:`                                             |              | Content
 :---------------------------------------------------------|--------------|:------------------------------------
