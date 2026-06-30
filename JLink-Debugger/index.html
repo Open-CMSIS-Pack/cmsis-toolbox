@@ -111,6 +111,8 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#trace">trace:</a>
         <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#swo-uart">swo-uart</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#trace-clocks">Trace Clocks</a>
     </li>
         </ul>
@@ -338,6 +340,16 @@ This chapter explains the usage of the <a href="https://kb.segger.com/J-Link_GDB
 <p>The <code>trace:</code> feature is under development. This section provides a preview.</p>
 </div>
 <p>J-Link supports the SWO trace output of Cortex-M devices. The raw trace data are made available from the J-Link GDB Server through a TCP connection.</p>
+<p>The <code>trace:</code> node has one child type per supported trace transport mode which offers mode-specific options. Currently, the <a href="#swo-uart"><code>swo-uart</code></a> type is supported.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code>trace:</code> node is implemented as a list. However, currently only one node is supported. Additional nodes are ignored.</p>
+</div>
+<pre><code class="language-yml">trace:
+  - swo-uart: TraceConfigName # Trace mode is SWO UART
+    input-clock: 120000000    # Trace clock = 120 MHz
+</code></pre>
+<h4 id="swo-uart"><code>swo-uart</code></h4>
 <table>
 <thead>
 <tr>
@@ -348,8 +360,13 @@ This chapter explains the usage of the <a href="https://kb.segger.com/J-Link_GDB
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
+<td style="text-align: left;"><code>- swo-uart:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Transport mode is SWO UART. The node allows an optional name (default: <code>null</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mode:</code></td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Trace: <code>off</code> (default), <code>server</code>.</td>
 </tr>
 <tr>
@@ -358,14 +375,9 @@ This chapter explains the usage of the <a href="https://kb.segger.com/J-Link_GDB
 <td style="text-align: left;">Trace input clock frequency in Hz.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>port-type:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Set trace port transport mode. Currently only <code>swo-uart</code> is accepted (default: <code>swo-uart</code>).</td>
-</tr>
-<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>output-clock:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Trace output clock for the selected port type. For <code>swo-uart</code> mode this is the baudrate.</td>
+<td style="text-align: left;">Trace output clock frequency in Hz, i.e. the baudrate, for the SWO output.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>server-port:</code></td>
