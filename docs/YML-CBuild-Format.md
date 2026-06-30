@@ -879,6 +879,7 @@ The following describes the overall structure of the `*.cbuild-run.yml` file.  W
 &nbsp;&nbsp;&nbsp; [`system-descriptions:`](#system-descriptions)         |  Optional  | List of description files for peripherals and software components.
 &nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)                               |**Required**| Configuration information for the debug connection.
 &nbsp;&nbsp;&nbsp; [`debug-sequences:`](#debug-sequences)                 |  Optional  | Tool actions for debugging, tracing, or programming.
+&nbsp;&nbsp;&nbsp; [`debug-sequences-conf:`](#debug-sequences-conf)       |  Optional  | Configuration information for how to use debug sequences.
 &nbsp;&nbsp;&nbsp; [`programming:`](#programming)                         |  Optional  | Algorithms for flash download.
 &nbsp;&nbsp;&nbsp; [`flash-info:`](#flash-info)                           |  Optional  | Memory where the debugger uses JTAG/SWD sequences for programming.
 &nbsp;&nbsp;&nbsp; [`debug-topology:`](#debug-topology)                   |  Optional  | Properties of the system hardware for debug functionality.
@@ -1054,6 +1055,10 @@ This node contains connection information for a debugger with initial settings c
 !!! Note
     - `protocol:` and `clock:` are required by pyOCD but optional for other debug adapters. The file [`./etc/debug-adapters.yml`](build-operation.md#debug-adapter-integration) allows to specify default values for required options.
     - `start-pname:` is mandatory for multi-processor targets. If `start-pname:` is not configured using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file, the `pname:` of the first `*.cproject.yml` file is used.
+
+!!! Note
+    Device-specific connection and trace settings are usually based on the device [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) element in the PDSC file. This element can also specify a `*.dbgconf` file to enable modifications of these settings in a solution.  
+    Support for this file remains via the `dbgconf:` node. However, it is preferred in `*.cbuild-run.yml` to store such settings in the [`device-settings:`](pyOCD-Debugger.md#device-settings) node for pyOCD, or in similar nodes for other debug adapters. This ensures that all solution settings are stored in a single, self-contained configuration file for a debug adapter.
 
 The information for the `debugger:` node may be configured using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file. If not present the values from BSP are used; if not present DFP values. The values in the `*.csolution.yml` file overwrites values from BSP or DFP as shown in the table below.
 
@@ -1261,6 +1266,26 @@ debug-sequences:
       // Read DPIDR to enable SWD interface (SW-DPv1 and SW-DPv2)
       ReadDP(0x0);
 ```
+
+#### `debug-sequences-conf:`
+
+This node contains configuration information for how [debug sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence) are expected to be used by a debugger.
+
+`debug-sequences-conf:`              |              | Content
+:------------------------------------|--------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `traceSetup:`     |   Optional   | Configure how to use trace sequences. Can be `full` or `legacy` (default: `legacy`).
+
+Value `full` for `traceSetup:` informs the debugger that all trace component setup is done by the trace sequences. Opposed to that, the `legacy` mode expected debuggers to program the CoreSight trace components as per built-in support knowledge. Going forward, `full` is the preferred mode to allow new CoreSight component support without debug tool updates.
+
+```yml
+debug-sequences:
+  - name: TraceStart
+       :
+
+debug-sequences-conf:
+  traceSetup: full
+```
+
 
 #### `programming:`
 
