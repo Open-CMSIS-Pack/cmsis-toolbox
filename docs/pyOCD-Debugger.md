@@ -325,23 +325,23 @@ trace:
 
 #### `swo-uart`
 
-`swo-uart:`                                               |              | Description
-:---------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `swo-uart:`                            | **Required** | Transport mode is SWO UART. The node allows an optional name (default: `null`).
-&nbsp;&nbsp;&nbsp; `mode:`                                |   Optional   | Trace: `off` (default), `server`, `file`.
-&nbsp;&nbsp;&nbsp; `input-clock:`                         | **Required** | Trace input clock frequency in Hz.
-&nbsp;&nbsp;&nbsp; `output-clock:`                        |   Optional   | Trace output clock for the selected port type. For `swo-uart` mode this is the baudrate.
-&nbsp;&nbsp;&nbsp; `server-port:`                         |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
-&nbsp;&nbsp;&nbsp; `file:`                                |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>[+<trace-config-name>].trace`.
+`trace:`                                 |              | Description
+:----------------------------------------|:-------------|:------------------------------------
+`- swo-uart:`                            | **Required** | Transport mode is SWO UART. The node allows an optional name (default: `null`).
+&nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
+&nbsp;&nbsp;&nbsp; `input-clock:`        | **Required** | Trace input clock frequency in Hz.
+&nbsp;&nbsp;&nbsp; `output-clock:`       |   Optional   | Trace output clock frequency, i.e. the baudrate, for the SWO output.
+&nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
+&nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>[+<trace-config-name>].trace`.
 
 #### `etb`
 
-`etb:`                                                    |              | Description
-:---------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `etb:`                                 | **Required** | Transport mode is Embedded Trace Buffer. The node allows an optional name (default: `null`).
-&nbsp;&nbsp;&nbsp; `mode:`                                |   Optional   | Trace: `off` (default), `server`, `file`.
-&nbsp;&nbsp;&nbsp; `server-port:`                         |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
-&nbsp;&nbsp;&nbsp; `file:`                                |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>[+<trace-config-name>].trace`.
+`trace:`                                 |              | Description
+:----------------------------------------|:-------------|:------------------------------------
+`- etb:`                                 | **Required** | Transport mode is Embedded Trace Buffer. The node allows an optional name (default: `null`).
+&nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
+&nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
+&nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>[+<trace-config-name>].trace`.
 
 #### Trace Clocks
 
@@ -354,7 +354,7 @@ For more complex multi-core systems, the clock is normally derived from the syst
 The above configurations are passed to debug sequence implementations through [pre-defined debug access variables](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#DebugVars). The following mapping is expected:
 
 - `input-clock` directly maps to variable [`__traceclockin`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceclockin).
-- If `output-clock` is provided or has a value other than `0`, then the value directly maps to variable [`__traceclockout`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceclockout).
+- If `output-clock` is provided and has a value other than `0`, then the value directly maps to variable [`__traceclockout`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceclockout).
 - If `output-clock` is not provided or has the value `0`, then the highest achievable output clock frequency supported by the debug unit is written to [`__traceclockout`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceclockout).
 - The selected transport mode (currently [`swo-uart`](#swo-uart) or [`etb`](#etb)) maps to bits `0..2` of variable [`__traceout`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceout).
 

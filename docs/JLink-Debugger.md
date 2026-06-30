@@ -112,13 +112,13 @@ trace:
 
 #### `swo-uart`
 
-`swo-uart:`                                               |              | Description
-:---------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `swo-uart:`                            | **Required** | Transport mode is SWO UART. The node allows an optional name (default: `null`).
-&nbsp;&nbsp;&nbsp; `mode:`                                |   Optional   | Trace: `off` (default), `server`.
-&nbsp;&nbsp;&nbsp; `input-clock:`                         | **Required** | Trace input clock frequency in Hz.
-&nbsp;&nbsp;&nbsp; `output-clock:`                        |   Optional   | Trace output clock for the selected port type. For `swo-uart` mode this is the baudrate.
-&nbsp;&nbsp;&nbsp; `server-port:`                         |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
+`trace:`                                  |              | Description
+:-----------------------------------------|:-------------|:------------------------------------
+`- swo-uart:`                             | **Required** | Transport mode is SWO UART. The node allows an optional name (default: `null`).
+&nbsp;&nbsp;&nbsp; `mode:`                |   Optional   | Trace: `off` (default), `server`.
+&nbsp;&nbsp;&nbsp; `input-clock:`         | **Required** | Trace input clock frequency in Hz.
+&nbsp;&nbsp;&nbsp; `output-clock:`        |   Optional   | Trace output clock frequency in Hz, i.e. the baudrate, for the SWO output.
+&nbsp;&nbsp;&nbsp; `server-port:`         |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 
 #### Trace Clocks
 
