@@ -309,12 +309,12 @@ debugger:
 CMSIS-DAP supports the SWO trace output of Cortex-M devices. The raw trace data are made available from pyOCD through a TCP connection or a binary file.
 Device-specific trace capture capabilities are configured using the [`device-settings`](#device-settings) node under `debugger:`.
 
-The `trace:` node has one child type per supported trace transport mode which offers mode-specific options. Currently, the [`swo-uart`](#swo-uart) type and the [`etb`](#etb) type are supported.
+The `trace:` node has one child type per supported trace transport mode which offers mode-specific options. Currently, the [`swo-uart`](#swo-uart) type and the [`trace-buffer`](#trace-buffer) type are supported.
 
 The default trace output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management)
 and uses the format `<solution-name>+<target-type>+<trace-config-name>.trace`.  
 The `<trace-config-name>` part is derived from the optional name of the configuration stored in the type node, i.e.
-[`- swo-uart:`](#swo-uart) and the [`- etb:`](#etb). If no name is provided, the type itself is used.
+[`- swo-uart:`](#swo-uart) and the [`- trace-buffer:`](#trace-buffer). If no name is provided, the type itself is used.
 
 
 !!! Note
@@ -328,20 +328,29 @@ trace:
 
 #### `swo-uart`
 
+Configuration for the SWO trace output in UART mode.
+
 `trace:`                                 |              | Description
 :----------------------------------------|:-------------|:------------------------------------
 `- swo-uart:`                            | **Required** | Transport mode is SWO UART. The node allows an optional name (default: `null`).
 &nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
-&nbsp;&nbsp;&nbsp; `input-clock:`        | **Required** | Trace input clock frequency in Hz.
-&nbsp;&nbsp;&nbsp; `output-clock:`       |   Optional   | Trace output clock frequency, i.e. the baudrate, for the SWO output.
 &nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 &nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>+<trace-config-name>.trace`.
+&nbsp;&nbsp;&nbsp; `input-clock:`        | **Required** | Trace input clock frequency in Hz.
+&nbsp;&nbsp;&nbsp; `output-clock:`       |   Optional   | Trace output clock frequency, i.e. the baudrate, for the SWO output.
 
-#### `etb`
+#### `trace-buffer`
+
+Configuration for the target device trace buffer. This type covers on-chip trace buffer variants like the Embedded Trace Buffer (ETB),
+the Embedded Trace FIFO (ETF, in circular buffer mode), the Embedded Trace Router, and the Micro Trace Buffer (MTB).
+
+Some of the listed on-chip trace buffer solutions provide sophisticated options to configure exact memory placement and bus access setup.
+Such settings are often use-case and device specific. They are usually exposed through the device [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars),
+and configured through the `device-settings:` or the `*.dbgconf` file.
 
 `trace:`                                 |              | Description
 :----------------------------------------|:-------------|:------------------------------------
-`- etb:`                                 | **Required** | Transport mode is Embedded Trace Buffer. The node allows an optional name (default: `null`).
+`- trace-buffer:`                        | **Required** | Transport mode is (on-chip) trace buffer. The node allows an optional name (default: `null`).
 &nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 &nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>+<trace-config-name>.trace`.
@@ -359,7 +368,7 @@ The above configurations are passed to debug sequence implementations through [p
 - `input-clock` directly maps to variable [`__traceclockin`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceclockin).
 - If `output-clock` is provided and has a value other than `0`, then the value directly maps to variable [`__traceclockout`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceclockout).
 - If `output-clock` is not provided or has the value `0`, then the highest achievable output clock frequency supported by the debug unit is written to [`__traceclockout`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceclockout).
-- The selected transport mode (currently [`swo-uart`](#swo-uart) or [`etb`](#etb)) maps to bits `0..2` of variable [`__traceout`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceout).
+- The selected transport mode (currently [`swo-uart`](#swo-uart) or [`trace-buffer`](#trace-buffer)) maps to bits `0..2` of variable [`__traceout`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceout).
 
 ### `device-settings:`
 
