@@ -76,8 +76,6 @@ body:
           required: false
         - label: Linux arm64
           required: false
-        - label: MacOS amd64
-          required: false
         - label: MacOS arm64
           required: false
   - type: textarea
