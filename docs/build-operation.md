@@ -446,14 +446,14 @@ solution:
    :
       target-set:
         - set:
-          debugger:0
+          debugger:
             name: CMSIS-DAP@pyOCD
             protocol: swd
-            clock: 10000000      # SWD clock = 10MHz
+            clock: 10000000             # SWD clock = 10MHz
             trace:
-              mode: UART
-              clock: 120000000   # Trace clock = 120 MHz
-            telnet:              # Enable telnet with defaults
+              - swo-uart:               # Trace mode is SWO UART
+                input-clock: 120000000  # Trace clock = 120 MHz
+            telnet:                     # Enable telnet with defaults
 ```
  
 **Example `debug-adapters.yml`**
