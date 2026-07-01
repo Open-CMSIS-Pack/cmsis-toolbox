@@ -14,7 +14,7 @@ There are three different ways to set up the CMSIS-Toolbox:
 
 ## Manual Setup
 
-Download the CMSIS-Toolbox from the [**Arm Tools Artifactory**](https://artifacts.keil.arm.com/cmsis-toolbox/). An archive file provides signed binaries for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (amd64, arm64).
+Download the CMSIS-Toolbox from the [**Arm Tools Artifactory**](https://artifacts.keil.arm.com/cmsis-toolbox/). An archive file provides signed binaries for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (arm64).
 
 To set up the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example, to `~/cmsis-toolbox`.
 
