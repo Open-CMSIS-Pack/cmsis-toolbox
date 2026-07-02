@@ -97,14 +97,28 @@ debugger:
 !!! Note
     The `trace:` feature is under development. This section provides a preview.
   
-J-Link supports SWO Trace.
+J-Link supports the SWO trace output of Cortex-M devices. The raw trace data are made available from the J-Link GDB Server through a TCP connection.
 
-`trace:`                                     |              | Description
-:--------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `input-clock:`            | **Required** | Trace input clock frequency in Hz.
-&nbsp;&nbsp;&nbsp; `port-type:`              |   Optional   | Set trace port transport mode. Currently only `SWO-UART` is accepted.
-&nbsp;&nbsp;&nbsp; `output-clock:`           |   Optional   | Trace output clock for the selected port type. For `SWO-UART` mode this is the baudrate.
-&nbsp;&nbsp;&nbsp; `server-port:`            |   Optional   | Set TCP/IP port number of Trace server (default: 5555).
+The `trace:` node has one child type per supported trace transport mode which offers mode-specific options. Currently, the [`swo-uart`](#swo-uart) type is supported.
+
+!!! Note
+    The `trace:` node is implemented as a list. However, currently only one node is supported. Additional nodes are ignored.
+
+```yml
+trace:
+  - swo-uart: TraceConfigName # Trace mode is SWO UART
+    input-clock: 120000000    # Trace clock = 120 MHz
+```
+
+#### `swo-uart`
+
+`trace:`                                  |              | Description
+:-----------------------------------------|:-------------|:------------------------------------
+`- swo-uart:`                             | **Required** | Transport mode is SWO UART. The node allows an optional name (default: `null`).
+&nbsp;&nbsp;&nbsp; `mode:`                |   Optional   | Trace: `off` (default), `server`.
+&nbsp;&nbsp;&nbsp; `input-clock:`         | **Required** | Trace input clock frequency in Hz.
+&nbsp;&nbsp;&nbsp; `output-clock:`        |   Optional   | Trace output clock frequency in Hz, i.e. the baudrate, for the SWO output.
+&nbsp;&nbsp;&nbsp; `server-port:`         |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 
 #### Trace Clocks
 

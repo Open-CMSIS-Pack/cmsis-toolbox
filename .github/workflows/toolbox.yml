@@ -326,7 +326,7 @@ jobs:
         working-directory: toolbox/cmsis-toolbox-${{ matrix.target }}-${{ matrix.arch }}
 
       - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -414,7 +414,6 @@ jobs:
       fail-fast: true
       matrix:
         config:
-          - { os: macos-15-intel, target: darwin, arch: amd64 }
           - { os: macos-14, target: darwin, arch: arm64 }
           - { os: windows-2022, target: windows, arch: amd64}
           - { os: windows-2022, target: windows, arch: arm64}
@@ -450,7 +449,7 @@ jobs:
         run: tar -xvf archive/cmsis-toolbox-${{ matrix.config.target }}-${{ matrix.config.arch }}.tar.gz -C toolbox
 
       - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.10'
 
@@ -516,7 +515,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
       - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.11'
           cache: 'pip'

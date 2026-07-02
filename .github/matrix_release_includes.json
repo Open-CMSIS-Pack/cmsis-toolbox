@@ -1,16 +1,5 @@
 [
     {
-        "runs_on":"macos-15-intel",
-        "target":"darwin",
-        "arch": "amd64",
-        "binary_extension": "",
-        "temp_extension": ".mac",
-        "archive_extension": ".tar.gz",
-        "runOnBranch":"always",
-        "runTests": false,
-        "runsXCTestSuite": false
-    },
-    {
         "runs_on":"macos-15",
         "target":"darwin",
         "arch": "arm64",
