@@ -165,11 +165,11 @@ Directory or File                    | Created by      | Description
 `.trace/<target-set>.SWO.csv`        | TraceDecoder    | CSV files that represent raw data + ctrace-refs
 `.trace/<target-set>/ctf`            | TraceDecoder    | CTF files such as `metadata`, `stream_0`, and `stream_1`.
 
-TraceDecoder: OpenCSD + writer + CTF
+TraceDecoder: OpenCSD + writer + CTF output
 
 The `.cmsis/<target-set>.ctrace.yml` file configures the trace generation. It is created or updated by the user interface of the CMSIS-Debugger Trace View.
 
-A CLI tool (`pyTS`) resolves symbol-based settings in `*.ctrace.yml` against the ELF/DWARF information of the active target-set and generates the register setup for the hardware configuration. The output is the `.trace/<target-set>.ctrace-run.yml` which is used by the debugger for register setup in hardware. During trace analysis the information of this file connects the raw trace data (with `atp-id`) back to the `*.ctrace.yml` configuration.
+A CLI tool (`pyTS`) resolves symbol-based settings in `*.ctrace.yml` against the ELF/DWARF information of the active target-set and generates the register setup for the hardware configuration. The output is the `.trace/<target-set>.ctrace-run.yml` which is used by the debugger for register setup in hardware. During trace analysis the information of this file connects the raw trace data back to the `*.ctrace.yml` configuration.
 
 Raw trace streams are stored as binary files, for example `.trace/<target-set>.SWO.raw`. The TraceDecoder CLI tool can post-process raw streams into CSV files and [CTF format v1.8.3](https://diamon.org/ctf/v1.8.3/) for viewers and analysis tools.
 
@@ -202,43 +202,31 @@ ctrace-ref: data#2                # `data:` node, list node #2
 ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
 ```
 
--------
-
-ToDo: RK replace this with pictures
-
 ### Tools and Extensions
 
-The trace workflow is split across the CMSIS-Toolbox, debugger, and VS Code extensions.
+The trace workflow is split across the command-line tools and  and VS Code extensions as shown below.
+
+![Trace components and data flow](./images/Trace-Dataflow.png "Trace components and data flow")
 
 Tool or Extension              | Input                                         | Output                         | Description
 :------------------------------|:----------------------------------------------|:-------------------------------|:------------------------------------
 [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) | `*.csolution.yml`, optional `.cmsis/*.dbgconf` | `*.cbuild-run.yml` | Generates the run and debug information consumed by debuggers.
-[Arm CMSIS Debugger](https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger) Trace View | `.cmsis/*.ctrace.yml`, raw trace files, ELF/DWARF symbols | Updated `.cmsis/*/ctrace.yml`, `.trace/*.ctrace-run.yml`, CTF output, CSV export, analysis views | Configures trace capture, resolves symbols, and post-processes trace data.
-[pyOCD](pyOCD-Debugger.md)     | `*.cbuild-run.yml`, `.target/*/ctrace-run.yml` | Raw trace data files in `.trace` | Programs trace registers and captures trace streams during the debug session.
-CLI symbol mapper              | `.cmsis/*.ctrace.yml`, ELF/DWARF symbols      | `.trace/*.ctrace-run.yml`      | Resolves symbols for CI and non-interactive workflows.
-[CDT Trace](https://github.com/eclipse-cdt-cloud/vscode-trace-extension) and [VS Code Trace Server](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-server) | CTF files, Trace Compass XML Analysis file | Trace viewer panes | Visualizes the CTF output in VS Code.
+[Arm CMSIS Debugger](https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger)<br/>Trace Generation Setup View | `.cmsis/*.ctrace.yml` | Updated `.cmsis/*.ctrace.yml` | Configures trace capture.
+pyTS symbol mapper             | `.cmsis/*.ctrace.yml`, ELF/DWARF symbols       | `.trace/*.ctrace-run.yml`      | Resolves symbols and generates Corsight register valuesworkflows.
+[pyOCD](pyOCD-Debugger.md)     | `*.cbuild-run.yml`, `.trace/*.ctrace-run.yml`  | Raw trace data files in `.trace/` | Programs trace registers and captures trace streams during the debug session.
+Trace Decoder                 | Raw trace data files, `.trace/*.ctrace.run.yml` | CSV, CTF files, Trace Compass XML Analysis file | Generates CSV files (human readable) and CTF files
+[Trace Viewer for VSCode](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension) and<br/> [VS Code Trace Server](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-server) | CTF files, Trace Compass XML Analysis file | Trace viewer panes | Visualizes the CTF output in VS Code.
 
-### Interactive Debug Workflow
+**Interactive Debug Workflow:**
 
-Phase                 | Where          | Action                                                                 | Output
-:---------------------|:--------------:|:-----------------------------------------------------------------------|:-------------------------------
-Configure             | CMSIS-Debugger | Load `.cmsis/<target-set>.ctrace.yml` when the IDE starts or when the target-set changes. | Active trace configuration.
-Build update          | CMSIS-Debugger | Resolve trace locations from ELF/DWARF data after `*.cbuild-run.yml` changes. | Updated `.trace/<target-set>.ctrace-run.yml`.
-Start debug           | pyOCD          | Clear previous raw trace files and configure trace registers from the generated trace run file. | Target trace setup.
-Edit trace settings   | CMSIS-Debugger | Update `.cmsis/<target-set>.ctrace.yml`, resolve symbols, and persist the configuration. | Saved trace configuration and generated trace run file.
-Capture               | pyOCD          | Capture trace data during execution. A monitor command may reload the trace configuration; changes delete previous raw trace data files. | Raw trace files in `.trace/<target-set>`.
-Analyze               | CMSIS-Debugger | Open raw trace files and generate views, CSV files, or CTF output. | `.trace/<target-set>/ctf` and analysis views.
+It is possible to change the **Trace Generation Setup** during debugging. For this workflow:
 
-### CI Workflow
+- pyTS generates a new `*.ctrace-run.yml` file.
+- pyOCD reloads this `*.ctrace-run.yml` file and deletes existing **Raw Trace Stream** files. 
 
-CI requires a prepared `.cmsis/<target-set>.ctrace.yml` file. This file may be created interactively and checked into source control, or maintained manually.
+**CI Workflow:**
 
-CI Phase              | Where          | Action                                                                 | Output
-:---------------------|:--------------:|:-----------------------------------------------------------------------|:-------------------------------
-Build                 | CMSIS-Toolbox  | Build the application.                                                 | ELF file and `*.cbuild-run.yml`.
-Resolve symbols       | CLI tool       | Resolve locations in `.cmsis/<target-set>.ctrace.yml` using ELF/DWARF data and validate the configuration. | `.trace/<target-set>.ctrace-run.yml`.
-Run and capture       | pyOCD          | Load the image, configure trace registers, delete previous raw trace files, and capture trace data. | Raw trace files in `.trace/<target-set>`.
-Post-process          | CMSIS-Debugger | Convert raw data to CTF and open analysis views on a desktop system.   | `.trace/<target-set>/ctf` and reports.
+CI requires a prepared `.cmsis/<target-set>.ctrace.yml` file. This file is may be under source control or maintained manually.
 
 ### Configuration Files
 
@@ -253,9 +241,7 @@ Configuration File             | Description
 
 The trace capture configuration is written to target trace resources such as `DWT`, `ITM`, `ETM`, `MTB`, or `PMU` registers. The generated register accesses are loaded by pyOCD when the debug session starts.
 
-In a later step, a preprocessing tool may generate `.trace/README.md` with setup instructions and code snippets that can be inserted in the application code. This file can also be consumed by automation and AI-based tooling.
-
-------
+In a later step, a preprocessing tool may generate `.trace/README.md` with setup instructions and code snippets that can be inserted in the application code.
 
 ### File Structure of `*.ctrace.yml`
 
@@ -300,8 +286,8 @@ ctrace:
           size: 0x100
           output: PC
 
-        - location: \\App\"main.c"\sample_counter
-          access: read
+        - location: App|"main.c"::sample_counter
+          access: R
           output: PC
           match:
             value: 0x00001234
@@ -321,9 +307,13 @@ ctrace:
 
 When `timestamps:` is present, timestamp generation is enabled in the trace stream. ITM uses local timestamps with a synchronous timestamp source. ETM uses the cycle counter.
 
+`timestamps:`                                            |             | Content
+:--------------------------------------------------------|:------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `itm-prescaler:`                      |  Optional   | ITM timestamp prescaler: `1` (default), `4`, `16`, `64`.
+
 #### `timesync:`
 
-When `timesync:` is present, time synchronization between streams is enabled, for example between ITM and ETM global timestamps.
+When `timesync:` is present, time synchronization between streams is enabled, for example between ITM and ETM by global timestamps.
 
 #### `data:`
 
@@ -332,13 +322,13 @@ The `data:` node configures DWT data trace. DWT comparator resources are limited
 `data:`                                                  |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
 `- location:`                                            |**Required** | Symbol or numeric address [location](#location) to trace.
-&nbsp;&nbsp;&nbsp; `access:`                             |  Optional   | Access type: `W` (default), `R`, or `RW`.
+&nbsp;&nbsp;&nbsp; `access:`                             |  Optional   | Access type: `W`, `R`, or `RW`. Default: `W`.
 &nbsp;&nbsp;&nbsp; `size:`                               |  Optional   | Number of bytes in the traced range. Default: `sizeof(symbol)`, `4` for numeric addresses.
 &nbsp;&nbsp;&nbsp; `pname:`                              |  Optional   | Processor name, required for numeric addresses in multi-processor systems.
 &nbsp;&nbsp;&nbsp; `output:`                             |  Optional   | Trace output mode (see table below). Default: `value`.
 &nbsp;&nbsp;&nbsp; `match:`                              |  Optional   | Value match condition. When present, trace is emitted only for matching accesses.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `value:`            |**Required** | Value to match.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `size:`             |  Optional   | Number of bytes to compare. Allowed values: 1, 2, 4. Default: 4.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `size:`             |  Optional   | Number of bytes to compare. Allowed values: `1`, `2`, `4`. Default: `4`.
 
 `output:`       | Description
 :---------------|:------------------------------------
@@ -363,11 +353,10 @@ The `events:` node enables DWT or PMU event trace for all processors or for a sp
 
 `events:`                             |             | Content
 :-------------------------------------|:------------|:------------------------------------
-`- event:`                            |**Required** | Event selector, optionally scoped with `\\<pname>\`.
+`- event:`                            |**Required** | Event selector.
 
-Supported DWT event selectors include `CYCCNT`, `CPICNT`, `EXCCNT`, `SLEEPCNT`, `LSUCNT`, and `FOLDCNT`. PMU events may be added when supported by the target.
-
-ToDo: PMU details
+Supported DWT event selectors include `CYCCNT`, `CPICNT`, `EXCCNT`, `SLEEPCNT`, `LSUCNT`, and `FOLDCNT`.
+`PMU` events may be added when supported by the target. They are emitted when one or more PMU counters with index 0..7 have an 8-bit overflow.
 
 **Example:**
 
@@ -384,10 +373,10 @@ The `itm:` node enables ITM channels.
 
 `itm:`                                |             | Content
 :-------------------------------------|:------------|:------------------------------------
-`- enable:`                           |**Required** | ITM channel bit mask, optionally scoped with `\\<pname>\`.
-&nbsp;&nbsp;&nbsp; `privileged:`      |  Optional   | Privileged access mask by blocks of eight channels. Default: `0`.
+`- enable:`                           |**Required** | ITM channel bit mask.
+&nbsp;&nbsp;&nbsp; `privileged:`      |  Optional   | Privileged access only mask by blocks of eight channels. Default: `0`.
 
-Each bit in `enable:` represents one ITM channel. When the processor scope is omitted, the ITM setting applies to all processors in the system that support ITM.
+Each bit in `enable:` represents one ITM channel.
 
 !!! Note
     ITM channel 0 is often used for `printf` output. This output should be routed to an output window or debug console instead of the trace analysis components.
@@ -398,9 +387,9 @@ The `pcsampling:` node enables DWT PC sampling for selected processors.
 
 `pcsampling:`                         |             | Content
 :-------------------------------------|:------------|:------------------------------------
-`- period:`                           |  Optional   | Sampling period, optionally scoped with `\\<pname>\`. When the processor scope is omitted, the setting applies to all processors that support PC sampling.
+`- period:`                           |  Optional   | Sampling period in CPU cycles.
 
-ToDo: The allowed sampling periods are target dependent and still need to be finalized.
+Supported values for DWT PC sampling `period:` are `0` (off), `64*1`, `64*2`, ... , `64*16`, `1024*1`, `1024*2`, ... , and `1024*16`. Default: `0`.
 
 #### `synchronization:`
 
@@ -408,12 +397,12 @@ The `synchronization:` node overrides component-specific synchronization packet 
 
 `synchronization:`                    |             | Content
 :-------------------------------------|:------------|:------------------------------------
-`- period:`                           |**Required** | Synchronization period in the form `[\\<pname>\]<component>\<period>`.
+`- period:`                           |**Required** | Synchronization period in the form `<component>\<period>`.
 
 Component | Supported Values
 :---------|:------------------------------------
-`DWT`     | `0` (off), `16M`, `64M`, `256M` (default) processor cycles.
-`ETM`     | `0` (off), `256`, `512`, `1k` (default), `2k`, ... , or `512k`, `1M` cycles/bytes.
+`DWT`     | `0` (off), `16M`, `64M`, `256M` processor cycles. Default: `256M`.
+`ETM`     | `0` (off), `256`, `512`, `1k`, `2k`, ... , or `512k`, `1M` cycles/bytes. Default `1k`.
 
 !!! Note
     `k`=`2^10`, `M`=`2^20`
@@ -515,14 +504,7 @@ ctrace-run:
 
 #### Register Accesses
 
-ToDo: rewrite this section
-
-Register accesses are generated in the recommended execution order and are executed from top to bottom.
-
-- A single-core system uses one `register-access:` entry with no `pname:` value.
-- A multi-processor system uses one `register-access:` entry per processor.
-- Entries in `*.ctrace.yml` without processor scope are expanded to each processor that supports the requested trace feature.
-- System-wide trace sources may use an entry without `pname:`.
+The `ctrace-run.yml` file contains the register values that are required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about the arichtectural defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.
 
 Trace Component | Base Address | Description
 :---------------|:------------:|:------------------------------------
@@ -531,16 +513,11 @@ Trace Component | Base Address | Description
 `PMU`           | `0xE0003000` | Performance Monitoring Unit.
 `ETM`           | `0xE0041000` | Embedded Trace Macrocell.
 
-Register access rules:
+The `ctrace-ref:` nodes references the trace generation configuration in `ctrace.yml` and contain register values that represents the references setup.
+A single-core system has no `pname:` value; a multi-processor always includes a `pname:` value in the `ctrace-ref:` node.
 
-- Register accesses are 32-bit little-endian values.
-- Each register access carries a comment with the brief register name as defined in the Armv8-M Architecture Reference Manual. Armv8-M names are used for simplicity, because Armv8-M is a superset of Armv7-M for these registers.
-- A `write` access may include `mask:`. When single bits are masked out, the operation becomes a read-modify-write access.
-- A `read` access compares the value read from the target against the configured value.
-- A `read` access may include `mask:` to compare selected bits only. A mask value of `0` ignores the read value but still performs the read, for example to trigger clear-on-read side effects.
-- A `read` access may include `timeout:`. The debugger retries until the value matches or the timeout expires.
-- If a read access times out, the debugger aborts configuration of the current component for the current processor and continues with the next component or processor.
-- Symbol locations are resolved to numeric address and size values before register accesses are generated. When a resolved symbol is programmed into a comparator register, the register-name comment is extended with the original symbol name and size.
+ToDo Jens: ware the system wide settings? How are the represented? What trace component is configured with such settings?
+     - Entries in `*.ctrace.yml` without processor scope are expanded to each processor that supports the requested trace feature.
 
 ### Initial Implementation
 
@@ -557,6 +534,7 @@ Subsequent releases may extend this initial solution to:
 - Cross-trigger functionality will be represented later (potentially in `*.ctrace.yml`)
 - "Trace and Live View" will be renamed to "Target Monitor" with the sub-sections "Live Watch" and "Trace"
     - How should trace configuration and captured trace information be exposed in the user interface?
+- How are PMU events configured (what is captured with the PMU)?
 
 ### Out-of-Scope
 
