@@ -110,25 +110,53 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#trace">Trace</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#tools-and-extensions">Tools and Extensions</a>
+    <li class="toctree-l3"><a class="reference internal" href="#directory-and-file-structure">Directory and File Structure</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#interactive-debug-workflow">Interactive Debug Workflow</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#ci-workflow">CI Workflow</a>
-    </li>
-    <li class="toctree-l3"><a class="reference internal" href="#configuration-files">Configuration files</a>
+    <li class="toctree-l3"><a class="reference internal" href="#name-conventions">Name Conventions</a>
         <ul>
-    <li class="toctree-l4"><a class="reference internal" href="#structure-of-ctraceyml">Structure of *.ctrace.yml</a>
+    <li class="toctree-l4"><a class="reference internal" href="#location">Location</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#references">References</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#target-trace-information-setup">Target trace information setup</a>
+    <li class="toctree-l3"><a class="reference internal" href="#tools-and-extensions">Tools and Extensions</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#overall-directory-and-file-structure">Overall directory and file structure</a>
+    <li class="toctree-l3"><a class="reference internal" href="#configuration-files">Configuration Files</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#file-structure-of-ctraceyml">File Structure of *.ctrace.yml</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#timestamps">timestamps:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#timesync">timesync:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#data">data:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#exceptions">exceptions:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#events">events:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#itm">itm:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#pcsampling">pcsampling:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#synchronization">synchronization:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#instructions">instructions:</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#tracehalt">tracehalt:</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#file-structure-of-ctrace-runyml">File Structure of *.ctrace-run.yml</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#register-accesses">Register Accesses</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#initial-implementation">Initial Implementation</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#open-design-questions">Open design questions</a>
+    <li class="toctree-l3"><a class="reference internal" href="#remaining-design-questions">Remaining Design Questions</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#out-of-scope">Out-of-Scope</a>
     </li>
@@ -300,244 +328,837 @@
 <p>The exported module can then be consumed by a Zephyr application by adding the module path to <code>ZEPHYR_EXTRA_MODULES</code> (or through a west manifest) and enabling the desired <code>CONFIG_...</code> symbols in <code>prj.conf</code>.</p>
 <p>Example: the <a href="https://github.com/brondani/cmsis-to-zephyr-concept/tree/main/ml_inference">cmsis-to-zephyr-concept <code>ml_inference</code> example</a> shows a minimal end-to-end flow: exporting a layer as a Zephyr module and consuming it from a Zephyr application.</p>
 <h2 id="trace">Trace</h2>
-<p>Trace captures target execution data via SWO (or trace port), ETB, MTB, and Event Recorder.</p>
-<blockquote>
-<p>Note</p>
+<p>Trace captures target execution data through SWO or trace port and from sources such as ETB, MTB, and Event Recorder. Trace is obtained with these steps:</p>
+<ol>
+<li>Configure trace communication (how trace leaves the MCU) with the <code>target-set:</code> in <code>*.csolution.yml</code> (and optional settings in <code>*.dbgconf</code>).</li>
+<li>Configure trace generation (what the MCU produces: ITM, DWT, etc.) with the <code>*.ctrace.yml</code> file.</li>
+<li>Collect trace information (debugger receives and records the stream) into raw data files.</li>
+<li>Analyze trace data files (host tools interpret the collected data files) and generate *.csv files and CTF files.</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <ul>
-<li><code>&lt;target-set&gt;</code> is the base name of the <code>*.ctrace.yml</code> file. This name is derived from the selected target-set, i.e. <code>SDS+AppKit-E8@HIL.ctrace.yml</code> is <code>&lt;target-set&gt;</code> = <code>SDS+AppKit-E8@HIL</code>.</li>
+<li><code>&lt;target-set&gt;</code> is the name of the target-set, for example <code>SDS+AppKit-E8@HIL</code>.</li>
+<li>Trace does not include SEGGER RTT, SystemView, or STDIO UART output. These features use separate data output paths.</li>
 </ul>
-</blockquote>
-<p>The file <code>*.ctrace.yml</code> specifies the trace information that should be captured from the target. This file is created using the CMSIS-Debugger with dialog support (UX potentially similar to SDS extension).</p>
-<p>pyOCD stores raw trace streams from various sources in binary files, for example <code>.trace/&lt;target-set&gt;/ETM.raw</code>, <code>.trace/&lt;target-set&gt;/ER.raw</code>.</p>
-<p>CMSIS Debugger post-processes raw streams into CSV files (on demand for raw views) and <a href="https://diamon.org/ctf/v1.8.3/">CTF format v1.8.3</a> for viewers and analysis tools. CTF output is written to <code>.trace/&lt;target-set&gt;/ctf</code>.</p>
-<p>CMSIS Debugger uses the <a href="https://github.com/eclipse-cdt-cloud/vscode-trace-extension">CDT Trace</a> extension as the VS Code viewer. This viewer requires a <a href="https://archive.eclipse.org/tracecompass/doc/stable/org.eclipse.tracecompass.doc.user/Data-driven-analysis.html">Trace Compass XML Analysis file</a> that defines analysis views. The XML Analysis file should be generated by a pre-processing tool from the trace configuration files listed below.</p>
-<p>The trace solution supports both interactive debug workflows and CI workflows.</p>
-<h3 id="tools-and-extensions">Tools and Extensions</h3>
-<p>The following responsibilities are split across tools and VS Code extensions.</p>
-<p><strong><a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a>:</strong></p>
-<ul>
-<li>Input: <code>*.csolution.yml</code> and optional <code>.cmsis/*.dbgconf</code>.</li>
-<li>Output: <code>*.cbuild-run.yml</code> consumed by pyOCD.</li>
-</ul>
-<p><strong><a href="https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger">Arm CMSIS Debugger</a> - Trace View:</strong></p>
-<ul>
-<li>Input: <code>.cmsis/*.ctrace.yml</code>, raw trace files in <code>.trace</code>, ELF/DWARF symbols.</li>
-<li>Output:</li>
-<li>updated <code>.cmsis/*.ctrace.yml</code> with resolved symbolic locations,</li>
-<li>CTF output in <code>.trace/ctf</code> for <a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-server">VSCode Trace Server</a>,</li>
-<li>trace analysis views and CSV export for raw trace data files.</li>
-</ul>
-<p><strong><a href="../pyOCD-Debugger/">pyOCD</a>:</strong></p>
-<ul>
-<li>Input: <code>*.cbuild-run.yml</code> and <code>.cmsis/*.ctrace.yml</code> (<code>register-values</code>).</li>
-<li>Output: raw trace data files in <code>.trace</code>.</li>
-</ul>
-<p><strong>CLI symbol mapper for CI:</strong></p>
-<ul>
-<li>Purpose: resolve ELF symbol values and update <code>.cmsis/*.ctrace.yml</code> in CI workflows.</li>
-</ul>
-<h3 id="interactive-debug-workflow">Interactive Debug Workflow</h3>
+</div>
+<h3 id="directory-and-file-structure">Directory and File Structure</h3>
+<p>Trace-related files are stored relative to the directory that contains the <code>*.csolution.yml</code> file.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Phase</th>
-<th style="text-align: center;">Where</th>
-<th style="text-align: left;">Action</th>
-<th style="text-align: left;">Output artifact</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Configure</td>
-<td style="text-align: center;">CMSIS Debugger</td>
-<td style="text-align: left;">Load existing <code>.cmsis/*.ctrace.yml</code> at IDE start or target-set change.</td>
-<td style="text-align: left;">n/a</td>
-</tr>
-<tr>
-<td style="text-align: left;">Build update</td>
-<td style="text-align: center;">CMSIS Debugger</td>
-<td style="text-align: left;">On update of <code>*.cbuild-run.yml</code>, resolve symbols from ELF and validate.</td>
-<td style="text-align: left;">Updated <code>register-values</code> in <code>*.ctrace.yml</code></td>
-</tr>
-<tr>
-<td style="text-align: left;">Start debug</td>
-<td style="text-align: center;">pyOCD</td>
-<td style="text-align: left;">Clear previous raw trace files and load <code>register-values</code> from <code>*.ctrace.yml</code></td>
-<td style="text-align: left;">n/a</td>
-</tr>
-<tr>
-<td style="text-align: left;">Edit trace settings</td>
-<td style="text-align: center;">CMSIS Debugger</td>
-<td style="text-align: left;">Update <code>.cmsis/*.ctrace.yml</code>, re-resolve symbols, persist config.</td>
-<td style="text-align: left;">Saved <code>.cmsis/*.ctrace.yml</code> with update <code>register-values</code>.</td>
-</tr>
-<tr>
-<td style="text-align: left;">Capture</td>
-<td style="text-align: center;">pyOCD</td>
-<td style="text-align: left;">Capture trace during execution; A monitor command triggers <code>*.ctrace.yml</code> reload, changes delete raw trace data files.</td>
-<td style="text-align: left;">Raw trace data files in <code>.trace</code></td>
-</tr>
-<tr>
-<td style="text-align: left;">Analyze</td>
-<td style="text-align: center;">CMSIS Debugger</td>
-<td style="text-align: left;">Open raw trace data files generate views, CSV, or CTF output (utilizing <code>*.ctrace.yml</code> values).</td>
-<td style="text-align: left;"><code>.trace/ctf</code> files and analysis views</td>
-</tr>
-</tbody>
-</table>
-<h3 id="ci-workflow">CI Workflow</h3>
-<p>CI requires a prepared <code>.cmsis/*.ctrace.yml</code> (created interactively or maintained manually in source control).</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">CI phase</th>
-<th style="text-align: center;">Where</th>
-<th style="text-align: left;">Action</th>
-<th style="text-align: left;">Output artifact</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Build</td>
-<td style="text-align: center;">CMSIS-Toolbox</td>
-<td style="text-align: left;">Build the application.</td>
-<td style="text-align: left;">ELF file and <code>*.cbuild-run.yml</code></td>
-</tr>
-<tr>
-<td style="text-align: left;">Resolve symbols</td>
-<td style="text-align: center;">CLI tool</td>
-<td style="text-align: left;">After build, resolve symbols in <code>.cmsis/*.ctrace.yml</code> using ELF/DWARF and validate.</td>
-<td style="text-align: left;">Updated <code>register-values</code> in <code>*.ctrace.yml</code></td>
-</tr>
-<tr>
-<td style="text-align: left;">Run and capture</td>
-<td style="text-align: center;">pyOCD</td>
-<td style="text-align: left;">Load image and register values, delete previous raw trace data files, then capture trace data.</td>
-<td style="text-align: left;">Raw trace data files in <code>.trace</code></td>
-</tr>
-<tr>
-<td style="text-align: left;">Post-process/analyze</td>
-<td style="text-align: center;">CMSIS Debugger</td>
-<td style="text-align: left;">Convert raw data to CTF and open analysis views (desktop step).</td>
-<td style="text-align: left;"><code>.trace/ctf</code> and reports</td>
-</tr>
-</tbody>
-</table>
-<h3 id="configuration-files">Configuration files</h3>
-<ul>
-<li>Trace infrastructure (trace clock, ETB setup, trace pins, and related hardware setup) is configured in <code>*.csolution.yml</code> and optional target-set specific <code>.cmsis/*.dbgconf</code>.</li>
-<li>Trace information (captured data configuration) is configured in Trace View of <strong><a href="https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger">Arm CMSIS Debugger</a></strong> and stored in target-set specific <code>.cmsis/*.ctrace.yml</code> (for example <code>SDS+AppKit-E8@HIL.ctrace.yml</code>).</li>
-</ul>
-<h4 id="structure-of-ctraceyml">Structure of <code>*.ctrace.yml</code></h4>
-<pre><code class="language-yml">ctrace:   # start of file (configure trace)
-# User-authored fields (created by dialog in CMSIS-Debugger):
-  created-by: CMSIS-Debugger v1.4.0
-  instructions:   # enable instruction trace (ETB, MTB only)
-    start:        # with cross trigger
-      - location: mySymbol    # can be code or data symbol
-        value: 0x10           # optional with data symbol
-
-  timestamp:      # enable timestamps
-
-  data:           # enable data trace
-    - location:   mysymbol  # required, symbol or address
-      access:     rw        # optional, default write
-      size:       8         # optional, default sizeof(symbol)
-      pc:         no        # optional, default PC value enabled
-    - location:
-            :
-
-  exceptions:       # enable exception trace
-    - pname: Core0  # only for Core0 (default all cores) 
-
-
-  events:           # enable all events or a specific list
-    - event: ///core1/CPI    # Cycles per instruction
-    - event: EXE    # Exception overhead
-        ...
- # todo how to specify Cortex-M85 PMU Events
-
-  itm:            # enable ITM
-    - pname: Core0
-      enable: 0xFFFFFFFF   
-      privilege: 0x8  
-
-# Generated fields (managed by CMSIS Debugger and CLI tooling, do not edit manually):
-  ELF-files:  # use for mapping locations
-    - file: program1.axf
-      pname: Core0
-    - file: program2.axf
-      pname: Core1
-
-  register-values:
-    - pname: Core0
-      ITM:
-        TER: 0xFFFFFFFF
-        TPR: 0x8
-      DTW:
-        xxx:
-        symbol: mysymbol
-
-
-    - pname: Core1
-      ITM:
-      DTW:
-</code></pre>
-<p>Validation rules:</p>
-<ul>
-<li><code>location</code> entries accept symbol names or numeric addresses.</li>
-<li><code>pname</code> defaults to all cores if omitted; set it to scope trace by core.</li>
-<li><code>register-values</code> must be regenerated after each build that changes symbols.</li>
-<li>Fields under <code>ELF-files</code> and <code>register-values</code> are generated artifacts.</li>
-</ul>
-<h3 id="target-trace-information-setup">Target trace information setup</h3>
-<p>The trace information configuration is written to <code>DWT</code> and <code>ITM</code> registers of the Cortex-M system. The setup is injected through generated <code>register-values</code> and loaded by pyOCD to the target.</p>
-<p>In a later step, a pre-processing tool may generate <code>.trace/README.md</code> with setup instructions and code snippets that can be inserted in the application code. This file can also be consumed by automation and AI-based tooling.</p>
-<h3 id="overall-directory-and-file-structure">Overall directory and file structure</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Directory</th>
+<th style="text-align: left;">Directory or File</th>
+<th style="text-align: left;">Created by</th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>.</code> (root)</td>
-<td style="text-align: left;">Contains *.csolution.yml project file.</td>
+<td style="text-align: left;"><code>.</code></td>
+<td style="text-align: left;">User</td>
+<td style="text-align: left;">Contains the <code>*.csolution.yml</code> project file.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>.cmsis</code></td>
-<td style="text-align: left;">Contains <code>&lt;target-set&gt;.ctrace.yml</code> that configures which trace information is captured (effectively the DWT, ITM register setup).</td>
+<td style="text-align: left;"><code>.cmsis/&lt;target-set&gt;.ctrace.yml</code></td>
+<td style="text-align: left;">CMSIS-Debugger</td>
+<td style="text-align: left;">User trace intent and target-set specific trace capture configuration.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>.trace/&lt;target-set&gt;</code></td>
-<td style="text-align: left;">Contains raw trace data files.</td>
+<td style="text-align: left;"><code>.trace/&lt;target-set&gt;.ctrace-run.yml</code></td>
+<td style="text-align: left;">pyTS</td>
+<td style="text-align: left;">Generated trace run information, including resolved symbols and register values.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.trace/&lt;target-set&gt;.SWO.raw</code></td>
+<td style="text-align: left;">pyOCD</td>
+<td style="text-align: left;">Raw trace data files, for example <code>.SWO</code>, <code>MTB</code>, or <code>ER</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.trace/&lt;target-set&gt;.SWO.csv</code></td>
+<td style="text-align: left;">TraceDecoder</td>
+<td style="text-align: left;">CSV files that represent raw data + ctrace-refs</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>.trace/&lt;target-set&gt;/ctf</code></td>
-<td style="text-align: left;">Contains CTF files (<code>metadata</code>, <code>stream_0</code>, <code>stream_1</code>, etc.)</td>
+<td style="text-align: left;">TraceDecoder</td>
+<td style="text-align: left;">CTF files such as <code>metadata</code>, <code>stream_0</code>, and <code>stream_1</code>.</td>
 </tr>
 </tbody>
 </table>
-<h3 id="initial-implementation">Initial Implementation</h3>
-<p>Initial release focus is pyOCD with SWO UART and interactive operation in CMSIS-Debugger.</p>
-<p>Subsequent releases extend this initial solution to:</p>
+<p>TraceDecoder: OpenCSD + writer + CTF output</p>
+<p>The <code>.cmsis/&lt;target-set&gt;.ctrace.yml</code> file configures the trace generation. It is created or updated by the user interface of the CMSIS-Debugger Trace View.</p>
+<p>A CLI tool (<code>pyTS</code>) resolves symbol-based settings in <code>*.ctrace.yml</code> against the ELF/DWARF information of the active target-set and generates the register setup for the hardware configuration. The output is the <code>.trace/&lt;target-set&gt;.ctrace-run.yml</code> which is used by the debugger for register setup in hardware. During trace analysis the information of this file connects the raw trace data back to the <code>*.ctrace.yml</code> configuration.</p>
+<p>Raw trace streams are stored as binary files, for example <code>.trace/&lt;target-set&gt;.SWO.raw</code>. The TraceDecoder CLI tool can post-process raw streams into CSV files and <a href="https://diamon.org/ctf/v1.8.3/">CTF format v1.8.3</a> for viewers and analysis tools.</p>
+<h3 id="name-conventions">Name Conventions</h3>
+<h4 id="location">Location</h4>
+<p>Locations can be symbols or a plain numeric addresses. An additional project or path to an image file may be specified.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Location Form</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>symbol</code></td>
+<td style="text-align: left;">Finds matching symbols in all available symbol files.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>"sourcefile"::symbol</code></td>
+<td style="text-align: left;">Finds matching symbols in a source file across all available symbol files.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>project\|symbol</code></td>
+<td style="text-align: left;">Finds matching symbols in symbol files from a specific project.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>project\|"sourcefile"::symbol</code></td>
+<td style="text-align: left;">Finds matching symbols in a source file from a specific project.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>file-path\|symbol</code></td>
+<td style="text-align: left;">Finds matching symbols in symbol files from a specific image file.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>file-path\|"sourcefile"::symbol</code></td>
+<td style="text-align: left;">Finds matching symbols in a source file from a specific image file.</td>
+</tr>
+</tbody>
+</table>
+<p>ToDo: examples</p>
+<h4 id="references">References</h4>
+<p>References identify a node in the <code>ctrace.yml</code> that generated information in <code>ctrace-run.yml</code>. These nodes are used for diagnostics and for linking trace analysis results back to the trace setup.</p>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-yml">ctrace-ref: &lt;pname&gt;/data#2        # refers to pname section, `data:` node, list node #2
+ctrace-ref: data#2                # `data:` node, list node #2
+ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
+</code></pre>
+<h3 id="tools-and-extensions">Tools and Extensions</h3>
+<p>The trace workflow is split across the command-line tools and  and VS Code extensions as shown below.</p>
+<p><img alt="Trace components and data flow" src="../images/Trace-Dataflow.png" title="Trace components and data flow" /></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Tool or Extension</th>
+<th style="text-align: left;">Input</th>
+<th style="text-align: left;">Output</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a></td>
+<td style="text-align: left;"><code>*.csolution.yml</code>, optional <code>.cmsis/*.dbgconf</code></td>
+<td style="text-align: left;"><code>*.cbuild-run.yml</code></td>
+<td style="text-align: left;">Generates the run and debug information consumed by debuggers.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger">Arm CMSIS Debugger</a><br/>Trace Generation Setup View</td>
+<td style="text-align: left;"><code>.cmsis/*.ctrace.yml</code></td>
+<td style="text-align: left;">Updated <code>.cmsis/*.ctrace.yml</code></td>
+<td style="text-align: left;">Configures trace capture.</td>
+</tr>
+<tr>
+<td style="text-align: left;">pyTS symbol mapper</td>
+<td style="text-align: left;"><code>.cmsis/*.ctrace.yml</code>, ELF/DWARF symbols</td>
+<td style="text-align: left;"><code>.trace/*.ctrace-run.yml</code></td>
+<td style="text-align: left;">Resolves symbols and generates Corsight register valuesworkflows.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="../pyOCD-Debugger/">pyOCD</a></td>
+<td style="text-align: left;"><code>*.cbuild-run.yml</code>, <code>.trace/*.ctrace-run.yml</code></td>
+<td style="text-align: left;">Raw trace data files in <code>.trace/</code></td>
+<td style="text-align: left;">Programs trace registers and captures trace streams during the debug session.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Trace Decoder</td>
+<td style="text-align: left;">Raw trace data files, <code>.trace/*.ctrace.run.yml</code></td>
+<td style="text-align: left;">CSV, CTF files, Trace Compass XML Analysis file</td>
+<td style="text-align: left;">Generates CSV files (human readable) and CTF files</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension">Trace Viewer for VSCode</a> and<br/> <a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-server">VS Code Trace Server</a></td>
+<td style="text-align: left;">CTF files, Trace Compass XML Analysis file</td>
+<td style="text-align: left;">Trace viewer panes</td>
+<td style="text-align: left;">Visualizes the CTF output in VS Code.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interactive Debug Workflow:</strong></p>
+<p>It is possible to change the <strong>Trace Generation Setup</strong> during debugging. For this workflow:</p>
 <ul>
-<li>Instruction Trace (ETB, MTB), EventRecorder</li>
-<li>CI Workflow</li>
+<li>pyTS generates a new <code>*.ctrace-run.yml</code> file.</li>
+<li>pyOCD reloads this <code>*.ctrace-run.yml</code> file and deletes existing <strong>Raw Trace Stream</strong> files. </li>
 </ul>
-<h3 id="open-design-questions">Open design questions</h3>
+<p><strong>CI Workflow:</strong></p>
+<p>CI requires a prepared <code>.cmsis/&lt;target-set&gt;.ctrace.yml</code> file. This file is may be under source control or maintained manually.</p>
+<h3 id="configuration-files">Configuration Files</h3>
+<p>Trace setup is split between target infrastructure configuration and capture configuration.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Configuration File</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>*.csolution.yml</code></td>
+<td style="text-align: left;">Selects the target-set and debug adapter. It may also reference target-set specific debugger configuration files.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.cmsis/*.dbgconf</code></td>
+<td style="text-align: left;">Optional target-set specific debugger configuration, for example trace clock, trace pins, ETB setup, and related hardware setup.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.cmsis/&lt;target-set&gt;.ctrace.yml</code></td>
+<td style="text-align: left;">User-authored trace capture configuration. This file defines which data, events, ITM channels, PC samples, or instruction trace streams are enabled.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>.trace/&lt;target-set&gt;.ctrace-run.yml</code></td>
+<td style="text-align: left;">Generated trace run configuration. This file contains resolved symbols and ordered register accesses for pyOCD or other debug tools.</td>
+</tr>
+</tbody>
+</table>
+<p>The trace capture configuration is written to target trace resources such as <code>DWT</code>, <code>ITM</code>, <code>ETM</code>, <code>MTB</code>, or <code>PMU</code> registers. The generated register accesses are loaded by pyOCD when the debug session starts.</p>
+<p>In a later step, a preprocessing tool may generate <code>.trace/README.md</code> with setup instructions and code snippets that can be inserted in the application code.</p>
+<h3 id="file-structure-of-ctraceyml">File Structure of <code>*.ctrace.yml</code></h3>
+<p>The <code>*.ctrace.yml</code> file starts with the node <code>ctrace:</code> and contains the trace capture settings for one target-set.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>ctrace:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>created-by:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Tool and version that created or last updated the file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>setup:</code></td>
+<td style="text-align: left;">Required</td>
+<td style="text-align: left;">Setup for each processor</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>setup:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- pname:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Section applies to a processor name (required for multi-processor systems)</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>disable:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">When set, this list node is ignored; useful for testing.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#timestamps"><code>timestamps:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Enables timestamps in the emitted trace streams.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#timesync"><code>timesync:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Enables time synchronization between trace streams.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#data"><code>data:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">DWT data trace configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#exceptions"><code>exceptions:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">DWT exception trace configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#events"><code>events:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">DWT or PMU event trace configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#itm"><code>itm:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">ITM channel configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#instructions"><code>instructions:</code></a></td>
+<td style="text-align: left;">Future</td>
+<td style="text-align: left;">ETB or MTB instruction trace configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pcsampling"><code>pcsampling:</code></a></td>
+<td style="text-align: left;">Future</td>
+<td style="text-align: left;">DWT PC sampling configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#synchronization"><code>synchronization:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Trace synchronization packet period configuration.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#tracehalt"><code>tracehalt:</code></a></td>
+<td style="text-align: left;">Future</td>
+<td style="text-align: left;">Trace sink or formatter halt trigger configuration.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">ctrace:
+  created-by: CMSIS-Debugger v1.4.0
+  setup:
+    - pname: 
+#     disable:    # disables trace without need to remove settings
+      timestamps:
+      timesync:
+
+      data:
+        - location: mysimple
+
+        - location: \\App\0x20001000
+          access: readwrite
+          size: 0x100
+          output: PC
+
+        - location: App|&quot;main.c&quot;::sample_counter
+          access: R
+          output: PC
+          match:
+            value: 0x00001234
+            size: 4
+
+      exceptions:
+      events:
+        - event: CPICNT
+        - event: LSUCNT
+
+      itm:
+        enable: 0x0000000F
+        privileged: 0x0
+</code></pre>
+<h4 id="timestamps"><code>timestamps:</code></h4>
+<p>When <code>timestamps:</code> is present, timestamp generation is enabled in the trace stream. ITM uses local timestamps with a synchronous timestamp source. ETM uses the cycle counter.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>timestamps:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>itm-prescaler:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">ITM timestamp prescaler: <code>1</code> (default), <code>4</code>, <code>16</code>, <code>64</code>.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="timesync"><code>timesync:</code></h4>
+<p>When <code>timesync:</code> is present, time synchronization between streams is enabled, for example between ITM and ETM by global timestamps.</p>
+<h4 id="data"><code>data:</code></h4>
+<p>The <code>data:</code> node configures DWT data trace. DWT comparator resources are limited and shared with data access breakpoints, trigger conditions, and trace start/stop logic.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>data:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- location:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Symbol or numeric address <a href="#location">location</a> to trace.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>access:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Access type: <code>W</code>, <code>R</code>, or <code>RW</code>. Default: <code>W</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>size:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Number of bytes in the traced range. Default: <code>sizeof(symbol)</code>, <code>4</code> for numeric addresses.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Processor name, required for numeric addresses in multi-processor systems.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>output:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Trace output mode (see table below). Default: <code>value</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>match:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Value match condition. When present, trace is emitted only for matching accesses.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>value:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Value to match.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>size:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Number of bytes to compare. Allowed values: <code>1</code>, <code>2</code>, <code>4</code>. Default: <code>4</code>.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>output:</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>value</code></td>
+<td style="text-align: left;">Emits the value of the access.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>address</code></td>
+<td style="text-align: left;">Emits the address offset. This is useful when tracing an address range.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PC</code></td>
+<td style="text-align: left;">Emits the PC value that caused the access.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>match</code></td>
+<td style="text-align: left;">Emits only the comparator ID of a match. This requires Armv8-M and saves trace bandwidth.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PC+value</code></td>
+<td style="text-align: left;">Emits PC and value.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>address+value</code></td>
+<td style="text-align: left;">Emits address offset and value.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PC+address</code></td>
+<td style="text-align: left;">Emits PC and address offset. This requires Armv8-M.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>size:</code> values greater than <code>4</code> may require two DWT comparators, depending on the DWT architecture. A <code>match:</code> condition can also require two DWT comparators.</p>
+</div>
+<h4 id="exceptions"><code>exceptions:</code></h4>
+<p>The <code>exceptions:</code> node enables DWT exception trace. This does not enable ETM exception trace.</p>
+<h4 id="events"><code>events:</code></h4>
+<p>The <code>events:</code> node enables DWT or PMU event trace for all processors or for a specific processor.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>events:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- event:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Event selector.</td>
+</tr>
+</tbody>
+</table>
+<p>Supported DWT event selectors include <code>CYCCNT</code>, <code>CPICNT</code>, <code>EXCCNT</code>, <code>SLEEPCNT</code>, <code>LSUCNT</code>, and <code>FOLDCNT</code>.
+<code>PMU</code> events may be added when supported by the target. They are emitted when one or more PMU counters with index 0..7 have an 8-bit overflow.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">events:
+  - event: CPICNT
+  - event: FOLDCNT
+  - event: LSUCNT
+</code></pre>
+<h4 id="itm"><code>itm:</code></h4>
+<p>The <code>itm:</code> node enables ITM channels.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>itm:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- enable:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">ITM channel bit mask.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>privileged:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Privileged access only mask by blocks of eight channels. Default: <code>0</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>Each bit in <code>enable:</code> represents one ITM channel.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ITM channel 0 is often used for <code>printf</code> output. This output should be routed to an output window or debug console instead of the trace analysis components.</p>
+</div>
+<h4 id="pcsampling"><code>pcsampling:</code></h4>
+<p>The <code>pcsampling:</code> node enables DWT PC sampling for selected processors.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>pcsampling:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- period:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Sampling period in CPU cycles.</td>
+</tr>
+</tbody>
+</table>
+<p>Supported values for DWT PC sampling <code>period:</code> are <code>0</code> (off), <code>64*1</code>, <code>64*2</code>, ... , <code>64*16</code>, <code>1024*1</code>, <code>1024*2</code>, ... , and <code>1024*16</code>. Default: <code>0</code>.</p>
+<h4 id="synchronization"><code>synchronization:</code></h4>
+<p>The <code>synchronization:</code> node overrides component-specific synchronization packet frequencies.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>synchronization:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- period:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Synchronization period in the form <code>&lt;component&gt;\&lt;period&gt;</code>.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Component</th>
+<th style="text-align: left;">Supported Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>DWT</code></td>
+<td style="text-align: left;"><code>0</code> (off), <code>16M</code>, <code>64M</code>, <code>256M</code> processor cycles. Default: <code>256M</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETM</code></td>
+<td style="text-align: left;"><code>0</code> (off), <code>256</code>, <code>512</code>, <code>1k</code>, <code>2k</code>, ... , or <code>512k</code>, <code>1M</code> cycles/bytes. Default <code>1k</code>.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>k</code>=<code>2^10</code>, <code>M</code>=<code>2^20</code></p>
+</div>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">synchronization:
+  - period: DWT\16M
+  - period: ETM\1k
+</code></pre>
+<h4 id="instructions"><code>instructions:</code></h4>
+<p>The <code>instructions:</code> node is reserved for ETB and MTB instruction trace. It is not required for the initial implementation.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>instructions:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>start:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Conditions that start instruction trace.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stop:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Conditions that stop instruction trace.</td>
+</tr>
+</tbody>
+</table>
+<p><code>start:</code> and <code>stop:</code> contain condition entries. These entries define when instruction trace starts or stops; they do not define trace output.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>start:</code> or <code>stop:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- location:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Code symbol, data symbol, or numeric address <a href="#location">location</a> used as the trace condition.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>access:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Access type: <code>X</code>, <code>R</code>, <code>W</code>, or <code>RW</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>size:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Number of bytes in the condition range. Defaults to <code>sizeof(symbol)</code> for symbols and <code>4</code> for numeric addresses.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>match:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Value match condition for data symbols or numeric addresses.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>value:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Value to match.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>size:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Number of bytes to compare. Allowed values: <code>1</code>, <code>2</code>, <code>4</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>The default <code>access:</code> is <code>X</code> for code symbols and <code>W</code> for data symbols or numeric addresses.
+ToDo: do not understand this: Multiple conditions may be supported as an <code>AND</code> combination when they affect the same ETM or MTB.</p>
+<h4 id="tracehalt"><code>tracehalt:</code></h4>
+<p>The <code>tracehalt:</code> node is reserved for conditions that halt a trace sink or formatter by trace trigger. It affects all trace streams that use the sink, not only ETM instruction trace.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>tracehalt:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- combine:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Boolean operator for complex halt trigger conditions: <code>AND</code> (default) or <code>OR</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>location:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Halt trigger location. ToDo: Details are still open.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="file-structure-of-ctrace-runyml">File Structure of <code>*.ctrace-run.yml</code></h3>
+<p>The <code>*.ctrace-run.yml</code> file starts with the node <code>ctrace-run:</code>. It is generated from <code>*.ctrace.yml</code>, <code>*.cbuild-run.yml</code>, and ELF/DWARF symbol information. This file is a generated artifact and should not be edited manually.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>ctrace-run:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>generated-by:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Tool and version that generated the file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ctrace-refs:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">List of <a href="#references">references</a> in the <code>*.ctrace.yml</code> file.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>ctrace-refs:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- ctrace-ref:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;"><a href="#references">Reference</a> to a node in the <code>*.ctrace.yml</code> file that generated the register setup</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Additional information (i.e. alignment extension, etc.)</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>warning:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Warning message</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>error:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Error message when setup cannot be completed</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>symbol-file:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Absolute path to the symbol file used in this reference</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>symbol-address:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Address of the symbol</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>atp-id:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">ID in raw trace that links back to this entry</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>regs:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Register setup</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>regs:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Symbolic name of the register</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>value:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Value to write in this register</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mask:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Bit mask for value write (default: 0xFFFFFFFF)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">ctrace-run:
+  generated-by: pyTS v0.0
+  ctrace-refs:
+  - ctrace-ref: core0/itm
+    pname: &lt;core0&gt;
+    symbol-file: &lt;symbol file used&gt;
+    symbol-address: address of symbol
+    atp-id: 1
+    regs:
+      - name:  ITM_TER0
+        value: 0xFFFFFFFF
+#       mask
+      - name:  
+        value:
+
+  - ctrace-ref: data#0
+    error | warning | info : cannot find symbol
+
+  - ctrace-ref: data#1
+    regs:
+      - name: DWT_COMP0
+        value: 1
+      - name: DWT_COMP1
+        value: 2
+</code></pre>
+<h4 id="register-accesses">Register Accesses</h4>
+<p>The <code>ctrace-run.yml</code> file contains the register values that are required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about the arichtectural defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Trace Component</th>
+<th style="text-align: center;">Base Address</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>ITM</code></td>
+<td style="text-align: center;"><code>0xE0000000</code></td>
+<td style="text-align: left;">Instrumentation Trace Macrocell.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DWT</code></td>
+<td style="text-align: center;"><code>0xE0001000</code></td>
+<td style="text-align: left;">Data Watchpoint and Trace unit.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PMU</code></td>
+<td style="text-align: center;"><code>0xE0003000</code></td>
+<td style="text-align: left;">Performance Monitoring Unit.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETM</code></td>
+<td style="text-align: center;"><code>0xE0041000</code></td>
+<td style="text-align: left;">Embedded Trace Macrocell.</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>ctrace-ref:</code> nodes references the trace generation configuration in <code>ctrace.yml</code> and contain register values that represents the references setup.
+A single-core system has no <code>pname:</code> value; a multi-processor always includes a <code>pname:</code> value in the <code>ctrace-ref:</code> node.</p>
+<p>ToDo Jens: ware the system wide settings? How are the represented? What trace component is configured with such settings?
+     - Entries in <code>*.ctrace.yml</code> without processor scope are expanded to each processor that supports the requested trace feature.</p>
+<h3 id="initial-implementation">Initial Implementation</h3>
+<p>The initial implementation focuses on pyOCD with SWO UART and interactive operation in CMSIS-Debugger.</p>
+<p>Subsequent releases may extend this initial solution to:</p>
 <ul>
-<li>How should cross-trigger functionality be represented in <code>*.ctrace.yml</code>?</li>
-<li>Should core selection (<code>pname</code>) support richer selectors beyond current core names?\</li>
-<li>UX: how to expose configuration and captured trace information.</li>
-<li>Rename "TRACE AND LIVE VIEW" to "TARGET MONITOR" with sub-sections LIVE WATCH and TRACE.</li>
+<li>Instruction trace using ETB or MTB.</li>
+<li>Event Recorder.</li>
+<li>CI workflow automation.</li>
+</ul>
+<h3 id="remaining-design-questions">Remaining Design Questions</h3>
+<ul>
+<li>Cross-trigger functionality will be represented later (potentially in <code>*.ctrace.yml</code>)</li>
+<li>"Trace and Live View" will be renamed to "Target Monitor" with the sub-sections "Live Watch" and "Trace"<ul>
+<li>How should trace configuration and captured trace information be exposed in the user interface?</li>
+</ul>
+</li>
+<li>How are PMU events configured (what is captured with the PMU)?</li>
 </ul>
 <h3 id="out-of-scope">Out-of-Scope</h3>
 <ul>
-<li>Trace <strong>does not</strong> include RTT (SystemView) or STDIO UART output, which use separate data output paths.</li>
-<li>ITM0 is often used for printf output; this output should not be routed to trace components and should instead go to an output window or debug console.</li>
+<li>SEGGER RTT, SystemView, and STDIO UART output are not part of trace capture and use separate output paths.</li>
+<li>ITM channel 0 <code>printf</code> output should not be routed to trace analysis components. It should be shown in an output window or debug console.</li>
 </ul>
               
             </div>
