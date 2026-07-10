@@ -146,6 +146,8 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#tracehalt">tracehalt:</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#conditions">Conditions</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#file-structure-of-ctrace-runyml">File Structure of *.ctrace-run.yml</a>
@@ -463,7 +465,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <td style="text-align: left;">pyTS symbol mapper</td>
 <td style="text-align: left;"><code>.cmsis/*.ctrace.yml</code>, ELF/DWARF symbols</td>
 <td style="text-align: left;"><code>.trace/*.ctrace-run.yml</code></td>
-<td style="text-align: left;">Resolves symbols and generates Corsight register valuesworkflows.</td>
+<td style="text-align: left;">Resolves symbols and generates Corsight register values.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="../pyOCD-Debugger/">pyOCD</a></td>
@@ -489,7 +491,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <p>It is possible to change the <strong>Trace Generation Setup</strong> during debugging. For this workflow:</p>
 <ul>
 <li>pyTS generates a new <code>*.ctrace-run.yml</code> file.</li>
-<li>pyOCD reloads this <code>*.ctrace-run.yml</code> file and deletes existing <strong>Raw Trace Stream</strong> files. </li>
+<li>pyOCD reloads this <code>*.ctrace-run.yml</code> file and deletes existing <strong>Raw Trace Stream</strong> files when changes are detected and a new trace collection is started.</li>
 </ul>
 <p><strong>CI Workflow:</strong></p>
 <p>CI requires a prepared <code>.cmsis/&lt;target-set&gt;.ctrace.yml</code> file. This file is may be under source control or maintained manually.</p>
@@ -598,7 +600,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#instructions"><code>instructions:</code></a></td>
 <td style="text-align: left;">Future</td>
-<td style="text-align: left;">ETB or MTB instruction trace configuration.</td>
+<td style="text-align: left;">ETM or MTB instruction trace configuration.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pcsampling"><code>pcsampling:</code></a></td>
@@ -629,8 +631,8 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
       data:
         - location: mysimple
 
-        - location: \\App\0x20001000
-          access: readwrite
+        - location: App|0x20001000
+          access: RW
           size: 0x100
           output: PC
 
@@ -695,11 +697,6 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>size:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Number of bytes in the traced range. Default: <code>sizeof(symbol)</code>, <code>4</code> for numeric addresses.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Processor name, required for numeric addresses in multi-processor systems.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>output:</code></td>
@@ -822,7 +819,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <p>ITM channel 0 is often used for <code>printf</code> output. This output should be routed to an output window or debug console instead of the trace analysis components.</p>
 </div>
 <h4 id="pcsampling"><code>pcsampling:</code></h4>
-<p>The <code>pcsampling:</code> node enables DWT PC sampling for selected processors.</p>
+<p>The <code>pcsampling:</code> node enables DWT PC sampling.</p>
 <table>
 <thead>
 <tr>
@@ -886,7 +883,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
   - period: ETM\1k
 </code></pre>
 <h4 id="instructions"><code>instructions:</code></h4>
-<p>The <code>instructions:</code> node is reserved for ETB and MTB instruction trace. It is not required for the initial implementation.</p>
+<p>The <code>instructions:</code> node is reserved for ETM and MTB instruction trace. It is not required for the initial implementation.</p>
 <table>
 <thead>
 <tr>
@@ -908,11 +905,15 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </tr>
 </tbody>
 </table>
-<p><code>start:</code> and <code>stop:</code> contain condition entries. These entries define when instruction trace starts or stops; they do not define trace output.</p>
+<p><code>start:</code> and <code>stop:</code> contain <a href="#conditions">condition</a> entries. These entries define when instruction trace starts or stops; they do not define trace output.</p>
+<h4 id="tracehalt"><code>tracehalt:</code></h4>
+<p>The <code>tracehalt:</code> node contains <a href="#conditions">condition</a> entries that halt a trace sink or formatter by a trace trigger. It affects all trace streams that use the sink. Support to combine two conditions by logic operators may be added in future.</p>
+<h4 id="conditions">Conditions</h4>
+<p>Nodes <code>start:</code>,<code>stop:</code>, and <code>tracehalt:</code> contain a list of OR'ed conditions. They have the following form.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;"><code>start:</code> or <code>stop:</code></th>
+<th style="text-align: left;"><code>start:</code>,<code>stop:</code>, <code>tracehalt:</code></th>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">Content</th>
 </tr>
@@ -950,31 +951,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </tr>
 </tbody>
 </table>
-<p>The default <code>access:</code> is <code>X</code> for code symbols and <code>W</code> for data symbols or numeric addresses.
-ToDo: do not understand this: Multiple conditions may be supported as an <code>AND</code> combination when they affect the same ETM or MTB.</p>
-<h4 id="tracehalt"><code>tracehalt:</code></h4>
-<p>The <code>tracehalt:</code> node is reserved for conditions that halt a trace sink or formatter by trace trigger. It affects all trace streams that use the sink, not only ETM instruction trace.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;"><code>tracehalt:</code></th>
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>- combine:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Boolean operator for complex halt trigger conditions: <code>AND</code> (default) or <code>OR</code>.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>location:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Halt trigger location. ToDo: Details are still open.</td>
-</tr>
-</tbody>
-</table>
+<p>The default <code>access:</code> is <code>X</code> for code symbols and <code>W</code> for data symbols or numeric addresses.</p>
 <h3 id="file-structure-of-ctrace-runyml">File Structure of <code>*.ctrace-run.yml</code></h3>
 <p>The <code>*.ctrace-run.yml</code> file starts with the node <code>ctrace-run:</code>. It is generated from <code>*.ctrace.yml</code>, <code>*.cbuild-run.yml</code>, and ELF/DWARF symbol information. This file is a generated artifact and should not be edited manually.</p>
 <table>
@@ -1013,6 +990,16 @@ ToDo: do not understand this: Multiple conditions may be supported as an <code>A
 <td style="text-align: left;"><a href="#references">Reference</a> to a node in the <code>*.ctrace.yml</code> file that generated the register setup</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Type of the trace source for this entry</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Processor name the reference resolves to for multi-core systems</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Additional information (i.e. alignment extension, etc.)</td>
@@ -1038,14 +1025,39 @@ ToDo: do not understand this: Multiple conditions may be supported as an <code>A
 <td style="text-align: left;">Address of the symbol</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>atp-id:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stream:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">ID in raw trace that links back to this entry</td>
+<td style="text-align: left;">Stream ID this entry links back to, same as the CoreSight ATB ID</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>source:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Trace source ID this entry links back to</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>regs:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Register setup</td>
+</tr>
+</tbody>
+</table>
+<p>Supported trace source types are <code>dwt</code>, <code>event</code>, <code>exception</code>, <code>itm</code>, <code>pmu</code>, <code>overflow</code>, <code>pcsample</code>, <code>global_ts</code>.
+Support for the optional <code>source-id:</code> depends on the set <code>type:</code>. The following are supported.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>type:</code></th>
+<th style="text-align: left;">Usage of <code>source-id:</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>dwt</code></td>
+<td style="text-align: left;">Number or array of numbers: Allocated DWT comparator IDs</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>itm</code></td>
+<td style="text-align: left;">Number: ITM channel</td>
 </tr>
 </tbody>
 </table>
@@ -1081,9 +1093,11 @@ ToDo: do not understand this: Multiple conditions may be supported as an <code>A
   ctrace-refs:
   - ctrace-ref: core0/itm
     pname: &lt;core0&gt;
+    type: dwt            # packet types
     symbol-file: &lt;symbol file used&gt;
     symbol-address: address of symbol
-    atp-id: 1
+    stream: 1            # stream id
+    source: 0            # ITM channel #0
     regs:
       - name:  ITM_TER0
         value: 0xFFFFFFFF
@@ -1092,9 +1106,14 @@ ToDo: do not understand this: Multiple conditions may be supported as an <code>A
         value:
 
   - ctrace-ref: data#0
-    error | warning | info : cannot find symbol
+    type: dwt
+    stream: 1            # stream id
+    error: cannot find symbol
 
   - ctrace-ref: data#1
+    type: dwt
+    stream: 1            # stream id
+    source: [0, 1]       # allocated DWT comparators #0 and #1
     regs:
       - name: DWT_COMP0
         value: 1
@@ -1142,18 +1161,22 @@ A single-core system has no <code>pname:</code> value; a multi-processor always 
 <p>The initial implementation focuses on pyOCD with SWO UART and interactive operation in CMSIS-Debugger.</p>
 <p>Subsequent releases may extend this initial solution to:</p>
 <ul>
-<li>Instruction trace using ETB or MTB.</li>
+<li>Instruction trace using ETM or MTB.</li>
 <li>Event Recorder.</li>
 <li>CI workflow automation.</li>
 </ul>
 <h3 id="remaining-design-questions">Remaining Design Questions</h3>
 <ul>
+<li>How to make implemented trace features known (SoC and CPU)?</li>
+<li>Level of built-in CoreSight knowledge for source configurations.</li>
+<li>Usage with sequences and user interactions (interactive IDE mode).</li>
 <li>Cross-trigger functionality will be represented later (potentially in <code>*.ctrace.yml</code>)</li>
 <li>"Trace and Live View" will be renamed to "Target Monitor" with the sub-sections "Live Watch" and "Trace"<ul>
 <li>How should trace configuration and captured trace information be exposed in the user interface?</li>
 </ul>
 </li>
 <li>How are PMU events configured (what is captured with the PMU)?</li>
+<li>Complex trace halt conditions</li>
 </ul>
 <h3 id="out-of-scope">Out-of-Scope</h3>
 <ul>
