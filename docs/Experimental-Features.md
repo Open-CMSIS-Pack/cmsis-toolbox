@@ -212,7 +212,7 @@ Tool or Extension              | Input                                         |
 :------------------------------|:----------------------------------------------|:-------------------------------|:------------------------------------
 [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) | `*.csolution.yml`, optional `.cmsis/*.dbgconf` | `*.cbuild-run.yml` | Generates the run and debug information consumed by debuggers.
 [Arm CMSIS Debugger](https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger)<br/>Trace Generation Setup View | `.cmsis/*.ctrace.yml` | Updated `.cmsis/*.ctrace.yml` | Configures trace capture.
-pyTS symbol mapper             | `.cmsis/*.ctrace.yml`, ELF/DWARF symbols       | `.trace/*.ctrace-run.yml`      | Resolves symbols and generates Corsight register valuesworkflows.
+pyTS symbol mapper             | `.cmsis/*.ctrace.yml`, ELF/DWARF symbols       | `.trace/*.ctrace-run.yml`      | Resolves symbols and generates Corsight register values.
 [pyOCD](pyOCD-Debugger.md)     | `*.cbuild-run.yml`, `.trace/*.ctrace-run.yml`  | Raw trace data files in `.trace/` | Programs trace registers and captures trace streams during the debug session.
 Trace Decoder                 | Raw trace data files, `.trace/*.ctrace.run.yml` | CSV, CTF files, Trace Compass XML Analysis file | Generates CSV files (human readable) and CTF files
 [Trace Viewer for VSCode](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension) and<br/> [VS Code Trace Server](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-server) | CTF files, Trace Compass XML Analysis file | Trace viewer panes | Visualizes the CTF output in VS Code.
@@ -222,7 +222,7 @@ Trace Decoder                 | Raw trace data files, `.trace/*.ctrace.run.yml` 
 It is possible to change the **Trace Generation Setup** during debugging. For this workflow:
 
 - pyTS generates a new `*.ctrace-run.yml` file.
-- pyOCD reloads this `*.ctrace-run.yml` file and deletes existing **Raw Trace Stream** files. 
+- pyOCD reloads this `*.ctrace-run.yml` file and deletes existing **Raw Trace Stream** files when changes are detected and a new trace collection is started.
 
 **CI Workflow:**
 
@@ -262,7 +262,7 @@ The `*.ctrace.yml` file starts with the node `ctrace:` and contains the trace ca
 &nbsp;&nbsp;&nbsp; [`exceptions:`](#exceptions)         |  Optional   | DWT exception trace configuration.
 &nbsp;&nbsp;&nbsp; [`events:`](#events)                 |  Optional   | DWT or PMU event trace configuration.
 &nbsp;&nbsp;&nbsp; [`itm:`](#itm)                       |  Optional   | ITM channel configuration.
-&nbsp;&nbsp;&nbsp; [`instructions:`](#instructions)     |  Future     | ETB or MTB instruction trace configuration.
+&nbsp;&nbsp;&nbsp; [`instructions:`](#instructions)     |  Future     | ETM or MTB instruction trace configuration.
 &nbsp;&nbsp;&nbsp; [`pcsampling:`](#pcsampling)         |  Future     | DWT PC sampling configuration.
 &nbsp;&nbsp;&nbsp; [`synchronization:`](#synchronization) | Optional  | Trace synchronization packet period configuration.
 &nbsp;&nbsp;&nbsp; [`tracehalt:`](#tracehalt)           |  Future     | Trace sink or formatter halt trigger configuration.
@@ -281,8 +281,8 @@ ctrace:
       data:
         - location: mysimple
 
-        - location: \\App\0x20001000
-          access: readwrite
+        - location: App|0x20001000
+          access: RW
           size: 0x100
           output: PC
 
@@ -324,7 +324,6 @@ The `data:` node configures DWT data trace. DWT comparator resources are limited
 `- location:`                                            |**Required** | Symbol or numeric address [location](#location) to trace.
 &nbsp;&nbsp;&nbsp; `access:`                             |  Optional   | Access type: `W`, `R`, or `RW`. Default: `W`.
 &nbsp;&nbsp;&nbsp; `size:`                               |  Optional   | Number of bytes in the traced range. Default: `sizeof(symbol)`, `4` for numeric addresses.
-&nbsp;&nbsp;&nbsp; `pname:`                              |  Optional   | Processor name, required for numeric addresses in multi-processor systems.
 &nbsp;&nbsp;&nbsp; `output:`                             |  Optional   | Trace output mode (see table below). Default: `value`.
 &nbsp;&nbsp;&nbsp; `match:`                              |  Optional   | Value match condition. When present, trace is emitted only for matching accesses.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `value:`            |**Required** | Value to match.
@@ -383,7 +382,7 @@ Each bit in `enable:` represents one ITM channel.
 
 #### `pcsampling:`
 
-The `pcsampling:` node enables DWT PC sampling for selected processors.
+The `pcsampling:` node enables DWT PC sampling.
 
 `pcsampling:`                         |             | Content
 :-------------------------------------|:------------|:------------------------------------
@@ -417,16 +416,24 @@ synchronization:
 
 #### `instructions:`
 
-The `instructions:` node is reserved for ETB and MTB instruction trace. It is not required for the initial implementation.
+The `instructions:` node is reserved for ETM and MTB instruction trace. It is not required for the initial implementation.
 
 `instructions:`                       |             | Content
 :-------------------------------------|:------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `start:`           |  Optional   | Conditions that start instruction trace.
 &nbsp;&nbsp;&nbsp; `stop:`            |  Optional   | Conditions that stop instruction trace.
 
-`start:` and `stop:` contain condition entries. These entries define when instruction trace starts or stops; they do not define trace output.
+`start:` and `stop:` contain [condition](#conditions) entries. These entries define when instruction trace starts or stops; they do not define trace output.
 
-`start:` or `stop:`                                    |             | Content
+#### `tracehalt:`
+
+The `tracehalt:` node contains [condition](#conditions) entries that halt a trace sink or formatter by a trace trigger. It affects all trace streams that use the sink. Support to combine two conditions by logic operators may be added in future.
+
+#### Conditions
+
+Nodes `start:`,`stop:`, and `tracehalt:` contain a list of OR'ed conditions. They have the following form.
+
+`start:`,`stop:`, `tracehalt:`                         |             | Content
 :------------------------------------------------------|:------------|:------------------------------------
 `- location:`                                          |**Required** | Code symbol, data symbol, or numeric address [location](#location) used as the trace condition.
 &nbsp;&nbsp;&nbsp; `access:`                           |  Optional   | Access type: `X`, `R`, `W`, or `RW`.
@@ -436,16 +443,6 @@ The `instructions:` node is reserved for ETB and MTB instruction trace. It is no
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `size:`           |  Optional   | Number of bytes to compare. Allowed values: `1`, `2`, `4`.
 
 The default `access:` is `X` for code symbols and `W` for data symbols or numeric addresses.
-ToDo: do not understand this: Multiple conditions may be supported as an `AND` combination when they affect the same ETM or MTB.
-
-#### `tracehalt:`
-
-The `tracehalt:` node is reserved for conditions that halt a trace sink or formatter by trace trigger. It affects all trace streams that use the sink, not only ETM instruction trace.
-
-`tracehalt:`                          |             | Content
-:-------------------------------------|:------------|:------------------------------------
-`- combine:`                          |  Optional   | Boolean operator for complex halt trigger conditions: `AND` (default) or `OR`.
-&nbsp;&nbsp;&nbsp; `location:`        |  Optional   | Halt trigger location. ToDo: Details are still open.
 
 ### File Structure of `*.ctrace-run.yml`
 
@@ -459,13 +456,24 @@ The `*.ctrace-run.yml` file starts with the node `ctrace-run:`. It is generated 
 `ctrace-refs:`                                           |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
 `- ctrace-ref:`                                          |**Required** | [Reference](#references) to a node in the `*.ctrace.yml` file that generated the register setup
+&nbsp;&nbsp;&nbsp; `type:`                               |**Required** | Type of the trace source for this entry
+&nbsp;&nbsp;&nbsp; `pname:`                              |  Optional   | Processor name the reference resolves to for multi-core systems
 &nbsp;&nbsp;&nbsp; `info:`                               |  Optional   | Additional information (i.e. alignment extension, etc.)
 &nbsp;&nbsp;&nbsp; `warning:`                            |  Optional   | Warning message 
 &nbsp;&nbsp;&nbsp; `error:`                              |  Optional   | Error message when setup cannot be completed
 &nbsp;&nbsp;&nbsp; `symbol-file:`                        |  Optional   | Absolute path to the symbol file used in this reference
 &nbsp;&nbsp;&nbsp; `symbol-address:`                     |  Optional   | Address of the symbol
-&nbsp;&nbsp;&nbsp; `atp-id:`                             |  Optional   | ID in raw trace that links back to this entry
+&nbsp;&nbsp;&nbsp; `stream:`                             |  Optional   | Stream ID this entry links back to, same as the CoreSight ATB ID
+&nbsp;&nbsp;&nbsp; `source:`                             |  Optional   | Trace source ID this entry links back to
 &nbsp;&nbsp;&nbsp; `regs:`                               |  Optional   | Register setup
+
+Supported trace source types are `dwt`, `event`, `exception`, `itm`, `pmu`, `overflow`, `pcsample`, `global_ts`.
+Support for the optional `source-id:` depends on the set `type:`. The following are supported.
+
+`type:`      | Usage of `source-id:`
+:------------|:------------------------------------
+`dwt`        | Number or array of numbers: Allocated DWT comparator IDs
+`itm`        | Number: ITM channel
 
 `regs:`                                                  |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
@@ -481,9 +489,11 @@ ctrace-run:
   ctrace-refs:
   - ctrace-ref: core0/itm
     pname: <core0>
+    type: dwt            # packet types
     symbol-file: <symbol file used>
     symbol-address: address of symbol
-    atp-id: 1
+    stream: 1            # stream id
+    source: 0            # ITM channel #0
     regs:
       - name:  ITM_TER0
         value: 0xFFFFFFFF
@@ -492,9 +502,14 @@ ctrace-run:
         value:
 
   - ctrace-ref: data#0
-    error | warning | info : cannot find symbol
+    type: dwt
+    stream: 1            # stream id
+    error: cannot find symbol
 
   - ctrace-ref: data#1
+    type: dwt
+    stream: 1            # stream id
+    source: [0, 1]       # allocated DWT comparators #0 and #1
     regs:
       - name: DWT_COMP0
         value: 1
@@ -525,16 +540,20 @@ The initial implementation focuses on pyOCD with SWO UART and interactive operat
 
 Subsequent releases may extend this initial solution to:
 
-- Instruction trace using ETB or MTB.
+- Instruction trace using ETM or MTB.
 - Event Recorder.
 - CI workflow automation.
 
 ### Remaining Design Questions
 
+- How to make implemented trace features known (SoC and CPU)?
+- Level of built-in CoreSight knowledge for source configurations.
+- Usage with sequences and user interactions (interactive IDE mode).
 - Cross-trigger functionality will be represented later (potentially in `*.ctrace.yml`)
 - "Trace and Live View" will be renamed to "Target Monitor" with the sub-sections "Live Watch" and "Trace"
     - How should trace configuration and captured trace information be exposed in the user interface?
 - How are PMU events configured (what is captured with the PMU)?
+- Complex trace halt conditions
 
 ### Out-of-Scope
 
