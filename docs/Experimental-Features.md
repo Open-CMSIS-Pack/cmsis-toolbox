@@ -359,7 +359,7 @@ The `events:` node enables DWT or PMU event trace for all processors or for a sp
 `- event:`                            |**Required** | Event selector.
 
 Supported DWT event selectors include `CYCCNT`, `CPICNT`, `EXCCNT`, `SLEEPCNT`, `LSUCNT`, and `FOLDCNT`.
-`PMU` events may be added when supported by the target. They are emitted when one or more PMU counters with index 0..7 have an 8-bit overflow.
+`PMU` events may be added when supported by the target. A PMU overflow packet is emitted when the lower eight bits of one or more PMU event counters with index 0..7 overflow.
 
 **Example:**
 
@@ -526,9 +526,6 @@ Trace Component | Base Address | Description
 
 The `ctrace-ref:` node references the trace generation configuration in the file `*.ctrace.yml` and contains register values that represent the setup.
 A single-core system has no `pname:` value; a multi-processor always includes a `pname:` value in the `ctrace-ref:` node.
-
-!!! Note
-    - Entries in `*.ctrace.yml` without processor scope are expanded to each processor that supports the requested trace feature.
 
 ToDo Jens: what the system wide settings? How are they represented? What trace component is configured with such settings?
 
