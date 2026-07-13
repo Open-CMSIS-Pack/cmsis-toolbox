@@ -189,8 +189,11 @@ Convert And Filter Contexts
         log    ${context}
         ${context_lower}=    Convert To Lower Case    ${context}
         ${contains_iar}=     Run Keyword And Return Status    Should Contain    ${context_lower}    iar
-        ${match_found}=      Evaluate    "'${os}' == 'Darwin' and ${contains_iar}"
-        Run Keyword If    ${match_found} == False    Append To List    ${filtered_contexts}    ${context}
+        ${match_found}=      Evaluate    '${os}' == 'Darwin' and ${contains_iar}
+        Log    os=${os}, context=${context}, contains_iar=${contains_iar}, match_found=${match_found}
+        IF    not ${match_found}
+            Append To List    ${filtered_contexts}    ${context}
+        END
     END
 
     Log    All contexts after filtering:\n${filtered_contexts}
