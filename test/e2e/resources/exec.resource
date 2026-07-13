@@ -70,15 +70,30 @@ Install Pack
 Get Contexts From Project
     [Documentation]     Get list of contexts from the csolution project
     [Arguments]         ${input_file}    ${expect}        ${args}=@{EMPTY}
-    ${parent_path}=     Get Parent Directory Path         ${input_file}
 
-    ${result}    Run Process    csolution     list    contexts    --yml-order    ${input_File}
+    ${result}    Run Process    csolution     list    contexts    --yml-order    ${input_file}
     ...                     -q    shell=True    stdout=${CURDIR}/stdout.txt
+
     ${ret_code}=        Set Variable If    ${result.rc} == ${0}    ${result.rc}    ${1}
     Log Many            StdOut: ${result.stdout}
     Log Many            StdErr: ${result.stderr}
-    Should Be Equal     ${ret_code}      ${expect}        msg=Unexpected status returned by list context command
-    RETURN              ${result.stdout}
+    ${contexts}=        Set Variable    ${result.stdout}
+
+    ${is_arm64}=        Is ARM64 Architecture
+    IF    ${is_arm64}
+        Log    Running on ARM64 architecture, skipping IAR contexts
+        ${contexts}=    Evaluate
+        ...    "\\n".join(line for line in $contexts.splitlines() if "iar" not in line.lower())
+    END
+
+    Log    Final contexts:\n${contexts}
+
+    Should Be Equal As Integers
+    ...    ${ret_code}
+    ...    ${expect}
+    ...    msg=Unexpected status returned by list context command.
+
+    RETURN              ${contexts}
 
 Build CSolution Example
     [Arguments]                        ${input_file}    ${cbuildgen_expect}    ${cbuild2cmake_expect}    ${args}=@{EMPTY}

@@ -87,3 +87,9 @@ Normalize Path
     [Arguments]        ${Path}
     ${resultPath}=     Replace String    ${Path}    \\    /
     RETURN             ${resultPath}
+
+Is ARM64 Architecture
+    [Documentation]    Check if the system under test is running on ARM64
+    ${arch}=           Evaluate    platform.machine()    platform
+    ${is_arm64}=       Evaluate    "${arch}".lower() in ("aarch64", "arm64")
+    RETURN    ${is_arm64}
