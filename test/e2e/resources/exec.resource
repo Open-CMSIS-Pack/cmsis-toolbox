@@ -29,6 +29,8 @@ Run cbuild
 
     @{args_ex}                     Create List    @{args}    @{filecontexts}
     Append To List                 ${args_ex}    -p    -r    --update-rte
+    Log                            cbuild args: ${args_ex}
+
 
     ${is_command_empty}=           Evaluate    '${command}' == '${EMPTY}'
     ${ret_code}=                   Run Keyword If    ${is_command_empty}
@@ -178,6 +180,8 @@ Convert And Filter Contexts
 
     ${os}=             Get Operating System
     @{contexts}=       Split String    ${all_contexts}    \n
+    Log    All contexts before filtering:\n${all_contexts}
+
 
     # Filter out items containing 'iar'
     @{filtered_contexts}=    Create List
@@ -188,6 +192,8 @@ Convert And Filter Contexts
         ${match_found}=      Evaluate    "'${os}' == 'Darwin' and ${contains_iar}"
         Run Keyword If    ${match_found} == False    Append To List    ${filtered_contexts}    ${context}
     END
+
+    Log    All contexts after filtering:\n${filtered_contexts}
 
     # Prefix remaining items with '-c ' and join them
     @{context_list_args}=    Create List
