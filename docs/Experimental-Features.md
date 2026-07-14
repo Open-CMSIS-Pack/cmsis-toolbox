@@ -152,6 +152,8 @@ Trace captures target execution data through SWO or trace port and from sources 
     - `<target-set>` is the name of the target-set, for example `SDS+AppKit-E8@HIL`.
     - Trace does not include SEGGER RTT, SystemView, or STDIO UART output. These features use separate data output paths.
 
+ToDo: `<traget-set>` might be confusing.
+
 ### Directory and File Structure
 
 Trace-related files are stored relative to the directory that contains the `*.csolution.yml` file.
@@ -161,11 +163,9 @@ Directory or File                    | Created by      | Description
 `.`                                  | User            | Contains the `*.csolution.yml` project file.
 `.cmsis/<target-set>.ctrace.yml`     | CMSIS-Debugger  | User trace intent and target-set specific trace capture configuration.
 `.trace/<target-set>.ctrace-run.yml` | pyTS            | Generated trace run information, including resolved symbols and register values.
-`.trace/<target-set>.SWO.raw`        | pyOCD           | Raw trace data files, for example `.SWO`, `MTB`, or `ER`.
-`.trace/<target-set>.SWO.csv`        | TraceDecoder    | CSV files that represent raw data + ctrace-refs
-`.trace/<target-set>/ctf`            | TraceDecoder    | CTF files such as `metadata`, `stream_0`, and `stream_1`.
-
-TraceDecoder: OpenCSD + writer + CTF output
+`.trace/<target-set>.<channel>.raw`  | pyOCD           | Raw trace data files, for example `.SWO`, `MTB`, or `ER`.
+`.trace/<target-set>.<channel>.csv`  | [ctrace](#ctrace-utility)   | CSV files that represent raw data + ctrace-refs
+`.trace/<target-set>/ctf`            | [ctrace](#ctrace-utility)   | CTF files such as `metadata`, `stream_0`, and `stream_1`.
 
 The `.cmsis/<target-set>.ctrace.yml` file configures the trace generation. It is created or updated by the user interface of the CMSIS-Debugger Trace View.
 
@@ -214,7 +214,7 @@ Tool or Extension              | Input                                         |
 [Arm CMSIS Debugger](https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger)<br/>Trace Generation Setup View | `.cmsis/*.ctrace.yml` | Updated `.cmsis/*.ctrace.yml` | Configures trace capture.
 pyTS symbol mapper             | `.cmsis/*.ctrace.yml`, ELF/DWARF symbols       | `.trace/*.ctrace-run.yml`      | Resolves symbols and generates Corsight register values.
 [pyOCD](pyOCD-Debugger.md)     | `*.cbuild-run.yml`, `.trace/*.ctrace-run.yml`  | Raw trace data files in `.trace/` | Programs trace registers and captures trace streams during the debug session.
-Trace Decoder                 | Raw trace data files, `.trace/*.ctrace.run.yml` | CSV, CTF files, Trace Compass XML Analysis file | Generates CSV files (human readable) and CTF files
+[`ctrace`](#ctrace-utility)    | Raw trace data files, `.trace/*.ctrace.run.yml` | CSV, CTF files, Trace Compass XML Analysis file | Generates CSV files (human readable) and CTF files
 [Trace Viewer for VSCode](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension) and<br/> [VS Code Trace Server](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-server) | CTF files, Trace Compass XML Analysis file | Trace viewer panes | Visualizes the CTF output in VS Code.
 
 **Interactive Debug Workflow:**
@@ -239,7 +239,9 @@ Configuration File             | Description
 `.cmsis/<target-set>.ctrace.yml` | User-authored trace capture configuration. This file defines which data, events, ITM channels, PC samples, or instruction trace streams are enabled.
 `.trace/<target-set>.ctrace-run.yml` | Generated trace run configuration. This file contains resolved symbols and ordered register accesses for pyOCD or other debug tools.
 
-The trace capture configuration is written to target trace resources such as `DWT`, `ITM`, `ETM`, `MTB`, or `PMU` registers. The generated register accesses are loaded by pyOCD when the debug session starts.
+The trace capture configuration (in `.trace/<target-set>.ctrace-run.yml`) is written to target trace resources such as `DWT`, `ITM`, `ETM`, `MTB`, or `PMU` registers. The generated register accesses are loaded by pyOCD when the debug session starts.  When the file `.trace/<target-set>.ctrace-run.yml`, pyOCD updates the target trace registers in the target and deletes previous raw trace data files.
+
+Based on these settings pyOCD captures raw trace data files in the [directory `.ctrace`](#directory-and-file-structure). These raw trace data files are converted by the `ctrace` utility.
 
 In a later step, a preprocessing tool may generate `.trace/README.md` with setup instructions and code snippets that can be inserted in the application code.
 
@@ -560,3 +562,141 @@ Subsequent releases may extend this initial solution to:
 - SEGGER RTT, SystemView, and STDIO UART output are not part of trace capture and use separate output paths.
 - ITM channel 0 `printf` output should not be routed to trace analysis components. It should be shown in an output window or debug console.
 
+## `ctrace` Utility
+
+The `ctrace` utility reads the raw trace data files in the [directory `.ctrace`](#directory-and-file-structure). It can check the raw trace files for consistency or convert the files into CSV and CTF format.
+
+`ctrace` is based on the open source trace decoder [github.com/linaro/opencsd](https://github.com/linaro/opencsd) and adds a CSV and CTF converter.
+
+```txt
+Usage:
+  ctrace [command] <trace-dir> [options]
+
+Commands:
+  check       Validate raw trace data files for consistency and print statistics
+  convert     Convert raw trace data files into CSV and CTF format
+
+Options:
+      --csv                Generate only CSV files (default: generate CSV and CTF)
+      --ctf                Generate only CTF files (default: generate CSV and CTF)
+  -f, --filter sel [...]   Filter output for specific packets (default: all packets are processed)
+  -t, --target arg         Specify <target-set> (default: process all target sets in trace-dir)
+  -V, --version            Print version
+
+Use "ctrace [command] --help" for more information about a command.
+```
+
+`ctrace` processes files in the sepcified `<trace-dir>`. If this directory contains more then one `<target-set>`, each target set is processed separately.
+CSV and CTF output files are written to the `<trace-directory>` as explained under [directory and file structure](#directory-and-file-structure).
+
+ToDo:  Questions
+- why is there DWT and DWT<n>. 
+   - combine selector and type tables (mostly identical)
+   - should there be another option --stream
+   - should --filter be renamed to --type
+- packet category should be listed only once (combine filter and csv output)
+- like CSV, but would change: address_offs -> offset, error -> note
+  
+### `--filter` option
+
+The `--filter` option is applied to the decoded packet output for both CSV and CTF files
+
+Accepted selectors are:
+
+Selector           | Description
+:-------------------|:------------------------------------
+`ITM`              | All ITM software stimulus packets.
+`ITM<n>`           | ITM software packets for stimulus port `<n>`, for example `ITM0`.
+`DWT`              | All DWT data or address/PC packets with a comparator id.
+`DWT<n>`           | DWT packets for comparator `<n>`, for example `DWT0`.
+`EXCEPTION`        | Exception state transition packets.
+`GLOBAL_TIMESTAMP` | Global timestamp packets.
+`OVERFLOW`         | SWO overflow status packets.
+`ERROR`            | Decoder error rows.
+
+Multiple filters are OR-combined. If no filter is supplied, all decoded packet
+rows accepted by the selected output format are emitted.
+
+## CSV Format
+
+The CSV output uses this header:
+
+```csv
+cycles,stream,type,source,value,pc,address_offs,error
+```
+
+Standalone local timestamp protocol packets are not emitted as CSV rows;
+their timing is carried as `cycles` on decoded data/status rows.
+
+Column         | Description
+:--------------|:------------------------------------
+`cycles`       | Decoded timestamp in CPU clock cycles, if available.
+`stream`       | Stream ID of the decoded trace packet, same as the corresponding CoreSight ATB ID. Empty if no formatting.
+`type`         | Packet category: `itm`, `dwt`, `events`, `pmu`, `exception`, `pcsample`, `global_ts`, `overflow`, `error`.
+`source`       | Numeric source id: ITM channel, DWT comparator, exception number, or hardware discriminator. For exception rows, source is the decimal exception number.
+`value`        | Numeric value in hexadecimal form. Payload width is represented by the number of hex digits: 1 byte is `0x00`, 2 bytes is `0x0000`, 4 bytes is `0x00000000`. For exception rows, this is the hexadecimal encoded state transition: `0x1` enter, `0x2` exit, `0x3` return.
+`pc`           | Program counter for `dwt` and `pcsample` rows if available. PC values are always formatted as 4 byte hexadecimal values, for example `0x08001234`.
+`address_offs` | Data address offset for `dwt` type if available. Address offsets are always formatted as 2 byte hexadecimal values, for example `0xfdf9`.
+`error`        | Error details, used for type `error`.
+
+## CSV Row Semantics
+
+`type`      | Description
+:-----------|:------------------------------------
+`itm`       | `source` is ITM channel.
+`dwt`       | `source` is the DWT comparator, `value` carries the data value, `address_offs` the data address, `pc` the program counter that caused the access.
+`events`    | Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.
+`pmu`       | Reserved for PMU counter rows. Detailed semantics will be specified in a future version.
+`exception` | `source` is the decimal exception number. `value` is the hexadecimal state transition, see [Exception States](#exception-states).
+`pcsample`  | `pc` is the program counter.
+`global_ts` | Global timestamp for synchronization between streams.
+`overflow`  | Marks an overflow, reason can be an overflow packet or an internal decoder overflow.
+`error`     | Decode error, for example unexpected trace byte values. `error` field carries details.
+
+All items carry an optional `cycles` value. Delayed local timestamp handling is
+reserved for a future detailed definition.
+
+## Exception States
+
+Value | State    | Meaning
+:-----|:---------|:------------------------------------
+`0x1` | `enter`  | The exception became the active processor context.
+`0x2` | `exit`   | The exception context was left or completed; consumers usually close that exception lane.
+`0x3` | `return` | Execution returned to, or resumed, the named exception context after another exception.
+
+For `type=exception`, `value=0x0` is reserved and causes a decode error.
+
+## CSV Example
+
+```csv
+cycles,stream,type,source,value,pc,address_offs,error
+2518192,,itm,0,0x53,,,
+2518404,,itm,0,0x54,,,
+2518616,,itm,0,0x4d,,,
+949338400,,dwt,2,0xfffffdf9,0x08001234,0xfdf9,
+949338400,,dwt,3,0x0000006c,0x08001240,0x006c,
+949338400,,dwt,0,0x00,,,
+949339000,,pcsample,,,0x08000100,,
+949338400,,exception,0,0x3,,,
+949338400,,overflow,,,,,
+950364820,,exception,11,0x1,,,
+950389420,,exception,0,0x3,,,
+```
+
+cycles    | stream | type      | source | value      | pc         | address_offs | error
+:---------|:-------|:----------|:-------|:-----------|:-----------|:-------------|:-----
+2518192   |        | itm       | 0      | 0x53       |            |              |
+2518404   |        | itm       | 0      | 0x54       |            |              |
+2518616   |        | itm       | 0      | 0x4d       |            |              |
+949338400 |        | dwt       | 2      | 0xfffffdf9 | 0x08001234 | 0xfdf9       |
+949338400 |        | dwt       | 3      | 0x0000006c | 0x08001240 | 0x006c       |
+949338400 |        | dwt       | 0      | 0x00       |            |              |
+949339000 |        | pcsample  |        |            | 0x08000100 |              |
+949338400 |        | exception | 0      | 0x3        |            |              |
+949338400 |        | overflow  |        |            |            |              |
+950364820 |        | exception | 11     | 0x1        |            |              |
+950389420 |        | exception | 0      | 0x3        |            |              |
+
+### CTF Format
+
+ToDo: describe CTF format and link to the project.
