@@ -146,38 +146,37 @@ Trace captures target execution data through SWO or trace port and from sources 
 1. Configure trace communication (how trace leaves the MCU) with the `target-set:` in `*.csolution.yml` (and optional settings in `*.dbgconf`).
 2. Configure trace generation (what the MCU produces: ITM, DWT, etc.) with the `*.ctrace.yml` file.
 3. Collect trace information (debugger receives and records the stream) into raw data files.
-4. Analyze trace data files (host tools interpret the collected data files) and generate *.csv files and CTF files.
+4. Analyze trace data files (host tools interpret the collected raw trace data files) and generate CSV and CTF files.
+
+This section uses `<solution-set>` as the combined name of the `solution`, `target-type`, and `target-set` name, for example `SDS+AppKit-E8@HIL`.
 
 !!! Note
-    - `<target-set>` is the name of the target-set, for example `SDS+AppKit-E8@HIL`.
     - Trace does not include SEGGER RTT, SystemView, or STDIO UART output. These features use separate data output paths.
 
 ### Directory and File Structure
 
 Trace-related files are stored relative to the directory that contains the `*.csolution.yml` file.
 
-Directory or File                    | Created by      | Description
-:------------------------------------|:----------------|:------------------------------------
-`.`                                  | User            | Contains the `*.csolution.yml` project file.
-`.cmsis/<target-set>.ctrace.yml`     | CMSIS-Debugger  | User trace intent and target-set specific trace capture configuration.
-`.trace/<target-set>.ctrace-run.yml` | pyTS            | Generated trace run information, including resolved symbols and register values.
-`.trace/<target-set>.SWO.raw`        | pyOCD           | Raw trace data files, for example `.SWO`, `MTB`, or `ER`.
-`.trace/<target-set>.SWO.csv`        | TraceDecoder    | CSV files that represent raw data + ctrace-refs
-`.trace/<target-set>/ctf`            | TraceDecoder    | CTF files such as `metadata`, `stream_0`, and `stream_1`.
+Directory or File                      | Created by                | Description
+:--------------------------------------|:--------------------------|:------------------------------------
+`.`                                    | User                      | Contains the `*.csolution.yml` project file.
+`.cmsis/<solution-set>.ctrace.yml`     | CMSIS-Debugger            | User trace intent and solution-set specific trace capture configuration.
+`.trace/<solution-set>.ctrace-run.yml` | [pyTS](#pyts-utility)     | Generated trace run information, including resolved symbols and register values.
+`.trace/<solution-set>.<channel>.raw`  | pyOCD                     | Raw trace data files, for example `.SWO`, `MTB`, or `ER`.
+`.trace/<solution-set>.<channel>.csv`  | [ctrace](#ctrace-utility) | CSV files that represent raw trace data files.
+`.trace/<solution-set>.ctf/`           | [ctrace](#ctrace-utility) | Directory for CTF files such as `metadata`, `stream_0`, and `stream_1`.
 
-TraceDecoder: OpenCSD + writer + CTF output
+The file `.cmsis/<solution-set>.ctrace.yml` configures the trace generation. It is created or updated by the user interface of the CMSIS-Debugger Trace View.
 
-The `.cmsis/<target-set>.ctrace.yml` file configures the trace generation. It is created or updated by the user interface of the CMSIS-Debugger Trace View.
+The [`pyTS`](#pyts-utility) utility resolves symbol-based settings in `*.ctrace.yml` against the ELF/DWARF information of the active `<solution-set>` and generates the register setup for the hardware configuration. The output is the `.trace/<solution-set>.ctrace-run.yml` which is used by the debugger for register setup in hardware. During trace analysis the information of this file connects the raw trace data back to the `*.ctrace.yml` configuration.
 
-A CLI tool (`pyTS`) resolves symbol-based settings in `*.ctrace.yml` against the ELF/DWARF information of the active target-set and generates the register setup for the hardware configuration. The output is the `.trace/<target-set>.ctrace-run.yml` which is used by the debugger for register setup in hardware. During trace analysis the information of this file connects the raw trace data back to the `*.ctrace.yml` configuration.
-
-Raw trace streams are stored as binary files, for example `.trace/<target-set>.SWO.raw`. The TraceDecoder CLI tool can post-process raw streams into CSV files and [CTF format v1.8.3](https://diamon.org/ctf/v1.8.3/) for viewers and analysis tools.
+Raw trace streams are stored as binary files, for example `.trace/<solution-set>.SWO.raw`. The `ctrace` utility converts raw trace data files into [CSV](#csv-format) and [CTF](#ctf-format) for viewers and analysis tools.
 
 ### Name Conventions
 
 #### Location
 
-Locations can be symbols or a plain numeric addresses. An additional project or path to an image file may be specified.
+Locations can be symbols or numeric addresses. An additional project or path to an image file may be specified.
 
 Location Form                         | Description
 :-------------------------------------|:------------------------------------
@@ -204,7 +203,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 
 ### Tools and Extensions
 
-The trace workflow is split across the command-line tools and  and VS Code extensions as shown below.
+The trace workflow is split across the command-line tools and VS Code extensions as shown below.
 
 ![Trace components and data flow](./images/Trace-Dataflow.png "Trace components and data flow")
 
@@ -212,10 +211,10 @@ Tool or Extension              | Input                                         |
 :------------------------------|:----------------------------------------------|:-------------------------------|:------------------------------------
 [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) | `*.csolution.yml`, optional `.cmsis/*.dbgconf` | `*.cbuild-run.yml` | Generates the run and debug information consumed by debuggers.
 [Arm CMSIS Debugger](https://marketplace.visualstudio.com/items?itemName=Arm.vscode-cmsis-debugger)<br/>Trace Generation Setup View | `.cmsis/*.ctrace.yml` | Updated `.cmsis/*.ctrace.yml` | Configures trace capture.
-pyTS symbol mapper             | `.cmsis/*.ctrace.yml`, ELF/DWARF symbols       | `.trace/*.ctrace-run.yml`      | Resolves symbols and generates Corsight register values.
+[pyTS](#pyts-utility)          | `.cmsis/*.ctrace.yml`, ELF/DWARF symbols       | `.trace/*.ctrace-run.yml`      | Resolves symbols and generates CoreSight trace register values.
 [pyOCD](pyOCD-Debugger.md)     | `*.cbuild-run.yml`, `.trace/*.ctrace-run.yml`  | Raw trace data files in `.trace/` | Programs trace registers and captures trace streams during the debug session.
-Trace Decoder                 | Raw trace data files, `.trace/*.ctrace.run.yml` | CSV, CTF files, Trace Compass XML Analysis file | Generates CSV files (human readable) and CTF files
-[Trace Viewer for VSCode](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension) and<br/> [VS Code Trace Server](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-server) | CTF files, Trace Compass XML Analysis file | Trace viewer panes | Visualizes the CTF output in VS Code.
+[`ctrace`](#ctrace-utility)    | Raw trace data files, `.trace/*.ctrace-run.yml` | CSV, CTF files, Trace Compass XML Analysis file | Generates CSV files (human readable) and CTF files
+[Trace Viewer for VS Code](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension) and<br/> [VS Code Trace Server](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-server) | CTF files, Trace Compass XML Analysis file | Trace viewer panes | Visualizes the CTF output in VS Code.
 
 **Interactive Debug Workflow:**
 
@@ -226,7 +225,7 @@ It is possible to change the **Trace Generation Setup** during debugging. For th
 
 **CI Workflow:**
 
-CI requires a prepared `.cmsis/<target-set>.ctrace.yml` file. This file is may be under source control or maintained manually.
+CI requires a prepared `.cmsis/<solution-set>.ctrace.yml` file. This file may be under source control or maintained manually.
 
 ### Configuration Files
 
@@ -234,27 +233,32 @@ Trace setup is split between target infrastructure configuration and capture con
 
 Configuration File             | Description
 :------------------------------|:------------------------------------
-`*.csolution.yml`              | Selects the target-set and debug adapter. It may also reference target-set specific debugger configuration files.
-`.cmsis/*.dbgconf`             | Optional target-set specific debugger configuration, for example trace clock, trace pins, ETB setup, and related hardware setup.
-`.cmsis/<target-set>.ctrace.yml` | User-authored trace capture configuration. This file defines which data, events, ITM channels, PC samples, or instruction trace streams are enabled.
-`.trace/<target-set>.ctrace-run.yml` | Generated trace run configuration. This file contains resolved symbols and ordered register accesses for pyOCD or other debug tools.
+`*.csolution.yml`              | Selects the solution-set and debug adapter. It may also reference solution-set specific debugger configuration files.
+`.cmsis/*.dbgconf`             | Optional solution-set specific debugger configuration, for example trace clock, trace pins, ETB setup, and related hardware setup.
+`.cmsis/<solution-set>.ctrace.yml` | User-authored trace generation setup. This file defines which data, events, ITM channels, PC samples, or instruction trace streams are enabled.
+`.trace/<solution-set>.ctrace-run.yml` | Generated trace run configuration. This file contains resolved symbols and ordered register accesses for pyOCD or other debug tools.
 
-The trace capture configuration is written to target trace resources such as `DWT`, `ITM`, `ETM`, `MTB`, or `PMU` registers. The generated register accesses are loaded by pyOCD when the debug session starts.
+The trace run configuration (in `.trace/<solution-set>.ctrace-run.yml`) is written to target trace resources such as `DWT`, `ITM`, `ETM`, `MTB`, or `PMU` registers. The generated register accesses are loaded by pyOCD when the debug session starts. When pyOCD detects an updated `*.ctrace-run.yml` file, it updates the target trace registers and deletes previous raw trace data files.
+
+Based on these settings pyOCD captures raw trace data files in the [directory `.trace`](#directory-and-file-structure). These raw trace data files are converted by the `ctrace` utility.
 
 In a later step, a preprocessing tool may generate `.trace/README.md` with setup instructions and code snippets that can be inserted in the application code.
 
 ### File Structure of `*.ctrace.yml`
 
-The `*.ctrace.yml` file starts with the node `ctrace:` and contains the trace capture settings for one target-set.
+The `*.ctrace.yml` file starts with the node `ctrace:` and contains the trace capture settings for one solution-set.
+
+!!! Note
+    Cortex-M processors and the DWT, ITM, ETM, MTB, and PMU implementations differ in ways that affect the available configuration options. The pyTS tool uses the `*.cbuild-run.yml` file to discover the processor and implemented capabilities and rejects incompatible settings.
 
 `ctrace:`                                               |             | Content
 :-------------------------------------------------------|:------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `created-by:`                        |  Optional   | Tool and version that created or last updated the file.
-&nbsp;&nbsp;&nbsp; `setup:`                             |  Required   | Setup for each processor
+&nbsp;&nbsp;&nbsp; `setup:`                             |  Required   | Setup for each processor.
 
 `setup:`                                                |             | Content
 :-------------------------------------------------------|:------------|:---------------------------------------                                      
-`- pname:`                                              |  Optional   | Section applies to a processor name (required for multi-processor systems)
+`- pname:`                                              |  Optional   | Section applies to a processor name (required for multi-processor systems).
 &nbsp;&nbsp;&nbsp; `disable:`                           |  Optional   | When set, this list node is ignored; useful for testing.
 &nbsp;&nbsp;&nbsp; [`timestamps:`](#timestamps)         |  Optional   | Enables timestamps in the emitted trace streams.
 &nbsp;&nbsp;&nbsp; [`timesync:`](#timesync)             |  Optional   | Enables time synchronization between trace streams.
@@ -305,7 +309,7 @@ ctrace:
 
 #### `timestamps:`
 
-When `timestamps:` is present, timestamp generation is enabled in the trace stream. ITM uses local timestamps with a synchronous timestamp source. ETM uses the cycle counter.
+When `timestamps:` is present, timestamp generation is enabled in the trace stream. ITM uses local timestamps with a synchronous timestamp source.
 
 `timestamps:`                                            |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
@@ -332,12 +336,12 @@ The `data:` node configures DWT data trace. DWT comparator resources are limited
 `output:`       | Description
 :---------------|:------------------------------------
 `value`         | Emits the value of the access.
-`address`       | Emits the address offset. This is useful when tracing an address range.
+`offset`        | Emits the address offset. This is useful when tracing an address range.
 `PC`            | Emits the PC value that caused the access.
 `match`         | Emits only the comparator ID of a match. This requires Armv8-M and saves trace bandwidth.
 `PC+value`      | Emits PC and value.
-`address+value` | Emits address offset and value.
-`PC+address`    | Emits PC and address offset. This requires Armv8-M.
+`offset+value`  | Emits address offset and value.
+`PC+offset`     | Emits PC and address offset. This requires Armv8-M.
 
 !!! Note
     `size:` values greater than `4` may require two DWT comparators, depending on the DWT architecture. A `match:` condition can also require two DWT comparators.
@@ -392,26 +396,17 @@ Supported values for DWT PC sampling `period:` are `0` (off), `64*1`, `64*2`, ..
 
 #### `synchronization:`
 
-The `synchronization:` node overrides component-specific synchronization packet frequencies.
+The `synchronization:` node specifies the frequency of the DWT synchronization packet.
 
 `synchronization:`                    |             | Content
 :-------------------------------------|:------------|:------------------------------------
-`- period:`                           |**Required** | Synchronization period in the form `<component>\<period>`.
-
-Component | Supported Values
-:---------|:------------------------------------
-`DWT`     | `0` (off), `16M`, `64M`, `256M` processor cycles. Default: `256M`.
-`ETM`     | `0` (off), `256`, `512`, `1k`, `2k`, ... , or `512k`, `1M` cycles/bytes. Default `1k`.
-
-!!! Note
-    `k`=`2^10`, `M`=`2^20`
+`- DWT:`                              |**Required** | Frequency `0` (off), `16M`, `64M`, `256M` processor cycles. Default: `256M`.
 
 **Example:**
 
 ```yml
 synchronization:
-  - period: DWT\16M
-  - period: ETM\1k
+  - DWT: 16M
 ```
 
 #### `instructions:`
@@ -431,9 +426,9 @@ The `tracehalt:` node contains [condition](#conditions) entries that halt a trac
 
 #### Conditions
 
-Nodes `start:`,`stop:`, and `tracehalt:` contain a list of OR'ed conditions. They have the following form.
+The nodes `start:`, `stop:`, and `tracehalt:` may contain a condition list that is logically OR-combined. They have the following form.
 
-`start:`,`stop:`, `tracehalt:`                         |             | Content
+`start:`, `stop:`, `tracehalt:`                        |             | Content
 :------------------------------------------------------|:------------|:------------------------------------
 `- location:`                                          |**Required** | Code symbol, data symbol, or numeric address [location](#location) used as the trace condition.
 &nbsp;&nbsp;&nbsp; `access:`                           |  Optional   | Access type: `X`, `R`, `W`, or `RW`.
@@ -455,25 +450,26 @@ The `*.ctrace-run.yml` file starts with the node `ctrace-run:`. It is generated 
 
 `ctrace-refs:`                                           |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
-`- ctrace-ref:`                                          |**Required** | [Reference](#references) to a node in the `*.ctrace.yml` file that generated the register setup
-&nbsp;&nbsp;&nbsp; `type:`                               |**Required** | Type of the trace source for this entry
-&nbsp;&nbsp;&nbsp; `pname:`                              |  Optional   | Processor name the reference resolves to for multi-core systems
-&nbsp;&nbsp;&nbsp; `info:`                               |  Optional   | Additional information (i.e. alignment extension, etc.)
-&nbsp;&nbsp;&nbsp; `warning:`                            |  Optional   | Warning message 
-&nbsp;&nbsp;&nbsp; `error:`                              |  Optional   | Error message when setup cannot be completed
-&nbsp;&nbsp;&nbsp; `symbol-file:`                        |  Optional   | Absolute path to the symbol file used in this reference
-&nbsp;&nbsp;&nbsp; `symbol-address:`                     |  Optional   | Address of the symbol
-&nbsp;&nbsp;&nbsp; `stream:`                             |  Optional   | Stream ID this entry links back to, same as the CoreSight ATB ID
-&nbsp;&nbsp;&nbsp; `source:`                             |  Optional   | Trace source ID this entry links back to
-&nbsp;&nbsp;&nbsp; `regs:`                               |  Optional   | Register setup
+`- ctrace-ref:`                                          |**Required** | [Reference](#references) to a node in the `*.ctrace.yml` file that generated the register setup.
+&nbsp;&nbsp;&nbsp; `type:`                               |**Required** | Trace source type.
+&nbsp;&nbsp;&nbsp; `pname:`                              |  Optional   | Processor name the reference resolves to for multi-core systems.
+&nbsp;&nbsp;&nbsp; `info:`                               |  Optional   | Additional information (for example alignment extension).
+&nbsp;&nbsp;&nbsp; `warning:`                            |  Optional   | Warning message.
+&nbsp;&nbsp;&nbsp; `error:`                              |  Optional   | Error message when setup cannot be completed.
+&nbsp;&nbsp;&nbsp; `symbol-file:`                        |  Optional   | Absolute path to the symbol file used in this reference.
+&nbsp;&nbsp;&nbsp; `symbol-address:`                     |  Optional   | Address of the symbol.
+&nbsp;&nbsp;&nbsp; `stream:`                             |  Optional   | Stream ID (CoreSight ATB ID).
+&nbsp;&nbsp;&nbsp; `source:`                             |  Optional   | Source ID.
+&nbsp;&nbsp;&nbsp; `regs:`                               |  Optional   | Register setup.
 
-Supported trace source types are `dwt`, `event`, `exception`, `itm`, `pmu`, `overflow`, `pcsample`, `global_ts`.
-Support for the optional `source-id:` depends on the set `type:`. The following are supported.
+The trace source types are: `dwt`, `event`, `exception`, `itm`, `pmu`, `overflow`, `pcsample`, `global_ts`.
 
-`type:`      | Usage of `source-id:`
+The meaning of `source:` depends on the `type:` as shown below.
+
+`type:`      | Usage of `source:`
 :------------|:------------------------------------
-`dwt`        | Number or array of numbers: Allocated DWT comparator IDs
-`itm`        | Number: ITM channel
+`dwt`        | Number or array of allocated DWT comparators.
+`itm`        | Number of allocated ITM channel.
 
 `regs:`                                                  |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
@@ -489,7 +485,7 @@ ctrace-run:
   ctrace-refs:
   - ctrace-ref: core0/itm
     pname: <core0>
-    type: dwt            # packet types
+    type: itm            # packet types
     symbol-file: <symbol file used>
     symbol-address: address of symbol
     stream: 1            # stream id
@@ -519,7 +515,7 @@ ctrace-run:
 
 #### Register Accesses
 
-The `ctrace-run.yml` file contains the register values that are required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about the arichtectural defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.
+The `ctrace-run.yml` file contains the register values that are required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.
 
 Trace Component | Base Address | Description
 :---------------|:------------:|:------------------------------------
@@ -528,11 +524,13 @@ Trace Component | Base Address | Description
 `PMU`           | `0xE0003000` | Performance Monitoring Unit.
 `ETM`           | `0xE0041000` | Embedded Trace Macrocell.
 
-The `ctrace-ref:` nodes references the trace generation configuration in `ctrace.yml` and contain register values that represents the references setup.
+The `ctrace-ref:` node references the trace generation configuration in the file `*.ctrace.yml` and contains register values that represent the setup.
 A single-core system has no `pname:` value; a multi-processor always includes a `pname:` value in the `ctrace-ref:` node.
 
-ToDo Jens: ware the system wide settings? How are the represented? What trace component is configured with such settings?
-     - Entries in `*.ctrace.yml` without processor scope are expanded to each processor that supports the requested trace feature.
+!!! Note
+    - Entries in `*.ctrace.yml` without processor scope are expanded to each processor that supports the requested trace feature.
+
+ToDo Jens: what the system wide settings? How are they represented? What trace component is configured with such settings?
 
 ### Initial Implementation
 
@@ -560,3 +558,317 @@ Subsequent releases may extend this initial solution to:
 - SEGGER RTT, SystemView, and STDIO UART output are not part of trace capture and use separate output paths.
 - ITM channel 0 `printf` output should not be routed to trace analysis components. It should be shown in an output window or debug console.
 
+## `pyTS` Utility
+
+The `pyTS` utility generates the file `.trace/<solution-set>.ctrace-run.yml`. It performs the following steps:
+
+- Reads the file `<name>.cbuild-run.yml` to provide the solution set, processor names, and ELF output files.
+- Converts symbolic names in the file `.cmsis/<solution-set>.ctrace.yml` to physical addresses by using the corresponding ELF output files.
+- Uses processor information and implementation details to map the trace generation setup into CoreSight trace register values. See [Processor-Specific Trace Features](#processor-specific-trace-features)
+- Rejects incompatible configuration settings with user-oriented `info`, `warning` or `error` messages in the `ctrace-ref:` node of the file `*.ctrace-run.yml`
+
+The final trace generation setup is written to the file `.trace/<solution-set>.ctrace-run.yml`.
+
+This utility will be part of pyOCD.
+
+```txt
+Usage:
+  pyts <name>.cbuild-run.yml
+```
+
+## `ctrace` Utility
+
+The `ctrace` utility reads the raw trace data files in the [directory `.trace`](#directory-and-file-structure). It can check the raw trace files for consistency or convert the files into CSV and CTF format.
+
+`ctrace` is based on the open source trace decoder [github.com/linaro/opencsd](https://github.com/linaro/opencsd) and adds a CSV and CTF converter. This utility will be part of CMSIS-Toolbox.
+
+```txt
+Usage:
+  ctrace [command] <trace-dir> [options]
+
+Commands:
+  check       Validate raw trace data files for consistency and print statistics
+  convert     Convert raw trace data files into CSV and CTF format
+
+Options:
+      --csv                Generate only CSV files (default: generate CSV and CTF)
+      --ctf                Generate only CTF files (default: generate CSV and CTF)
+      --type sel [...]     Filter output for specific packet types (default: all packet types)
+      --stream sel [...]   Filter output for specific streams (default: all streams)
+  -t, --target arg         Specify <solution-set> (default: process all solution sets in trace-dir)
+  -V, --version            Print version
+
+Use "ctrace [command] --help" for more information about a command.
+```
+
+`ctrace` processes files in the specified `<trace-dir>`. If this directory contains more than one `<solution-set>`, each solution set is processed separately.
+CSV and CTF output files are written to the `<trace-dir>` as explained under [directory and file structure](#directory-and-file-structure).
+
+### `--type` option
+
+The `--type` option is applied to the decoded packet type for both CSV and CTF files. Only the specified packet types are contained in the generated files.
+
+Accepted packet types are: `itm`, `dwt`, `event`, `pmu`, `exception`, `pcsample`, `global_ts`, `overflow`, `error`.
+
+**Example:**
+
+Output only the packet types DWT comparator and event counter. 
+
+```bash
+ctrace convert .trace --type dwt event
+```
+
+### CSV Format
+
+The CSV output file uses these columns:
+
+Column         | Description
+:--------------|:------------------------------------
+`cycles`       | Timestamp in CPU clock cycles, if available.
+`stream`       | Stream ID (CoreSight ATB ID) of the trace packet. Empty if no formatting.
+`type`         | Packet type: `itm`, `dwt`, `event`, `pmu`, `exception`, `pcsample`, `global_ts`, `overflow`, `error`.
+`source`       | Source id: ITM channel, DWT comparator, exception number, or hardware discriminator.
+`value`        | Value in hexadecimal form. Payload width is represented by the number of hex digits: 1 byte: `0x00`, 2 bytes: `0x0000`, 4 bytes: `0x00000000`. For packet type `exception` state transition: `0x1` enter, `0x2` exit, `0x3` return.
+`pc`           | Program counter for packet types `dwt` and `pcsample` (hexadecimal format, example `0x08001234`).
+`offset`       | Data address offset for packet type `dwt` (hexadecimal format, example `0xfdf9`).
+`note`         | Additional details, used for error notification.
+
+The following table contains details about the packet type. Information is empty when not provided by the trace packet.
+
+`type`      | Description
+:-----------|:------------------------------------
+`itm`       | `source` = ITM channel.
+`dwt`       | `source` = DWT comparator, `value` = data value, `offset` = data address offset, `pc` = program counter.
+`events`    | Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.
+`pmu`       | Reserved for PMU counter rows. Detailed semantics will be specified in a future version.
+`exception` | `source` = exception number. `value` = exception state transition.
+`pcsample`  | `pc` = program counter.
+`global_ts` | Global timestamp for synchronization between streams.
+`overflow`  | Marks an overflow, reason can be an overflow packet or an internal decoder overflow.
+`error`     | Decode error, for example unexpected trace byte values. `note` field carries details.
+
+!!! Note
+    The timestamp packet type information is provided in the `cycles` column.
+
+**Exception State Transition:**
+
+Value | State    | Meaning
+:-----|:---------|:------------------------------------
+`0x0` | reserved | Causes a decode error.
+`0x1` | `enter`  | The exception became the active processor context.
+`0x2` | `exit`   | The exception context was left or completed; consumers usually close that exception lane.
+`0x3` | `return` | Execution returned to, or resumed, the named exception context after another exception.
+
+**Example:**
+
+```csv
+cycles,stream,type,source,value,pc,offset,note
+2518192,,itm,0,0x53,,,
+2518404,,itm,0,0x54,,,
+2518616,,itm,0,0x4d,,,
+949338400,,dwt,2,0xfffffdf9,0x08001234,0xfdf9,
+949338400,,dwt,3,0x0000006c,0x08001240,0x006c,
+949338400,,dwt,0,0x00,,,
+949339000,,pcsample,,,0x08000100,,
+949338400,,exception,0,0x3,,,
+949338400,,overflow,,,,,
+950364820,,exception,11,0x1,,,
+950389420,,exception,0,0x3,,,
+```
+
+cycles    | stream | type      | source | value      | pc         | offset  | note
+:---------|:-------|:----------|:-------|:-----------|:-----------|:--------|:-----
+2518192   |        | itm       | 0      | 0x53       |            |         |
+2518404   |        | itm       | 0      | 0x54       |            |         |
+2518616   |        | itm       | 0      | 0x4d       |            |         |
+949338400 |        | dwt       | 2      | 0xfffffdf9 | 0x08001234 | 0xfdf9  |
+949338400 |        | dwt       | 3      | 0x0000006c | 0x08001240 | 0x006c  |
+949338400 |        | dwt       | 0      | 0x00       |            |         |
+949339000 |        | pcsample  |        |            | 0x08000100 |         |
+949338400 |        | exception | 0      | 0x3        |            |         |
+949338400 |        | overflow  |        |            |            |         |
+950364820 |        | exception | 11     | 0x1        |            |         |
+950389420 |        | exception | 0      | 0x3        |            |         |
+
+### CTF Format
+
+The generated [Common Trace Format (CTF) v1.8.3](https://diamon.org/ctf/v1.8.3/) is compatible with [Trace Compass](https://eclipse.dev/tracecompass/) and used by [Trace Viewer for VS Code](https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension). It uses the following files that are generated by `ctrace` in the directory `.trace/<solution-set>.ctf/`.
+
+File           | Description
+:--------------|:------------------------
+`metadata`     | Metadata information for Trace Compass.
+`stream_<n>`   | Trace data stream.
+
+## Processor-Specific Trace Features
+
+The following information lists the Cortex-M processors and the DWT, ITM, ETM, MTB, and PMU implementation options.
+
+ToDo: how are implementation options obtained?
+
+### Processor Trace Capabilities
+
+In the table, the three `ITM/DWT Comps` columns show the number of Data Watchpoint and Trace comparators for each available debug setup; `-` means that setup is not available. `ITM/DWT` means instrumentation, event, PC-sampling, exception, and *data trace* packets generated by the ITM and DWT; a DWT that is present without ITM/DWT trace support is shown as **no trace**. `PMU` means the architectural Performance Monitoring Unit and its event counters. `ETM` and `MTB` provide *instruction trace*; ETM streams trace into a CoreSight trace system, while MTB writes a compact execution trace into system SRAM.
+
+Processor | ITM/DWT Comps *reduced* | ITM/DWT Comps *mid* | ITM/DWT Comps *full* | PMU | ETM | MTB
+:---------|:------------------------|:--------------------|:---------------------|:----|:----|:---
+Cortex-M0 | `0-2` comps; no trace   | -                   | -                    | -   | -   | -
+Cortex-M0+ | `0-2` comps; no trace | - | - | - | - | Optional; start/stop using `TSTART`/`TSTOP` integration inputs or software; integration inputs can be driven by `0-2` MTB_DWT comparators; watermark autostop
+Cortex-M1 | `1` comp; no trace | - | - | `2` comps; no trace | - | - | -
+Cortex-M3 | `1` comp | - | `4` comps | - | Optional ETMv3.4/v3.5 *instruction trace*<br>Up to `4` DWT comparator inputs; `1` reduced-function counter in newer revisions; `2` external inputs; start/stop logic; read-only `ETMSYNCFR` fixed at `1024` | -
+Cortex-M4 | `1` comp | - | `4` comps | - | Optional ETMv3.5 *instruction trace*<br>Up to `4` DWT comparator inputs; `1` reduced-function counter; `2` external inputs; start/stop logic; read-only `ETMSYNCFR` fixed at `1024` | -
+Cortex-M7 | `2` comps | - | `4` comps | - | Optional ETMv4 *instruction trace* or *instruction and data trace*;<br>*instruction-only* resources: `4` DWT inputs, `1` reduced-function counter, `2` resource-selector pairs, `1` single-shot control, read-only `TRCSYNCPR`;<br>*instruction+data* resources: `4` DWT inputs, `2` counters, `8` resource-selector pairs, `4` address-comparator pairs, `2` data-value comparators, `1` four-state sequencer, read/write `TRCSYNCPR` | -
+Cortex-M23 | `2` comps; no trace | - | - | `4` comps; no trace | - | Optional ETMv3.5 *instruction trace*; mutually exclusive with MTB<br>`4` DWT comparator inputs; `1` reduced-function counter; `2` external inputs; start/stop logic; read-only `ETMSYNCFR` fixed at `1024` | Optional; mutually exclusive with ETM; start/stop using `2` or `4` DWT inputs, `TSTART`/`TSTOP` inputs, or software; watermark autostop
+Cortex-M33 | `2` comps | - | `4` comps | - | Optional ETMv4 *instruction trace*<br>`2` or `4` DWT inputs; `1` reduced-function counter; `2` resource-selector pairs; `1` single-shot control; read-only `TRCSYNCPR` | Optional; start/stop using `2` or `4` DWT inputs, CTI inputs, or software; watermark autostop
+Cortex-M52 | `2` comps | `4` comps | `8` comps | Debug-set-dependent | Optional ETMv4.5 *instruction trace*<br>`2`, `4`, or `8` DWT inputs; `1` reduced-function counter; resource selectors; `1` single-shot control; read-only `TRCSYNCPR` | -
+Cortex-M55 | `2` comps | `4` comps | `8` comps | Debug-set-dependent | Optional ETMv4.5 *instruction trace*<br>`2`, `4`, or `8` DWT inputs; `1` reduced-function counter; `2` resource-selector pairs; `1` single-shot control; `4` external-input selectors; `2` external outputs; read-only `TRCSYNCPR` | -
+Cortex-M85 | `4` comps | - | `8` comps | Debug-set-dependent | Optional ETMv4.5 *instruction trace*<br>`4` or `8` DWT inputs; `1` reduced-function counter; `2` resource-selector pairs; `1` single-shot control; `4` external-input selectors; `2` external outputs; read-only `TRCSYNCPR` | -
+
+## DWT Feature Variants
+
+The DWT comparator count alone does not describe the implemented feature set. Data-value matching normally uses an address comparator together with a value comparator, so enabling it also allocates one or more address comparators. For Armv8-M and Armv8.1-M implementations, comparator capabilities can differ within the same DWT. Software must read each `DWT_FUNCTIONn` before allocating it.
+
+Processor | DWT variants | Cycle counter | Profiling counters | Address and PC matching | Data-value matching | Range matching | DWT trace and trigger features
+:---------|:-------------|:--------------|:-------------------|:------------------------|:--------------------|:---------------|:------------------------------
+Cortex-M0 | `0-2` comparators | - | - | Watchpoint and debug-event matching | - | `DWT_MASKn` | -
+Cortex-M0+ | `0-2` comparators | - | - | Watchpoint and debug-event matching | - | `DWT_MASKn` | Optional MTB_DWT matches can drive the MTB `TSTART` and `TSTOP` integration inputs
+Cortex-M1 | *Reduced* `1`; *full* `2` comparators | - | - | Watchpoint and debug-event matching | - | `DWT_MASKn` | -
+Cortex-M3 | *Reduced* `1`; *full* `4` comparators | `DWT_CYCCNT` | `5` DWT counters | Watchpoint, PC match, and data-address match | *Reduced*: -; *full*: `COMP1` only, using address comparator references | `DWT_MASKn` | PC, data-address, and data-value trace; cycle, exception, and event trace triggers
+Cortex-M4 | *Reduced* `1`; *full* `4` comparators | `DWT_CYCCNT` | `5` DWT counters | Watchpoint, PC match, and data-address match | *Reduced*: -; *full*: `COMP1` only, using address comparator references | `DWT_MASKn` | PC, data-address, and data-value trace; cycle, exception, and event trace triggers
+Cortex-M7 | *Reduced* `2`; *full* `4` comparators | `DWT_CYCCNT` | `5` DWT counters | All comparators: watchpoint, PC match, and data-address match; `COMP0`: cycle matching | *Reduced* and *full*: `COMP1` only, using address comparator references | `DWT_MASKn` | All implemented comparators support triggers and, when ITM/DWT trace is included, trace packets
+Cortex-M23 | *Reduced* `2`; *full* `4` comparators | - | - | All comparators: watchpoint, instruction-address match, and data-address match | - | *Reduced*: linked `COMP0-1`; *full*: linked `COMP0-1` or `COMP2-3` | Debug and trigger events; no cycle matching or DWT trace packets
+Cortex-M33 | *Reduced* `2`; *full* `4` comparators | `DWT_CYCCNT` | `5` DWT counters | All comparators: watchpoint, instruction-address match, and data-address match; `COMP0`: cycle matching; *reduced* `COMP1`, *full* `COMP1` and `COMP3`: linked or limit matching | *Reduced*: `COMP1`; *full*: `COMP1` and `COMP3` | *Reduced*: linked `COMP0-1`; *full*: linked `COMP0-1` or `COMP2-3` | All implemented comparators support triggers and, when ITM is included, trace packets
+Cortex-M52 | *Reduced* `2`; *mid* `4`; *full* `8` comparators | `DWT_CYCCNT` | `5` DWT counters | *Reduced* `COMP0-1`, *mid* `COMP0-3`, *full* `COMP0-7`: instruction-address and data-address matching; `COMP0`: cycle matching; *reduced* `COMP1`, *mid* `COMP1` and `COMP3`, *full* `COMP1`, `COMP3`, `COMP5`, and `COMP7`: linking | *Reduced*: `COMP1`; *mid* and *full*: `COMP1` and `COMP3` | *Reduced*: linked `COMP0-1`; *mid*: linked `COMP0-1` or `COMP2-3`; *full*: linked `COMP0-1`, `COMP2-3`, `COMP4-5`, or `COMP6-7` | *Reduced* `COMP0-1` and *mid* `COMP0-3`: watchpoints, triggers, and trace; *full* `COMP0-3`: watchpoints, triggers, and trace; *full* `COMP4-7`: watchpoints and triggers only
+Cortex-M55 | *Reduced* `2`; *mid* `4`; *full* `8` comparators | `DWT_CYCCNT` | `5` DWT counters | *Reduced* `COMP0-1`, *mid* `COMP0-3`, *full* `COMP0-7`: instruction-address and data-address matching; `COMP0`: cycle matching; *reduced* `COMP1`, *mid* `COMP1` and `COMP3`, *full* `COMP1`, `COMP3`, `COMP5`, and `COMP7`: linking | *Reduced*: `COMP1`; *mid* and *full*: `COMP1` and `COMP3` | *Reduced*: linked `COMP0-1`; *mid*: linked `COMP0-1` or `COMP2-3`; *full*: linked `COMP0-1`, `COMP2-3`, `COMP4-5`, or `COMP6-7` | *Reduced* `COMP0-1` and *mid* `COMP0-3`: watchpoints, triggers, and trace; *full* `COMP0-3`: watchpoints, triggers, and trace; *full* `COMP4-7`: watchpoints and triggers only
+Cortex-M85 | *Reduced* `4`; *full* `8` comparators | `DWT_CYCCNT` | `5` DWT counters | *Reduced* `COMP0-3`, *full* `COMP0-7`: instruction-address and data-address matching; `COMP0`: cycle matching; *reduced* `COMP1` and `COMP3`, *full* `COMP1`, `COMP3`, `COMP5`, and `COMP7`: linking | *Reduced* and *full*: `COMP1` and `COMP3` | *Reduced*: linked `COMP0-1` or `COMP2-3`; *full*: linked `COMP0-1`, `COMP2-3`, `COMP4-5`, or `COMP6-7` | *Reduced* `COMP0-3`: watchpoints, triggers, and trace; *full* `COMP0-3`: watchpoints, triggers, and trace; *full* `COMP4-7`: watchpoints and triggers only
+
+The five DWT profiling counters are `DWT_CPICNT`, `DWT_EXCCNT`, `DWT_SLEEPCNT`, `DWT_LSUCNT`, and `DWT_FOLDCNT`. Their presence is reported by `DWT_CTRL.NOPRFCNT`.
+
+Here, data-value matching means comparing an observed load or store value. It does not by itself imply that the implementation can emit a data-value trace packet; that capability is listed separately in the final column.
+
+### Synchronization
+
+The ETM synchronization range `0`, `256`, ... , `1M` is not generally configurable on the listed Cortex-M processors.
+
+- Cortex-M3, Cortex-M4, and Cortex-M23 ETMv3 implementations use a read-only `ETMSYNCFR` fixed at `1024` trace bytes.
+- Cortex-M33, Cortex-M52, Cortex-M55, and Cortex-M85 use a read-only `TRCSYNCPR` fixed at `1024` trace bytes.
+- Cortex-M7 instruction-only ETM uses a read-only `TRCSYNCPR` fixed at `1024` trace bytes.
+- Cortex-M7 instruction-and-data ETM has a programmable `TRCSYNCPR`. The requested period must use an implemented power-of-two encoding.
+
+Among the listed Arm ETM implementations, an `ETM\<period>` override is therefore configurable only for the Cortex-M7 instruction-and-data ETM. For other implementations, the tool should accept a fixed or default setting and diagnose attempts to override it.
+
+The ETM synchronization unit is **trace bytes**, not processor cycles.
+
+### DWT Synchronization
+
+DWT synchronization is controlled through `DWT_CTRL.SYNCTAP`.
+
+- Architecturally encoded periods are `16M`, `64M`, and `256M` processor cycles.
+- All listed Cortex-M DWT implementations that support DWT trace provide a read/write `SYNCTAP` field.
+- Processors or debug configurations marked as having no DWT trace cannot emit DWT synchronization packets and do not provide a functional `SYNCTAP` field.
+- `SYNCTAP` selects the synchronization period; synchronization packet generation is enabled or disabled through `ITM_TCR.SYNCENA`.
+- `DWT\0` should therefore disable DWT synchronization packets through `ITM_TCR.SYNCENA`, not attempt to encode zero in `SYNCTAP`.
+
+For the listed Cortex-M processors, the configuration generator can treat DWT trace support as implying a writable `SYNCTAP`. It must still discover whether DWT trace and the associated ITM are implemented and accessible.
+
+### PC Sampling
+
+DWT PC sampling uses two fields:
+
+- `CYCTAP` selects bit 6 or bit 10 of `CYCCNT`.
+- `POSTPRESET` provides a four-bit post-scaler reload value.
+
+The supported periods are the following discrete values:
+
+- `64 * (1..16)` processor cycles.
+- `1024 * (1..16)` processor cycles.
+
+PC sampling additionally requires:
+
+- An implemented cycle counter, reported by `DWT_CTRL.NOCYCCNT == 0`.
+- PC sampling support in the DWT implementation.
+- An enabled cycle counter.
+- A trace-capable DWT and ITM implementation.
+
+The schema should validate the discrete supported values rather than accept an arbitrary cycle count.
+
+### DWT Events
+
+The DWT event selectors are not universally available.
+
+- `CYCCNT` requires an implemented cycle counter.
+- `CPICNT`, `EXCCNT`, `SLEEPCNT`, `LSUCNT`, and `FOLDCNT` require the DWT profiling counters.
+- `DWT_CTRL.NOPRFCNT` reports whether the profiling counters are absent.
+- Newer processors can expose PMU events instead of, or in addition to, the legacy DWT profiling counters.
+
+The generator must discover event-counter presence rather than validate events only by processor name.
+
+### DWT Data Trace
+
+DWT comparator functions vary between architectures and implementations.
+
+- Armv7-M DWT implementations generally require comparator pairing for data-value matching.
+- Armv8-M adds linked comparator functions and compact match packets.
+- The `match` output mode is Armv8-M-specific.
+- The `PC+offset` output mode is Armv8-M-specific.
+- Address range support, address masks, access sizes, data-value matching, linked comparators, and emitted packet types must be checked for each comparator through `DWT_FUNCTIONn`.
+- Some comparator numbers can support fewer functions than other comparators in the same DWT.
+
+A requested range can require:
+
+- One comparator using an address mask.
+- Two linked comparators.
+- Multiple comparators when the range is not naturally aligned.
+
+A value match can also require more than one comparator. Comparator allocation therefore depends on the DWT architecture, requested function, alignment, and range. The statement that a size greater than four bytes “may require two comparators” is not sufficient as a complete allocation rule.
+
+### Instruction Trace Start and Stop
+
+The generic `start:` and `stop:` condition syntax cannot always map directly to every trace component.
+
+- Cortex-M3, Cortex-M4, and Cortex-M23 ETMv3 implementations and Cortex-M7, Cortex-M33, Cortex-M52, Cortex-M55, and Cortex-M85 ETMv4 implementations use DWT or processor comparator inputs for stateful start/stop control. ETMv4 can additionally use resource selectors for event-based trace filtering; single-shot control is needed only when a transient comparator match must be latched.
+- Cortex-M7 instruction-and-data ETM additionally provides local address comparators, data-value comparators, counters, and a sequencer.
+- Cortex-M0+ MTB uses `TSTART` and `TSTOP` integration inputs. These can be driven by optional MTB_DWT comparators in an SoC implementation.
+- Cortex-M23 and Cortex-M33 MTB implementations can use DWT comparator matches for start and stop control.
+- Available start and stop conditions are constrained by DWT comparators shared with watchpoints and data trace.
+
+The requested `X`, `R`, `W`, `RW`, value-match, and range conditions are not supported by every ETM or MTB trigger path. The resolver should report when a condition is syntactically valid but cannot be represented by the selected component.
+
+### Timestamps
+
+ITM local timestamps, ETM timestamp packets, and ETM cycle-count timing are distinct facilities. ETM timestamp packets can carry values derived from a shared system or global timestamp source.
+
+- ITM timestamp prescaler values `1`, `4`, `16`, and `64` are architectural.
+- ITM timestamps require ITM and a functioning cycle counter.
+- ETM timestamp packets correlate trace with the shared system timestamp domain, while ETM cycle counts report elapsed processor cycles within the instruction trace. The system timestamp generator and its distribution infrastructure are optional.
+
+### ITM Channels
+
+A 32-bit `enable` mask is suitable for the architectural ITM stimulus ports.
+
+### PMU Events
+
+PMU resources depend on the processor and selected debug implementation.
+
+- PMU event counters are wider architectural counters, but PMU overflow trace monitors the lower eight bits of each counter.
+
+### Recommended Documentation and Schema Changes
+
+1. Mark ETM synchronization as fixed for all listed processors except Cortex-M7 instruction-and-data ETM.
+2. Define whether an unsupported setting produces an error, warning, fixed-value notice, or nearest-supported-value adjustment.
+
+### Related
+
+- [v8-M Architecture Reference Manual](https://developer.arm.com/documentation/ddi0553/bz/)
+    - The Instrumentation Trace Macrocell (B14.1)
+    - The Data Watchpoint and Trace unit (B14.2)
+    - The Performance Monitors Extension (B15)
+    - ITM and DWT Packet Protocol Specification (F1)
+- [v7-M Architecture Reference Manual](https://developer.arm.com/documentation/ddi0403/latest/)
+    - The Instrumentation Trace Macrocell (C1.7)
+    - The Data Watchpoint and Trace unit (C1.8)
+    - Debug ITM and DWT Packet Protocol (D4)
+- [v6-M Architecture Reference Manual](https://developer.arm.com/documentation/ddi0419/e/?lang=en)
+    - The Data Watchpoint and Trace Unit (C1.7)
+
+- [Cortex-M55 PMU](https://developer.arm.com/documentation/101051/0101/Performance-Monitoring-Unit-Extension)
+- [Cortex-M85 PMU](https://developer.arm.com/documentation/101924/0101/Performance-Monitoring-Unit-Extension)
