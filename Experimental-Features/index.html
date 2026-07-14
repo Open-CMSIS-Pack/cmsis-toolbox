@@ -164,6 +164,50 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pyts-utility">pyTS Utility</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ctrace-utility">ctrace Utility</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#-type-option">--type option</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#csv-format">CSV Format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ctf-format">CTF Format</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#processor-specific-trace-features">Processor-Specific Trace Features</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#processor-trace-capabilities">Processor Trace Capabilities</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#dwt-feature-variants">DWT Feature Variants</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#synchronization_1">Synchronization</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dwt-synchronization">DWT Synchronization</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pc-sampling">PC Sampling</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dwt-events">DWT Events</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dwt-data-trace">DWT Data Trace</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#instruction-trace-start-and-stop">Instruction Trace Start and Stop</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#timestamps_1">Timestamps</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#itm-channels">ITM Channels</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#pmu-events">PMU Events</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#recommended-documentation-and-schema-changes">Recommended Documentation and Schema Changes</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#related">Related</a>
+    </li>
+        </ul>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -335,12 +379,12 @@
 <li>Configure trace communication (how trace leaves the MCU) with the <code>target-set:</code> in <code>*.csolution.yml</code> (and optional settings in <code>*.dbgconf</code>).</li>
 <li>Configure trace generation (what the MCU produces: ITM, DWT, etc.) with the <code>*.ctrace.yml</code> file.</li>
 <li>Collect trace information (debugger receives and records the stream) into raw data files.</li>
-<li>Analyze trace data files (host tools interpret the collected data files) and generate *.csv files and CTF files.</li>
+<li>Analyze trace data files (host tools interpret the collected raw trace data files) and generate CSV and CTF files.</li>
 </ol>
+<p>This section uses <code>&lt;solution-set&gt;</code> as the combined name of the <code>solution</code>, <code>target-type</code>, and <code>target-set</code> name, for example <code>SDS+AppKit-E8@HIL</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li><code>&lt;target-set&gt;</code> is the name of the target-set, for example <code>SDS+AppKit-E8@HIL</code>.</li>
 <li>Trace does not include SEGGER RTT, SystemView, or STDIO UART output. These features use separate data output paths.</li>
 </ul>
 </div>
@@ -361,39 +405,38 @@
 <td style="text-align: left;">Contains the <code>*.csolution.yml</code> project file.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>.cmsis/&lt;target-set&gt;.ctrace.yml</code></td>
+<td style="text-align: left;"><code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code></td>
 <td style="text-align: left;">CMSIS-Debugger</td>
-<td style="text-align: left;">User trace intent and target-set specific trace capture configuration.</td>
+<td style="text-align: left;">User trace intent and solution-set specific trace capture configuration.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>.trace/&lt;target-set&gt;.ctrace-run.yml</code></td>
-<td style="text-align: left;">pyTS</td>
+<td style="text-align: left;"><code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code></td>
+<td style="text-align: left;"><a href="#pyts-utility">pyTS</a></td>
 <td style="text-align: left;">Generated trace run information, including resolved symbols and register values.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>.trace/&lt;target-set&gt;.SWO.raw</code></td>
+<td style="text-align: left;"><code>.trace/&lt;solution-set&gt;.&lt;channel&gt;.raw</code></td>
 <td style="text-align: left;">pyOCD</td>
 <td style="text-align: left;">Raw trace data files, for example <code>.SWO</code>, <code>MTB</code>, or <code>ER</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>.trace/&lt;target-set&gt;.SWO.csv</code></td>
-<td style="text-align: left;">TraceDecoder</td>
-<td style="text-align: left;">CSV files that represent raw data + ctrace-refs</td>
+<td style="text-align: left;"><code>.trace/&lt;solution-set&gt;.&lt;channel&gt;.csv</code></td>
+<td style="text-align: left;"><a href="#ctrace-utility">ctrace</a></td>
+<td style="text-align: left;">CSV files that represent raw trace data files.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>.trace/&lt;target-set&gt;/ctf</code></td>
-<td style="text-align: left;">TraceDecoder</td>
-<td style="text-align: left;">CTF files such as <code>metadata</code>, <code>stream_0</code>, and <code>stream_1</code>.</td>
+<td style="text-align: left;"><code>.trace/&lt;solution-set&gt;.ctf/</code></td>
+<td style="text-align: left;"><a href="#ctrace-utility">ctrace</a></td>
+<td style="text-align: left;">Directory for CTF files such as <code>metadata</code>, <code>stream_0</code>, and <code>stream_1</code>.</td>
 </tr>
 </tbody>
 </table>
-<p>TraceDecoder: OpenCSD + writer + CTF output</p>
-<p>The <code>.cmsis/&lt;target-set&gt;.ctrace.yml</code> file configures the trace generation. It is created or updated by the user interface of the CMSIS-Debugger Trace View.</p>
-<p>A CLI tool (<code>pyTS</code>) resolves symbol-based settings in <code>*.ctrace.yml</code> against the ELF/DWARF information of the active target-set and generates the register setup for the hardware configuration. The output is the <code>.trace/&lt;target-set&gt;.ctrace-run.yml</code> which is used by the debugger for register setup in hardware. During trace analysis the information of this file connects the raw trace data back to the <code>*.ctrace.yml</code> configuration.</p>
-<p>Raw trace streams are stored as binary files, for example <code>.trace/&lt;target-set&gt;.SWO.raw</code>. The TraceDecoder CLI tool can post-process raw streams into CSV files and <a href="https://diamon.org/ctf/v1.8.3/">CTF format v1.8.3</a> for viewers and analysis tools.</p>
+<p>The file <code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code> configures the trace generation. It is created or updated by the user interface of the CMSIS-Debugger Trace View.</p>
+<p>The <a href="#pyts-utility"><code>pyTS</code></a> utility resolves symbol-based settings in <code>*.ctrace.yml</code> against the ELF/DWARF information of the active <code>&lt;solution-set&gt;</code> and generates the register setup for the hardware configuration. The output is the <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code> which is used by the debugger for register setup in hardware. During trace analysis the information of this file connects the raw trace data back to the <code>*.ctrace.yml</code> configuration.</p>
+<p>Raw trace streams are stored as binary files, for example <code>.trace/&lt;solution-set&gt;.SWO.raw</code>. The <code>ctrace</code> utility converts raw trace data files into <a href="#csv-format">CSV</a> and <a href="#ctf-format">CTF</a> for viewers and analysis tools.</p>
 <h3 id="name-conventions">Name Conventions</h3>
 <h4 id="location">Location</h4>
-<p>Locations can be symbols or a plain numeric addresses. An additional project or path to an image file may be specified.</p>
+<p>Locations can be symbols or numeric addresses. An additional project or path to an image file may be specified.</p>
 <table>
 <thead>
 <tr>
@@ -437,7 +480,7 @@ ctrace-ref: data#2                # `data:` node, list node #2
 ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
 </code></pre>
 <h3 id="tools-and-extensions">Tools and Extensions</h3>
-<p>The trace workflow is split across the command-line tools and  and VS Code extensions as shown below.</p>
+<p>The trace workflow is split across the command-line tools and VS Code extensions as shown below.</p>
 <p><img alt="Trace components and data flow" src="../images/Trace-Dataflow.png" title="Trace components and data flow" /></p>
 <table>
 <thead>
@@ -462,10 +505,10 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <td style="text-align: left;">Configures trace capture.</td>
 </tr>
 <tr>
-<td style="text-align: left;">pyTS symbol mapper</td>
+<td style="text-align: left;"><a href="#pyts-utility">pyTS</a></td>
 <td style="text-align: left;"><code>.cmsis/*.ctrace.yml</code>, ELF/DWARF symbols</td>
 <td style="text-align: left;"><code>.trace/*.ctrace-run.yml</code></td>
-<td style="text-align: left;">Resolves symbols and generates Corsight register values.</td>
+<td style="text-align: left;">Resolves symbols and generates CoreSight trace register values.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="../pyOCD-Debugger/">pyOCD</a></td>
@@ -474,13 +517,13 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <td style="text-align: left;">Programs trace registers and captures trace streams during the debug session.</td>
 </tr>
 <tr>
-<td style="text-align: left;">Trace Decoder</td>
-<td style="text-align: left;">Raw trace data files, <code>.trace/*.ctrace.run.yml</code></td>
+<td style="text-align: left;"><a href="#ctrace-utility"><code>ctrace</code></a></td>
+<td style="text-align: left;">Raw trace data files, <code>.trace/*.ctrace-run.yml</code></td>
 <td style="text-align: left;">CSV, CTF files, Trace Compass XML Analysis file</td>
 <td style="text-align: left;">Generates CSV files (human readable) and CTF files</td>
 </tr>
 <tr>
-<td style="text-align: left;"><a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension">Trace Viewer for VSCode</a> and<br/> <a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-server">VS Code Trace Server</a></td>
+<td style="text-align: left;"><a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension">Trace Viewer for VS Code</a> and<br/> <a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-server">VS Code Trace Server</a></td>
 <td style="text-align: left;">CTF files, Trace Compass XML Analysis file</td>
 <td style="text-align: left;">Trace viewer panes</td>
 <td style="text-align: left;">Visualizes the CTF output in VS Code.</td>
@@ -494,7 +537,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <li>pyOCD reloads this <code>*.ctrace-run.yml</code> file and deletes existing <strong>Raw Trace Stream</strong> files when changes are detected and a new trace collection is started.</li>
 </ul>
 <p><strong>CI Workflow:</strong></p>
-<p>CI requires a prepared <code>.cmsis/&lt;target-set&gt;.ctrace.yml</code> file. This file is may be under source control or maintained manually.</p>
+<p>CI requires a prepared <code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code> file. This file may be under source control or maintained manually.</p>
 <h3 id="configuration-files">Configuration Files</h3>
 <p>Trace setup is split between target infrastructure configuration and capture configuration.</p>
 <table>
@@ -507,26 +550,31 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <tbody>
 <tr>
 <td style="text-align: left;"><code>*.csolution.yml</code></td>
-<td style="text-align: left;">Selects the target-set and debug adapter. It may also reference target-set specific debugger configuration files.</td>
+<td style="text-align: left;">Selects the solution-set and debug adapter. It may also reference solution-set specific debugger configuration files.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>.cmsis/*.dbgconf</code></td>
-<td style="text-align: left;">Optional target-set specific debugger configuration, for example trace clock, trace pins, ETB setup, and related hardware setup.</td>
+<td style="text-align: left;">Optional solution-set specific debugger configuration, for example trace clock, trace pins, ETB setup, and related hardware setup.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>.cmsis/&lt;target-set&gt;.ctrace.yml</code></td>
-<td style="text-align: left;">User-authored trace capture configuration. This file defines which data, events, ITM channels, PC samples, or instruction trace streams are enabled.</td>
+<td style="text-align: left;"><code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code></td>
+<td style="text-align: left;">User-authored trace generation setup. This file defines which data, events, ITM channels, PC samples, or instruction trace streams are enabled.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>.trace/&lt;target-set&gt;.ctrace-run.yml</code></td>
+<td style="text-align: left;"><code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code></td>
 <td style="text-align: left;">Generated trace run configuration. This file contains resolved symbols and ordered register accesses for pyOCD or other debug tools.</td>
 </tr>
 </tbody>
 </table>
-<p>The trace capture configuration is written to target trace resources such as <code>DWT</code>, <code>ITM</code>, <code>ETM</code>, <code>MTB</code>, or <code>PMU</code> registers. The generated register accesses are loaded by pyOCD when the debug session starts.</p>
+<p>The trace run configuration (in <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>) is written to target trace resources such as <code>DWT</code>, <code>ITM</code>, <code>ETM</code>, <code>MTB</code>, or <code>PMU</code> registers. The generated register accesses are loaded by pyOCD when the debug session starts. When pyOCD detects an updated <code>*.ctrace-run.yml</code> file, it updates the target trace registers and deletes previous raw trace data files.</p>
+<p>Based on these settings pyOCD captures raw trace data files in the <a href="#directory-and-file-structure">directory <code>.trace</code></a>. These raw trace data files are converted by the <code>ctrace</code> utility.</p>
 <p>In a later step, a preprocessing tool may generate <code>.trace/README.md</code> with setup instructions and code snippets that can be inserted in the application code.</p>
 <h3 id="file-structure-of-ctraceyml">File Structure of <code>*.ctrace.yml</code></h3>
-<p>The <code>*.ctrace.yml</code> file starts with the node <code>ctrace:</code> and contains the trace capture settings for one target-set.</p>
+<p>The <code>*.ctrace.yml</code> file starts with the node <code>ctrace:</code> and contains the trace capture settings for one solution-set.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Cortex-M processors and the DWT, ITM, ETM, MTB, and PMU implementations differ in ways that affect the available configuration options. The pyTS tool uses the <code>*.cbuild-run.yml</code> file to discover the processor and implemented capabilities and rejects incompatible settings.</p>
+</div>
 <table>
 <thead>
 <tr>
@@ -544,7 +592,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>setup:</code></td>
 <td style="text-align: left;">Required</td>
-<td style="text-align: left;">Setup for each processor</td>
+<td style="text-align: left;">Setup for each processor.</td>
 </tr>
 </tbody>
 </table>
@@ -560,7 +608,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <tr>
 <td style="text-align: left;"><code>- pname:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Section applies to a processor name (required for multi-processor systems)</td>
+<td style="text-align: left;">Section applies to a processor name (required for multi-processor systems).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>disable:</code></td>
@@ -653,7 +701,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
         privileged: 0x0
 </code></pre>
 <h4 id="timestamps"><code>timestamps:</code></h4>
-<p>When <code>timestamps:</code> is present, timestamp generation is enabled in the trace stream. ITM uses local timestamps with a synchronous timestamp source. ETM uses the cycle counter.</p>
+<p>When <code>timestamps:</code> is present, timestamp generation is enabled in the trace stream. ITM uses local timestamps with a synchronous timestamp source.</p>
 <table>
 <thead>
 <tr>
@@ -733,7 +781,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <td style="text-align: left;">Emits the value of the access.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>address</code></td>
+<td style="text-align: left;"><code>offset</code></td>
 <td style="text-align: left;">Emits the address offset. This is useful when tracing an address range.</td>
 </tr>
 <tr>
@@ -749,11 +797,11 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <td style="text-align: left;">Emits PC and value.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>address+value</code></td>
+<td style="text-align: left;"><code>offset+value</code></td>
 <td style="text-align: left;">Emits address offset and value.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>PC+address</code></td>
+<td style="text-align: left;"><code>PC+offset</code></td>
 <td style="text-align: left;">Emits PC and address offset. This requires Armv8-M.</td>
 </tr>
 </tbody>
@@ -838,7 +886,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </table>
 <p>Supported values for DWT PC sampling <code>period:</code> are <code>0</code> (off), <code>64*1</code>, <code>64*2</code>, ... , <code>64*16</code>, <code>1024*1</code>, <code>1024*2</code>, ... , and <code>1024*16</code>. Default: <code>0</code>.</p>
 <h4 id="synchronization"><code>synchronization:</code></h4>
-<p>The <code>synchronization:</code> node overrides component-specific synchronization packet frequencies.</p>
+<p>The <code>synchronization:</code> node specifies the frequency of the DWT synchronization packet.</p>
 <table>
 <thead>
 <tr>
@@ -849,38 +897,15 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>- period:</code></td>
+<td style="text-align: left;"><code>- DWT:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Synchronization period in the form <code>&lt;component&gt;\&lt;period&gt;</code>.</td>
+<td style="text-align: left;">Frequency <code>0</code> (off), <code>16M</code>, <code>64M</code>, <code>256M</code> processor cycles. Default: <code>256M</code>.</td>
 </tr>
 </tbody>
 </table>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Component</th>
-<th style="text-align: left;">Supported Values</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>DWT</code></td>
-<td style="text-align: left;"><code>0</code> (off), <code>16M</code>, <code>64M</code>, <code>256M</code> processor cycles. Default: <code>256M</code>.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>ETM</code></td>
-<td style="text-align: left;"><code>0</code> (off), <code>256</code>, <code>512</code>, <code>1k</code>, <code>2k</code>, ... , or <code>512k</code>, <code>1M</code> cycles/bytes. Default <code>1k</code>.</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code>k</code>=<code>2^10</code>, <code>M</code>=<code>2^20</code></p>
-</div>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">synchronization:
-  - period: DWT\16M
-  - period: ETM\1k
+  - DWT: 16M
 </code></pre>
 <h4 id="instructions"><code>instructions:</code></h4>
 <p>The <code>instructions:</code> node is reserved for ETM and MTB instruction trace. It is not required for the initial implementation.</p>
@@ -909,11 +934,11 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <h4 id="tracehalt"><code>tracehalt:</code></h4>
 <p>The <code>tracehalt:</code> node contains <a href="#conditions">condition</a> entries that halt a trace sink or formatter by a trace trigger. It affects all trace streams that use the sink. Support to combine two conditions by logic operators may be added in future.</p>
 <h4 id="conditions">Conditions</h4>
-<p>Nodes <code>start:</code>,<code>stop:</code>, and <code>tracehalt:</code> contain a list of OR'ed conditions. They have the following form.</p>
+<p>The nodes <code>start:</code>, <code>stop:</code>, and <code>tracehalt:</code> may contain a condition list that is logically OR-combined. They have the following form.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;"><code>start:</code>,<code>stop:</code>, <code>tracehalt:</code></th>
+<th style="text-align: left;"><code>start:</code>, <code>stop:</code>, <code>tracehalt:</code></th>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">Content</th>
 </tr>
@@ -987,77 +1012,77 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <tr>
 <td style="text-align: left;"><code>- ctrace-ref:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;"><a href="#references">Reference</a> to a node in the <code>*.ctrace.yml</code> file that generated the register setup</td>
+<td style="text-align: left;"><a href="#references">Reference</a> to a node in the <code>*.ctrace.yml</code> file that generated the register setup.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Type of the trace source for this entry</td>
+<td style="text-align: left;">Trace source type.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Processor name the reference resolves to for multi-core systems</td>
+<td style="text-align: left;">Processor name the reference resolves to for multi-core systems.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Additional information (i.e. alignment extension, etc.)</td>
+<td style="text-align: left;">Additional information (for example alignment extension).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>warning:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Warning message</td>
+<td style="text-align: left;">Warning message.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>error:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Error message when setup cannot be completed</td>
+<td style="text-align: left;">Error message when setup cannot be completed.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>symbol-file:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Absolute path to the symbol file used in this reference</td>
+<td style="text-align: left;">Absolute path to the symbol file used in this reference.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>symbol-address:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Address of the symbol</td>
+<td style="text-align: left;">Address of the symbol.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stream:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Stream ID this entry links back to, same as the CoreSight ATB ID</td>
+<td style="text-align: left;">Stream ID (CoreSight ATB ID).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>source:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Trace source ID this entry links back to</td>
+<td style="text-align: left;">Source ID.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>regs:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Register setup</td>
+<td style="text-align: left;">Register setup.</td>
 </tr>
 </tbody>
 </table>
-<p>Supported trace source types are <code>dwt</code>, <code>event</code>, <code>exception</code>, <code>itm</code>, <code>pmu</code>, <code>overflow</code>, <code>pcsample</code>, <code>global_ts</code>.
-Support for the optional <code>source-id:</code> depends on the set <code>type:</code>. The following are supported.</p>
+<p>The trace source types are: <code>dwt</code>, <code>event</code>, <code>exception</code>, <code>itm</code>, <code>pmu</code>, <code>overflow</code>, <code>pcsample</code>, <code>global_ts</code>.</p>
+<p>The meaning of <code>source:</code> depends on the <code>type:</code> as shown below.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"><code>type:</code></th>
-<th style="text-align: left;">Usage of <code>source-id:</code></th>
+<th style="text-align: left;">Usage of <code>source:</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>dwt</code></td>
-<td style="text-align: left;">Number or array of numbers: Allocated DWT comparator IDs</td>
+<td style="text-align: left;">Number or array of allocated DWT comparators.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>itm</code></td>
-<td style="text-align: left;">Number: ITM channel</td>
+<td style="text-align: left;">Number of allocated ITM channel.</td>
 </tr>
 </tbody>
 </table>
@@ -1093,7 +1118,7 @@ Support for the optional <code>source-id:</code> depends on the set <code>type:<
   ctrace-refs:
   - ctrace-ref: core0/itm
     pname: &lt;core0&gt;
-    type: dwt            # packet types
+    type: itm            # packet types
     symbol-file: &lt;symbol file used&gt;
     symbol-address: address of symbol
     stream: 1            # stream id
@@ -1121,7 +1146,7 @@ Support for the optional <code>source-id:</code> depends on the set <code>type:<
         value: 2
 </code></pre>
 <h4 id="register-accesses">Register Accesses</h4>
-<p>The <code>ctrace-run.yml</code> file contains the register values that are required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about the arichtectural defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.</p>
+<p>The <code>ctrace-run.yml</code> file contains the register values that are required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.</p>
 <table>
 <thead>
 <tr>
@@ -1153,10 +1178,15 @@ Support for the optional <code>source-id:</code> depends on the set <code>type:<
 </tr>
 </tbody>
 </table>
-<p>The <code>ctrace-ref:</code> nodes references the trace generation configuration in <code>ctrace.yml</code> and contain register values that represents the references setup.
+<p>The <code>ctrace-ref:</code> node references the trace generation configuration in the file <code>*.ctrace.yml</code> and contains register values that represent the setup.
 A single-core system has no <code>pname:</code> value; a multi-processor always includes a <code>pname:</code> value in the <code>ctrace-ref:</code> node.</p>
-<p>ToDo Jens: ware the system wide settings? How are the represented? What trace component is configured with such settings?
-     - Entries in <code>*.ctrace.yml</code> without processor scope are expanded to each processor that supports the requested trace feature.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li>Entries in <code>*.ctrace.yml</code> without processor scope are expanded to each processor that supports the requested trace feature.</li>
+</ul>
+</div>
+<p>ToDo Jens: what the system wide settings? How are they represented? What trace component is configured with such settings?</p>
 <h3 id="initial-implementation">Initial Implementation</h3>
 <p>The initial implementation focuses on pyOCD with SWO UART and interactive operation in CMSIS-Debugger.</p>
 <p>Subsequent releases may extend this initial solution to:</p>
@@ -1182,6 +1212,704 @@ A single-core system has no <code>pname:</code> value; a multi-processor always 
 <ul>
 <li>SEGGER RTT, SystemView, and STDIO UART output are not part of trace capture and use separate output paths.</li>
 <li>ITM channel 0 <code>printf</code> output should not be routed to trace analysis components. It should be shown in an output window or debug console.</li>
+</ul>
+<h2 id="pyts-utility"><code>pyTS</code> Utility</h2>
+<p>The <code>pyTS</code> utility generates the file <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>. It performs the following steps:</p>
+<ul>
+<li>Reads the file <code>&lt;name&gt;.cbuild-run.yml</code> to provide the solution set, processor names, and ELF output files.</li>
+<li>Converts symbolic names in the file <code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code> to physical addresses by using the corresponding ELF output files.</li>
+<li>Uses processor information and implementation details to map the trace generation setup into CoreSight trace register values. See <a href="#processor-specific-trace-features">Processor-Specific Trace Features</a></li>
+<li>Rejects incompatible configuration settings with user-oriented <code>info</code>, <code>warning</code> or <code>error</code> messages in the <code>ctrace-ref:</code> node of the file <code>*.ctrace-run.yml</code></li>
+</ul>
+<p>The final trace generation setup is written to the file <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>.</p>
+<p>This utility will be part of pyOCD.</p>
+<pre><code class="language-txt">Usage:
+  pyts &lt;name&gt;.cbuild-run.yml
+</code></pre>
+<h2 id="ctrace-utility"><code>ctrace</code> Utility</h2>
+<p>The <code>ctrace</code> utility reads the raw trace data files in the <a href="#directory-and-file-structure">directory <code>.trace</code></a>. It can check the raw trace files for consistency or convert the files into CSV and CTF format.</p>
+<p><code>ctrace</code> is based on the open source trace decoder <a href="https://github.com/linaro/opencsd">github.com/linaro/opencsd</a> and adds a CSV and CTF converter. This utility will be part of CMSIS-Toolbox.</p>
+<pre><code class="language-txt">Usage:
+  ctrace [command] &lt;trace-dir&gt; [options]
+
+Commands:
+  check       Validate raw trace data files for consistency and print statistics
+  convert     Convert raw trace data files into CSV and CTF format
+
+Options:
+      --csv                Generate only CSV files (default: generate CSV and CTF)
+      --ctf                Generate only CTF files (default: generate CSV and CTF)
+      --type sel [...]     Filter output for specific packet types (default: all packet types)
+      --stream sel [...]   Filter output for specific streams (default: all streams)
+  -t, --target arg         Specify &lt;solution-set&gt; (default: process all solution sets in trace-dir)
+  -V, --version            Print version
+
+Use &quot;ctrace [command] --help&quot; for more information about a command.
+</code></pre>
+<p><code>ctrace</code> processes files in the specified <code>&lt;trace-dir&gt;</code>. If this directory contains more than one <code>&lt;solution-set&gt;</code>, each solution set is processed separately.
+CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as explained under <a href="#directory-and-file-structure">directory and file structure</a>.</p>
+<h3 id="-type-option"><code>--type</code> option</h3>
+<p>The <code>--type</code> option is applied to the decoded packet type for both CSV and CTF files. Only the specified packet types are contained in the generated files.</p>
+<p>Accepted packet types are: <code>itm</code>, <code>dwt</code>, <code>event</code>, <code>pmu</code>, <code>exception</code>, <code>pcsample</code>, <code>global_ts</code>, <code>overflow</code>, <code>error</code>.</p>
+<p><strong>Example:</strong></p>
+<p>Output only the packet types DWT comparator and event counter. </p>
+<pre><code class="language-bash">ctrace convert .trace --type dwt event
+</code></pre>
+<h3 id="csv-format">CSV Format</h3>
+<p>The CSV output file uses these columns:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Column</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>cycles</code></td>
+<td style="text-align: left;">Timestamp in CPU clock cycles, if available.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>stream</code></td>
+<td style="text-align: left;">Stream ID (CoreSight ATB ID) of the trace packet. Empty if no formatting.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>type</code></td>
+<td style="text-align: left;">Packet type: <code>itm</code>, <code>dwt</code>, <code>event</code>, <code>pmu</code>, <code>exception</code>, <code>pcsample</code>, <code>global_ts</code>, <code>overflow</code>, <code>error</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>source</code></td>
+<td style="text-align: left;">Source id: ITM channel, DWT comparator, exception number, or hardware discriminator.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>value</code></td>
+<td style="text-align: left;">Value in hexadecimal form. Payload width is represented by the number of hex digits: 1 byte: <code>0x00</code>, 2 bytes: <code>0x0000</code>, 4 bytes: <code>0x00000000</code>. For packet type <code>exception</code> state transition: <code>0x1</code> enter, <code>0x2</code> exit, <code>0x3</code> return.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>pc</code></td>
+<td style="text-align: left;">Program counter for packet types <code>dwt</code> and <code>pcsample</code> (hexadecimal format, example <code>0x08001234</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>offset</code></td>
+<td style="text-align: left;">Data address offset for packet type <code>dwt</code> (hexadecimal format, example <code>0xfdf9</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>note</code></td>
+<td style="text-align: left;">Additional details, used for error notification.</td>
+</tr>
+</tbody>
+</table>
+<p>The following table contains details about the packet type. Information is empty when not provided by the trace packet.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>type</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>itm</code></td>
+<td style="text-align: left;"><code>source</code> = ITM channel.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>dwt</code></td>
+<td style="text-align: left;"><code>source</code> = DWT comparator, <code>value</code> = data value, <code>offset</code> = data address offset, <code>pc</code> = program counter.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>events</code></td>
+<td style="text-align: left;">Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>pmu</code></td>
+<td style="text-align: left;">Reserved for PMU counter rows. Detailed semantics will be specified in a future version.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>exception</code></td>
+<td style="text-align: left;"><code>source</code> = exception number. <code>value</code> = exception state transition.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>pcsample</code></td>
+<td style="text-align: left;"><code>pc</code> = program counter.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>global_ts</code></td>
+<td style="text-align: left;">Global timestamp for synchronization between streams.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>overflow</code></td>
+<td style="text-align: left;">Marks an overflow, reason can be an overflow packet or an internal decoder overflow.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>error</code></td>
+<td style="text-align: left;">Decode error, for example unexpected trace byte values. <code>note</code> field carries details.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The timestamp packet type information is provided in the <code>cycles</code> column.</p>
+</div>
+<p><strong>Exception State Transition:</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;">State</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>0x0</code></td>
+<td style="text-align: left;">reserved</td>
+<td style="text-align: left;">Causes a decode error.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>0x1</code></td>
+<td style="text-align: left;"><code>enter</code></td>
+<td style="text-align: left;">The exception became the active processor context.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>0x2</code></td>
+<td style="text-align: left;"><code>exit</code></td>
+<td style="text-align: left;">The exception context was left or completed; consumers usually close that exception lane.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>0x3</code></td>
+<td style="text-align: left;"><code>return</code></td>
+<td style="text-align: left;">Execution returned to, or resumed, the named exception context after another exception.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-csv">cycles,stream,type,source,value,pc,offset,note
+2518192,,itm,0,0x53,,,
+2518404,,itm,0,0x54,,,
+2518616,,itm,0,0x4d,,,
+949338400,,dwt,2,0xfffffdf9,0x08001234,0xfdf9,
+949338400,,dwt,3,0x0000006c,0x08001240,0x006c,
+949338400,,dwt,0,0x00,,,
+949339000,,pcsample,,,0x08000100,,
+949338400,,exception,0,0x3,,,
+949338400,,overflow,,,,,
+950364820,,exception,11,0x1,,,
+950389420,,exception,0,0x3,,,
+</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">cycles</th>
+<th style="text-align: left;">stream</th>
+<th style="text-align: left;">type</th>
+<th style="text-align: left;">source</th>
+<th style="text-align: left;">value</th>
+<th style="text-align: left;">pc</th>
+<th style="text-align: left;">offset</th>
+<th style="text-align: left;">note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">2518192</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">itm</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0x53</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">2518404</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">itm</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0x54</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">2518616</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">itm</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0x4d</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">949338400</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">dwt</td>
+<td style="text-align: left;">2</td>
+<td style="text-align: left;">0xfffffdf9</td>
+<td style="text-align: left;">0x08001234</td>
+<td style="text-align: left;">0xfdf9</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">949338400</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">dwt</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">0x0000006c</td>
+<td style="text-align: left;">0x08001240</td>
+<td style="text-align: left;">0x006c</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">949338400</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">dwt</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0x00</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">949339000</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">pcsample</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">0x08000100</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">949338400</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">exception</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0x3</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">949338400</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">overflow</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">950364820</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">exception</td>
+<td style="text-align: left;">11</td>
+<td style="text-align: left;">0x1</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;">950389420</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">exception</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">0x3</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<h3 id="ctf-format">CTF Format</h3>
+<p>The generated <a href="https://diamon.org/ctf/v1.8.3/">Common Trace Format (CTF) v1.8.3</a> is compatible with <a href="https://eclipse.dev/tracecompass/">Trace Compass</a> and used by <a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension">Trace Viewer for VS Code</a>. It uses the following files that are generated by <code>ctrace</code> in the directory <code>.trace/&lt;solution-set&gt;.ctf/</code>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">File</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>metadata</code></td>
+<td style="text-align: left;">Metadata information for Trace Compass.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>stream_&lt;n&gt;</code></td>
+<td style="text-align: left;">Trace data stream.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="processor-specific-trace-features">Processor-Specific Trace Features</h2>
+<p>The following information lists the Cortex-M processors and the DWT, ITM, ETM, MTB, and PMU implementation options.</p>
+<p>ToDo: how are implementation options obtained?</p>
+<h3 id="processor-trace-capabilities">Processor Trace Capabilities</h3>
+<p>In the table, the three <code>ITM/DWT Comps</code> columns show the number of Data Watchpoint and Trace comparators for each available debug setup; <code>-</code> means that setup is not available. <code>ITM/DWT</code> means instrumentation, event, PC-sampling, exception, and <em>data trace</em> packets generated by the ITM and DWT; a DWT that is present without ITM/DWT trace support is shown as <strong>no trace</strong>. <code>PMU</code> means the architectural Performance Monitoring Unit and its event counters. <code>ETM</code> and <code>MTB</code> provide <em>instruction trace</em>; ETM streams trace into a CoreSight trace system, while MTB writes a compact execution trace into system SRAM.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Processor</th>
+<th style="text-align: left;">ITM/DWT Comps <em>reduced</em></th>
+<th style="text-align: left;">ITM/DWT Comps <em>mid</em></th>
+<th style="text-align: left;">ITM/DWT Comps <em>full</em></th>
+<th style="text-align: left;">PMU</th>
+<th style="text-align: left;">ETM</th>
+<th style="text-align: left;">MTB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Cortex-M0</td>
+<td style="text-align: left;"><code>0-2</code> comps; no trace</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M0+</td>
+<td style="text-align: left;"><code>0-2</code> comps; no trace</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">Optional; start/stop using <code>TSTART</code>/<code>TSTOP</code> integration inputs or software; integration inputs can be driven by <code>0-2</code> MTB_DWT comparators; watermark autostop</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M1</td>
+<td style="text-align: left;"><code>1</code> comp; no trace</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>2</code> comps; no trace</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M3</td>
+<td style="text-align: left;"><code>1</code> comp</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>4</code> comps</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">Optional ETMv3.4/v3.5 <em>instruction trace</em><br>Up to <code>4</code> DWT comparator inputs; <code>1</code> reduced-function counter in newer revisions; <code>2</code> external inputs; start/stop logic; read-only <code>ETMSYNCFR</code> fixed at <code>1024</code></td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M4</td>
+<td style="text-align: left;"><code>1</code> comp</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>4</code> comps</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">Optional ETMv3.5 <em>instruction trace</em><br>Up to <code>4</code> DWT comparator inputs; <code>1</code> reduced-function counter; <code>2</code> external inputs; start/stop logic; read-only <code>ETMSYNCFR</code> fixed at <code>1024</code></td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M7</td>
+<td style="text-align: left;"><code>2</code> comps</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>4</code> comps</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">Optional ETMv4 <em>instruction trace</em> or <em>instruction and data trace</em>;<br><em>instruction-only</em> resources: <code>4</code> DWT inputs, <code>1</code> reduced-function counter, <code>2</code> resource-selector pairs, <code>1</code> single-shot control, read-only <code>TRCSYNCPR</code>;<br><em>instruction+data</em> resources: <code>4</code> DWT inputs, <code>2</code> counters, <code>8</code> resource-selector pairs, <code>4</code> address-comparator pairs, <code>2</code> data-value comparators, <code>1</code> four-state sequencer, read/write <code>TRCSYNCPR</code></td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M23</td>
+<td style="text-align: left;"><code>2</code> comps; no trace</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>4</code> comps; no trace</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">Optional ETMv3.5 <em>instruction trace</em>; mutually exclusive with MTB<br><code>4</code> DWT comparator inputs; <code>1</code> reduced-function counter; <code>2</code> external inputs; start/stop logic; read-only <code>ETMSYNCFR</code> fixed at <code>1024</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M33</td>
+<td style="text-align: left;"><code>2</code> comps</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>4</code> comps</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">Optional ETMv4 <em>instruction trace</em><br><code>2</code> or <code>4</code> DWT inputs; <code>1</code> reduced-function counter; <code>2</code> resource-selector pairs; <code>1</code> single-shot control; read-only <code>TRCSYNCPR</code></td>
+<td style="text-align: left;">Optional; start/stop using <code>2</code> or <code>4</code> DWT inputs, CTI inputs, or software; watermark autostop</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M52</td>
+<td style="text-align: left;"><code>2</code> comps</td>
+<td style="text-align: left;"><code>4</code> comps</td>
+<td style="text-align: left;"><code>8</code> comps</td>
+<td style="text-align: left;">Debug-set-dependent</td>
+<td style="text-align: left;">Optional ETMv4.5 <em>instruction trace</em><br><code>2</code>, <code>4</code>, or <code>8</code> DWT inputs; <code>1</code> reduced-function counter; resource selectors; <code>1</code> single-shot control; read-only <code>TRCSYNCPR</code></td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M55</td>
+<td style="text-align: left;"><code>2</code> comps</td>
+<td style="text-align: left;"><code>4</code> comps</td>
+<td style="text-align: left;"><code>8</code> comps</td>
+<td style="text-align: left;">Debug-set-dependent</td>
+<td style="text-align: left;">Optional ETMv4.5 <em>instruction trace</em><br><code>2</code>, <code>4</code>, or <code>8</code> DWT inputs; <code>1</code> reduced-function counter; <code>2</code> resource-selector pairs; <code>1</code> single-shot control; <code>4</code> external-input selectors; <code>2</code> external outputs; read-only <code>TRCSYNCPR</code></td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M85</td>
+<td style="text-align: left;"><code>4</code> comps</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>8</code> comps</td>
+<td style="text-align: left;">Debug-set-dependent</td>
+<td style="text-align: left;">Optional ETMv4.5 <em>instruction trace</em><br><code>4</code> or <code>8</code> DWT inputs; <code>1</code> reduced-function counter; <code>2</code> resource-selector pairs; <code>1</code> single-shot control; <code>4</code> external-input selectors; <code>2</code> external outputs; read-only <code>TRCSYNCPR</code></td>
+<td style="text-align: left;">-</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dwt-feature-variants">DWT Feature Variants</h2>
+<p>The DWT comparator count alone does not describe the implemented feature set. Data-value matching normally uses an address comparator together with a value comparator, so enabling it also allocates one or more address comparators. For Armv8-M and Armv8.1-M implementations, comparator capabilities can differ within the same DWT. Software must read each <code>DWT_FUNCTIONn</code> before allocating it.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Processor</th>
+<th style="text-align: left;">DWT variants</th>
+<th style="text-align: left;">Cycle counter</th>
+<th style="text-align: left;">Profiling counters</th>
+<th style="text-align: left;">Address and PC matching</th>
+<th style="text-align: left;">Data-value matching</th>
+<th style="text-align: left;">Range matching</th>
+<th style="text-align: left;">DWT trace and trigger features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Cortex-M0</td>
+<td style="text-align: left;"><code>0-2</code> comparators</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">Watchpoint and debug-event matching</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>DWT_MASKn</code></td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M0+</td>
+<td style="text-align: left;"><code>0-2</code> comparators</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">Watchpoint and debug-event matching</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>DWT_MASKn</code></td>
+<td style="text-align: left;">Optional MTB_DWT matches can drive the MTB <code>TSTART</code> and <code>TSTOP</code> integration inputs</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M1</td>
+<td style="text-align: left;"><em>Reduced</em> <code>1</code>; <em>full</em> <code>2</code> comparators</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">Watchpoint and debug-event matching</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><code>DWT_MASKn</code></td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M3</td>
+<td style="text-align: left;"><em>Reduced</em> <code>1</code>; <em>full</em> <code>4</code> comparators</td>
+<td style="text-align: left;"><code>DWT_CYCCNT</code></td>
+<td style="text-align: left;"><code>5</code> DWT counters</td>
+<td style="text-align: left;">Watchpoint, PC match, and data-address match</td>
+<td style="text-align: left;"><em>Reduced</em>: -; <em>full</em>: <code>COMP1</code> only, using address comparator references</td>
+<td style="text-align: left;"><code>DWT_MASKn</code></td>
+<td style="text-align: left;">PC, data-address, and data-value trace; cycle, exception, and event trace triggers</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M4</td>
+<td style="text-align: left;"><em>Reduced</em> <code>1</code>; <em>full</em> <code>4</code> comparators</td>
+<td style="text-align: left;"><code>DWT_CYCCNT</code></td>
+<td style="text-align: left;"><code>5</code> DWT counters</td>
+<td style="text-align: left;">Watchpoint, PC match, and data-address match</td>
+<td style="text-align: left;"><em>Reduced</em>: -; <em>full</em>: <code>COMP1</code> only, using address comparator references</td>
+<td style="text-align: left;"><code>DWT_MASKn</code></td>
+<td style="text-align: left;">PC, data-address, and data-value trace; cycle, exception, and event trace triggers</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M7</td>
+<td style="text-align: left;"><em>Reduced</em> <code>2</code>; <em>full</em> <code>4</code> comparators</td>
+<td style="text-align: left;"><code>DWT_CYCCNT</code></td>
+<td style="text-align: left;"><code>5</code> DWT counters</td>
+<td style="text-align: left;">All comparators: watchpoint, PC match, and data-address match; <code>COMP0</code>: cycle matching</td>
+<td style="text-align: left;"><em>Reduced</em> and <em>full</em>: <code>COMP1</code> only, using address comparator references</td>
+<td style="text-align: left;"><code>DWT_MASKn</code></td>
+<td style="text-align: left;">All implemented comparators support triggers and, when ITM/DWT trace is included, trace packets</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M23</td>
+<td style="text-align: left;"><em>Reduced</em> <code>2</code>; <em>full</em> <code>4</code> comparators</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">All comparators: watchpoint, instruction-address match, and data-address match</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><em>Reduced</em>: linked <code>COMP0-1</code>; <em>full</em>: linked <code>COMP0-1</code> or <code>COMP2-3</code></td>
+<td style="text-align: left;">Debug and trigger events; no cycle matching or DWT trace packets</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M33</td>
+<td style="text-align: left;"><em>Reduced</em> <code>2</code>; <em>full</em> <code>4</code> comparators</td>
+<td style="text-align: left;"><code>DWT_CYCCNT</code></td>
+<td style="text-align: left;"><code>5</code> DWT counters</td>
+<td style="text-align: left;">All comparators: watchpoint, instruction-address match, and data-address match; <code>COMP0</code>: cycle matching; <em>reduced</em> <code>COMP1</code>, <em>full</em> <code>COMP1</code> and <code>COMP3</code>: linked or limit matching</td>
+<td style="text-align: left;"><em>Reduced</em>: <code>COMP1</code>; <em>full</em>: <code>COMP1</code> and <code>COMP3</code></td>
+<td style="text-align: left;"><em>Reduced</em>: linked <code>COMP0-1</code>; <em>full</em>: linked <code>COMP0-1</code> or <code>COMP2-3</code></td>
+<td style="text-align: left;">All implemented comparators support triggers and, when ITM is included, trace packets</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M52</td>
+<td style="text-align: left;"><em>Reduced</em> <code>2</code>; <em>mid</em> <code>4</code>; <em>full</em> <code>8</code> comparators</td>
+<td style="text-align: left;"><code>DWT_CYCCNT</code></td>
+<td style="text-align: left;"><code>5</code> DWT counters</td>
+<td style="text-align: left;"><em>Reduced</em> <code>COMP0-1</code>, <em>mid</em> <code>COMP0-3</code>, <em>full</em> <code>COMP0-7</code>: instruction-address and data-address matching; <code>COMP0</code>: cycle matching; <em>reduced</em> <code>COMP1</code>, <em>mid</em> <code>COMP1</code> and <code>COMP3</code>, <em>full</em> <code>COMP1</code>, <code>COMP3</code>, <code>COMP5</code>, and <code>COMP7</code>: linking</td>
+<td style="text-align: left;"><em>Reduced</em>: <code>COMP1</code>; <em>mid</em> and <em>full</em>: <code>COMP1</code> and <code>COMP3</code></td>
+<td style="text-align: left;"><em>Reduced</em>: linked <code>COMP0-1</code>; <em>mid</em>: linked <code>COMP0-1</code> or <code>COMP2-3</code>; <em>full</em>: linked <code>COMP0-1</code>, <code>COMP2-3</code>, <code>COMP4-5</code>, or <code>COMP6-7</code></td>
+<td style="text-align: left;"><em>Reduced</em> <code>COMP0-1</code> and <em>mid</em> <code>COMP0-3</code>: watchpoints, triggers, and trace; <em>full</em> <code>COMP0-3</code>: watchpoints, triggers, and trace; <em>full</em> <code>COMP4-7</code>: watchpoints and triggers only</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M55</td>
+<td style="text-align: left;"><em>Reduced</em> <code>2</code>; <em>mid</em> <code>4</code>; <em>full</em> <code>8</code> comparators</td>
+<td style="text-align: left;"><code>DWT_CYCCNT</code></td>
+<td style="text-align: left;"><code>5</code> DWT counters</td>
+<td style="text-align: left;"><em>Reduced</em> <code>COMP0-1</code>, <em>mid</em> <code>COMP0-3</code>, <em>full</em> <code>COMP0-7</code>: instruction-address and data-address matching; <code>COMP0</code>: cycle matching; <em>reduced</em> <code>COMP1</code>, <em>mid</em> <code>COMP1</code> and <code>COMP3</code>, <em>full</em> <code>COMP1</code>, <code>COMP3</code>, <code>COMP5</code>, and <code>COMP7</code>: linking</td>
+<td style="text-align: left;"><em>Reduced</em>: <code>COMP1</code>; <em>mid</em> and <em>full</em>: <code>COMP1</code> and <code>COMP3</code></td>
+<td style="text-align: left;"><em>Reduced</em>: linked <code>COMP0-1</code>; <em>mid</em>: linked <code>COMP0-1</code> or <code>COMP2-3</code>; <em>full</em>: linked <code>COMP0-1</code>, <code>COMP2-3</code>, <code>COMP4-5</code>, or <code>COMP6-7</code></td>
+<td style="text-align: left;"><em>Reduced</em> <code>COMP0-1</code> and <em>mid</em> <code>COMP0-3</code>: watchpoints, triggers, and trace; <em>full</em> <code>COMP0-3</code>: watchpoints, triggers, and trace; <em>full</em> <code>COMP4-7</code>: watchpoints and triggers only</td>
+</tr>
+<tr>
+<td style="text-align: left;">Cortex-M85</td>
+<td style="text-align: left;"><em>Reduced</em> <code>4</code>; <em>full</em> <code>8</code> comparators</td>
+<td style="text-align: left;"><code>DWT_CYCCNT</code></td>
+<td style="text-align: left;"><code>5</code> DWT counters</td>
+<td style="text-align: left;"><em>Reduced</em> <code>COMP0-3</code>, <em>full</em> <code>COMP0-7</code>: instruction-address and data-address matching; <code>COMP0</code>: cycle matching; <em>reduced</em> <code>COMP1</code> and <code>COMP3</code>, <em>full</em> <code>COMP1</code>, <code>COMP3</code>, <code>COMP5</code>, and <code>COMP7</code>: linking</td>
+<td style="text-align: left;"><em>Reduced</em> and <em>full</em>: <code>COMP1</code> and <code>COMP3</code></td>
+<td style="text-align: left;"><em>Reduced</em>: linked <code>COMP0-1</code> or <code>COMP2-3</code>; <em>full</em>: linked <code>COMP0-1</code>, <code>COMP2-3</code>, <code>COMP4-5</code>, or <code>COMP6-7</code></td>
+<td style="text-align: left;"><em>Reduced</em> <code>COMP0-3</code>: watchpoints, triggers, and trace; <em>full</em> <code>COMP0-3</code>: watchpoints, triggers, and trace; <em>full</em> <code>COMP4-7</code>: watchpoints and triggers only</td>
+</tr>
+</tbody>
+</table>
+<p>The five DWT profiling counters are <code>DWT_CPICNT</code>, <code>DWT_EXCCNT</code>, <code>DWT_SLEEPCNT</code>, <code>DWT_LSUCNT</code>, and <code>DWT_FOLDCNT</code>. Their presence is reported by <code>DWT_CTRL.NOPRFCNT</code>.</p>
+<p>Here, data-value matching means comparing an observed load or store value. It does not by itself imply that the implementation can emit a data-value trace packet; that capability is listed separately in the final column.</p>
+<h3 id="synchronization_1">Synchronization</h3>
+<p>The ETM synchronization range <code>0</code>, <code>256</code>, ... , <code>1M</code> is not generally configurable on the listed Cortex-M processors.</p>
+<ul>
+<li>Cortex-M3, Cortex-M4, and Cortex-M23 ETMv3 implementations use a read-only <code>ETMSYNCFR</code> fixed at <code>1024</code> trace bytes.</li>
+<li>Cortex-M33, Cortex-M52, Cortex-M55, and Cortex-M85 use a read-only <code>TRCSYNCPR</code> fixed at <code>1024</code> trace bytes.</li>
+<li>Cortex-M7 instruction-only ETM uses a read-only <code>TRCSYNCPR</code> fixed at <code>1024</code> trace bytes.</li>
+<li>Cortex-M7 instruction-and-data ETM has a programmable <code>TRCSYNCPR</code>. The requested period must use an implemented power-of-two encoding.</li>
+</ul>
+<p>Among the listed Arm ETM implementations, an <code>ETM\&lt;period&gt;</code> override is therefore configurable only for the Cortex-M7 instruction-and-data ETM. For other implementations, the tool should accept a fixed or default setting and diagnose attempts to override it.</p>
+<p>The ETM synchronization unit is <strong>trace bytes</strong>, not processor cycles.</p>
+<h3 id="dwt-synchronization">DWT Synchronization</h3>
+<p>DWT synchronization is controlled through <code>DWT_CTRL.SYNCTAP</code>.</p>
+<ul>
+<li>Architecturally encoded periods are <code>16M</code>, <code>64M</code>, and <code>256M</code> processor cycles.</li>
+<li>All listed Cortex-M DWT implementations that support DWT trace provide a read/write <code>SYNCTAP</code> field.</li>
+<li>Processors or debug configurations marked as having no DWT trace cannot emit DWT synchronization packets and do not provide a functional <code>SYNCTAP</code> field.</li>
+<li><code>SYNCTAP</code> selects the synchronization period; synchronization packet generation is enabled or disabled through <code>ITM_TCR.SYNCENA</code>.</li>
+<li><code>DWT\0</code> should therefore disable DWT synchronization packets through <code>ITM_TCR.SYNCENA</code>, not attempt to encode zero in <code>SYNCTAP</code>.</li>
+</ul>
+<p>For the listed Cortex-M processors, the configuration generator can treat DWT trace support as implying a writable <code>SYNCTAP</code>. It must still discover whether DWT trace and the associated ITM are implemented and accessible.</p>
+<h3 id="pc-sampling">PC Sampling</h3>
+<p>DWT PC sampling uses two fields:</p>
+<ul>
+<li><code>CYCTAP</code> selects bit 6 or bit 10 of <code>CYCCNT</code>.</li>
+<li><code>POSTPRESET</code> provides a four-bit post-scaler reload value.</li>
+</ul>
+<p>The supported periods are the following discrete values:</p>
+<ul>
+<li><code>64 * (1..16)</code> processor cycles.</li>
+<li><code>1024 * (1..16)</code> processor cycles.</li>
+</ul>
+<p>PC sampling additionally requires:</p>
+<ul>
+<li>An implemented cycle counter, reported by <code>DWT_CTRL.NOCYCCNT == 0</code>.</li>
+<li>PC sampling support in the DWT implementation.</li>
+<li>An enabled cycle counter.</li>
+<li>A trace-capable DWT and ITM implementation.</li>
+</ul>
+<p>The schema should validate the discrete supported values rather than accept an arbitrary cycle count.</p>
+<h3 id="dwt-events">DWT Events</h3>
+<p>The DWT event selectors are not universally available.</p>
+<ul>
+<li><code>CYCCNT</code> requires an implemented cycle counter.</li>
+<li><code>CPICNT</code>, <code>EXCCNT</code>, <code>SLEEPCNT</code>, <code>LSUCNT</code>, and <code>FOLDCNT</code> require the DWT profiling counters.</li>
+<li><code>DWT_CTRL.NOPRFCNT</code> reports whether the profiling counters are absent.</li>
+<li>Newer processors can expose PMU events instead of, or in addition to, the legacy DWT profiling counters.</li>
+</ul>
+<p>The generator must discover event-counter presence rather than validate events only by processor name.</p>
+<h3 id="dwt-data-trace">DWT Data Trace</h3>
+<p>DWT comparator functions vary between architectures and implementations.</p>
+<ul>
+<li>Armv7-M DWT implementations generally require comparator pairing for data-value matching.</li>
+<li>Armv8-M adds linked comparator functions and compact match packets.</li>
+<li>The <code>match</code> output mode is Armv8-M-specific.</li>
+<li>The <code>PC+offset</code> output mode is Armv8-M-specific.</li>
+<li>Address range support, address masks, access sizes, data-value matching, linked comparators, and emitted packet types must be checked for each comparator through <code>DWT_FUNCTIONn</code>.</li>
+<li>Some comparator numbers can support fewer functions than other comparators in the same DWT.</li>
+</ul>
+<p>A requested range can require:</p>
+<ul>
+<li>One comparator using an address mask.</li>
+<li>Two linked comparators.</li>
+<li>Multiple comparators when the range is not naturally aligned.</li>
+</ul>
+<p>A value match can also require more than one comparator. Comparator allocation therefore depends on the DWT architecture, requested function, alignment, and range. The statement that a size greater than four bytes “may require two comparators” is not sufficient as a complete allocation rule.</p>
+<h3 id="instruction-trace-start-and-stop">Instruction Trace Start and Stop</h3>
+<p>The generic <code>start:</code> and <code>stop:</code> condition syntax cannot always map directly to every trace component.</p>
+<ul>
+<li>Cortex-M3, Cortex-M4, and Cortex-M23 ETMv3 implementations and Cortex-M7, Cortex-M33, Cortex-M52, Cortex-M55, and Cortex-M85 ETMv4 implementations use DWT or processor comparator inputs for stateful start/stop control. ETMv4 can additionally use resource selectors for event-based trace filtering; single-shot control is needed only when a transient comparator match must be latched.</li>
+<li>Cortex-M7 instruction-and-data ETM additionally provides local address comparators, data-value comparators, counters, and a sequencer.</li>
+<li>Cortex-M0+ MTB uses <code>TSTART</code> and <code>TSTOP</code> integration inputs. These can be driven by optional MTB_DWT comparators in an SoC implementation.</li>
+<li>Cortex-M23 and Cortex-M33 MTB implementations can use DWT comparator matches for start and stop control.</li>
+<li>Available start and stop conditions are constrained by DWT comparators shared with watchpoints and data trace.</li>
+</ul>
+<p>The requested <code>X</code>, <code>R</code>, <code>W</code>, <code>RW</code>, value-match, and range conditions are not supported by every ETM or MTB trigger path. The resolver should report when a condition is syntactically valid but cannot be represented by the selected component.</p>
+<h3 id="timestamps_1">Timestamps</h3>
+<p>ITM local timestamps, ETM timestamp packets, and ETM cycle-count timing are distinct facilities. ETM timestamp packets can carry values derived from a shared system or global timestamp source.</p>
+<ul>
+<li>ITM timestamp prescaler values <code>1</code>, <code>4</code>, <code>16</code>, and <code>64</code> are architectural.</li>
+<li>ITM timestamps require ITM and a functioning cycle counter.</li>
+<li>ETM timestamp packets correlate trace with the shared system timestamp domain, while ETM cycle counts report elapsed processor cycles within the instruction trace. The system timestamp generator and its distribution infrastructure are optional.</li>
+</ul>
+<h3 id="itm-channels">ITM Channels</h3>
+<p>A 32-bit <code>enable</code> mask is suitable for the architectural ITM stimulus ports.</p>
+<h3 id="pmu-events">PMU Events</h3>
+<p>PMU resources depend on the processor and selected debug implementation.</p>
+<ul>
+<li>PMU event counters are wider architectural counters, but PMU overflow trace monitors the lower eight bits of each counter.</li>
+</ul>
+<h3 id="recommended-documentation-and-schema-changes">Recommended Documentation and Schema Changes</h3>
+<ol>
+<li>Mark ETM synchronization as fixed for all listed processors except Cortex-M7 instruction-and-data ETM.</li>
+<li>Define whether an unsupported setting produces an error, warning, fixed-value notice, or nearest-supported-value adjustment.</li>
+</ol>
+<h3 id="related">Related</h3>
+<ul>
+<li><a href="https://developer.arm.com/documentation/ddi0553/bz/">v8-M Architecture Reference Manual</a><ul>
+<li>The Instrumentation Trace Macrocell (B14.1)</li>
+<li>The Data Watchpoint and Trace unit (B14.2)</li>
+<li>The Performance Monitors Extension (B15)</li>
+<li>ITM and DWT Packet Protocol Specification (F1)</li>
+</ul>
+</li>
+<li><a href="https://developer.arm.com/documentation/ddi0403/latest/">v7-M Architecture Reference Manual</a><ul>
+<li>The Instrumentation Trace Macrocell (C1.7)</li>
+<li>The Data Watchpoint and Trace unit (C1.8)</li>
+<li>Debug ITM and DWT Packet Protocol (D4)</li>
+</ul>
+</li>
+<li>
+<p><a href="https://developer.arm.com/documentation/ddi0419/e/?lang=en">v6-M Architecture Reference Manual</a></p>
+<ul>
+<li>The Data Watchpoint and Trace Unit (C1.7)</li>
+</ul>
+</li>
+<li>
+<p><a href="https://developer.arm.com/documentation/101051/0101/Performance-Monitoring-Unit-Extension">Cortex-M55 PMU</a></p>
+</li>
+<li><a href="https://developer.arm.com/documentation/101924/0101/Performance-Monitoring-Unit-Extension">Cortex-M85 PMU</a></li>
 </ul>
               
             </div>
