@@ -1275,9 +1275,9 @@ This node contains configuration information for how [debug sequences](https://o
 
 `debug-sequences-conf:`              |              | Content
 :------------------------------------|--------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `traceSetup:`     |   Optional   | Configure how to use trace sequences. Can be `full` or `legacy` (default: `legacy`).
+&nbsp;&nbsp;&nbsp; `trace-setup:`     |   Optional   | Configure how to use trace sequences. Can be `full` or `legacy` (default: `legacy`).
 
-Value `full` for `traceSetup:` informs the debugger that all trace component setup is done by the trace sequences. Opposed to that, the `legacy` mode expected debuggers to program the CoreSight trace components as per built-in support knowledge. Going forward, `full` is the preferred mode to allow new CoreSight component support without debug tool updates.
+Value `full` for `trace-setup:` informs the debugger that all trace component setup is done by the trace sequences. Opposed to that, the `legacy` mode expected debuggers to program the CoreSight trace components as per built-in support knowledge. Going forward, `full` is the preferred mode to allow new CoreSight component support without debug tool updates.
 
 ```yml
 debug-sequences:
@@ -1285,7 +1285,7 @@ debug-sequences:
        :
 
 debug-sequences-conf:
-  traceSetup: full
+  trace-setup: full
 ```
 
 
