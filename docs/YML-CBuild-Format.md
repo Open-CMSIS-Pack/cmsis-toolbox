@@ -839,6 +839,7 @@ cbuild-run:
       type: svd
   output:
     - file: out/CubeMX/MyBoard_ROM/Debug/CubeMX.axf
+      project: CubeMX
       type: elf
 
   system-resources:
@@ -892,6 +893,7 @@ The `output:` node also contains other required files that are added with [`imag
 `output:`                                                 |             | Content
 :---------------------------------------------------------|-------------|:------------------------------------
 `- file:`                                                 |**Required** | Specifies the file name.
+&nbsp;&nbsp;&nbsp; `project:`                             |  Optional   | Project associated with the image file.
 &nbsp;&nbsp;&nbsp; [`type:`](YML-Input-Format.md#type)    |**Required** | Specifies the file type.
 &nbsp;&nbsp;&nbsp; `info:`                                |  Optional   | Brief description of the file.
 &nbsp;&nbsp;&nbsp; [`load:`](YML-Input-Format.md#load)    |**Required** | Load mode of the image file for programmers and debug tools.
