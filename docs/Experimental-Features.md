@@ -141,7 +141,7 @@ Example: the [cmsis-to-zephyr-concept `ml_inference` example](https://github.com
 
 ## Trace
 
-Trace captures target execution data through SWO or trace port and from sources such as ETB, MTB, and Event Recorder. Trace is obtained with these steps:
+Trace captures target execution data through stream channels is obtained with these steps:
 
 1. Configure trace communication (how trace leaves the MCU) with the `target-set:` in `*.csolution.yml` (and optional settings in `*.dbgconf`).
 2. Configure trace generation (what the MCU produces: ITM, DWT, etc.) with the `*.ctrace.yml` file.
@@ -153,6 +153,16 @@ This section uses `<solution-set>` as the combined name of the `solution`, `targ
 !!! Note
     - Trace does not include SEGGER RTT, SystemView, or STDIO UART output. These features use separate data output paths.
 
+### Trace Stream Channels
+
+The trace stream channels are configured using the [`trace:`](pyOCD-Debugger.md#trace) node in the `*.csolution.yml` project file. The following trace stream `<channels>` may be used:
+
+`<channel>`   | Description
+:-------------|:------------------------
+SWO           | Serial-Wire Output: 1-pin interface that sends trace information using [UART](pyOCD-Debugger.md#swo-uart) or Manchester mode (tbd).
+TB            | [Embedded Trace Buffer or Micro Trace Buffer](pyOCD-Debugger.md#trace-buffer): that stores trace information in memory. 
+ER            | Event Recorder: uses code annotations that store program events in memory.
+
 ### Directory and File Structure
 
 Trace-related files are stored relative to the directory that contains the `*.csolution.yml` file.
@@ -162,7 +172,7 @@ Directory or File                      | Created by                | Description
 `.`                                    | User                      | Contains the `*.csolution.yml` project file.
 `.cmsis/<solution-set>.ctrace.yml`     | CMSIS-Debugger            | User trace intent and solution-set specific trace capture configuration.
 `.trace/<solution-set>.ctrace-run.yml` | [pyTS](#pyts-utility)     | Generated trace run information, including resolved symbols and register values.
-`.trace/<solution-set>.<channel>.raw`  | pyOCD                     | Raw trace data files, for example `.SWO`, `MTB`, or `ER`.
+`.trace/<solution-set>.<channel>.raw`  | pyOCD                     | Raw trace data files, specific to a `<channel>` (`SWO`, `ETM`, `MTB`, or `ER`).
 `.trace/<solution-set>.<channel>.csv`  | [ctrace](#ctrace-utility) | CSV files that represent raw trace data files.
 `.trace/<solution-set>.ctf/`           | [ctrace](#ctrace-utility) | Directory for CTF files such as `metadata`, `stream_0`, and `stream_1`.
 
@@ -170,7 +180,7 @@ The file `.cmsis/<solution-set>.ctrace.yml` configures the trace generation. It 
 
 The [`pyTS`](#pyts-utility) utility resolves symbol-based settings in `*.ctrace.yml` against the ELF/DWARF information of the active `<solution-set>` and generates the register setup for the hardware configuration. The output is the `.trace/<solution-set>.ctrace-run.yml` which is used by the debugger for register setup in hardware. During trace analysis the information of this file connects the raw trace data back to the `*.ctrace.yml` configuration.
 
-Raw trace streams are stored as binary files, for example `.trace/<solution-set>.SWO.raw`. The `ctrace` utility converts raw trace data files into [CSV](#csv-format) and [CTF](#ctf-format) for viewers and analysis tools.
+Raw trace streams are stored as binary files, for example `.trace/<solution-set>.SWO.raw`. The [`ctrace`](#ctrace-utility) utility converts raw trace data files into [CSV](#csv-format) and [CTF](#ctf-format) for viewers and analysis tools.
 
 ### Name Conventions
 
@@ -359,7 +369,6 @@ The `events:` node enables DWT or PMU event trace for all processors or for a sp
 `- event:`                            |**Required** | Event selector.
 
 Supported DWT event selectors include `CYCCNT`, `CPICNT`, `EXCCNT`, `SLEEPCNT`, `LSUCNT`, and `FOLDCNT`.
-`PMU` events may be added when supported by the target. They are emitted when one or more PMU counters with index 0..7 have an 8-bit overflow.
 
 **Example:**
 
@@ -484,7 +493,7 @@ ctrace-run:
   generated-by: pyTS v0.0
   ctrace-refs:
   - ctrace-ref: core0/itm
-    pname: <core0>
+    pname: core0
     type: itm            # packet types
     symbol-file: <symbol file used>
     symbol-address: address of symbol
@@ -493,7 +502,6 @@ ctrace-run:
     regs:
       - name:  ITM_TER0
         value: 0xFFFFFFFF
-#       mask
       - name:  
         value:
 
@@ -509,6 +517,7 @@ ctrace-run:
     regs:
       - name: DWT_COMP0
         value: 1
+        mask:  0xFF
       - name: DWT_COMP1
         value: 2
 ```
@@ -544,19 +553,52 @@ Subsequent releases may extend this initial solution to:
 
 ### Remaining Design Questions
 
+ToDo: align with Jens
+
 - How to make implemented trace features known (SoC and CPU)?
 - Level of built-in CoreSight knowledge for source configurations.
+    - Suggest that the table below is enough.
+  
 - Usage with sequences and user interactions (interactive IDE mode).
+     - IMHO it is defined already.
+
 - Cross-trigger functionality will be represented later (potentially in `*.ctrace.yml`)
+
 - "Trace and Live View" will be renamed to "Target Monitor" with the sub-sections "Live Watch" and "Trace"
-    - How should trace configuration and captured trace information be exposed in the user interface?
-- How are PMU events configured (what is captured with the PMU)?
+    - How should trace configuration and captured trace information be exposed in the user interface? Done
+    - IMHO keep as is with name "Trace and Live View"
 - Complex trace halt conditions
+
+- PMU is a different unit that should be not intermixed with trace. The setup may however use the *.ctrace.yml file, this will require another iteration.
+    - See https://github.com/Open-CMSIS-Pack/vscode-cmsis-debugger/issues/1046
 
 ### Out-of-Scope
 
 - SEGGER RTT, SystemView, and STDIO UART output are not part of trace capture and use separate output paths.
 - ITM channel 0 `printf` output should not be routed to trace analysis components. It should be shown in an output window or debug console.
+
+## Configure Trace Generation
+
+The file [`.cmsis/<solution-set>.ctrace.yml`](#file-structure-of-ctraceyml) is the user-facing configuration file for the trace generation. The CMSIS-Debugger implements a graphical user interface that is shown below.  Each processor has a separate configuration section.
+
+![Trace components and data flow](./images/Trace-Options.png "components and data flow")
+
+The available options depend on the Cortex-M processor and on the selected [trace stream channel](#trace-stream-channels) that is used to obtain trace. The following table shows the available options.
+
+Option                 | M0 | M0+, M23 | M3, M4, M7, M33 | M52, M55 | M85
+:----------------------|:--:|:--------:|:---------------:|:--------:|:------:
+Timestamps             | -  | -        | yes             | yes      | yes
+Exceptions             | -  | -        | yes             | yes      | yes
+Event Counters         | -  | -        | yes             | yes      | no (uses PMU)
+Instrumentation Trace  | -  | -        | yes             | yes      | yes
+DWT Data Trace         | -  | -        | 4 comperators   | 8 comperators | 8 comperators
+Instruction Trace      | -  | with TB  | with TB         | with TB  | with TB
+PC Sampling            | -  | -        | yes             | yes      | yes
+Time Synchronisation   | -  | -        | -               | yes      | yes
+Stream Synchronisation | -  | -        | -               | yes      | yes
+
+!!! Note
+    The available Event Counters depend on the Cortex-M processor
 
 ## `pyTS` Utility
 
@@ -610,6 +652,8 @@ The `--type` option is applied to the decoded packet type for both CSV and CTF f
 
 Accepted packet types are: `itm`, `dwt`, `event`, `pmu`, `exception`, `pcsample`, `global_ts`, `overflow`, `error`.
 
+ToDo: is pmu a packet type?
+
 **Example:**
 
 Output only the packet types DWT comparator and event counter. 
@@ -639,7 +683,7 @@ The following table contains details about the packet type. Information is empty
 :-----------|:------------------------------------
 `itm`       | `source` = ITM channel.
 `dwt`       | `source` = DWT comparator, `value` = data value, `offset` = data address offset, `pc` = program counter.
-`events`    | Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.
+`event`     | Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.
 `pmu`       | Reserved for PMU counter rows. Detailed semantics will be specified in a future version.
 `exception` | `source` = exception number. `value` = exception state transition.
 `pcsample`  | `pc` = program counter.
@@ -858,7 +902,7 @@ PMU resources depend on the processor and selected debug implementation.
 
 ### Related
 
-- [v8-M Architecture Reference Manual](https://developer.arm.com/documentation/ddi0553/bz/)
+- [v8-M Architecture Reference Manual](https://developer.arm.com/documentation/ddi0553/latest/)
     - The Instrumentation Trace Macrocell (B14.1)
     - The Data Watchpoint and Trace unit (B14.2)
     - The Performance Monitors Extension (B15)
@@ -867,7 +911,7 @@ PMU resources depend on the processor and selected debug implementation.
     - The Instrumentation Trace Macrocell (C1.7)
     - The Data Watchpoint and Trace unit (C1.8)
     - Debug ITM and DWT Packet Protocol (D4)
-- [v6-M Architecture Reference Manual](https://developer.arm.com/documentation/ddi0419/e/?lang=en)
+- [v6-M Architecture Reference Manual](https://developer.arm.com/documentation/ddi0419/latest/)
     - The Data Watchpoint and Trace Unit (C1.7)
 
 - [Cortex-M55 PMU](https://developer.arm.com/documentation/101051/0101/Performance-Monitoring-Unit-Extension)
