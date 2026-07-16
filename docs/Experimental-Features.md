@@ -591,7 +591,7 @@ Timestamps             | -  | -        | yes             | yes      | yes
 Exceptions             | -  | -        | yes             | yes      | yes
 Event Counters         | -  | -        | yes             | yes      | no (uses PMU)
 Instrumentation Trace  | -  | -        | yes             | yes      | yes
-DWT Data Trace         | -  | -        | 4 comperators   | 8 comperators | 8 comperators
+DWT Data Trace         | -  | -        | 4 comparators   | 8 comparators | 8 comparators
 Instruction Trace      | -  | with TB  | with TB         | with TB  | with TB
 PC Sampling            | -  | -        | yes             | yes      | yes
 Time Synchronisation   | -  | -        | -               | yes      | yes
