@@ -17,26 +17,29 @@ Other manual sections describe how to configure debuggers:
 
 The section [Debugger Configuration - J-Link Server](YML-Input-Format.md#j-link-server) contains the J-Link configuration for typical systems.
 
-### `telnet:`
+### `stdio:`
 
-J-Link supports a Telnet service that connects to character I/O functions. Character I/O is supported via Semihosting (or SEGGER RTT channel 0). Currently only semihosting is configured for the primary core.
+J-Link supports a standard I/O service that connects to character I/O functions. Character I/O is supported via Semihosting (or SEGGER RTT channel 0). Currently only semihosting is configured for the primary core.
 
-`telnet:`                     |              | Description
+`stdio:`                      |              | Description
 :-----------------------------|:-------------|:------------------------------------
 `- mode:`                     | **Required** | Redirect output: `off` (default), `server`, `console`, `monitor`.
 &nbsp;&nbsp;&nbsp; `pname:`   |   Optional   | Identifies the processor (not required for single core system).
 &nbsp;&nbsp;&nbsp; `port:`    |   Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
 
-Telnet Mode   | Description
-:-------------|:--------------------------------------
-`server`      | Serial I/O to Telnet server port
-`console`     | Serial output to console (Debug console in VS Code).
-`monitor`     | Serial I/O via TCP/IP port to VS Code Serial Monitor.
-`off`         | Serial I/O disabled.
+Standard I/O Mode | Description
+:-----------------|:--------------------------------------
+`server`          | Serial I/O to Telnet server port
+`console`         | Serial output to console (Debug console in VS Code).
+`monitor`         | Serial I/O via TCP/IP port to VS Code Serial Monitor.
+`off`             | Serial I/O disabled.
 
 !!! Note
-    - The Telnet service is always enabled for the J-Link GDB Server. The mode `off` turns off the data source (semihosting, SEGGER RTT).
-    - When no `telnet` node is added then Serial I/O to all processors is set to mode `off`.
+    - The standard I/O service is always enabled for the J-Link GDB Server. The mode `off` turns off the data source (semihosting, SEGGER RTT).
+    - When no `stdio` node is added then Serial I/O to all processors is set to mode `off`.
+
+!!! Info
+    - Use `stdio:` for new configurations. The legacy `telnet:` node remains supported as an alias for backward compatibility.
 
 ### `connect:`
 

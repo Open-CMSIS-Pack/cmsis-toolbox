@@ -34,26 +34,26 @@ CMSIS-DAP based Debug Adapters implement [debug access sequences](https://open-c
 !!! Note
     - When no `gdbserver` node is applied, the default mechanism of incrementing port number starting with `3333` is used.
 
-### `telnet:`
+### `stdio:`
 
-pyOCD integrates a Telnet service for character I/O functions via Semihosting or [SEGGER RTT](#rtt). Each processor that runs an independent application can be controlled individually.
+pyOCD integrates a standard I/O service for character I/O functions via Semihosting or [SEGGER RTT](#rtt). Each processor that runs an independent application can be controlled individually.
 
-![Telnet Modes](./images/telnet.png "Telnet modes")
+![Standard I/O Modes](./images/stdio.png "Standard I/O modes")
 
-The `telnet:` node configures:
+The `stdio:` node configures:
 
-- Telnet port for connecting remote tools, for example the [Serial Monitor VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
-- Redirect the output to a `file`, `console`, `server`, or `monitor`. The setting `monitor` connects a telnet `port` to the Serial Monitor in VS Code. The default output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management) and uses the extension `<pname>.txt`, format: `<solution-name>+<target-type>.<pname>.out`
+- Server port for connecting remote tools, for example the [Serial Monitor VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
+- Redirect the output to a `file`, `console`, `server`, or `monitor`. The setting `monitor` connects a Telnet server `port` to the Serial Monitor in VS Code. The default output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management) and uses the extension `<pname>.out`, format: `<solution-name>+<target-type>.<pname>.out`
 
-`telnet:`                      |              | Description
+`stdio:`                       |              | Description
 :------------------------------|:-------------|:------------------------------------
 `- mode:`                      | **Required** | Redirect output: `off` (default), `server`, `file`, `console`, `monitor`.
 &nbsp;&nbsp;&nbsp; `pname:`    |   Optional   | Identifies the processor (not required for single core system).
 &nbsp;&nbsp;&nbsp; `port:`     |   Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
-&nbsp;&nbsp;&nbsp; `file-in:`  |   Optional   | Explicit path and name of the telnet input file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.in`
-&nbsp;&nbsp;&nbsp; `file-out:` |   Optional   | Explicit path and name of the telnet output file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.out`
+&nbsp;&nbsp;&nbsp; `file-in:`  |   Optional   | Explicit path and name of the input file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.in`
+&nbsp;&nbsp;&nbsp; `file-out:` |   Optional   | Explicit path and name of the output file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.out`
 
-Telnet Mode                    | Description
+Standard I/O Mode              | Description
 :------------------------------|:--------------------------------------
 `server`                       | Serial I/O to Telnet server port.
 `file`                         | Serial I/O to text files. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.{in \| out}`
@@ -62,48 +62,51 @@ Telnet Mode                    | Description
 `off`                          | Serial I/O disabled.
 
 !!! Note
-    - When no `telnet` node is applied, Serial I/O to all processors is disabled.
+    - When no `stdio` node is applied, Serial I/O to all processors is disabled.
+
+!!! Info
+    - Use `stdio:` for new configurations. The legacy `telnet:` node remains supported as an alias for backward compatibility.
 
 The [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension for VS Code simplifies the configuration and the examples below show the setup in a `*.csolution.yml` file.
 
-![Telnet Configuration Dialog](./images/telnet-dialog.png "Telnet modes")
+![Standard I/O Configuration Dialog](./images/telnet-dialog.png "Standard I/O modes")
 
 **Examples:**
 
-Enable Telnet service for a single core system.
+Enable standard I/O service for a single core system.
 
 ```yml
 debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
-  telnet:
+  stdio:
     - mode: monitor          # Output via TCP/IP port to VS Code Serial Monitor
 ```
 
-Enable Telnet service for a single core system.
+Enable standard I/O service for a single core system.
 
 ```yml
 debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
-  telnet:
+  stdio:
     - mode: server
 ```
 
-Enable Telnet service for a multi core system.
+Enable standard I/O service for a multi core system.
 
 ```yml
 debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
-  telnet:
-    - pname: Core0          # enable Telnet service with default settings
+  stdio:
+    - pname: Core0          # enable standard I/O service with default settings
       mode: server
       port: 4444
     - pname: Core1
-      mode: console         # route Telnet input/output to console 
+      mode: console         # route standard I/O to console
     - pname: Core2
-      mode: file            # route Telnet input/output to files
+      mode: file            # route standard I/O to files
       file-in: Blinky+MyTarget.Core2.in
       file-out: Blinky+MyTarget.Core2.out
 ```
@@ -187,7 +190,7 @@ debugger:
 
 [RTT](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) is a software component that implements real-time transfer channels from the target system to the pyOCD Debugger for multiple processors.
 
-![Telnet Modes](./images/rtt.png "Telnet modes")
+![Standard I/O Modes](./images/rtt.png "Standard I/O modes")
 
 The `rtt:` node configures the RTT features and the RTT channel usage. At least one RTT channel must be configured for each processor to enable the RTT capturing in pyOCD.
 
@@ -232,14 +235,14 @@ The `channel:` node selects the RTT channel mode.
 
 Channel Mode                  | Description
 :-----------------------------|:------------------------------------
-`stdio`                       | Connects channel to standard input/output service that is configured via the [`telnet:`](#telnet) node.
+`stdio`                       | Connects channel to standard I/O service that is configured via the [`stdio:`](#stdio) node.
 `server`                      | Exposes channel over a TCP server port.
 `systemview`                  | Saves channel data to *.SVDat file for [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/) tool.<br/>Default file: `./out/<solution-name>+<target-type>.SVDat`; see [`systemview:`](#systemview) node.
 `systemview-server`           | Streams live data to [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/) tool over a "IP Recorder host" TCP port. Refer to the SEGGER SystemView user guide, IP Recorder.
 
 **Examples:**
 
-Enable RTT with STDIO on channel 0 and configure explicit control block:
+Enable RTT with standard I/O on channel 0 and configure explicit control block:
 
 ```yml
 debugger:
@@ -255,7 +258,7 @@ debugger:
           mode: stdio
 ```
 
-Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port `4444` and channel 3 to a Telnet Server port `4445`:
+Enable RTT with standard I/O on channel 0 and map RTT channel 2 to a Telnet Server port `4444` and channel 3 to a Telnet Server port `4445`:
 
 ```yml
 debugger:
@@ -832,7 +835,7 @@ and pyOCD Debugger [Extended Options](#extended-options).
         pname: M55_HP
       - port: 3334
         pname: M55_HE
-    telnet:
+    stdio:
       - mode: console
         pname: M55_HE
         port: 4445

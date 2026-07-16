@@ -453,7 +453,7 @@ solution:
             trace:
               - swo-uart:               # Trace mode is SWO UART
                 input-clock: 120000000  # Trace clock = 120 MHz
-            telnet:                     # Enable telnet with defaults
+            stdio:                      # Enable standard I/O with defaults
 ```
  
 **Example `debug-adapters.yml`**
@@ -510,16 +510,33 @@ debug-adapters:
                 value: TP4
                 description: Connection via 4-bit Trace port
             default: UART
-      - section: Telnet
-        description: Telnet server configuration   # hover over text
-        yml-node: telnet
-        select: off
-        pname-option:
-          - title: Port
-            yml-node: port
-            type: inumber
-            range: [1, 100000]
-            default: 4444
+      - section: Standard I/O
+        description: Serial input/output via semihosting or RTT channel 0
+        yml-node: stdio
+        select: on
+        pname-options:
+        options:
+          - name: Standard I/O Mode
+            description: Configure Serial I/O redirect
+            yml-node: mode
+            type: enum
+            default: monitor
+            values:
+              - name: Telnet Server
+                value: server
+                description:  Serial I/O to Telnet server port
+              - name: Debug Console
+                value: console
+                description:  Serial output to console (Debug console in VS Code)
+              - name: Serial Monitor
+                value: monitor
+                description:  Serial I/O via TCP/IP port to VS Code Serial Monitor
+              - name: Text File
+                value: file
+                description:  Serial output to file (default ./out/<solution-name>+<target-type>.<pname>.out)
+              - name: Disabled
+                value: off
+                description:  Serial I/O disabled
  
   - name: "J-Link Server"
       - section: Debug Interface

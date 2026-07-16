@@ -2533,7 +2533,7 @@ debugger:                                                                  |    
 &nbsp;&nbsp;&nbsp; `dbgconf:`                                              |   Optional   | [Configuration file](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/dbg_debug_sqns.html#dbg_sqns_dbgconf) for device settings such as trace pins and option bytes.
 &nbsp;&nbsp;&nbsp; `start-pname:`                                          |   Optional   | Debugger connects at start to this processor.
 &nbsp;&nbsp;&nbsp; [`gdbserver:`](pyOCD-Debugger.md#gdbserver)             |   Optional   | Extended Option: GDB Server configuration.
-&nbsp;&nbsp;&nbsp; [`telnet:`](pyOCD-Debugger.md#telnet)                   |   Optional   | Extended Option: Telnet service configuration.
+&nbsp;&nbsp;&nbsp; [`stdio:`](pyOCD-Debugger.md#stdio)                     |   Optional   | Extended Option: Standard I/O service configuration.
 &nbsp;&nbsp;&nbsp; [`connect:`](pyOCD-Debugger.md#connect)                 |   Optional   | Extended Option: Connect mode to hardware.
 &nbsp;&nbsp;&nbsp; [`reset:`](pyOCD-Debugger.md#reset)                     |   Optional   | Extended Option: Reset type configuration for various cores.
 &nbsp;&nbsp;&nbsp; [`load-setup:`](pyOCD-Debugger.md#load-setup)           |   Optional   | Extended Option: Reset type and Halt configuration for Load command.
@@ -2656,7 +2656,7 @@ debugger:                                                  |              | Desc
 &nbsp;&nbsp;&nbsp; `name:`                                 | **Required** | Identifies the debug adapter with `J-Link Server`.
 &nbsp;&nbsp;&nbsp; `clock:`                                |   Optional   | Debug clock speed in Hz.
 &nbsp;&nbsp;&nbsp; `protocol:`                             |   Optional   | Debug protocol (jtag or swd).
-&nbsp;&nbsp;&nbsp; [`telnet:`](JLink-Debugger.md#telnet)   |   Optional   | Extended Option: Telnet service configuration.
+&nbsp;&nbsp;&nbsp; [`stdio:`](JLink-Debugger.md#stdio)     |   Optional   | Extended Option: Standard I/O service configuration.
 &nbsp;&nbsp;&nbsp; [`trace:`](JLink-Debugger.md#trace)     |   Optional   | Extended Option: Trace configuration.
 &nbsp;&nbsp;&nbsp; [`connect:`](JLink-Debugger.md#connect) |   Optional   | Extended Option: Connect mode to hardware.
 &nbsp;&nbsp;&nbsp; [`reset:`](JLink-Debugger.md#reset)     |   Optional   | Extended Option: Reset type configuration for various cores.

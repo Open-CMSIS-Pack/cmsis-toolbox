@@ -1049,7 +1049,7 @@ This node contains connection information for a debugger with initial settings c
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
 &nbsp;&nbsp;&nbsp; `start-pname:`                         |  Optional   | Debugger connects at start to this processor.
 &nbsp;&nbsp;&nbsp; `gdbserver:`                           |  Optional   | Information for GDB server option of debugger.
-&nbsp;&nbsp;&nbsp; `telnet:`                              |  Optional   | Telnet service configuration.
+&nbsp;&nbsp;&nbsp; `stdio:`                               |  Optional   | Standard I/O service configuration.
 &nbsp;&nbsp;&nbsp; `connect:`                             |  Optional   | Connect mode to hardware.
 &nbsp;&nbsp;&nbsp; `reset:`                               |  Optional   | Reset type configuration for various cores.
 &nbsp;&nbsp;&nbsp; `load-setup:`                          |  Optional   | Reset type and Halt configuration for Load command.
@@ -1061,6 +1061,7 @@ This node contains connection information for a debugger with initial settings c
 !!! Note
     - `protocol:` and `clock:` are required by pyOCD but optional for other debug adapters. The file [`./etc/debug-adapters.yml`](build-operation.md#debug-adapter-integration) allows to specify default values for required options.
     - `start-pname:` is mandatory for multi-processor targets. If `start-pname:` is not configured using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file, the `pname:` of the first `*.cproject.yml` file is used.
+    - `telnet:` is a legacy alias for `stdio:`. New configurations should use `stdio:`.
 
 !!! Note
     Device-specific connection and trace settings are usually based on the device [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) element in the PDSC file. This element can also specify a `*.dbgconf` file to enable modifications of these settings in a solution.  
