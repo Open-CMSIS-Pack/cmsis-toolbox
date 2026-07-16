@@ -1710,6 +1710,7 @@
       type: svd
   output:
     - file: out/CubeMX/MyBoard_ROM/Debug/CubeMX.axf
+      project: CubeMX
       type: elf
 
   system-resources:
@@ -1848,6 +1849,11 @@ The <code>output:</code> node also contains other required files that are added 
 <td style="text-align: left;"><code>- file:</code></td>
 <td><strong>Required</strong></td>
 <td style="text-align: left;">Specifies the file name.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>project:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Project associated with the image file.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../YML-Input-Format/#type"><code>type:</code></a></td>
@@ -2596,19 +2602,19 @@ These initial values are overwritten by explicit settings in the <code>*.dbgconf
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>traceSetup:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>trace-setup:</code></td>
 <td>Optional</td>
 <td style="text-align: left;">Configure how to use trace sequences. Can be <code>full</code> or <code>legacy</code> (default: <code>legacy</code>).</td>
 </tr>
 </tbody>
 </table>
-<p>Value <code>full</code> for <code>traceSetup:</code> informs the debugger that all trace component setup is done by the trace sequences. Opposed to that, the <code>legacy</code> mode expected debuggers to program the CoreSight trace components as per built-in support knowledge. Going forward, <code>full</code> is the preferred mode to allow new CoreSight component support without debug tool updates.</p>
+<p>Value <code>full</code> for <code>trace-setup:</code> informs the debugger that all trace component setup is done by the trace sequences. Opposed to that, the <code>legacy</code> mode expected debuggers to program the CoreSight trace components as per built-in support knowledge. Going forward, <code>full</code> is the preferred mode to allow new CoreSight component support without debug tool updates.</p>
 <pre><code class="language-yml">debug-sequences:
   - name: TraceStart
        :
 
 debug-sequences-conf:
-  traceSetup: full
+  trace-setup: full
 </code></pre>
 <h4 id="programming"><code>programming:</code></h4>
 <p>The <code>programming:</code> node collects the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/flashAlgorithm.html">flash algorithms</a> of device memory (specified in DFP) and board memory (specified in BSP), and <a href="../YML-Input-Format/#memory"><code>memory:</code></a> specified the <code>*.csolution.yml</code> file.</p>
