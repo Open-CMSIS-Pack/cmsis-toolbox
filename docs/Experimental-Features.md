@@ -172,7 +172,7 @@ Directory or File                      | Created by                | Description
 `.`                                    | User                      | Contains the `*.csolution.yml` project file.
 `.cmsis/<solution-set>.ctrace.yml`     | CMSIS-Debugger            | User trace intent and solution-set specific trace capture configuration.
 `.trace/<solution-set>.ctrace-run.yml` | [pyTS](#pyts-utility)     | Generated trace run information, including resolved symbols and register values.
-`.trace/<solution-set>.<channel>.raw`  | pyOCD                     | Raw trace data files, specific to a `<channel>` (`SWO`, `ETB`, `MTB`, or `ER`).
+`.trace/<solution-set>.<channel>.raw`  | pyOCD                     | Raw trace data files, specific to a `<channel>` (`SWO`, `TB`, or `ER`).
 `.trace/<solution-set>.<channel>.csv`  | [ctrace](#ctrace-utility) | CSV files that represent raw trace data files.
 `.trace/<solution-set>.ctf/`           | [ctrace](#ctrace-utility) | Directory for CTF files such as `metadata`, `stream_0`, and `stream_1`.
 
@@ -536,11 +536,6 @@ Trace Component | Base Address | Description
 The `ctrace-ref:` node references the trace generation configuration in the file `*.ctrace.yml` and contains register values that represent the setup.
 A single-core system has no `pname:` value; a multi-processor always includes a `pname:` value in the `ctrace-ref:` node.
 
-!!! Note
-    - Entries in `*.ctrace.yml` without processor scope are expanded to each processor that supports the requested trace feature.
-
-ToDo Jens: what the system wide settings? How are they represented? What trace component is configured with such settings?
-
 ### Initial Implementation
 
 The initial implementation focuses on pyOCD with SWO UART and interactive operation in CMSIS-Debugger.
@@ -553,24 +548,8 @@ Subsequent releases may extend this initial solution to:
 
 ### Remaining Design Questions
 
-ToDo: align with Jens
-
-- How to make implemented trace features known (SoC and CPU)?
-- Level of built-in CoreSight knowledge for source configurations.
-    - Suggest that the table below is enough.
-  
-- Usage with sequences and user interactions (interactive IDE mode).
-     - IMHO it is defined already.
-
 - Cross-trigger functionality will be represented later (potentially in `*.ctrace.yml`)
-
-- "Trace and Live View" will be renamed to "Target Monitor" with the sub-sections "Live Watch" and "Trace"
-    - How should trace configuration and captured trace information be exposed in the user interface? Done
-    - IMHO keep as is with name "Trace and Live View"
-- Complex trace halt conditions
-
-- PMU is a different unit that should be not intermixed with trace. The setup may however use the *.ctrace.yml file, this will require another iteration.
-    - See https://github.com/Open-CMSIS-Pack/vscode-cmsis-debugger/issues/1046
+- What the system wide settings? How are they represented? What trace component is configured with such settings?
 
 ### Out-of-Scope
 
@@ -589,16 +568,19 @@ Option                 | M0 | M0+, M23 | M3, M4, M7, M33 | M52, M55 | M85
 :----------------------|:--:|:--------:|:---------------:|:--------:|:------:
 Timestamps             | -  | -        | yes             | yes      | yes
 Exceptions             | -  | -        | yes             | yes      | yes
-Event Counters         | -  | -        | yes             | yes      | no (uses PMU)
+Event Counters         | -  | -        | yes             | yes      | yes
+PMU Event              | -  | -        | no              | yes      | yes
 Instrumentation Trace  | -  | -        | yes             | yes      | yes
 DWT Data Trace         | -  | -        | 4 comparators   | 8 comparators | 8 comparators
 Instruction Trace      | -  | with TB  | with TB         | with TB  | with TB
+Start, Stop, Halt      | -  | 2 comparators | 4 comparators | 8 comparators | 8 comparators
 PC Sampling            | -  | -        | yes             | yes      | yes
-Time Synchronisation   | -  | -        | -               | yes      | yes
-Stream Synchronisation | -  | -        | -               | yes      | yes
+Time Synchronisation   | -  | -        | yes             | yes      | yes
+Stream Synchronisation | -  | -        | yes             | yes      | yes
 
 !!! Note
-    The available Event Counters depend on the Cortex-M processor
+    The available Event Counters depend on the Cortex-M processor.
+    M52, M55, M85 use the first 4 DWT comparators for data trace.
 
 ## `pyTS` Utility
 
@@ -651,8 +633,6 @@ CSV and CTF output files are written to the `<trace-dir>` as explained under [di
 The `--type` option is applied to the decoded packet type for both CSV and CTF files. Only the specified packet types are contained in the generated files.
 
 Accepted packet types are: `itm`, `dwt`, `event`, `pmu`, `exception`, `pcsample`, `global_ts`, `overflow`, `error`.
-
-ToDo: is pmu a packet type?
 
 **Example:**
 
