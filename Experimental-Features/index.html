@@ -110,6 +110,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#trace">Trace</a>
         <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#trace-stream-channels">Trace Stream Channels</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#directory-and-file-structure">Directory and File Structure</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#name-conventions">Name Conventions</a>
@@ -163,6 +165,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#out-of-scope">Out-of-Scope</a>
     </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#configure-trace-generation">Configure Trace Generation</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#pyts-utility">pyTS Utility</a>
     </li>
@@ -374,7 +378,7 @@
 <p>The exported module can then be consumed by a Zephyr application by adding the module path to <code>ZEPHYR_EXTRA_MODULES</code> (or through a west manifest) and enabling the desired <code>CONFIG_...</code> symbols in <code>prj.conf</code>.</p>
 <p>Example: the <a href="https://github.com/brondani/cmsis-to-zephyr-concept/tree/main/ml_inference">cmsis-to-zephyr-concept <code>ml_inference</code> example</a> shows a minimal end-to-end flow: exporting a layer as a Zephyr module and consuming it from a Zephyr application.</p>
 <h2 id="trace">Trace</h2>
-<p>Trace captures target execution data through SWO or trace port and from sources such as ETB, MTB, and Event Recorder. Trace is obtained with these steps:</p>
+<p>Trace captures target execution data through stream channels is obtained with these steps:</p>
 <ol>
 <li>Configure trace communication (how trace leaves the MCU) with the <code>target-set:</code> in <code>*.csolution.yml</code> (and optional settings in <code>*.dbgconf</code>).</li>
 <li>Configure trace generation (what the MCU produces: ITM, DWT, etc.) with the <code>*.ctrace.yml</code> file.</li>
@@ -388,6 +392,30 @@
 <li>Trace does not include SEGGER RTT, SystemView, or STDIO UART output. These features use separate data output paths.</li>
 </ul>
 </div>
+<h3 id="trace-stream-channels">Trace Stream Channels</h3>
+<p>The trace stream channels are configured using the <a href="../pyOCD-Debugger/#trace"><code>trace:</code></a> node in the <code>*.csolution.yml</code> project file. The following trace stream <code>&lt;channels&gt;</code> may be used:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>&lt;channel&gt;</code></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">SWO</td>
+<td style="text-align: left;">Serial-Wire Output: 1-pin interface that sends trace information using <a href="../pyOCD-Debugger/#swo-uart">UART</a> or Manchester mode (tbd).</td>
+</tr>
+<tr>
+<td style="text-align: left;">TB</td>
+<td style="text-align: left;"><a href="../pyOCD-Debugger/#trace-buffer">Embedded Trace Buffer or Micro Trace Buffer</a>: that stores trace information in memory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">ER</td>
+<td style="text-align: left;">Event Recorder: uses code annotations that store program events in memory.</td>
+</tr>
+</tbody>
+</table>
 <h3 id="directory-and-file-structure">Directory and File Structure</h3>
 <p>Trace-related files are stored relative to the directory that contains the <code>*.csolution.yml</code> file.</p>
 <table>
@@ -417,7 +445,7 @@
 <tr>
 <td style="text-align: left;"><code>.trace/&lt;solution-set&gt;.&lt;channel&gt;.raw</code></td>
 <td style="text-align: left;">pyOCD</td>
-<td style="text-align: left;">Raw trace data files, for example <code>.SWO</code>, <code>MTB</code>, or <code>ER</code>.</td>
+<td style="text-align: left;">Raw trace data files, specific to a <code>&lt;channel&gt;</code> (<code>SWO</code>, <code>TB</code>, or <code>ER</code>).</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>.trace/&lt;solution-set&gt;.&lt;channel&gt;.csv</code></td>
@@ -433,7 +461,7 @@
 </table>
 <p>The file <code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code> configures the trace generation. It is created or updated by the user interface of the CMSIS-Debugger Trace View.</p>
 <p>The <a href="#pyts-utility"><code>pyTS</code></a> utility resolves symbol-based settings in <code>*.ctrace.yml</code> against the ELF/DWARF information of the active <code>&lt;solution-set&gt;</code> and generates the register setup for the hardware configuration. The output is the <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code> which is used by the debugger for register setup in hardware. During trace analysis the information of this file connects the raw trace data back to the <code>*.ctrace.yml</code> configuration.</p>
-<p>Raw trace streams are stored as binary files, for example <code>.trace/&lt;solution-set&gt;.SWO.raw</code>. The <code>ctrace</code> utility converts raw trace data files into <a href="#csv-format">CSV</a> and <a href="#ctf-format">CTF</a> for viewers and analysis tools.</p>
+<p>Raw trace streams are stored as binary files, for example <code>.trace/&lt;solution-set&gt;.SWO.raw</code>. The <a href="#ctrace-utility"><code>ctrace</code></a> utility converts raw trace data files into <a href="#csv-format">CSV</a> and <a href="#ctf-format">CTF</a> for viewers and analysis tools.</p>
 <h3 id="name-conventions">Name Conventions</h3>
 <h4 id="location">Location</h4>
 <p>Locations can be symbols or numeric addresses. An additional project or path to an image file may be specified.</p>
@@ -830,8 +858,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </tr>
 </tbody>
 </table>
-<p>Supported DWT event selectors include <code>CYCCNT</code>, <code>CPICNT</code>, <code>EXCCNT</code>, <code>SLEEPCNT</code>, <code>LSUCNT</code>, and <code>FOLDCNT</code>.
-<code>PMU</code> events may be added when supported by the target. They are emitted when one or more PMU counters with index 0..7 have an 8-bit overflow.</p>
+<p>Supported DWT event selectors include <code>CYCCNT</code>, <code>CPICNT</code>, <code>EXCCNT</code>, <code>SLEEPCNT</code>, <code>LSUCNT</code>, and <code>FOLDCNT</code>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">events:
   - event: CPICNT
@@ -1117,7 +1144,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
   generated-by: pyTS v0.0
   ctrace-refs:
   - ctrace-ref: core0/itm
-    pname: &lt;core0&gt;
+    pname: core0
     type: itm            # packet types
     symbol-file: &lt;symbol file used&gt;
     symbol-address: address of symbol
@@ -1126,7 +1153,6 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
     regs:
       - name:  ITM_TER0
         value: 0xFFFFFFFF
-#       mask
       - name:  
         value:
 
@@ -1142,6 +1168,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
     regs:
       - name: DWT_COMP0
         value: 1
+        mask:  0xFF
       - name: DWT_COMP1
         value: 2
 </code></pre>
@@ -1180,13 +1207,6 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </table>
 <p>The <code>ctrace-ref:</code> node references the trace generation configuration in the file <code>*.ctrace.yml</code> and contains register values that represent the setup.
 A single-core system has no <code>pname:</code> value; a multi-processor always includes a <code>pname:</code> value in the <code>ctrace-ref:</code> node.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<ul>
-<li>Entries in <code>*.ctrace.yml</code> without processor scope are expanded to each processor that supports the requested trace feature.</li>
-</ul>
-</div>
-<p>ToDo Jens: what the system wide settings? How are they represented? What trace component is configured with such settings?</p>
 <h3 id="initial-implementation">Initial Implementation</h3>
 <p>The initial implementation focuses on pyOCD with SWO UART and interactive operation in CMSIS-Debugger.</p>
 <p>Subsequent releases may extend this initial solution to:</p>
@@ -1197,22 +1217,125 @@ A single-core system has no <code>pname:</code> value; a multi-processor always 
 </ul>
 <h3 id="remaining-design-questions">Remaining Design Questions</h3>
 <ul>
-<li>How to make implemented trace features known (SoC and CPU)?</li>
-<li>Level of built-in CoreSight knowledge for source configurations.</li>
-<li>Usage with sequences and user interactions (interactive IDE mode).</li>
 <li>Cross-trigger functionality will be represented later (potentially in <code>*.ctrace.yml</code>)</li>
-<li>"Trace and Live View" will be renamed to "Target Monitor" with the sub-sections "Live Watch" and "Trace"<ul>
-<li>How should trace configuration and captured trace information be exposed in the user interface?</li>
-</ul>
-</li>
-<li>How are PMU events configured (what is captured with the PMU)?</li>
-<li>Complex trace halt conditions</li>
+<li>What the system wide settings? How are they represented? What trace component is configured with such settings?</li>
 </ul>
 <h3 id="out-of-scope">Out-of-Scope</h3>
 <ul>
 <li>SEGGER RTT, SystemView, and STDIO UART output are not part of trace capture and use separate output paths.</li>
 <li>ITM channel 0 <code>printf</code> output should not be routed to trace analysis components. It should be shown in an output window or debug console.</li>
 </ul>
+<h2 id="configure-trace-generation">Configure Trace Generation</h2>
+<p>The file <a href="#file-structure-of-ctraceyml"><code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code></a> is the user-facing configuration file for the trace generation. The CMSIS-Debugger implements a graphical user interface that is shown below.  Each processor has a separate configuration section.</p>
+<p><img alt="Trace components and data flow" src="../images/Trace-Options.png" title="components and data flow" /></p>
+<p>The available options depend on the Cortex-M processor and on the selected <a href="#trace-stream-channels">trace stream channel</a> that is used to obtain trace. The following table shows the available options.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Option</th>
+<th style="text-align: center;">M0</th>
+<th style="text-align: center;">M0+, M23</th>
+<th style="text-align: center;">M3, M4, M7, M33</th>
+<th style="text-align: center;">M52, M55</th>
+<th style="text-align: center;">M85</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Timestamps</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Exceptions</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Event Counters</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">PMU Event</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">no</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Instrumentation Trace</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">DWT Data Trace</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">4 comparators</td>
+<td style="text-align: center;">8 comparators</td>
+<td style="text-align: center;">8 comparators</td>
+</tr>
+<tr>
+<td style="text-align: left;">Instruction Trace</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">with TB</td>
+<td style="text-align: center;">with TB</td>
+<td style="text-align: center;">with TB</td>
+<td style="text-align: center;">with TB</td>
+</tr>
+<tr>
+<td style="text-align: left;">Start, Stop, Halt</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">2 comparators</td>
+<td style="text-align: center;">4 comparators</td>
+<td style="text-align: center;">8 comparators</td>
+<td style="text-align: center;">8 comparators</td>
+</tr>
+<tr>
+<td style="text-align: left;">PC Sampling</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Time Synchronisation</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr>
+<td style="text-align: left;">Stream Synchronisation</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The available Event Counters depend on the Cortex-M processor.
+M52, M55, M85 use the first 4 DWT comparators for data trace.</p>
+</div>
 <h2 id="pyts-utility"><code>pyTS</code> Utility</h2>
 <p>The <code>pyTS</code> utility generates the file <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>. It performs the following steps:</p>
 <ul>
@@ -1317,7 +1440,7 @@ CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as ex
 <td style="text-align: left;"><code>source</code> = DWT comparator, <code>value</code> = data value, <code>offset</code> = data address offset, <code>pc</code> = program counter.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>events</code></td>
+<td style="text-align: left;"><code>event</code></td>
 <td style="text-align: left;">Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.</td>
 </tr>
 <tr>
@@ -1887,7 +2010,7 @@ CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as ex
 </ol>
 <h3 id="related">Related</h3>
 <ul>
-<li><a href="https://developer.arm.com/documentation/ddi0553/bz/">v8-M Architecture Reference Manual</a><ul>
+<li><a href="https://developer.arm.com/documentation/ddi0553/latest/">v8-M Architecture Reference Manual</a><ul>
 <li>The Instrumentation Trace Macrocell (B14.1)</li>
 <li>The Data Watchpoint and Trace unit (B14.2)</li>
 <li>The Performance Monitors Extension (B15)</li>
@@ -1901,7 +2024,7 @@ CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as ex
 </ul>
 </li>
 <li>
-<p><a href="https://developer.arm.com/documentation/ddi0419/e/?lang=en">v6-M Architecture Reference Manual</a></p>
+<p><a href="https://developer.arm.com/documentation/ddi0419/latest/">v6-M Architecture Reference Manual</a></p>
 <ul>
 <li>The Data Watchpoint and Trace Unit (C1.7)</li>
 </ul>
