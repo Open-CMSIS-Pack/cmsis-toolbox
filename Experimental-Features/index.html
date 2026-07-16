@@ -378,7 +378,7 @@
 <p>The exported module can then be consumed by a Zephyr application by adding the module path to <code>ZEPHYR_EXTRA_MODULES</code> (or through a west manifest) and enabling the desired <code>CONFIG_...</code> symbols in <code>prj.conf</code>.</p>
 <p>Example: the <a href="https://github.com/brondani/cmsis-to-zephyr-concept/tree/main/ml_inference">cmsis-to-zephyr-concept <code>ml_inference</code> example</a> shows a minimal end-to-end flow: exporting a layer as a Zephyr module and consuming it from a Zephyr application.</p>
 <h2 id="trace">Trace</h2>
-<p>Trace captures target execution data through stream channels is obtained with these steps:</p>
+<p>Target execution data is captured through trace stream channels. The overall process has these steps:</p>
 <ol>
 <li>Configure trace communication (how trace leaves the MCU) with the <code>target-set:</code> in <code>*.csolution.yml</code> (and optional settings in <code>*.dbgconf</code>).</li>
 <li>Configure trace generation (what the MCU produces: ITM, DWT, etc.) with the <code>*.ctrace.yml</code> file.</li>
@@ -393,7 +393,7 @@
 </ul>
 </div>
 <h3 id="trace-stream-channels">Trace Stream Channels</h3>
-<p>The trace stream channels are configured using the <a href="../pyOCD-Debugger/#trace"><code>trace:</code></a> node in the <code>*.csolution.yml</code> project file. The following trace stream <code>&lt;channels&gt;</code> may be used:</p>
+<p>The trace stream channels are configured using the <a href="../pyOCD-Debugger/#trace"><code>trace:</code></a> node in <code>target-set:</code> of the <code>*.csolution.yml</code> project file. The following trace stream <code>&lt;channels&gt;</code> may be used:</p>
 <table>
 <thead>
 <tr>
@@ -404,11 +404,11 @@
 <tbody>
 <tr>
 <td style="text-align: left;">SWO</td>
-<td style="text-align: left;">Serial-Wire Output: 1-pin interface that sends trace information using <a href="../pyOCD-Debugger/#swo-uart">UART</a> or Manchester mode (tbd).</td>
+<td style="text-align: left;">Serial-Wire Output: one-pin interface that sends trace information using <a href="../pyOCD-Debugger/#swo-uart">UART</a> or Manchester mode (tbd).</td>
 </tr>
 <tr>
 <td style="text-align: left;">TB</td>
-<td style="text-align: left;"><a href="../pyOCD-Debugger/#trace-buffer">Embedded Trace Buffer or Micro Trace Buffer</a>: that stores trace information in memory.</td>
+<td style="text-align: left;"><a href="../pyOCD-Debugger/#trace-buffer">Embedded Trace Buffer or Micro Trace Buffer</a> that stores trace information in memory.</td>
 </tr>
 <tr>
 <td style="text-align: left;">ER</td>
@@ -435,7 +435,7 @@
 <tr>
 <td style="text-align: left;"><code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code></td>
 <td style="text-align: left;">CMSIS-Debugger</td>
-<td style="text-align: left;">User trace intent and solution-set specific trace capture configuration.</td>
+<td style="text-align: left;">User trace intent and "solution-set specific" trace capture configuration.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code></td>
@@ -460,7 +460,7 @@
 </tbody>
 </table>
 <p>The file <code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code> configures the trace generation. It is created or updated by the user interface of the CMSIS-Debugger Trace View.</p>
-<p>The <a href="#pyts-utility"><code>pyTS</code></a> utility resolves symbol-based settings in <code>*.ctrace.yml</code> against the ELF/DWARF information of the active <code>&lt;solution-set&gt;</code> and generates the register setup for the hardware configuration. The output is the <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code> which is used by the debugger for register setup in hardware. During trace analysis the information of this file connects the raw trace data back to the <code>*.ctrace.yml</code> configuration.</p>
+<p>The <a href="#pyts-utility"><code>pyTS</code></a> utility resolves symbol-based settings in <code>*.ctrace.yml</code> against the ELF/DWARF information of the active <code>&lt;solution-set&gt;</code> and generates the register setup for the hardware configuration. The output is the file <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code> which is used by the debugger for register setup in target hardware. During trace analysis the information of this file connects the raw trace data back to the <code>*.ctrace.yml</code> configuration.</p>
 <p>Raw trace streams are stored as binary files, for example <code>.trace/&lt;solution-set&gt;.SWO.raw</code>. The <a href="#ctrace-utility"><code>ctrace</code></a> utility converts raw trace data files into <a href="#csv-format">CSV</a> and <a href="#ctf-format">CTF</a> for viewers and analysis tools.</p>
 <h3 id="name-conventions">Name Conventions</h3>
 <h4 id="location">Location</h4>
@@ -586,7 +586,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </tr>
 <tr>
 <td style="text-align: left;"><code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code></td>
-<td style="text-align: left;">User-authored trace generation setup. This file defines which data, events, ITM channels, PC samples, or instruction trace streams are enabled.</td>
+<td style="text-align: left;">User trace generation setup. This file defines which data, events, ITM channels, PC samples, or instruction trace streams are enabled.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code></td>
@@ -675,12 +675,12 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#instructions"><code>instructions:</code></a></td>
-<td style="text-align: left;">Future</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">ETM or MTB instruction trace configuration.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#pcsampling"><code>pcsampling:</code></a></td>
-<td style="text-align: left;">Future</td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">DWT PC sampling configuration.</td>
 </tr>
 <tr>
@@ -763,6 +763,11 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <td style="text-align: left;"><code>- location:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Symbol or numeric address <a href="#location">location</a> to trace.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>label:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">User-defined short label for Trace Compass.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>access:</code></td>
@@ -911,7 +916,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </tr>
 </tbody>
 </table>
-<p>Supported values for DWT PC sampling <code>period:</code> are <code>0</code> (off), <code>64*1</code>, <code>64*2</code>, ... , <code>64*16</code>, <code>1024*1</code>, <code>1024*2</code>, ... , and <code>1024*16</code>. Default: <code>0</code>.</p>
+<p>Supported values for <code>period:</code> <code>0</code> (off), <code>64</code>, <code>128</code>, <code>256</code>, ..., <code>16384</code>. Default: <code>0</code>.</p>
 <h4 id="synchronization"><code>synchronization:</code></h4>
 <p>The <code>synchronization:</code> node specifies the frequency of the DWT synchronization packet.</p>
 <table>
@@ -959,7 +964,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </table>
 <p><code>start:</code> and <code>stop:</code> contain <a href="#conditions">condition</a> entries. These entries define when instruction trace starts or stops; they do not define trace output.</p>
 <h4 id="tracehalt"><code>tracehalt:</code></h4>
-<p>The <code>tracehalt:</code> node contains <a href="#conditions">condition</a> entries that halt a trace sink or formatter by a trace trigger. It affects all trace streams that use the sink. Support to combine two conditions by logic operators may be added in future.</p>
+<p>The <code>tracehalt:</code> node contains <a href="#conditions">condition</a> entries that halt a trace sink or formatter by a trace trigger. It affects all trace streams that use the sink. Support to combine two conditions by logic operators may be added in the future.</p>
 <h4 id="conditions">Conditions</h4>
 <p>The nodes <code>start:</code>, <code>stop:</code>, and <code>tracehalt:</code> may contain a condition list that is logically OR-combined. They have the following form.</p>
 <table>
@@ -1077,6 +1082,11 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <td style="text-align: left;">Address of the symbol.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>label:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">User-define short label for Trace Compass</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stream:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Stream ID (CoreSight ATB ID).</td>
@@ -1125,17 +1135,17 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <tr>
 <td style="text-align: left;"><code>- name:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Symbolic name of the register</td>
+<td style="text-align: left;">Symbolic name of the register.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>value:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Value to write in this register</td>
+<td style="text-align: left;">Value to write in this register.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>mask:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Bit mask for value write (default: 0xFFFFFFFF)</td>
+<td style="text-align: left;">Bit mask for value write (default: <code>0xFFFFFFFF</code>).</td>
 </tr>
 </tbody>
 </table>
@@ -1218,7 +1228,7 @@ A single-core system has no <code>pname:</code> value; a multi-processor always 
 <h3 id="remaining-design-questions">Remaining Design Questions</h3>
 <ul>
 <li>Cross-trigger functionality will be represented later (potentially in <code>*.ctrace.yml</code>)</li>
-<li>What the system wide settings? How are they represented? What trace component is configured with such settings?</li>
+<li>What are system wide settings? How are they represented? What trace component is configured with such settings?</li>
 </ul>
 <h3 id="out-of-scope">Out-of-Scope</h3>
 <ul>
@@ -1226,9 +1236,9 @@ A single-core system has no <code>pname:</code> value; a multi-processor always 
 <li>ITM channel 0 <code>printf</code> output should not be routed to trace analysis components. It should be shown in an output window or debug console.</li>
 </ul>
 <h2 id="configure-trace-generation">Configure Trace Generation</h2>
-<p>The file <a href="#file-structure-of-ctraceyml"><code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code></a> is the user-facing configuration file for the trace generation. The CMSIS-Debugger implements a graphical user interface that is shown below.  Each processor has a separate configuration section.</p>
+<p>The file <a href="#file-structure-of-ctraceyml"><code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code></a> is the user-facing configuration file for the trace generation. The CMSIS-Debugger implements a graphical user interface that is shown below. Each processor has a separate configuration section.</p>
 <p><img alt="Trace components and data flow" src="../images/Trace-Options.png" title="components and data flow" /></p>
-<p>The available options depend on the Cortex-M processor and on the selected <a href="#trace-stream-channels">trace stream channel</a> that is used to obtain trace. The following table shows the available options.</p>
+<p>The available options in the user interface depend on the Cortex-M processor and on the selected <a href="#trace-stream-channels">trace stream channel</a> that is used to obtain trace. Depending on the processor implemention, option setting may get rejected at the level of pyTS or pyOCD.</p>
 <table>
 <thead>
 <tr>
@@ -1314,7 +1324,7 @@ A single-core system has no <code>pname:</code> value; a multi-processor always 
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
-<td style="text-align: left;">Time Synchronisation</td>
+<td style="text-align: left;">Time Synchronization</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">yes</td>
@@ -1322,7 +1332,7 @@ A single-core system has no <code>pname:</code> value; a multi-processor always 
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
-<td style="text-align: left;">Stream Synchronisation</td>
+<td style="text-align: left;">Stream Synchronization</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">yes</td>
@@ -1333,8 +1343,10 @@ A single-core system has no <code>pname:</code> value; a multi-processor always 
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The available Event Counters depend on the Cortex-M processor.
-M52, M55, M85 use the first 4 DWT comparators for data trace.</p>
+<ul>
+<li>The available Event Counters depend on the Cortex-M processor.</li>
+<li>M52, M55, M85 use the first 4 DWT comparators for data trace.</li>
+</ul>
 </div>
 <h2 id="pyts-utility"><code>pyTS</code> Utility</h2>
 <p>The <code>pyTS</code> utility generates the file <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>. It performs the following steps:</p>
@@ -1342,7 +1354,7 @@ M52, M55, M85 use the first 4 DWT comparators for data trace.</p>
 <li>Reads the file <code>&lt;name&gt;.cbuild-run.yml</code> to provide the solution set, processor names, and ELF output files.</li>
 <li>Converts symbolic names in the file <code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code> to physical addresses by using the corresponding ELF output files.</li>
 <li>Uses processor information and implementation details to map the trace generation setup into CoreSight trace register values. See <a href="#processor-specific-trace-features">Processor-Specific Trace Features</a></li>
-<li>Rejects incompatible configuration settings with user-oriented <code>info</code>, <code>warning</code> or <code>error</code> messages in the <code>ctrace-ref:</code> node of the file <code>*.ctrace-run.yml</code></li>
+<li>Rejects incompatible configuration settings with user-oriented messages (<code>info:</code>, <code>warning:</code>, or <code>error:</code>) in the <code>ctrace-ref:</code> node of the file <code>*.ctrace-run.yml</code></li>
 </ul>
 <p>The final trace generation setup is written to the file <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>.</p>
 <p>This utility will be part of pyOCD.</p>
@@ -1350,33 +1362,29 @@ M52, M55, M85 use the first 4 DWT comparators for data trace.</p>
   pyts &lt;name&gt;.cbuild-run.yml
 </code></pre>
 <h2 id="ctrace-utility"><code>ctrace</code> Utility</h2>
-<p>The <code>ctrace</code> utility reads the raw trace data files in the <a href="#directory-and-file-structure">directory <code>.trace</code></a>. It can check the raw trace files for consistency or convert the files into CSV and CTF format.</p>
+<p>The <code>ctrace</code> utility reads the raw trace data files in the <a href="#directory-and-file-structure">directory <code>.trace</code></a>. It can check the raw data trace files for consistency or convert the files into CSV and CTF format.</p>
 <p><code>ctrace</code> is based on the open source trace decoder <a href="https://github.com/linaro/opencsd">github.com/linaro/opencsd</a> and adds a CSV and CTF converter. This utility will be part of CMSIS-Toolbox.</p>
 <pre><code class="language-txt">Usage:
-  ctrace [command] &lt;trace-dir&gt; [options]
-
-Commands:
-  check       Validate raw trace data files for consistency and print statistics
-  convert     Convert raw trace data files into CSV and CTF format
+  ctrace &lt;trace-dir&gt; [options]
 
 Options:
       --csv                Generate only CSV files (default: generate CSV and CTF)
       --ctf                Generate only CTF files (default: generate CSV and CTF)
+  -a  --all                Generate both CSV and CTF files
       --type sel [...]     Filter output for specific packet types (default: all packet types)
       --stream sel [...]   Filter output for specific streams (default: all streams)
   -t, --target arg         Specify &lt;solution-set&gt; (default: process all solution sets in trace-dir)
   -V, --version            Print version
-
-Use &quot;ctrace [command] --help&quot; for more information about a command.
 </code></pre>
 <p><code>ctrace</code> processes files in the specified <code>&lt;trace-dir&gt;</code>. If this directory contains more than one <code>&lt;solution-set&gt;</code>, each solution set is processed separately.
-CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as explained under <a href="#directory-and-file-structure">directory and file structure</a>.</p>
+CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as explained under <a href="#directory-and-file-structure">directory and file structure</a>.
+When no option for generating files is specified, the raw trace data files are validated.</p>
 <h3 id="-type-option"><code>--type</code> option</h3>
 <p>The <code>--type</code> option is applied to the decoded packet type for both CSV and CTF files. Only the specified packet types are contained in the generated files.</p>
 <p>Accepted packet types are: <code>itm</code>, <code>dwt</code>, <code>event</code>, <code>pmu</code>, <code>exception</code>, <code>pcsample</code>, <code>global_ts</code>, <code>overflow</code>, <code>error</code>.</p>
 <p><strong>Example:</strong></p>
-<p>Output only the packet types DWT comparator and event counter. </p>
-<pre><code class="language-bash">ctrace convert .trace --type dwt event
+<p>Output only the packet types <code>dwt</code> and <code>event</code> to the generated CSV and CTF files.</p>
+<pre><code class="language-bash">ctrace .trace --all --type dwt event
 </code></pre>
 <h3 id="csv-format">CSV Format</h3>
 <p>The CSV output file uses these columns:</p>
@@ -1402,7 +1410,7 @@ CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as ex
 </tr>
 <tr>
 <td style="text-align: left;"><code>source</code></td>
-<td style="text-align: left;">Source id: ITM channel, DWT comparator, exception number, or hardware discriminator.</td>
+<td style="text-align: left;">Source ID: ITM channel, DWT comparator, exception number, or hardware discriminator.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>value</code></td>
@@ -1646,7 +1654,7 @@ CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as ex
 </tbody>
 </table>
 <h3 id="ctf-format">CTF Format</h3>
-<p>The generated <a href="https://diamon.org/ctf/v1.8.3/">Common Trace Format (CTF) v1.8.3</a> is compatible with <a href="https://eclipse.dev/tracecompass/">Trace Compass</a> and used by <a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension">Trace Viewer for VS Code</a>. It uses the following files that are generated by <code>ctrace</code> in the directory <code>.trace/&lt;solution-set&gt;.ctf/</code>.</p>
+<p>The generated <a href="https://diamon.org/ctf/v1.8.3/">Common Trace Format (CTF) v1.8.3</a> is compatible with <a href="https://eclipse.dev/tracecompass/">Trace Compass</a> and is used by <a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension">Trace Viewer for VS Code</a>. It uses the following files that are generated by <code>ctrace</code> in the directory <code>.trace/&lt;solution-set&gt;.ctf/</code>.</p>
 <table>
 <thead>
 <tr>
@@ -1744,7 +1752,7 @@ CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as ex
 <td style="text-align: left;">-</td>
 <td style="text-align: left;"><code>4</code> comps; no trace</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">Optional ETMv3.5 <em>instruction trace</em>; mutually exclusive with MTB<br><code>4</code> DWT comparator inputs; <code>1</code> reduced-function counter; <code>2</code> external inputs; start/stop logic; read-only <code>ETMSYNCFR</code> fixed at <code>1024</code></td>
+<td style="text-align: left;">Optional ETMv3.5 <em>instruction trace</em>; mutually exclusive with MTB<br><code>4</code> DWT comparator inputs; <code>1</code> reduced-function counter; <code>2</code> external inputs; start/stop logic; read-only <code>ETMSYNCFR</code> fixed at <code>1024</code> Optional; mutually exclusive with ETM; start/stop using <code>2</code> or <code>4</code> DWT inputs, <code>TSTART</code>/<code>TSTOP</code> inputs, or software; watermark autostop</td>
 </tr>
 <tr>
 <td style="text-align: left;">Cortex-M33</td>
