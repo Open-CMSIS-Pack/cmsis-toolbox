@@ -172,7 +172,7 @@ Directory or File                      | Created by                | Description
 `.`                                    | User                      | Contains the `*.csolution.yml` project file.
 `.cmsis/<solution-set>.ctrace.yml`     | CMSIS-Debugger            | User trace intent and solution-set specific trace capture configuration.
 `.trace/<solution-set>.ctrace-run.yml` | [pyTS](#pyts-utility)     | Generated trace run information, including resolved symbols and register values.
-`.trace/<solution-set>.<channel>.raw`  | pyOCD                     | Raw trace data files, specific to a `<channel>` (`SWO`, `ETM`, `MTB`, or `ER`).
+`.trace/<solution-set>.<channel>.raw`  | pyOCD                     | Raw trace data files, specific to a `<channel>` (`SWO`, `ETB`, `MTB`, or `ER`).
 `.trace/<solution-set>.<channel>.csv`  | [ctrace](#ctrace-utility) | CSV files that represent raw trace data files.
 `.trace/<solution-set>.ctf/`           | [ctrace](#ctrace-utility) | Directory for CTF files such as `metadata`, `stream_0`, and `stream_1`.
 
