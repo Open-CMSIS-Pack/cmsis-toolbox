@@ -230,13 +230,16 @@ The `channel:` node selects the RTT channel mode.
 `channel:`                                          |              | Description
 :---------------------------------------------------|:-------------|:------------------------------------
 `- number:`                                         | **Required** | Channel number.
-&nbsp;&nbsp;&nbsp; `mode:`                          | **Required** | Channel mode selection: `stdio`, `server`, `systemview`, `systemview-server`.
+&nbsp;&nbsp;&nbsp; `mode:`                          | **Required** | Channel mode selection: `stdio`, `server`, `file`, `systemview`, `systemview-server`.
 &nbsp;&nbsp;&nbsp; `port:`                          |   Optional   | TCP port number (required for `server` and `systemview-server`).
+&nbsp;&nbsp;&nbsp; `file-out:`                      |   Optional   | Path of the file that receives data from the RTT channel. Applies to `file` mode. Default: `<target>[_core<core>]_ch<channel>.out`.
+&nbsp;&nbsp;&nbsp; `file-in:`                       |   Optional   | Path of the file that sends data to the RTT channel. Applies to `file` mode. Default: `<target>[_core<core>]_ch<channel>.in`; input is disabled when the file does not exist.
 
 Channel Mode                  | Description
 :-----------------------------|:------------------------------------
 `stdio`                       | Connects channel to standard I/O service that is configured via the [`stdio:`](#stdio) node.
 `server`                      | Exposes channel over a TCP server port.
+`file`                        | Routes RTT channel data to and from files.
 `systemview`                  | Saves channel data to *.SVDat file for [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/) tool.<br/>Default file: `./out/<solution-name>+<target-type>.SVDat`; see [`systemview:`](#systemview) node.
 `systemview-server`           | Streams live data to [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/) tool over a "IP Recorder host" TCP port. Refer to the SEGGER SystemView user guide, IP Recorder.
 
@@ -275,6 +278,21 @@ debugger:
         - number: 3
           mode: server
           port: 4445
+```
+
+Map RTT channel 2 to input and output files:
+
+```yml
+debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  rtt:
+    - pname: Core0
+      channel:
+        - number: 2
+          mode: file
+          file-out: ./out/Blinky.out
+          file-in: ./out/Blinky.in
 ```
 
 ### `systemview:`
