@@ -290,6 +290,7 @@ ctrace:
     - pname: 
 #     disable:    # disables trace without need to remove settings
       timestamps:
+        clock: 24000000
       timesync:
 
       data:
@@ -323,7 +324,10 @@ When `timestamps:` is present, timestamp generation is enabled in the trace stre
 
 `timestamps:`                                            |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `clock:`                              |  Optional   | Timestamp clock frequency in Hz.
 &nbsp;&nbsp;&nbsp; `itm-prescaler:`                      |  Optional   | ITM timestamp prescaler: `1` (default), `4`, `16`, `64`.
+
+The timestamp `clock` typically is the processor clock.
 
 #### `timesync:`
 
@@ -456,7 +460,10 @@ The `*.ctrace-run.yml` file starts with the node `ctrace-run:`. It is generated 
 `ctrace-run:`                                            |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `generated-by:`                       |  Optional   | Tool and version that generated the file.
+&nbsp;&nbsp;&nbsp; `ctrace-setup:`                       |  Optional   | Copy of [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file.
 &nbsp;&nbsp;&nbsp; `ctrace-refs:`                        |**Required** | List of [references](#references) in the `*.ctrace.yml` file.
+
+The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file and preserves the original user input for consumers of the `*.ctrace-run.yml` file. This includes settings that do not resolve to a `ctrace-ref` but are required for higher-level output formats such as CTF. For example the `timestamps:clock` node.
 
 `ctrace-refs:`                                           |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
@@ -474,6 +481,8 @@ The `*.ctrace-run.yml` file starts with the node `ctrace-run:`. It is generated 
 &nbsp;&nbsp;&nbsp; `regs:`                               |  Optional   | Register setup.
 
 The trace source types are: `dwt`, `event`, `exception`, `itm`, `pmu`, `overflow`, `pcsample`, `global_ts`.
+
+Multiple `ctrace-ref` entries may reference the same configuration node when it generates setups for multiple streams. The combination of `ctrace-ref` and `stream` identifies each generated setup.
 
 The meaning of `source:` depends on the `type:` as shown below.
 
@@ -522,6 +531,26 @@ ctrace-run:
         mask:  0xFF
       - name: DWT_COMP1
         value: 2
+
+  - ctrace-ref: core0/timestamps
+    type: itm
+    pname: core0
+    stream: 1
+    regs:
+      - name: ITM_TCR
+        value: 0x00000002
+        mask: 0x00000002
+
+  # - ctrace-ref: core0/timestamps
+  #   type: etm            # etm not yet supported, for demonstration purposes only
+  #   pname: core0
+  #   stream: 2
+  #   regs:
+  #     - name: TRCCONFIGR
+  #       value: 0x00000010
+  #       mask: 0x00000010
+  #     - name: TRCCCCTLR
+  #       value: 0x4
 ```
 
 #### Register Accesses
@@ -535,7 +564,7 @@ Trace Component | Base Address | Description
 `PMU`           | `0xE0003000` | Performance Monitoring Unit.
 `ETM`           | `0xE0041000` | Embedded Trace Macrocell.
 
-The `ctrace-ref:` node references the trace generation configuration in the file `*.ctrace.yml` and contains register values that represent the setup.
+The `ctrace-ref:` node references the trace generation configuration in the file `*.ctrace.yml` and contains register values that represent the setup for trace sources.
 A single-core system has no `pname:` value; a multi-processor always includes a `pname:` value in the `ctrace-ref:` node.
 
 ### Initial Implementation
@@ -723,9 +752,9 @@ File           | Description
 
 ## Processor-Specific Trace Features
 
-The following information lists the Cortex-M processors and the DWT, ITM, ETM, MTB, and PMU implementation options.
+TODO: Discard most of the following chapters. Condensed in table further above.
 
-ToDo: how are implementation options obtained?
+The following information lists the Cortex-M processors and the DWT, ITM, ETM, MTB, and PMU implementation options.
 
 ### Processor Trace Capabilities
 
