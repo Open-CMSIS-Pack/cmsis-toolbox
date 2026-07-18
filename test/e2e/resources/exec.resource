@@ -29,6 +29,8 @@ Run cbuild
 
     @{args_ex}                     Create List    @{args}    @{filecontexts}
     Append To List                 ${args_ex}    -p    -r    --update-rte
+    Log                            cbuild args: ${args_ex}
+
 
     ${is_command_empty}=           Evaluate    '${command}' == '${EMPTY}'
     ${ret_code}=                   Run Keyword If    ${is_command_empty}
@@ -70,15 +72,21 @@ Install Pack
 Get Contexts From Project
     [Documentation]     Get list of contexts from the csolution project
     [Arguments]         ${input_file}    ${expect}        ${args}=@{EMPTY}
-    ${parent_path}=     Get Parent Directory Path         ${input_file}
 
-    ${result}    Run Process    csolution     list    contexts    --yml-order    ${input_File}
+    ${result}    Run Process    csolution     list    contexts    --yml-order    ${input_file}
     ...                     -q    shell=True    stdout=${CURDIR}/stdout.txt
+
     ${ret_code}=        Set Variable If    ${result.rc} == ${0}    ${result.rc}    ${1}
     Log Many            StdOut: ${result.stdout}
     Log Many            StdErr: ${result.stderr}
-    Should Be Equal     ${ret_code}      ${expect}        msg=Unexpected status returned by list context command
-    RETURN              ${result.stdout}
+    ${contexts}=        Set Variable    ${result.stdout}
+
+    Should Be Equal As Integers
+    ...    ${ret_code}
+    ...    ${expect}
+    ...    msg=Unexpected status returned by list context command.
+
+    RETURN              ${contexts}
 
 Build CSolution Example
     [Arguments]                        ${input_file}    ${cbuildgen_expect}    ${cbuild2cmake_expect}    ${args}=@{EMPTY}
@@ -107,24 +115,30 @@ Checkout GitHub Repository
 
 Run Csolution Project
     [Arguments]                     ${input_file}    ${expect}     ${args}=@{EMPTY}
-    ${contexts}=                    Get Contexts From Project      ${input_file}    ${expect}    ${args}
-    ${filecontexts}=                Convert And Filter Contexts    ${contexts}
-    @{args_ex}                      Create List                    @{args}    @{filecontexts}
+    ${file_name}=        Evaluate    os.path.basename(r'''${input_file}''')    modules=os
+    ${is_tz_example}=    Evaluate    $file_name == "SimpleTZ.csolution.yml"
 
-    # For SimpleTZ solution, explicitly build the TrustZone contexts in order
-    ${file_name}=    Evaluate    os.path.basename(r'''${input_file}''')    modules=os
+    @{args_ex}                  Create List    @{args}
     @{args_cbuildgen}=    Copy List    ${args_ex}
-    IF    '${file_name}' == 'SimpleTZ.csolution.yml'
+    # For SimpleTZ solution, explicitly build the TrustZone contexts in order
+    IF    ${is_tz_example}
         Append To List    ${args_cbuildgen}    -c    CM33_s.Debug+AVH
         Append To List    ${args_cbuildgen}    -c    CM33_ns.Debug+AVH
         Append To List    ${args_cbuildgen}    -c    CM33_s.Release+AVH
         Append To List    ${args_cbuildgen}    -c    CM33_ns.Release+AVH
     END
 
-    ${res_cbuildgen}=       Run Keyword And Ignore Error
-    ...    Build Example With cbuildgen      ${input_file}    ${expect}    ${args_cbuildgen}
+    ${res_cbuildgen}=    Run Keyword And Ignore Error
+    ...    Build Example With cbuildgen
+    ...    ${input_file}
+    ...    ${expect}
+    ...    ${args_cbuildgen}
+
     ${res_cbuild2cmake}=    Run Keyword And Ignore Error
-    ...    Build Example with cbuild2cmake    ${input_file}    ${expect}    ${args_ex}
+    ...    Build Example with cbuild2cmake
+    ...    ${input_file}
+    ...    ${expect}
+    ...    ${args_ex}
 
     # Check the result of the first run
     ${success}=    Set Variable    ${res_cbuildgen[0]}
@@ -161,23 +175,23 @@ Convert And Filter Contexts
     [Documentation]    Example test to convert a string to an array, filter it, and join it
     [Arguments]        ${all_contexts}
 
-    ${os}=             Get Operating System
     @{contexts}=       Split String    ${all_contexts}    \n
+    Log    All contexts before filtering:\n${all_contexts}
 
-    # Filter out items containing 'iar'
-    @{filtered_contexts}=    Create List
-    FOR    ${context}    IN    @{contexts}
-        log    ${context}
-        ${context_lower}=    Convert To Lower Case    ${context}
-        ${contains_iar}=     Run Keyword And Return Status    Should Contain    ${context_lower}    iar
-        ${match_found}=      Evaluate    "'${os}' == 'Darwin' and ${contains_iar}"
-        Run Keyword If    ${match_found} == False    Append To List    ${filtered_contexts}    ${context}
-    END
+    ${is_arm64}=        Is ARM64 Architecture
 
     # Prefix remaining items with '-c ' and join them
     @{context_list_args}=    Create List
-    FOR    ${context}    IN    @{filtered_contexts}
-        Append To List    ${context_list_args}    -c    ${context}
+    FOR    ${context}    IN    @{contexts}
+        ${context_lower}=    Convert To Lower Case    ${context}
+        ${is_iar_context}=    Run Keyword And Return Status    Should Contain    ${context_lower}    iar
+        ${is_xc_context}=     Run Keyword And Return Status    Should Contain    ${context_lower}    xc
+        ${skip_context}=      Evaluate    $is_arm64 and ($is_iar_context or $is_xc_context)
+        IF    not ${skip_context}
+            Append To List    ${context_list_args}    -c    ${context}
+        END
     END
+
+    Log    Context arguments after filtering: ${context_list_args}
 
     RETURN    ${context_list_args}

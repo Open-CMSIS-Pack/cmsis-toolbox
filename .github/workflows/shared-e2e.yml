@@ -544,7 +544,9 @@ jobs:
             ./reports-windows-amd64-cmake3.31.12/output.xml \
             ./reports-windows-amd64-cmake4.3.3/output.xml \
             ./reports-linux-amd64-cmake3.31.12/output.xml \
-            ./reports-linux-amd64-cmake4.3.3/output.xml
+            ./reports-linux-amd64-cmake4.3.3/output.xml \
+            ./reports-linux-arm64-cmake3.31.12/output.xml \
+            ./reports-linux-arm64-cmake4.3.3/output.xml
 
     - name: Generate Summary report
       if: always()
