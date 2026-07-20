@@ -263,7 +263,7 @@ The `*.ctrace.yml` file starts with the node `ctrace:` and contains the trace ca
 
 `ctrace:`                                               |             | Content
 :-------------------------------------------------------|:------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `created-by:`                        |  Optional   | Tool and version that created or last updated the file.
+&nbsp;&nbsp;&nbsp; `generated-by:`                      |  Optional   | Tool and version that generated or last updated the file.
 &nbsp;&nbsp;&nbsp; `setup:`                             |  Required   | Setup for each processor.
 
 `setup:`                                                  |             | Content
