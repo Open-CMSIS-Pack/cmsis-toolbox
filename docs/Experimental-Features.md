@@ -404,7 +404,7 @@ The `pcsampling:` node enables DWT PC sampling.
 
 `pcsampling:`                         |             | Content
 :-------------------------------------|:------------|:------------------------------------
-`- period:`                           |  Optional   | Sampling period in CPU cycles.
+`period:`                             |  Optional   | Sampling period in CPU cycles.
 
 Supported values for `period:` `0` (off), `64`, `128`, `256`, ..., `16384`. Default: `0`.
 
