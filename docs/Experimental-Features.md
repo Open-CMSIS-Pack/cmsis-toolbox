@@ -414,7 +414,7 @@ The `synchronization:` node specifies the frequency of the DWT synchronization p
 
 `synchronization:`                    |             | Content
 :-------------------------------------|:------------|:------------------------------------
-`- DWT:`                              |**Required** | Frequency `0` (off), `16M`, `64M`, `256M` processor cycles. Default: `256M`.
+`- DWT:`                              |**Required** | Frequency `off`, `16M`, `64M`, `256M` processor cycles. Default: `256M`.
 
 **Example:**
 
