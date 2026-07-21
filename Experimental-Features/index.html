@@ -613,9 +613,9 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>created-by:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>generated-by:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Tool and version that created or last updated the file.</td>
+<td style="text-align: left;">Tool and version that generated or last updated the file.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>setup:</code></td>
@@ -702,6 +702,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
     - pname: 
 #     disable:    # disables trace without need to remove settings
       timestamps:
+        clock: 24000000
       timesync:
 
       data:
@@ -740,12 +741,18 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </thead>
 <tbody>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clock:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Timestamp clock frequency in Hz.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>itm-prescaler:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">ITM timestamp prescaler: <code>1</code> (default), <code>4</code>, <code>16</code>, <code>64</code>.</td>
 </tr>
 </tbody>
 </table>
+<p>The timestamp <code>clock</code> typically is the processor clock.</p>
 <h4 id="timesync"><code>timesync:</code></h4>
 <p>When <code>timesync:</code> is present, time synchronization between streams is enabled, for example between ITM and ETM by global timestamps.</p>
 <h4 id="data"><code>data:</code></h4>
@@ -910,7 +917,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>- period:</code></td>
+<td style="text-align: left;"><code>period:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Sampling period in CPU cycles.</td>
 </tr>
@@ -931,7 +938,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <tr>
 <td style="text-align: left;"><code>- DWT:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Frequency <code>0</code> (off), <code>16M</code>, <code>64M</code>, <code>256M</code> processor cycles. Default: <code>256M</code>.</td>
+<td style="text-align: left;">Frequency <code>off</code>, <code>16M</code>, <code>64M</code>, <code>256M</code> processor cycles. Default: <code>256M</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -1026,12 +1033,18 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <td style="text-align: left;">Tool and version that generated the file.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ctrace-setup:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Copy of <a href="#file-structure-of-ctraceyml"><code>setup</code></a> node in the <code>*.ctrace.yml</code> file.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ctrace-refs:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">List of <a href="#references">references</a> in the <code>*.ctrace.yml</code> file.</td>
 </tr>
 </tbody>
 </table>
+<p>The <code>ctrace-setup</code> node uses the same format as the <a href="#file-structure-of-ctraceyml"><code>setup</code></a> node in the <code>*.ctrace.yml</code> file and preserves the original user input for consumers of the <code>*.ctrace-run.yml</code> file. This includes settings that do not resolve to a <code>ctrace-ref</code> but are required for higher-level output formats such as CTF. For example the <code>timestamps:clock</code> node.</p>
 <table>
 <thead>
 <tr>
@@ -1104,6 +1117,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </tbody>
 </table>
 <p>The trace source types are: <code>dwt</code>, <code>event</code>, <code>exception</code>, <code>itm</code>, <code>pmu</code>, <code>overflow</code>, <code>pcsample</code>, <code>global_ts</code>.</p>
+<p>Multiple <code>ctrace-ref</code> entries may reference the same configuration node when it generates setups for multiple streams. The combination of <code>ctrace-ref</code> and <code>stream</code> identifies each generated setup.</p>
 <p>The meaning of <code>source:</code> depends on the <code>type:</code> as shown below.</p>
 <table>
 <thead>
@@ -1181,6 +1195,26 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
         mask:  0xFF
       - name: DWT_COMP1
         value: 2
+
+  - ctrace-ref: core0/timestamps
+    type: itm
+    pname: core0
+    stream: 1
+    regs:
+      - name: ITM_TCR
+        value: 0x00000002
+        mask: 0x00000002
+
+  # - ctrace-ref: core0/timestamps
+  #   type: etm            # etm not yet supported, for demonstration purposes only
+  #   pname: core0
+  #   stream: 2
+  #   regs:
+  #     - name: TRCCONFIGR
+  #       value: 0x00000010
+  #       mask: 0x00000010
+  #     - name: TRCCCCTLR
+  #       value: 0x4
 </code></pre>
 <h4 id="register-accesses">Register Accesses</h4>
 <p>The <code>ctrace-run.yml</code> file contains the register values that are required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.</p>
@@ -1215,7 +1249,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </tr>
 </tbody>
 </table>
-<p>The <code>ctrace-ref:</code> node references the trace generation configuration in the file <code>*.ctrace.yml</code> and contains register values that represent the setup.
+<p>The <code>ctrace-ref:</code> node references the trace generation configuration in the file <code>*.ctrace.yml</code> and contains register values that represent the setup for trace sources.
 A single-core system has no <code>pname:</code> value; a multi-processor always includes a <code>pname:</code> value in the <code>ctrace-ref:</code> node.</p>
 <h3 id="initial-implementation">Initial Implementation</h3>
 <p>The initial implementation focuses on pyOCD with SWO UART and interactive operation in CMSIS-Debugger.</p>
@@ -1674,8 +1708,8 @@ When no option for generating files is specified, the raw trace data files are v
 </tbody>
 </table>
 <h2 id="processor-specific-trace-features">Processor-Specific Trace Features</h2>
+<p>TODO: Discard most of the following chapters. Condensed in table further above.</p>
 <p>The following information lists the Cortex-M processors and the DWT, ITM, ETM, MTB, and PMU implementation options.</p>
-<p>ToDo: how are implementation options obtained?</p>
 <h3 id="processor-trace-capabilities">Processor Trace Capabilities</h3>
 <p>In the table, the three <code>ITM/DWT Comps</code> columns show the number of Data Watchpoint and Trace comparators for each available debug setup; <code>-</code> means that setup is not available. <code>ITM/DWT</code> means instrumentation, event, PC-sampling, exception, and <em>data trace</em> packets generated by the ITM and DWT; a DWT that is present without ITM/DWT trace support is shown as <strong>no trace</strong>. <code>PMU</code> means the architectural Performance Monitoring Unit and its event counters. <code>ETM</code> and <code>MTB</code> provide <em>instruction trace</em>; ETM streams trace into a CoreSight trace system, while MTB writes a compact execution trace into system SRAM.</p>
 <table>
