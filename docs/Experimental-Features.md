@@ -393,7 +393,8 @@ The `itm:` node enables ITM channels.
 `- enable:`                           |**Required** | ITM channel bit mask.
 &nbsp;&nbsp;&nbsp; `privileged:`      |  Optional   | Privileged access only mask by blocks of eight channels. Default: `0`.
 
-Each bit in `enable:` represents one ITM channel.
+Each bit in `enable:` represents one ITM channel.  
+Each bit in `privileged:` represents a block of eight channels, i.e. value `0x2` configures that access to ITM channles 8-15 must be privileged.
 
 !!! Note
     ITM channel 0 is often used for `printf` output. This output should be routed to an output window or debug console instead of the trace analysis components.
