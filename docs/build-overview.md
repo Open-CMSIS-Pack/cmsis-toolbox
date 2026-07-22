@@ -1224,7 +1224,7 @@ solution:
             clock: 10000000
             protocol: swd
             start-pname: M55_HP
-            telnet:
+            stdio:
               - pname: M55_HP
                 mode: console
           images:

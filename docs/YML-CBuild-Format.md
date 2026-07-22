@@ -873,12 +873,15 @@ The following describes the overall structure of the `*.cbuild-run.yml` file.  W
 &nbsp;&nbsp;&nbsp; `compiler:`                                            |  Optional  | [Compiler toolchain](YML-Input-Format.md#compiler) used for code generation.
 &nbsp;&nbsp;&nbsp; `board:`                                               |  Optional  | [Board name](YML-Input-Format.md#board) used for this target.
 &nbsp;&nbsp;&nbsp; `board-pack:`                                          |  Optional  | BSP that is defining the [Board name](YML-Input-Format.md#board) used for this target.
+&nbsp;&nbsp;&nbsp; `board-pack-path:`                                     |  Optional  | Path to the BSP on the host computer.
 &nbsp;&nbsp;&nbsp; `device:`                                              |  Optional  | [Device name](YML-Input-Format.md#device) used in this target.
 &nbsp;&nbsp;&nbsp; `device-pack:`                                         |  Optional  | DFP that is defining the [Device](YML-Input-Format.md#device) used in this target.
+&nbsp;&nbsp;&nbsp; `device-pack-path:`                                    |  Optional  | Path to the DFP on the host computer.
 &nbsp;&nbsp;&nbsp; [`output:`](#output)                                   |**Required**| List of the image (ELF, HEX, BIN) files generated.
 &nbsp;&nbsp;&nbsp; [`system-resources:`](#system-resources)               |  Optional  | List of the system resources available in target.
 &nbsp;&nbsp;&nbsp; [`system-descriptions:`](#system-descriptions)         |  Optional  | List of description files for peripherals and software components.
 &nbsp;&nbsp;&nbsp; [`debugger:`](#debugger)                               |**Required**| Configuration information for the debug connection.
+&nbsp;&nbsp;&nbsp; [`debug-vars:`](#debug-vars)                           |  Optional  | Pass user settings to debug access sequences.
 &nbsp;&nbsp;&nbsp; [`debug-sequences:`](#debug-sequences)                 |  Optional  | Tool actions for debugging, tracing, or programming.
 &nbsp;&nbsp;&nbsp; [`debug-sequences-conf:`](#debug-sequences-conf)       |  Optional  | Configuration information for how to use debug sequences.
 &nbsp;&nbsp;&nbsp; [`programming:`](#programming)                         |  Optional  | Algorithms for flash download.
@@ -941,6 +944,7 @@ The `system-resources:` node lists the resources of a target system. It includes
 &nbsp;&nbsp;&nbsp; `size:`                                |**Required** | Size of the memory.
 &nbsp;&nbsp;&nbsp; `pname:`                               |  Optional   | Only accessible by a specific processor.
 &nbsp;&nbsp;&nbsp; `alias:`                               |  Optional   | Name of identical memory exposed at a different address.
+&nbsp;&nbsp;&nbsp; `default:`                             |  Optional   | Indicates a general purpose memory region.
 &nbsp;&nbsp;&nbsp; `from-pack:`                           |  Optional   | Pack that defines this memory.
 
 The table lists the letters and their meaning for use in the access attribute string.
@@ -1045,7 +1049,7 @@ This node contains connection information for a debugger with initial settings c
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
 &nbsp;&nbsp;&nbsp; `start-pname:`                         |  Optional   | Debugger connects at start to this processor.
 &nbsp;&nbsp;&nbsp; `gdbserver:`                           |  Optional   | Information for GDB server option of debugger.
-&nbsp;&nbsp;&nbsp; `telnet:`                              |  Optional   | Telnet service configuration.
+&nbsp;&nbsp;&nbsp; `stdio:`                               |  Optional   | Standard I/O service configuration.
 &nbsp;&nbsp;&nbsp; `connect:`                             |  Optional   | Connect mode to hardware.
 &nbsp;&nbsp;&nbsp; `reset:`                               |  Optional   | Reset type configuration for various cores.
 &nbsp;&nbsp;&nbsp; `load-setup:`                          |  Optional   | Reset type and Halt configuration for Load command.
@@ -1057,6 +1061,7 @@ This node contains connection information for a debugger with initial settings c
 !!! Note
     - `protocol:` and `clock:` are required by pyOCD but optional for other debug adapters. The file [`./etc/debug-adapters.yml`](build-operation.md#debug-adapter-integration) allows to specify default values for required options.
     - `start-pname:` is mandatory for multi-processor targets. If `start-pname:` is not configured using the [`debugger:`](YML-Input-Format.md#debugger) node in the `*.csolution.yml` file, the `pname:` of the first `*.cproject.yml` file is used.
+    - `telnet:` is a legacy alias for `stdio:`. New configurations should use `stdio:`.
 
 !!! Note
     Device-specific connection and trace settings are usually based on the device [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) element in the PDSC file. This element can also specify a `*.dbgconf` file to enable modifications of these settings in a solution.  

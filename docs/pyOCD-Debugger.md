@@ -34,26 +34,26 @@ CMSIS-DAP based Debug Adapters implement [debug access sequences](https://open-c
 !!! Note
     - When no `gdbserver` node is applied, the default mechanism of incrementing port number starting with `3333` is used.
 
-### `telnet:`
+### `stdio:`
 
-pyOCD integrates a Telnet service for character I/O functions via Semihosting or [SEGGER RTT](#rtt). Each processor that runs an independent application can be controlled individually.
+pyOCD integrates a standard I/O service for character I/O functions via Semihosting or [SEGGER RTT](#rtt). Each processor that runs an independent application can be controlled individually.
 
-![Telnet Modes](./images/telnet.png "Telnet modes")
+![Standard I/O Modes](./images/stdio.png "Standard I/O modes")
 
-The `telnet:` node configures:
+The `stdio:` node configures:
 
-- Telnet port for connecting remote tools, for example the [Serial Monitor VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
-- Redirect the output to a `file`, `console`, `server`, or `monitor`. The setting `monitor` connects a telnet `port` to the Serial Monitor in VS Code. The default output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management) and uses the extension `<pname>.txt`, format: `<solution-name>+<target-type>.<pname>.out`
+- Server port for connecting remote tools, for example the [Serial Monitor VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
+- Redirect the output to a `file`, `console`, `server`, or `monitor`. The setting `monitor` connects a Telnet server `port` to the Serial Monitor in VS Code. The default output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management) and uses the extension `<pname>.out`, format: `<solution-name>+<target-type>.<pname>.out`
 
-`telnet:`                      |              | Description
+`stdio:`                       |              | Description
 :------------------------------|:-------------|:------------------------------------
 `- mode:`                      | **Required** | Redirect output: `off` (default), `server`, `file`, `console`, `monitor`.
 &nbsp;&nbsp;&nbsp; `pname:`    |   Optional   | Identifies the processor (not required for single core system).
 &nbsp;&nbsp;&nbsp; `port:`     |   Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
-&nbsp;&nbsp;&nbsp; `file-in:`  |   Optional   | Explicit path and name of the telnet input file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.in`
-&nbsp;&nbsp;&nbsp; `file-out:` |   Optional   | Explicit path and name of the telnet output file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.out`
+&nbsp;&nbsp;&nbsp; `file-in:`  |   Optional   | Explicit path and name of the input file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.in`
+&nbsp;&nbsp;&nbsp; `file-out:` |   Optional   | Explicit path and name of the output file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.out`
 
-Telnet Mode                    | Description
+Standard I/O Mode              | Description
 :------------------------------|:--------------------------------------
 `server`                       | Serial I/O to Telnet server port.
 `file`                         | Serial I/O to text files. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.{in \| out}`
@@ -62,48 +62,51 @@ Telnet Mode                    | Description
 `off`                          | Serial I/O disabled.
 
 !!! Note
-    - When no `telnet` node is applied, Serial I/O to all processors is disabled.
+    - When no `stdio` node is applied, Serial I/O to all processors is disabled.
+
+!!! Info
+    - Use `stdio:` for new configurations. The legacy `telnet:` node remains supported as an alias for backward compatibility.
 
 The [Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension for VS Code simplifies the configuration and the examples below show the setup in a `*.csolution.yml` file.
 
-![Telnet Configuration Dialog](./images/telnet-dialog.png "Telnet modes")
+![Standard I/O Configuration Dialog](./images/telnet-dialog.png "Standard I/O modes")
 
 **Examples:**
 
-Enable Telnet service for a single core system.
+Enable standard I/O service for a single core system.
 
 ```yml
 debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
-  telnet:
+  stdio:
     - mode: monitor          # Output via TCP/IP port to VS Code Serial Monitor
 ```
 
-Enable Telnet service for a single core system.
+Enable standard I/O service for a single core system.
 
 ```yml
 debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
-  telnet:
+  stdio:
     - mode: server
 ```
 
-Enable Telnet service for a multi core system.
+Enable standard I/O service for a multi core system.
 
 ```yml
 debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
-  telnet:
-    - pname: Core0          # enable Telnet service with default settings
+  stdio:
+    - pname: Core0          # enable standard I/O service with default settings
       mode: server
       port: 4444
     - pname: Core1
-      mode: console         # route Telnet input/output to console 
+      mode: console         # route standard I/O to console
     - pname: Core2
-      mode: file            # route Telnet input/output to files
+      mode: file            # route standard I/O to files
       file-in: Blinky+MyTarget.Core2.in
       file-out: Blinky+MyTarget.Core2.out
 ```
@@ -187,7 +190,7 @@ debugger:
 
 [RTT](https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/) is a software component that implements real-time transfer channels from the target system to the pyOCD Debugger for multiple processors.
 
-![Telnet Modes](./images/rtt.png "Telnet modes")
+![Standard I/O Modes](./images/rtt.png "Standard I/O modes")
 
 The `rtt:` node configures the RTT features and the RTT channel usage. At least one RTT channel must be configured for each processor to enable the RTT capturing in pyOCD.
 
@@ -227,19 +230,22 @@ The `channel:` node selects the RTT channel mode.
 `channel:`                                          |              | Description
 :---------------------------------------------------|:-------------|:------------------------------------
 `- number:`                                         | **Required** | Channel number.
-&nbsp;&nbsp;&nbsp; `mode:`                          | **Required** | Channel mode selection: `stdio`, `server`, `systemview`, `systemview-server`.
+&nbsp;&nbsp;&nbsp; `mode:`                          | **Required** | Channel mode selection: `stdio`, `server`, `file`, `systemview`, `systemview-server`.
 &nbsp;&nbsp;&nbsp; `port:`                          |   Optional   | TCP port number (required for `server` and `systemview-server`).
+&nbsp;&nbsp;&nbsp; `file-out:`                      |   Optional   | Path of the file that receives data from the RTT channel. Applies to `file` mode. Default: `<target>[_core<core>]_ch<channel>.out`.
+&nbsp;&nbsp;&nbsp; `file-in:`                       |   Optional   | Path of the file that sends data to the RTT channel. Applies to `file` mode. Default: `<target>[_core<core>]_ch<channel>.in`; input is disabled when the file does not exist.
 
 Channel Mode                  | Description
 :-----------------------------|:------------------------------------
-`stdio`                       | Connects channel to standard input/output service that is configured via the [`telnet:`](#telnet) node.
+`stdio`                       | Connects channel to standard I/O service that is configured via the [`stdio:`](#stdio) node.
 `server`                      | Exposes channel over a TCP server port.
+`file`                        | Routes RTT channel data to and from files.
 `systemview`                  | Saves channel data to *.SVDat file for [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/) tool.<br/>Default file: `./out/<solution-name>+<target-type>.SVDat`; see [`systemview:`](#systemview) node.
 `systemview-server`           | Streams live data to [SEGGER SystemView](https://www.segger.com/products/development-tools/systemview/) tool over a "IP Recorder host" TCP port. Refer to the SEGGER SystemView user guide, IP Recorder.
 
 **Examples:**
 
-Enable RTT with STDIO on channel 0 and configure explicit control block:
+Enable RTT with standard I/O on channel 0 and configure explicit control block:
 
 ```yml
 debugger:
@@ -255,7 +261,7 @@ debugger:
           mode: stdio
 ```
 
-Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port `4444` and channel 3 to a Telnet Server port `4445`:
+Enable RTT with standard I/O on channel 0 and map RTT channel 2 to a Telnet Server port `4444` and channel 3 to a Telnet Server port `4445`:
 
 ```yml
 debugger:
@@ -272,6 +278,21 @@ debugger:
         - number: 3
           mode: server
           port: 4445
+```
+
+Map RTT channel 2 to input and output files:
+
+```yml
+debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  rtt:
+    - pname: Core0
+      channel:
+        - number: 2
+          mode: file
+          file-out: ./out/Blinky.out
+          file-in: ./out/Blinky.in
 ```
 
 ### `systemview:`
@@ -576,9 +597,11 @@ configuration and highlights the nodes relevant to pyOCD. The contents of each n
 
 `cbuild-run:`                                                     |              | Content
 :-----------------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; [`board-pack:`](#board-pack)                   |   Optional   | Identifies the board pack used.
+&nbsp;&nbsp;&nbsp; [`board-pack-path:`](#board-pack-path)         |   Optional   | Path to the board pack on the host computer.
 &nbsp;&nbsp;&nbsp; [`device:`](#device)                           | **Required** | Identifies the device.
 &nbsp;&nbsp;&nbsp; [`device-pack:`](#device-pack)                 |   Optional   | Identifies the device pack used.
-&nbsp;&nbsp;&nbsp; [`board-pack:`](#board-pack)                   |   Optional   | Identifies the board pack used.
+&nbsp;&nbsp;&nbsp; [`device-pack-path:`](#device-pack-path)       |   Optional   | Path to the device pack on the host computer.
 &nbsp;&nbsp;&nbsp; [`output:`](#output)                           |   Optional   | Lists the images (ELF, HEX, BIN) in this solution.
 &nbsp;&nbsp;&nbsp; [`system-resources:`](#system-resources)       |   Optional   | Lists target system resources.
 &nbsp;&nbsp;&nbsp; [`system-descriptions:`](#system-descriptions) |   Optional   | Lists target's description files for peripherals and software components.
@@ -588,6 +611,26 @@ configuration and highlights the nodes relevant to pyOCD. The contents of each n
 &nbsp;&nbsp;&nbsp; [`programming:`](#programming)                 |   Optional   | Lists flash algorithms for programming.
 &nbsp;&nbsp;&nbsp; [`flash-info:`](#flash-info)                   |   Optional   | Lists flash information for flash programming using debug sequences.
 &nbsp;&nbsp;&nbsp; [`debug-topology:`](#debug-topology)           |   Optional   | Debug topology.
+
+### `board-pack:`
+
+The `board-pack` (BSP) improves pyOCD's error reporting when a required file is provided by the board pack.
+
+**Example:**
+
+```yml
+  board-pack: Keil::B-U585I-IOT02A_BSP@2.1.0
+```
+
+### `board-pack-path:`
+
+The `board-pack-path` defines the path to the board pack (BSP) on the host computer.
+
+**Example:**
+
+```yml
+  board-pack-path: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.1.0
+```
 
 ### `device:`
 
@@ -611,14 +654,14 @@ The `device-pack` (DFP) improves pyOCD's error reporting when a required file is
   device-pack: AlifSemiconductor::Ensemble@2.0.4
 ```
 
-### `board-pack:`
+### `device-pack-path:`
 
-The `board-pack` (BSP) improves pyOCD's error reporting when a required file is provided by the board pack.
+The `device-pack-path` defines the path to the device pack (DFP) on the host computer.
 
 **Example:**
 
 ```yml
-  board-pack: AlifSemiconductor::Ensemble@2.0.4
+  device-pack-path: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4
 ```
 
 ### `output:`
@@ -681,6 +724,7 @@ pyOCD falls back to the default Cortex-M memory map.
 &nbsp;&nbsp;&nbsp; `size:`                        | **Required** | Size of the memory.
 &nbsp;&nbsp;&nbsp; `pname:`                       |   Optional   | Only accessible by a specific processor.
 &nbsp;&nbsp;&nbsp; `alias:`                       |   Optional   | Name of identical memory exposed at a different address.
+&nbsp;&nbsp;&nbsp; `default:`                     |   Optional   | Indicates a general purpose memory region.
 
 **Default Cortex-M memory map:**
 
@@ -742,6 +786,7 @@ pyOCD falls back to the default Cortex-M memory map.
         access: rx
         start: 0x80000000
         size: 0x00580000
+        default: true
       - name: SRAM2
         access: rwx
         start: 0x50000000
@@ -808,7 +853,7 @@ and pyOCD Debugger [Extended Options](#extended-options).
         pname: M55_HP
       - port: 3334
         pname: M55_HE
-    telnet:
+    stdio:
       - mode: console
         pname: M55_HE
         port: 4445
