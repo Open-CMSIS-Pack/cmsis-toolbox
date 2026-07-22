@@ -900,7 +900,8 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </tr>
 </tbody>
 </table>
-<p>Each bit in <code>enable:</code> represents one ITM channel.</p>
+<p>Each bit in <code>enable:</code> represents one ITM channel.<br />
+Each bit in <code>privileged:</code> represents a block of eight channels, i.e. value <code>0x2</code> configures that access to ITM channles 8-15 must be privileged.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>ITM channel 0 is often used for <code>printf</code> output. This output should be routed to an output window or debug console instead of the trace analysis components.</p>
