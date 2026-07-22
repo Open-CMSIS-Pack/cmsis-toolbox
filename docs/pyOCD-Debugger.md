@@ -311,11 +311,14 @@ Device-specific trace capture capabilities are configured using the [`device-set
 
 The `trace:` node has one child type per supported trace transport mode which offers mode-specific options. Currently, the [`swo-uart`](#swo-uart) type and the [`trace-buffer`](#trace-buffer) type are supported.
 
-The default trace output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management)
-and uses the format `<solution-name>+<target-type>+<trace-config-name>.trace`.  
-The `<trace-config-name>` part is derived from the optional name of the configuration stored in the type node, i.e.
-[`- swo-uart:`](#swo-uart) and the [`- trace-buffer:`](#trace-buffer). If no name is provided, the type itself is used.
+The default trace output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management). It
+is located in the solution's `.trace/` sub-folder and uses the format `<solution-name>+<target-type>@<target-set>.<channel>.raw`.
+The `<channel>` part is derived from the type node as it follows.
 
+Type node                          | `<channel>` |
+:----------------------------------|:------------|
+[`- swo-uart:`](#swo-uart)         | SWO         |
+[`- trace-buffer:`](#trace-buffer) | TB          |
 
 !!! Note
     The `trace:` node is implemented as a list. However, currently only one node is supported. Additional nodes are ignored.
@@ -335,7 +338,7 @@ Configuration for the SWO trace output in UART mode.
 `- swo-uart:`                            | **Required** | Transport mode is SWO UART. The node allows an optional name (default: `null`).
 &nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
-&nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>+<trace-config-name>.trace`.
+&nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>@<target-set>.SWO.raw`.
 &nbsp;&nbsp;&nbsp; `input-clock:`        | **Required** | Trace input clock frequency in Hz.
 &nbsp;&nbsp;&nbsp; `output-clock:`       |   Optional   | Trace output clock frequency, i.e. the baudrate, for the SWO output.
 
@@ -353,7 +356,7 @@ and configured through the `device-settings:` or the `*.dbgconf` file.
 `- trace-buffer:`                        | **Required** | Transport mode is (on-chip) trace buffer. The node allows an optional name (default: `null`).
 &nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
-&nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>+<trace-config-name>.trace`.
+&nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>@<target-set>.TB.raw`.
 
 #### Trace Clocks
 
