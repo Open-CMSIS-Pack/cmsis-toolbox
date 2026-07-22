@@ -99,7 +99,7 @@
 <ul>
 <li class="toctree-l3"><a class="reference internal" href="#gdbserver">gdbserver:</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#telnet">telnet:</a>
+<li class="toctree-l3"><a class="reference internal" href="#stdio">stdio:</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#connect">connect:</a>
 </li>
@@ -153,11 +153,15 @@
 <ul>
 <li class="toctree-l3"><a class="reference internal" href="#cbuild-run">cbuild-run:</a>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#board-pack">board-pack:</a>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#board-pack-path">board-pack-path:</a>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#device">device:</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#device-pack">device-pack:</a>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#board-pack">board-pack:</a>
+<li class="toctree-l3"><a class="reference internal" href="#device-pack-path">device-pack-path:</a>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#output">output:</a>
 </li>
@@ -273,18 +277,18 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 <li>When no <code>gdbserver</code> node is applied, the default mechanism of incrementing port number starting with <code>3333</code> is used.</li>
 </ul>
 </div>
-<h3 id="telnet"><code>telnet:</code></h3>
-<p>pyOCD integrates a Telnet service for character I/O functions via Semihosting or <a href="#rtt">SEGGER RTT</a>. Each processor that runs an independent application can be controlled individually.</p>
-<p><img alt="Telnet Modes" src="../images/telnet.png" title="Telnet modes"/></p>
-<p>The <code>telnet:</code> node configures:</p>
+<h3 id="stdio"><code>stdio:</code></h3>
+<p>pyOCD integrates a standard I/O service for character I/O functions via Semihosting or <a href="#rtt">SEGGER RTT</a>. Each processor that runs an independent application can be controlled individually.</p>
+<p><img alt="Standard I/O Modes" src="../images/stdio.png" title="Standard I/O modes"/></p>
+<p>The <code>stdio:</code> node configures:</p>
 <ul>
-<li>Telnet port for connecting remote tools, for example the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor">Serial Monitor VS Code extension</a>.</li>
-<li>Redirect the output to a <code>file</code>, <code>console</code>, <code>server</code>, or <code>monitor</code>. The setting <code>monitor</code> connects a telnet <code>port</code> to the Serial Monitor in VS Code. The default output file and location is derived from the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a> and uses the extension <code>&lt;pname&gt;.txt</code>, format: <code>&lt;solution-name&gt;+&lt;target-type&gt;.&lt;pname&gt;.out</code></li>
+<li>Server port for connecting remote tools, for example the <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor">Serial Monitor VS Code extension</a>.</li>
+<li>Redirect the output to a <code>file</code>, <code>console</code>, <code>server</code>, or <code>monitor</code>. The setting <code>monitor</code> connects a Telnet server <code>port</code> to the Serial Monitor in VS Code. The default output file and location is derived from the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a> and uses the extension <code>&lt;pname&gt;.out</code>, format: <code>&lt;solution-name&gt;+&lt;target-type&gt;.&lt;pname&gt;.out</code></li>
 </ul>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;"><code>telnet:</code></th>
+<th style="text-align: left;"><code>stdio:</code></th>
 <th style="text-align: left;"></th>
 <th style="text-align: left;">Description</th>
 </tr>
@@ -308,19 +312,19 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 <tr>
 <td style="text-align: left;">    <code>file-in:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Explicit path and name of the telnet input file. Default: <code>./out/\&lt;solution-name\&gt;+\&lt;target-type\&gt;.\&lt;pname\&gt;.in</code></td>
+<td style="text-align: left;">Explicit path and name of the input file. Default: <code>./out/\&lt;solution-name\&gt;+\&lt;target-type\&gt;.\&lt;pname\&gt;.in</code></td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>file-out:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Explicit path and name of the telnet output file. Default: <code>./out/\&lt;solution-name\&gt;+\&lt;target-type\&gt;.\&lt;pname\&gt;.out</code></td>
+<td style="text-align: left;">Explicit path and name of the output file. Default: <code>./out/\&lt;solution-name\&gt;+\&lt;target-type\&gt;.\&lt;pname\&gt;.out</code></td>
 </tr>
 </tbody>
 </table>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Telnet Mode</th>
+<th style="text-align: left;">Standard I/O Mode</th>
 <th style="text-align: left;">Description</th>
 </tr>
 </thead>
@@ -350,38 +354,44 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
-<li>When no <code>telnet</code> node is applied, Serial I/O to all processors is disabled.</li>
+<li>When no <code>stdio</code> node is applied, Serial I/O to all processors is disabled.</li>
+</ul>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<ul>
+<li>Use <code>stdio:</code> for new configurations. The legacy <code>telnet:</code> node remains supported as an alias for backward compatibility.</li>
 </ul>
 </div>
 <p>The <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">Arm CMSIS Solution</a> extension for VS Code simplifies the configuration and the examples below show the setup in a <code>*.csolution.yml</code> file.</p>
-<p><img alt="Telnet Configuration Dialog" src="../images/telnet-dialog.png" title="Telnet modes"/></p>
+<p><img alt="Standard I/O Configuration Dialog" src="../images/telnet-dialog.png" title="Standard I/O modes"/></p>
 <p><strong>Examples:</strong></p>
-<p>Enable Telnet service for a single core system.</p>
+<p>Enable standard I/O service for a single core system.</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
-  telnet:
+  stdio:
     - mode: monitor          # Output via TCP/IP port to VS Code Serial Monitor
 </code></pre>
-<p>Enable Telnet service for a single core system.</p>
+<p>Enable standard I/O service for a single core system.</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
-  telnet:
+  stdio:
     - mode: server
 </code></pre>
-<p>Enable Telnet service for a multi core system.</p>
+<p>Enable standard I/O service for a multi core system.</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
-  telnet:
-    - pname: Core0          # enable Telnet service with default settings
+  stdio:
+    - pname: Core0          # enable standard I/O service with default settings
       mode: server
       port: 4444
     - pname: Core1
-      mode: console         # route Telnet input/output to console 
+      mode: console         # route standard I/O to console
     - pname: Core2
-      mode: file            # route Telnet input/output to files
+      mode: file            # route standard I/O to files
       file-in: Blinky+MyTarget.Core2.in
       file-out: Blinky+MyTarget.Core2.out
 </code></pre>
@@ -533,7 +543,7 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 </code></pre>
 <h3 id="rtt"><code>rtt:</code></h3>
 <p><a href="https://www.segger.com/products/debug-probes/j-link/technology/about-real-time-transfer/">RTT</a> is a software component that implements real-time transfer channels from the target system to the pyOCD Debugger for multiple processors.</p>
-<p><img alt="Telnet Modes" src="../images/rtt.png" title="Telnet modes"/></p>
+<p><img alt="Standard I/O Modes" src="../images/rtt.png" title="Standard I/O modes"/></p>
 <p>The <code>rtt:</code> node configures the RTT features and the RTT channel usage. At least one RTT channel must be configured for each processor to enable the RTT capturing in pyOCD.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -621,12 +631,22 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 <tr>
 <td style="text-align: left;">    <code>mode:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Channel mode selection: <code>stdio</code>, <code>server</code>, <code>systemview</code>, <code>systemview-server</code>.</td>
+<td style="text-align: left;">Channel mode selection: <code>stdio</code>, <code>server</code>, <code>file</code>, <code>systemview</code>, <code>systemview-server</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>port:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">TCP port number (required for <code>server</code> and <code>systemview-server</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>file-out:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Path of the file that receives data from the RTT channel. Applies to <code>file</code> mode. Default: <code>&lt;target&gt;[_core&lt;core&gt;]_ch&lt;channel&gt;.out</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <code>file-in:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Path of the file that sends data to the RTT channel. Applies to <code>file</code> mode. Default: <code>&lt;target&gt;[_core&lt;core&gt;]_ch&lt;channel&gt;.in</code>; input is disabled when the file does not exist.</td>
 </tr>
 </tbody>
 </table>
@@ -640,11 +660,15 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 <tbody>
 <tr>
 <td style="text-align: left;"><code>stdio</code></td>
-<td style="text-align: left;">Connects channel to standard input/output service that is configured via the <a href="#telnet"><code>telnet:</code></a> node.</td>
+<td style="text-align: left;">Connects channel to standard I/O service that is configured via the <a href="#stdio"><code>stdio:</code></a> node.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>server</code></td>
 <td style="text-align: left;">Exposes channel over a TCP server port.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>file</code></td>
+<td style="text-align: left;">Routes RTT channel data to and from files.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>systemview</code></td>
@@ -657,7 +681,7 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 </tbody>
 </table>
 <p><strong>Examples:</strong></p>
-<p>Enable RTT with STDIO on channel 0 and configure explicit control block:</p>
+<p>Enable RTT with standard I/O on channel 0 and configure explicit control block:</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
@@ -670,7 +694,7 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
         - number: 0
           mode: stdio
 </code></pre>
-<p>Enable RTT with STDIO and map RTT channel 2 to a Telnet Server port <code>4444</code> and channel 3 to a Telnet Server port <code>4445</code>:</p>
+<p>Enable RTT with standard I/O on channel 0 and map RTT channel 2 to a Telnet Server port <code>4444</code> and channel 3 to a Telnet Server port <code>4445</code>:</p>
 <pre><code class="language-yml">debugger:
   name: CMSIS-DAP@pyOCD
   protocol: swd
@@ -685,6 +709,18 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
         - number: 3
           mode: server
           port: 4445
+</code></pre>
+<p>Map RTT channel 2 to input and output files:</p>
+<pre><code class="language-yml">debugger:
+  name: CMSIS-DAP@pyOCD
+  protocol: swd
+  rtt:
+    - pname: Core0
+      channel:
+        - number: 2
+          mode: file
+          file-out: ./out/Blinky.out
+          file-in: ./out/Blinky.in
 </code></pre>
 <h3 id="systemview"><code>systemview:</code></h3>
 <p>The <code>systemview:</code> node configures the *.SVDat file capturing for <a href="https://www.segger.com/products/development-tools/systemview/">SEGGER SystemView</a> tool for analyzing the runtime behavior of embedded systems.</p>
@@ -1092,6 +1128,16 @@ configuration and highlights the nodes relevant to pyOCD. The contents of each n
 </thead>
 <tbody>
 <tr>
+<td style="text-align: left;">    <a href="#board-pack"><code>board-pack:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Identifies the board pack used.</td>
+</tr>
+<tr>
+<td style="text-align: left;">    <a href="#board-pack-path"><code>board-pack-path:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Path to the board pack on the host computer.</td>
+</tr>
+<tr>
 <td style="text-align: left;">    <a href="#device"><code>device:</code></a></td>
 <td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">Identifies the device.</td>
@@ -1102,9 +1148,9 @@ configuration and highlights the nodes relevant to pyOCD. The contents of each n
 <td style="text-align: left;">Identifies the device pack used.</td>
 </tr>
 <tr>
-<td style="text-align: left;">    <a href="#board-pack"><code>board-pack:</code></a></td>
+<td style="text-align: left;">    <a href="#device-pack-path"><code>device-pack-path:</code></a></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Identifies the board pack used.</td>
+<td style="text-align: left;">Path to the device pack on the host computer.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <a href="#output"><code>output:</code></a></td>
@@ -1153,6 +1199,16 @@ configuration and highlights the nodes relevant to pyOCD. The contents of each n
 </tr>
 </tbody>
 </table>
+<h3 id="board-pack"><code>board-pack:</code></h3>
+<p>The <code>board-pack</code> (BSP) improves pyOCD's error reporting when a required file is provided by the board pack.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  board-pack: Keil::B-U585I-IOT02A_BSP@2.1.0
+</code></pre>
+<h3 id="board-pack-path"><code>board-pack-path:</code></h3>
+<p>The <code>board-pack-path</code> defines the path to the board pack (BSP) on the host computer.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  board-pack-path: ${CMSIS_PACK_ROOT}/Keil/B-U585I-IOT02A_BSP/2.1.0
+</code></pre>
 <h3 id="device"><code>device:</code></h3>
 <p>pyOCD uses the <code>device</code> node to name the target in the current debug session. The node value is structured as
 <code>[&lt;vendor&gt;::]&lt;device&gt;[:&lt;pname&gt;]</code>, where only the <code>&lt;device&gt;</code> part is used to name the target. The default value
@@ -1165,10 +1221,10 @@ is an empty string.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  device-pack: AlifSemiconductor::Ensemble@2.0.4
 </code></pre>
-<h3 id="board-pack"><code>board-pack:</code></h3>
-<p>The <code>board-pack</code> (BSP) improves pyOCD's error reporting when a required file is provided by the board pack.</p>
+<h3 id="device-pack-path"><code>device-pack-path:</code></h3>
+<p>The <code>device-pack-path</code> defines the path to the device pack (DFP) on the host computer.</p>
 <p><strong>Example:</strong></p>
-<pre><code class="language-yml">  board-pack: AlifSemiconductor::Ensemble@2.0.4
+<pre><code class="language-yml">  device-pack-path: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.4
 </code></pre>
 <h3 id="output"><code>output:</code></h3>
 <p>pyOCD uses the information from the <code>output:</code> node to determine which images need to be loaded into the device's
@@ -1298,6 +1354,11 @@ pyOCD falls back to the default Cortex-M memory map.</p>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Name of identical memory exposed at a different address.</td>
 </tr>
+<tr>
+<td style="text-align: left;">    <code>default:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Indicates a general purpose memory region.</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Default Cortex-M memory map:</strong></p>
@@ -1355,6 +1416,7 @@ pyOCD falls back to the default Cortex-M memory map.</p>
         access: rx
         start: 0x80000000
         size: 0x00580000
+        default: true
       - name: SRAM2
         access: rwx
         start: 0x50000000
@@ -1446,7 +1508,7 @@ and pyOCD Debugger <a href="#extended-options">Extended Options</a>.</p>
         pname: M55_HP
       - port: 3334
         pname: M55_HE
-    telnet:
+    stdio:
       - mode: console
         pname: M55_HE
         port: 4445

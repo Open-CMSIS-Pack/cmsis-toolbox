@@ -1777,6 +1777,11 @@
 <td>BSP that is defining the <a href="../YML-Input-Format/#board">Board name</a> used for this target.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>board-pack-path:</code></td>
+<td style="text-align: left;">Optional</td>
+<td>Path to the BSP on the host computer.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device:</code></td>
 <td style="text-align: left;">Optional</td>
 <td><a href="../YML-Input-Format/#device">Device name</a> used in this target.</td>
@@ -1785,6 +1790,11 @@
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device-pack:</code></td>
 <td style="text-align: left;">Optional</td>
 <td>DFP that is defining the <a href="../YML-Input-Format/#device">Device</a> used in this target.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>device-pack-path:</code></td>
+<td style="text-align: left;">Optional</td>
+<td>Path to the DFP on the host computer.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#output"><code>output:</code></a></td>
@@ -1805,6 +1815,11 @@
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debugger"><code>debugger:</code></a></td>
 <td style="text-align: left;"><strong>Required</strong></td>
 <td>Configuration information for the debug connection.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug-vars"><code>debug-vars:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td>Pass user settings to debug access sequences.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#debug-sequences"><code>debug-sequences:</code></a></td>
@@ -1966,6 +1981,11 @@ The <code>output:</code> node also contains other required files that are added 
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>alias:</code></td>
 <td>Optional</td>
 <td style="text-align: left;">Name of identical memory exposed at a different address.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>default:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Indicates a general purpose memory region.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>from-pack:</code></td>
@@ -2231,9 +2251,9 @@ The <code>output:</code> node also contains other required files that are added 
 <td style="text-align: left;">Information for GDB server option of debugger.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>telnet:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stdio:</code></td>
 <td>Optional</td>
-<td style="text-align: left;">Telnet service configuration.</td>
+<td style="text-align: left;">Standard I/O service configuration.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>connect:</code></td>
@@ -2277,6 +2297,7 @@ The <code>output:</code> node also contains other required files that are added 
 <ul>
 <li><code>protocol:</code> and <code>clock:</code> are required by pyOCD but optional for other debug adapters. The file <a href="../build-operation/#debug-adapter-integration"><code>./etc/debug-adapters.yml</code></a> allows to specify default values for required options.</li>
 <li><code>start-pname:</code> is mandatory for multi-processor targets. If <code>start-pname:</code> is not configured using the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> node in the <code>*.csolution.yml</code> file, the <code>pname:</code> of the first <code>*.cproject.yml</code> file is used.</li>
+<li><code>telnet:</code> is a legacy alias for <code>stdio:</code>. New configurations should use <code>stdio:</code>.</li>
 </ul>
 </div>
 <div class="admonition note">
