@@ -735,10 +735,27 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 <p>CMSIS-DAP supports the SWO trace output of Cortex-M devices. The raw trace data are made available from pyOCD through a TCP connection or a binary file.
 Device-specific trace capture capabilities are configured using the <a href="#device-settings"><code>device-settings</code></a> node under <code>debugger:</code>.</p>
 <p>The <code>trace:</code> node has one child type per supported trace transport mode which offers mode-specific options. Currently, the <a href="#swo-uart"><code>swo-uart</code></a> type and the <a href="#trace-buffer"><code>trace-buffer</code></a> type are supported.</p>
-<p>The default trace output file and location is derived from the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a>
-and uses the format <code>&lt;solution-name&gt;+&lt;target-type&gt;+&lt;trace-config-name&gt;.trace</code>.<br/>
-The <code>&lt;trace-config-name&gt;</code> part is derived from the optional name of the configuration stored in the type node, i.e.
-<a href="#swo-uart"><code>- swo-uart:</code></a> and the <a href="#trace-buffer"><code>- trace-buffer:</code></a>. If no name is provided, the type itself is used.</p>
+<p>The default trace output file and location is derived from the <a href="../YML-CBuild-Format/#run-and-debug-management"><code>cbuild-run.yml</code> file</a>. It
+is located in the solution's <code>.trace/</code> sub-folder and uses the format <code>&lt;solution-name&gt;+&lt;target-type&gt;@&lt;target-set&gt;.&lt;channel&gt;.raw</code>.
+The <code>&lt;channel&gt;</code> part is derived from the type node as it follows.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Type node</th>
+<th style="text-align: left;"><code>&lt;channel&gt;</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#swo-uart"><code>- swo-uart:</code></a></td>
+<td style="text-align: left;">SWO</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#trace-buffer"><code>- trace-buffer:</code></a></td>
+<td style="text-align: left;">TB</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The <code>trace:</code> node is implemented as a list. However, currently only one node is supported. Additional nodes are ignored.</p>
@@ -776,7 +793,7 @@ The <code>&lt;trace-config-name&gt;</code> part is derived from the optional nam
 <tr>
 <td style="text-align: left;">    <code>file:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Explicit path and name of the trace output file in <code>file</code> mode. Default: <code>&lt;solution-name&gt;+&lt;target-type&gt;+&lt;trace-config-name&gt;.trace</code>.</td>
+<td style="text-align: left;">Explicit path and name of the trace output file in <code>file</code> mode. Default: <code>&lt;solution-name&gt;+&lt;target-type&gt;@&lt;target-set&gt;.SWO.raw</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>input-clock:</code></td>
@@ -823,7 +840,7 @@ and configured through the <code>device-settings:</code> or the <code>*.dbgconf<
 <tr>
 <td style="text-align: left;">    <code>file:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Explicit path and name of the trace output file in <code>file</code> mode. Default: <code>&lt;solution-name&gt;+&lt;target-type&gt;+&lt;trace-config-name&gt;.trace</code>.</td>
+<td style="text-align: left;">Explicit path and name of the trace output file in <code>file</code> mode. Default: <code>&lt;solution-name&gt;+&lt;target-type&gt;@&lt;target-set&gt;.TB.raw</code>.</td>
 </tr>
 </tbody>
 </table>
