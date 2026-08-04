@@ -631,6 +631,7 @@ Stream Synchronization | -  | -        | yes             | yes      | yes
 
 !!! Note
     - The available Event Counters depend on the Cortex-M processor.
+    - The DWT comparators available for `DWT Data Trace` and `Start, Stop, Halt` are shared, so the total number of available comparators is not the sum of the values in the two rows.
     - M52, M55, M85 use the first 4 DWT comparators for data trace.
 
 ## `pyTS` Utility
