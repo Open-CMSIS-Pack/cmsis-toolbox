@@ -278,7 +278,7 @@ The `*.ctrace.yml` file starts with the node `ctrace:` and contains the trace ca
 &nbsp;&nbsp;&nbsp; [`itm:`](#itm)                         |  Optional   | ITM channel configuration.
 &nbsp;&nbsp;&nbsp; [`instructions:`](#instructions)       |  Optional   | ETM or MTB instruction trace configuration.
 &nbsp;&nbsp;&nbsp; [`pcsampling:`](#pcsampling)           |  Optional   | DWT PC sampling configuration.
-&nbsp;&nbsp;&nbsp; [`synchronization:`](#synchronization) | Optional  | Trace synchronization packet period configuration.
+&nbsp;&nbsp;&nbsp; [`synchronization:`](#synchronization) |  Optional   | Trace synchronization packet period configuration.
 &nbsp;&nbsp;&nbsp; [`tracehalt:`](#tracehalt)             |  Future     | Trace sink or formatter halt trigger configuration.
 
 **Example:**
@@ -415,13 +415,13 @@ The `synchronization:` node specifies the frequency of the DWT synchronization p
 
 `synchronization:`                    |             | Content
 :-------------------------------------|:------------|:------------------------------------
-`- DWT:`                              |**Required** | Frequency `off`, `16M`, `64M`, `256M` processor cycles. Default: `256M`.
+`DWT:`                                |  Optional   | Frequency `off`, `16M`, `64M`, `256M` processor cycles. Default: `256M`.
 
 **Example:**
 
 ```yml
 synchronization:
-  - DWT: 16M
+  DWT: 16M
 ```
 
 #### `instructions:`
@@ -797,7 +797,7 @@ The five DWT profiling counters are `DWT_CPICNT`, `DWT_EXCCNT`, `DWT_SLEEPCNT`, 
 
 Here, data-value matching means comparing an observed load or store value. It does not by itself imply that the implementation can emit a data-value trace packet; that capability is listed separately in the final column.
 
-### Synchronization
+### ETM Synchronization
 
 The ETM synchronization range `0`, `256`, ... , `1M` is not generally configurable on the listed Cortex-M processors.
 
