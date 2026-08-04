@@ -491,12 +491,13 @@ The trace source types are: `dwt`, `event`, `exception`, `itm`, `pmu`, `overflow
 
 Multiple `ctrace-ref` entries may reference the same configuration node when it generates setups for multiple streams. The combination of `ctrace-ref` and `stream` identifies each generated setup.
 
-The meaning of `source:` depends on the `type:` as shown below.
+The use of `source:` depends on the combination of `type:` and the setting referenced by `ctrace-ref:`.
 
-`type:`      | Usage of `source:`
-:------------|:------------------------------------
-`dwt`        | Number or array of allocated DWT comparators.
-`itm`        | Number of allocated ITM channel.
+`type:` | `ctrace-ref:` setting | Usage of `source:`
+:-------|:----------------------|:-------------------
+`dwt`   | `data:` | Number or array of DWT comparators allocated for the data-trace entry.
+`dwt`   | `instructions:start:`, `instructions:stop:`, or `tracehalt:` | Number or array of DWT comparators allocated for the condition.
+`itm`   | `itm:` | Number or array of enabled ITM channels.
 
 `regs:`                                                  |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
