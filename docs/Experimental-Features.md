@@ -449,7 +449,7 @@ The nodes `start:`, `stop:`, and `tracehalt:` may contain a condition list that 
 `start:`, `stop:`, `tracehalt:`                        |             | Content
 :------------------------------------------------------|:------------|:------------------------------------
 `- location:`                                          |**Required** | Code symbol, data symbol, or numeric address [location](#location) used as the trace condition.
-&nbsp;&nbsp;&nbsp; `access:`                           |  Optional   | Access type: `X`, `R`, `W`, or `RW`.
+&nbsp;&nbsp;&nbsp; `access:`                           |  Optional   | Access type: `X`, `R`, `W`, or `RW`. Defaults to `X` for code symbols, and to `W` for data symbols or numeric addresses
 &nbsp;&nbsp;&nbsp; `size:`                             |  Optional   | Number of bytes in the condition range. Defaults to `sizeof(symbol)` for symbols and `4` for numeric addresses.
 &nbsp;&nbsp;&nbsp; `match:`                            |  Optional   | Value match condition for data symbols or numeric addresses.
 
@@ -457,8 +457,6 @@ The nodes `start:`, `stop:`, and `tracehalt:` may contain a condition list that 
 :------------------------------------------------------|:------------|:------------------------------------
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `value:`          |**Required** | Value to match.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `size:`           |  Optional   | Number of bytes to compare. Allowed values: `1`, `2`, `4`. Default: `4`.
-
-The default `access:` is `X` for code symbols and `W` for data symbols or numeric addresses.
 
 ### File Structure of `*.ctrace-run.yml`
 
@@ -480,9 +478,11 @@ The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of
 &nbsp;&nbsp;&nbsp; `info:`                               |  Optional   | Additional information (for example alignment extension).
 &nbsp;&nbsp;&nbsp; `warning:`                            |  Optional   | Warning message.
 &nbsp;&nbsp;&nbsp; `error:`                              |  Optional   | Error message when setup cannot be completed.
+&nbsp;&nbsp;&nbsp; `label:`                              |  Optional   | User-defined short label for Trace Compass
+&nbsp;&nbsp;&nbsp; `address:`                            |  Optional   | Resolved address for the setting. May be resolved from a symbol.
+&nbsp;&nbsp;&nbsp; `size:`                               |  Optional   | Size, in bytes, of the capture data. May be extracted from symbol information.
 &nbsp;&nbsp;&nbsp; `symbol-file:`                        |  Optional   | Absolute path to the symbol file used in this reference.
-&nbsp;&nbsp;&nbsp; `symbol-address:`                     |  Optional   | Address of the symbol.
-&nbsp;&nbsp;&nbsp; `label:`                              |  Optional   | User-define short label for Trace Compass
+&nbsp;&nbsp;&nbsp; `data-type:`                          |  Optional   | Type of displayed data: `unsigned`, `signed`, or `float`. Default: `unsigned`.
 &nbsp;&nbsp;&nbsp; `stream:`                             |  Optional   | Stream ID (CoreSight ATB ID).
 &nbsp;&nbsp;&nbsp; `source:`                             |  Optional   | Source ID.
 &nbsp;&nbsp;&nbsp; `regs:`                               |  Optional   | Register setup.
@@ -490,6 +490,8 @@ The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of
 The trace source types are: `dwt`, `event`, `exception`, `itm`, `pmu`, `overflow`, `pcsample`, `global_ts`.
 
 Multiple `ctrace-ref` entries may reference the same configuration node when it generates setups for multiple streams. The combination of `ctrace-ref` and `stream` identifies each generated setup.
+
+The `data-type` in combination with `size` provides a hint for the display format. Other information required for generating CTF data can be extracted from the referenced setting node in the `ctrace-setup:` section.
 
 The use of `source:` depends on the combination of `type:` and the setting referenced by `ctrace-ref:`.
 
@@ -514,8 +516,6 @@ ctrace-run:
   - ctrace-ref: core0/itm
     pname: core0
     type: itm            # packet types
-    symbol-file: <symbol file used>
-    symbol-address: address of symbol
     stream: 1            # stream id
     source: 0            # ITM channel #0
     regs:
@@ -529,8 +529,12 @@ ctrace-run:
     stream: 1            # stream id
     error: cannot find symbol
 
-  - ctrace-ref: data#1
+  - ctrace-ref: data#1   # symbol location
     type: dwt
+    address: <symbol address>
+    size: <symbol size>
+    symbol-file: <symbol file used>
+    data-type: unsigned
     stream: 1            # stream id
     source: [0, 1]       # allocated DWT comparators #0 and #1
     regs:
