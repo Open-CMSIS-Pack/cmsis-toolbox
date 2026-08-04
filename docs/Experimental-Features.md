@@ -519,10 +519,14 @@ ctrace-run:
     stream: 1            # stream id
     source: 0            # ITM channel #0
     regs:
-      - name:  ITM_TER0
-        value: 0xFFFFFFFF
-      - name:  
-        value:
+      - name: ITM_TER0
+        value: 0x00000001
+      - name: ITM_TPR
+        value: 0x00000001
+        mask: 0x0000000f
+      - name: ITM_TCR
+        value: 0x00010000
+        mask: 0x007f0000
 
   - ctrace-ref: data#0
     type: dwt
@@ -564,6 +568,10 @@ ctrace-run:
   #     - name: TRCCCCTLR
   #       value: 0x4
 ```
+
+!!! Note
+    The processor `itm` reference configures the ITM ATB stream ID. It may be generated even when no ITM channels are enabled.
+
 
 #### Register Accesses
 
