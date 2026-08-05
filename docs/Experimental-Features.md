@@ -278,7 +278,7 @@ The `*.ctrace.yml` file starts with the node `ctrace:` and contains the trace ca
 &nbsp;&nbsp;&nbsp; [`itm:`](#itm)                         |  Optional   | ITM channel configuration.
 &nbsp;&nbsp;&nbsp; [`instructions:`](#instructions)       |  Optional   | ETM or MTB instruction trace configuration.
 &nbsp;&nbsp;&nbsp; [`pcsampling:`](#pcsampling)           |  Optional   | DWT PC sampling configuration.
-&nbsp;&nbsp;&nbsp; [`synchronization:`](#synchronization) | Optional  | Trace synchronization packet period configuration.
+&nbsp;&nbsp;&nbsp; [`synchronization:`](#synchronization) |  Optional   | Trace synchronization packet period configuration.
 &nbsp;&nbsp;&nbsp; [`tracehalt:`](#tracehalt)             |  Future     | Trace sink or formatter halt trigger configuration.
 
 **Example:**
@@ -345,6 +345,9 @@ The `data:` node configures DWT data trace. DWT comparator resources are limited
 &nbsp;&nbsp;&nbsp; `size:`                               |  Optional   | Number of bytes in the traced range. Default: `sizeof(symbol)`, `4` for numeric addresses.
 &nbsp;&nbsp;&nbsp; `output:`                             |  Optional   | Trace output mode (see table below). Default: `value`.
 &nbsp;&nbsp;&nbsp; `match:`                              |  Optional   | Value match condition. When present, trace is emitted only for matching accesses.
+
+`match:`                                                 |             | Content
+:--------------------------------------------------------|:------------|:------------------------------------
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `value:`            |**Required** | Value to match.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `size:`             |  Optional   | Number of bytes to compare. Allowed values: `1`, `2`, `4`. Default: `4`.
 
@@ -415,13 +418,13 @@ The `synchronization:` node specifies the frequency of the DWT synchronization p
 
 `synchronization:`                    |             | Content
 :-------------------------------------|:------------|:------------------------------------
-`- DWT:`                              |**Required** | Frequency `off`, `16M`, `64M`, `256M` processor cycles. Default: `256M`.
+`DWT:`                                |  Optional   | Frequency `off`, `16M`, `64M`, `256M` processor cycles. Default: `256M`.
 
 **Example:**
 
 ```yml
 synchronization:
-  - DWT: 16M
+  DWT: 16M
 ```
 
 #### `instructions:`
@@ -446,13 +449,14 @@ The nodes `start:`, `stop:`, and `tracehalt:` may contain a condition list that 
 `start:`, `stop:`, `tracehalt:`                        |             | Content
 :------------------------------------------------------|:------------|:------------------------------------
 `- location:`                                          |**Required** | Code symbol, data symbol, or numeric address [location](#location) used as the trace condition.
-&nbsp;&nbsp;&nbsp; `access:`                           |  Optional   | Access type: `X`, `R`, `W`, or `RW`.
+&nbsp;&nbsp;&nbsp; `access:`                           |  Optional   | Access type: `X`, `R`, `W`, or `RW`. Defaults to `X` for code symbols, and to `W` for data symbols or numeric addresses
 &nbsp;&nbsp;&nbsp; `size:`                             |  Optional   | Number of bytes in the condition range. Defaults to `sizeof(symbol)` for symbols and `4` for numeric addresses.
 &nbsp;&nbsp;&nbsp; `match:`                            |  Optional   | Value match condition for data symbols or numeric addresses.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `value:`          |**Required** | Value to match.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `size:`           |  Optional   | Number of bytes to compare. Allowed values: `1`, `2`, `4`.
 
-The default `access:` is `X` for code symbols and `W` for data symbols or numeric addresses.
+`match:`                                               |             | Content
+:------------------------------------------------------|:------------|:------------------------------------
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `value:`          |**Required** | Value to match.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `size:`           |  Optional   | Number of bytes to compare. Allowed values: `1`, `2`, `4`. Default: `4`.
 
 ### File Structure of `*.ctrace-run.yml`
 
@@ -474,9 +478,11 @@ The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of
 &nbsp;&nbsp;&nbsp; `info:`                               |  Optional   | Additional information (for example alignment extension).
 &nbsp;&nbsp;&nbsp; `warning:`                            |  Optional   | Warning message.
 &nbsp;&nbsp;&nbsp; `error:`                              |  Optional   | Error message when setup cannot be completed.
+&nbsp;&nbsp;&nbsp; `label:`                              |  Optional   | User-defined short label for Trace Compass
+&nbsp;&nbsp;&nbsp; `address:`                            |  Optional   | Resolved address for the setting. May be resolved from a symbol.
+&nbsp;&nbsp;&nbsp; `size:`                               |  Optional   | Size, in bytes, of the capture data. May be extracted from symbol information.
 &nbsp;&nbsp;&nbsp; `symbol-file:`                        |  Optional   | Absolute path to the symbol file used in this reference.
-&nbsp;&nbsp;&nbsp; `symbol-address:`                     |  Optional   | Address of the symbol.
-&nbsp;&nbsp;&nbsp; `label:`                              |  Optional   | User-define short label for Trace Compass
+&nbsp;&nbsp;&nbsp; `data-type:`                          |  Optional   | Type of displayed data: `unsigned`, `signed`, or `float`. Default: `unsigned`.
 &nbsp;&nbsp;&nbsp; `stream:`                             |  Optional   | Stream ID (CoreSight ATB ID).
 &nbsp;&nbsp;&nbsp; `source:`                             |  Optional   | Source ID.
 &nbsp;&nbsp;&nbsp; `regs:`                               |  Optional   | Register setup.
@@ -485,12 +491,17 @@ The trace source types are: `dwt`, `event`, `exception`, `itm`, `pmu`, `overflow
 
 Multiple `ctrace-ref` entries may reference the same configuration node when it generates setups for multiple streams. The combination of `ctrace-ref` and `stream` identifies each generated setup.
 
-The meaning of `source:` depends on the `type:` as shown below.
+The `data-type` in combination with `size` provides a hint for the display format. Other information required for generating CTF data can be extracted from the referenced setting node in the `ctrace-setup:` section.
 
-`type:`      | Usage of `source:`
-:------------|:------------------------------------
-`dwt`        | Number or array of allocated DWT comparators.
-`itm`        | Number of allocated ITM channel.
+`size` can be extracted from symbol information or provided in the `ctrace` file. If both are present, user input takes precedence.
+
+The use of `source:` depends on the combination of `type:` and the setting referenced by `ctrace-ref:`.
+
+`type:` | `ctrace-ref:` setting | Usage of `source:`
+:-------|:----------------------|:-------------------
+`dwt`   | `data:` | Number or array of DWT comparators allocated for the data-trace entry.
+`dwt`   | `instructions:start:`, `instructions:stop:`, or `tracehalt:` | Number or array of DWT comparators allocated for the condition.
+`itm`   | `itm:` | Number or array of enabled ITM channels.
 
 `regs:`                                                  |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
@@ -507,23 +518,29 @@ ctrace-run:
   - ctrace-ref: core0/itm
     pname: core0
     type: itm            # packet types
-    symbol-file: <symbol file used>
-    symbol-address: address of symbol
     stream: 1            # stream id
     source: 0            # ITM channel #0
     regs:
-      - name:  ITM_TER0
-        value: 0xFFFFFFFF
-      - name:  
-        value:
+      - name: ITM_TER0
+        value: 0x00000001
+      - name: ITM_TPR
+        value: 0x00000001
+        mask: 0x0000000f
+      - name: ITM_TCR
+        value: 0x00010000
+        mask: 0x007f0000
 
   - ctrace-ref: data#0
     type: dwt
     stream: 1            # stream id
     error: cannot find symbol
 
-  - ctrace-ref: data#1
+  - ctrace-ref: data#1   # symbol location
     type: dwt
+    address: <symbol address>
+    size: <symbol size>
+    symbol-file: <symbol file used>
+    data-type: unsigned
     stream: 1            # stream id
     source: [0, 1]       # allocated DWT comparators #0 and #1
     regs:
@@ -553,6 +570,10 @@ ctrace-run:
   #     - name: TRCCCCTLR
   #       value: 0x4
 ```
+
+!!! Note
+    The processor `itm` reference configures the ITM ATB stream ID. It may be generated even when no ITM channels are enabled.
+
 
 #### Register Accesses
 
@@ -612,6 +633,7 @@ Stream Synchronization | -  | -        | yes             | yes      | yes
 
 !!! Note
     - The available Event Counters depend on the Cortex-M processor.
+    - The DWT comparators available for `DWT Data Trace` and `Start, Stop, Halt` are shared, so the total number of available comparators is not the sum of the values in the two rows.
     - M52, M55, M85 use the first 4 DWT comparators for data trace.
 
 ## `pyTS` Utility
@@ -797,7 +819,7 @@ The five DWT profiling counters are `DWT_CPICNT`, `DWT_EXCCNT`, `DWT_SLEEPCNT`, 
 
 Here, data-value matching means comparing an observed load or store value. It does not by itself imply that the implementation can emit a data-value trace packet; that capability is listed separately in the final column.
 
-### Synchronization
+### ETM Synchronization
 
 The ETM synchronization range `0`, `256`, ... , `1M` is not generally configurable on the listed Cortex-M processors.
 
