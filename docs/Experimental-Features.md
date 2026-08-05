@@ -493,6 +493,8 @@ Multiple `ctrace-ref` entries may reference the same configuration node when it 
 
 The `data-type` in combination with `size` provides a hint for the display format. Other information required for generating CTF data can be extracted from the referenced setting node in the `ctrace-setup:` section.
 
+`size` can be extracted from symbol information or provided in the `ctrace` file. If both are present, user input takes precedence.
+
 The use of `source:` depends on the combination of `type:` and the setting referenced by `ctrace-ref:`.
 
 `type:` | `ctrace-ref:` setting | Usage of `source:`
