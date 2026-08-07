@@ -123,7 +123,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/generator-bridge"
-          version: tags/v0.10.0
+          version: tags/v0.10.1
           regex: true
           file: "cbridge_.*\\.(zip|gz)"
           target: "toolbox/"
@@ -291,6 +291,8 @@ jobs:
           cp ./cbridge/*/cbridge${{ matrix.binary_extension }}                                              ./distribution/bin/cbridge${{ matrix.binary_extension }}
           cp ./cbridge/*/launch-MCUXpressoConfigTools*                                                      ./distribution/bin/
           cp ./cbridge/*/launch-Infineon_Dev_Config*                                                        ./distribution/bin/
+          cp ./cbridge/*/launch-Infineon_Dev_Config_motixlitix*                                             ./distribution/bin/
+          cp ./cbridge/*/launch-Infineon_MCU_Config_Wizard*                                                 ./distribution/bin/
           cp ./cbuild/*/cbuild${{ matrix.binary_extension }}                                                ./distribution/bin/cbuild${{ matrix.binary_extension }}
           cp ./cbuild2cmake/*/cbuild2cmake${{ matrix.binary_extension }}                                    ./distribution/bin/cbuild2cmake${{ matrix.binary_extension }}
           cp ./cpackget/*/cpackget${{ matrix.binary_extension }}                                            ./distribution/bin/cpackget${{ matrix.binary_extension }}
