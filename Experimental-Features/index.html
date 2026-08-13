@@ -188,7 +188,7 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#dwt-feature-variants">DWT Feature Variants</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#synchronization_1">Synchronization</a>
+    <li class="toctree-l3"><a class="reference internal" href="#etm-synchronization">ETM Synchronization</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#dwt-synchronization">DWT Synchronization</a>
     </li>
@@ -796,6 +796,17 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Value match condition. When present, trace is emitted only for matching accesses.</td>
 </tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>match:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>value:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
@@ -937,15 +948,15 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>- DWT:</code></td>
-<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;"><code>DWT:</code></td>
+<td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Frequency <code>off</code>, <code>16M</code>, <code>64M</code>, <code>256M</code> processor cycles. Default: <code>256M</code>.</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">synchronization:
-  - DWT: 16M
+  DWT: 16M
 </code></pre>
 <h4 id="instructions"><code>instructions:</code></h4>
 <p>The <code>instructions:</code> node is reserved for ETM and MTB instruction trace. It is not required for the initial implementation.</p>
@@ -992,7 +1003,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>access:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Access type: <code>X</code>, <code>R</code>, <code>W</code>, or <code>RW</code>.</td>
+<td style="text-align: left;">Access type: <code>X</code>, <code>R</code>, <code>W</code>, or <code>RW</code>. Defaults to <code>X</code> for code symbols, and to <code>W</code> for data symbols or numeric addresses</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>size:</code></td>
@@ -1004,6 +1015,17 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Value match condition for data symbols or numeric addresses.</td>
 </tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>match:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>value:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
@@ -1012,11 +1034,10 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>size:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Number of bytes to compare. Allowed values: <code>1</code>, <code>2</code>, <code>4</code>.</td>
+<td style="text-align: left;">Number of bytes to compare. Allowed values: <code>1</code>, <code>2</code>, <code>4</code>. Default: <code>4</code>.</td>
 </tr>
 </tbody>
 </table>
-<p>The default <code>access:</code> is <code>X</code> for code symbols and <code>W</code> for data symbols or numeric addresses.</p>
 <h3 id="file-structure-of-ctrace-runyml">File Structure of <code>*.ctrace-run.yml</code></h3>
 <p>The <code>*.ctrace-run.yml</code> file starts with the node <code>ctrace-run:</code>. It is generated from <code>*.ctrace.yml</code>, <code>*.cbuild-run.yml</code>, and ELF/DWARF symbol information. This file is a generated artifact and should not be edited manually.</p>
 <table>
@@ -1086,19 +1107,29 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <td style="text-align: left;">Error message when setup cannot be completed.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>label:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">User-defined short label for Trace Compass</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>address:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Resolved address for the setting. May be resolved from a symbol.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>size:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Size, in bytes, of the capture data. May be extracted from symbol information.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>symbol-file:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Absolute path to the symbol file used in this reference.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>symbol-address:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>data-type:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Address of the symbol.</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>label:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">User-define short label for Trace Compass</td>
+<td style="text-align: left;">Type of displayed data: <code>unsigned</code>, <code>signed</code>, or <code>float</code>. Default: <code>unsigned</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stream:</code></td>
@@ -1119,22 +1150,32 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 </table>
 <p>The trace source types are: <code>dwt</code>, <code>event</code>, <code>exception</code>, <code>itm</code>, <code>pmu</code>, <code>overflow</code>, <code>pcsample</code>, <code>global_ts</code>.</p>
 <p>Multiple <code>ctrace-ref</code> entries may reference the same configuration node when it generates setups for multiple streams. The combination of <code>ctrace-ref</code> and <code>stream</code> identifies each generated setup.</p>
-<p>The meaning of <code>source:</code> depends on the <code>type:</code> as shown below.</p>
+<p>The <code>data-type</code> in combination with <code>size</code> provides a hint for the display format. Other information required for generating CTF data can be extracted from the referenced setting node in the <code>ctrace-setup:</code> section.</p>
+<p><code>size</code> can be extracted from symbol information or provided in the <code>ctrace</code> file. If both are present, user input takes precedence.</p>
+<p>The use of <code>source:</code> depends on the combination of <code>type:</code> and the setting referenced by <code>ctrace-ref:</code>.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"><code>type:</code></th>
+<th style="text-align: left;"><code>ctrace-ref:</code> setting</th>
 <th style="text-align: left;">Usage of <code>source:</code></th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;"><code>dwt</code></td>
-<td style="text-align: left;">Number or array of allocated DWT comparators.</td>
+<td style="text-align: left;"><code>data:</code></td>
+<td style="text-align: left;">Number or array of DWT comparators allocated for the data-trace entry.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>dwt</code></td>
+<td style="text-align: left;"><code>instructions:start:</code>, <code>instructions:stop:</code>, or <code>tracehalt:</code></td>
+<td style="text-align: left;">Number or array of DWT comparators allocated for the condition.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>itm</code></td>
-<td style="text-align: left;">Number of allocated ITM channel.</td>
+<td style="text-align: left;"><code>itm:</code></td>
+<td style="text-align: left;">Number or array of enabled ITM channels.</td>
 </tr>
 </tbody>
 </table>
@@ -1171,23 +1212,29 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
   - ctrace-ref: core0/itm
     pname: core0
     type: itm            # packet types
-    symbol-file: &lt;symbol file used&gt;
-    symbol-address: address of symbol
     stream: 1            # stream id
     source: 0            # ITM channel #0
     regs:
-      - name:  ITM_TER0
-        value: 0xFFFFFFFF
-      - name:  
-        value:
+      - name: ITM_TER0
+        value: 0x00000001
+      - name: ITM_TPR
+        value: 0x00000001
+        mask: 0x0000000f
+      - name: ITM_TCR
+        value: 0x00010000
+        mask: 0x007f0000
 
   - ctrace-ref: data#0
     type: dwt
     stream: 1            # stream id
     error: cannot find symbol
 
-  - ctrace-ref: data#1
+  - ctrace-ref: data#1   # symbol location
     type: dwt
+    address: &lt;symbol address&gt;
+    size: &lt;symbol size&gt;
+    symbol-file: &lt;symbol file used&gt;
+    data-type: unsigned
     stream: 1            # stream id
     source: [0, 1]       # allocated DWT comparators #0 and #1
     regs:
@@ -1217,6 +1264,10 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
   #     - name: TRCCCCTLR
   #       value: 0x4
 </code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The processor <code>itm</code> reference configures the ITM ATB stream ID. It may be generated even when no ITM channels are enabled.</p>
+</div>
 <h4 id="register-accesses">Register Accesses</h4>
 <p>The <code>ctrace-run.yml</code> file contains the register values that are required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.</p>
 <table>
@@ -1380,6 +1431,7 @@ A single-core system has no <code>pname:</code> value; a multi-processor always 
 <p class="admonition-title">Note</p>
 <ul>
 <li>The available Event Counters depend on the Cortex-M processor.</li>
+<li>The DWT comparators available for <code>DWT Data Trace</code> and <code>Start, Stop, Halt</code> are shared, so the total number of available comparators is not the sum of the values in the two rows.</li>
 <li>M52, M55, M85 use the first 4 DWT comparators for data trace.</li>
 </ul>
 </div>
@@ -1957,7 +2009,7 @@ When no option for generating files is specified, the raw trace data files are v
 </table>
 <p>The five DWT profiling counters are <code>DWT_CPICNT</code>, <code>DWT_EXCCNT</code>, <code>DWT_SLEEPCNT</code>, <code>DWT_LSUCNT</code>, and <code>DWT_FOLDCNT</code>. Their presence is reported by <code>DWT_CTRL.NOPRFCNT</code>.</p>
 <p>Here, data-value matching means comparing an observed load or store value. It does not by itself imply that the implementation can emit a data-value trace packet; that capability is listed separately in the final column.</p>
-<h3 id="synchronization_1">Synchronization</h3>
+<h3 id="etm-synchronization">ETM Synchronization</h3>
 <p>The ETM synchronization range <code>0</code>, <code>256</code>, ... , <code>1M</code> is not generally configurable on the listed Cortex-M processors.</p>
 <ul>
 <li>Cortex-M3, Cortex-M4, and Cortex-M23 ETMv3 implementations use a read-only <code>ETMSYNCFR</code> fixed at <code>1024</code> trace bytes.</li>
