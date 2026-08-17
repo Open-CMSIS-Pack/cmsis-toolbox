@@ -160,8 +160,34 @@ The trace stream channels are configured using the [`trace:`](pyOCD-Debugger.md#
 `<channel>`   | Description
 :-------------|:------------------------
 SWO           | Serial-Wire Output: one-pin interface that sends trace information using [UART](pyOCD-Debugger.md#swo-uart) or Manchester mode (tbd).
-TB            | [Embedded Trace Buffer or Micro Trace Buffer](pyOCD-Debugger.md#trace-buffer) that stores trace information in memory. 
+TB            | [Embedded Trace Buffer or Micro Trace Buffer](pyOCD-Debugger.md#trace-buffer) that stores trace information in memory.
 ER            | Event Recorder: uses code annotations that store program events in memory.
+
+#### Binding Trace Channels to PDSC Trace Sinks
+
+The trace transport selected in `target-set:` must identify the physical trace sink described by the device Pack. The scalar value of `swo-uart:` or `trace-buffer:` is therefore the exact `name` of the respective child in the applicable PDSC `<trace>` element.
+
+YAML transport node              | PDSC trace-sink element
+:---------------------------------|:-------------------------------------------
+`swo-uart: <name>`                | `<serialwire name="<name>"/>`
+`trace-buffer: <name>`            | `<tracebuffer name="<name>" .../>`
+
+For example, the following selected SWO transport binds to the `SWO` sink in the Pack:
+
+```xml
+<trace Pname="Cortex-M4">
+  <serialwire name="SWO"/>
+  <tracebuffer name="MTB" start="0x20000000" size="0x1000"/>
+</trace>
+```
+
+```yml
+trace:
+  - swo-uart: SWO
+    input-clock: 120000000
+```
+
+When the YAML value is specified, it must match the PDSC `name` attribute of the selected sink. When the YAML value is empty, the debugger selects the first available sink of that type in the applicable PDSC `<trace>` configuration, in XML order. This binding lets device debug sequences use `TraceSinkEnabled("serialwire", "SWO")` or `TraceSinkEnabled("tracebuffer", "MTB")`, and lets a `TraceFlush` sequence direct `BufferStreamOut` to the selected named trace buffer.
 
 ### Directory and File Structure
 

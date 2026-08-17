@@ -330,7 +330,7 @@ debugger:
 CMSIS-DAP supports the SWO trace output of Cortex-M devices. The raw trace data are made available from pyOCD through a TCP connection or a binary file.
 Device-specific trace capture capabilities are configured using the [`device-settings`](#device-settings) node under `debugger:`.
 
-The `trace:` node has one child type per supported trace transport mode which offers mode-specific options. Currently, the [`swo-uart`](#swo-uart) type and the [`trace-buffer`](#trace-buffer) type are supported.
+The `trace:` node has one child type per supported trace transport mode which offers mode-specific options. Currently, the [`swo-uart`](#swo-uart) type and the [`trace-buffer`](#trace-buffer) type are supported. The value of a transport node selects the corresponding named trace sink in the device Pack's applicable [`<trace>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace) configuration.
 
 The default trace output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management). It
 is located in the solution's `.trace/` sub-folder and uses the format `<solution-name>+<target-type>@<target-set>.<channel>.raw`.
@@ -346,7 +346,7 @@ Type node                          | `<channel>` |
 
 ```yml
 trace:
-  - swo-uart: TraceConfigName # Trace mode is SWO UART
+  - swo-uart: SWO             # Name of the PDSC <serialwire> trace sink
     input-clock: 120000000    # Trace clock = 120 MHz
 ```
 
@@ -356,7 +356,7 @@ Configuration for the SWO trace output in UART mode.
 
 `trace:`                                 |              | Description
 :----------------------------------------|:-------------|:------------------------------------
-`- swo-uart:`                            | **Required** | Transport mode is SWO UART. The node allows an optional name (default: `null`).
+`- swo-uart:`                            | **Required** | Transport mode is SWO UART. Its value selects a PDSC `<serialwire>` trace sink by exact `name`-attribute match. When the value is empty, the debugger selects the first available `<serialwire>` entry in the applicable PDSC `<trace>` configuration, in XML order.
 &nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 &nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>@<target-set>.SWO.raw`.
@@ -374,7 +374,7 @@ and configured through the `device-settings:` or the `*.dbgconf` file.
 
 `trace:`                                 |              | Description
 :----------------------------------------|:-------------|:------------------------------------
-`- trace-buffer:`                        | **Required** | Transport mode is (on-chip) trace buffer. The node allows an optional name (default: `null`).
+`- trace-buffer:`                        | **Required** | Transport mode is (on-chip) trace buffer. Its value selects a PDSC `<tracebuffer>` trace sink by exact `name`-attribute match. When the value is empty, the debugger selects the first available `<tracebuffer>` entry in the applicable PDSC `<trace>` configuration, in XML order.
 &nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 &nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>@<target-set>.TB.raw`.
