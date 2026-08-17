@@ -198,7 +198,7 @@ Directory or File                      | Created by                | Description
 `.`                                    | User                      | Contains the `*.csolution.yml` project file.
 `.cmsis/<solution-set>.ctrace.yml`     | CMSIS-Debugger            | User trace intent and "solution-set specific" trace capture configuration.
 `.trace/<solution-set>.ctrace-run.yml` | [pyTS](#pyts-utility)     | Generated trace run information, including resolved symbols and register values.
-`.trace/<solution-set>.<channel>.raw`  | pyOCD                     | Raw trace data files, specific to a `<channel>` (`SWO`, `TB`, or `ER`).
+`.trace/<solution-set>.<channel>[-<trace-sink>].raw` | pyOCD        | Raw trace data files, specific to a `<channel>` (`SWO`, `TB`, or `ER`) and, when named, a PDSC trace sink.
 `.trace/<solution-set>.<channel>.csv`  | [ctrace](#ctrace-utility) | CSV files that represent raw trace data files.
 `.trace/<solution-set>.ctf/`           | [ctrace](#ctrace-utility) | Directory for CTF files such as `metadata`, `stream_0`, and `stream_1`.
 
@@ -206,7 +206,7 @@ The file `.cmsis/<solution-set>.ctrace.yml` configures the trace generation. It 
 
 The [`pyTS`](#pyts-utility) utility resolves symbol-based settings in `*.ctrace.yml` against the ELF/DWARF information of the active `<solution-set>` and generates the register setup for the hardware configuration. The output is the file `.trace/<solution-set>.ctrace-run.yml` which is used by the debugger for register setup in target hardware. During trace analysis the information of this file connects the raw trace data back to the `*.ctrace.yml` configuration.
 
-Raw trace streams are stored as binary files, for example `.trace/<solution-set>.SWO.raw`. The [`ctrace`](#ctrace-utility) utility converts raw trace data files into [CSV](#csv-format) and [CTF](#ctf-format) for viewers and analysis tools.
+Raw trace streams are stored as binary files. The filename is `.trace/<solution-set>.<channel>.raw` for an unnamed selected sink, or `.trace/<solution-set>.<channel>-<trace-sink>.raw` when the selected PDSC trace sink has a `name` attribute. For example, an SWO sink named `SWO0` is stored as `.trace/<solution-set>.SWO-SWO0.raw`. The [`ctrace`](#ctrace-utility) utility converts raw trace data files into [CSV](#csv-format) and [CTF](#ctf-format) for viewers and analysis tools.
 
 ### Name Conventions
 
