@@ -1361,6 +1361,7 @@ debug-topology:
 :-------------------------------------------------|--------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `debugports:`                  |   Optional   | Describes the CoreSight debug ports of the device and its capabilities.
 &nbsp;&nbsp;&nbsp; `processors:`                  |   Optional   | Map of `pname` identifiers to access port IDs (mandatory for multi-processor devices).
+&nbsp;&nbsp;&nbsp; `trace-sinks:`                 |   Optional   | List of selectable trace sinks from the DFP [`trace`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace) element. This information verifies a valid sink is checked in `TraceSinkEnabled`.
 &nbsp;&nbsp;&nbsp; `swj:`                         |   Optional   | Device allows switching between Serial Wire Debug (SWD) and JTAG protocols (`true` or `false`).
 &nbsp;&nbsp;&nbsp; `dormant:`                     |   Optional   | Device requires the dormant state to switch debug protocols (`true` or `false`).
 &nbsp;&nbsp;&nbsp; *`sdf:`*                       |   Optional   | [System Description File (`*.sdf`)](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/sdf_pg.html) specified in the [DFP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugconfig).
@@ -1393,6 +1394,20 @@ debug-topology:
 &nbsp;&nbsp;&nbsp; *`punits:`*                    |   Optional   | Specifies processor units in a symmetric multi-processor core (MPCore) (mandatory when more than one CPU debug block is accessible).
 &nbsp;&nbsp;&nbsp; `apid:`                        |   Optional   | Access port ID to use for this processor.
 &nbsp;&nbsp;&nbsp; `reset-sequence:`              |   Optional   | Name of debug sequence for reset operation (default: `ResetSystem` sequence).
+
+`trace-sinks:`                                    |              | Content
+:-------------------------------------------------|--------------|:------------------------------------
+`- <pdsc-type>:`                                  | **Required** | A trace sink. Supported keys are `serialwire` and `tracebuffer`. The value is the optional PDSC `name` attribute. The value becomes mandatory if multiple entries of the same type exist.
+
+**Example:**
+
+```yml
+debug-topology:
+  trace-sinks:
+    - serialwire:
+    - tracebuffer: ETF
+    - tracebuffer: MTB
+```
 
 `datapatch:`                                      |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
