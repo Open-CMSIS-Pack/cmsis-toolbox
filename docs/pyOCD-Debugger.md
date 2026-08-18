@@ -1021,7 +1021,7 @@ the DFP. If the information is not provided in the `*.cbuild-run.yml` file, pyOC
 :-------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `debugports:`                  |   Optional   | Describes the CoreSight debug ports of the device and its capabilities.
 &nbsp;&nbsp;&nbsp; `processors:`                  |   Optional   | Map of `pname` identifiers to access port IDs (mandatory for multi-processor devices).
-&nbsp;&nbsp;&nbsp; `trace-sinks:`                 |   Optional   | List of selectable trace sinks from the DFP [`trace`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace) element. pyOCD uses this information to verify a valid sink is checked in `TraceSinkEnabled`.
+&nbsp;&nbsp;&nbsp; `trace-sinks:`                 |   Optional   | List of selectable trace sinks from the DFP [`trace`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace) element. pyOCD uses this information to verify a valid sink is checked in `TraceSinkSelected`.
 &nbsp;&nbsp;&nbsp; `swj:`                         |   Optional   | Device allows switching between Serial Wire Debug (SWD) and JTAG protocols (`true` or `false`).
 &nbsp;&nbsp;&nbsp; `dormant:`                     |   Optional   | Device requires the dormant state to switch debug protocols (`true` or `false`).
 

@@ -187,7 +187,7 @@ trace:
     input-clock: 120000000
 ```
 
-When the YAML value is specified, it must match the PDSC `name` attribute of the selected sink. When the YAML value is empty, the debugger selects the first available sink of that type in the applicable PDSC `<trace>` configuration, in XML order. This binding lets device debug sequences use `TraceSinkEnabled("serialwire", "SWO")` or `TraceSinkEnabled("tracebuffer", "MTB")`, and lets a `TraceFlush` sequence direct `BufferStreamOut` to the selected named trace buffer.
+When the YAML value is specified, it must match the PDSC `name` attribute of the selected sink. When the YAML value is empty, the debugger selects the first available sink of that type in the applicable PDSC `<trace>` configuration, in XML order. This binding lets device debug sequences use `TraceSinkSelected("serialwire", "SWO")` or `TraceSinkSelected("tracebuffer", "MTB")`, and lets a `TraceFlush` sequence direct `BufferStreamOut` to the selected named trace buffer.
 
 ### Directory and File Structure
 
