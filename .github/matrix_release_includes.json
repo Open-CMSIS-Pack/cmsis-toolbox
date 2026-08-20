@@ -11,7 +11,7 @@
         "runsXCTestSuite": false
     },
     {
-        "runs_on":"ubuntu-22.04",
+        "runs_on":"ubuntu-24.04",
         "target":"linux",
         "arch": "amd64",
         "binary_extension":"",
@@ -22,7 +22,7 @@
         "runsXCTestSuite": true
     },
     {
-        "runs_on":"ubuntu-22.04-arm",
+        "runs_on":"ubuntu-24.04-arm",
         "target":"linux",
         "arch": "arm64",
         "binary_extension":"",
