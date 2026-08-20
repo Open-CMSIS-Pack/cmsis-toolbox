@@ -418,8 +418,8 @@ jobs:
           - { os: macos-14, target: darwin, arch: arm64 }
           - { os: windows-2022, target: windows, arch: amd64}
           - { os: windows-2022, target: windows, arch: arm64}
-          - { os: ubuntu-22.04, target: linux, arch: amd64}
-          - { os: ubuntu-22.04, target: linux, arch: arm64}
+          - { os: ubuntu-24.04, target: linux, arch: amd64}
+          - { os: ubuntu-24.04-arm, target: linux, arch: arm64}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@05e31511f85b41b11d1cf0ef85d0992719546e2c # v2.21.0
@@ -614,7 +614,7 @@ jobs:
   release:
     if: ${{ github.event_name == 'release' }}
     needs: [ release-package-tests, e2e-tests ]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: write
