@@ -83,7 +83,7 @@ body:
       label: Environment
       description: Give more details about the affected operating system(s), e.g. distribution and version.
       placeholder: |
-        - Ubuntu 22.04
+        - Ubuntu 24.04
         - Windows 10 Version 22H2 (Build ...)
     validations:
       required: false
