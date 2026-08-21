@@ -163,9 +163,11 @@ SWO           | Serial-Wire Output: one-pin interface that sends trace informati
 TB            | [Embedded Trace Buffer or Micro Trace Buffer](pyOCD-Debugger.md#trace-buffer) that stores trace information in memory.
 ER            | Event Recorder: uses code annotations that store program events in memory.
 
+For `TB`, the trace buffer name is appended to the channel name when present. For example, a trace buffer named `MTB` uses the `TB_MTB` channel.
+
 #### Selecting Trace Buffers
 
-The generated [`trace-sinks:` node](YML-CBuild-Format.md#debug-topology) under `debug-topology:` in `*.cbuild-run.yml` lists the `tracebuffer` elements available for selection. The optional `trace-buffer:` value selects one of them. It may be empty when exactly one is listed without a value.
+The optional `trace-buffer:` node under `trace:` in the [`debugger:`](YML-Input-Format.md#debugger) configuration selects a trace buffer. When multiple trace buffers are available, its value must match the name of the selected trace buffer. The [`trace-sinks:`](YML-CBuild-Format.md#debug-topology) node under `debug-topology:` in `*.cbuild-run.yml` lists PDSC `tracebuffer` elements and their names. The name value may be omitted when exactly one trace buffer is listed without a name.
 
 For example, the following selects the `MTB` trace buffer:
 
@@ -174,14 +176,16 @@ debug-topology:
   trace-sinks:
     - serialwire:
     - tracebuffer: MTB
+    - tracebuffer: ETB_0
 ```
 
 ```yml
-trace:
-  - trace-buffer: MTB
+debugger:
+  trace:
+    - trace-buffer: MTB
 ```
 
-This selection lets device debug sequences use `TraceSinkSelected("tracebuffer", "MTB")`, and lets a `TraceFlush` sequence direct `BufferStreamOut` to the selected named trace buffer.
+This selection lets DFP debug sequences use `TraceBufferSelected("MTB")`, and lets a `TraceFlush` sequence direct `BufferStreamOut` to the selected named trace buffer in the debugger.
 
 ### Directory and File Structure
 
@@ -200,7 +204,7 @@ The file `.cmsis/<solution-set>.ctrace.yml` configures the trace generation. It 
 
 The [`pyTS`](#pyts-utility) utility resolves symbol-based settings in `*.ctrace.yml` against the ELF/DWARF information of the active `<solution-set>` and generates the register setup for the hardware configuration. The output is the file `.trace/<solution-set>.ctrace-run.yml` which is used by the debugger for register setup in target hardware. During trace analysis the information of this file connects the raw trace data back to the `*.ctrace.yml` configuration.
 
-Raw trace streams are stored as binary files named `.trace/<solution-set>.<channel>.raw`. For `TB`, the trace buffer name is appended when present. For example, a trace buffer named `MTB` is stored as `.trace/<solution-set>.TB_MTB.raw`.
+Raw trace streams are stored as binary files named `.trace/<solution-set>.<channel>.raw`.
 
 The [`ctrace`](#ctrace-utility) utility converts raw trace data files into [CSV](#csv-format) and [CTF](#ctf-format) for viewers and analysis tools.
 

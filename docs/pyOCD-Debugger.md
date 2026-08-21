@@ -379,7 +379,7 @@ and configured through the `device-settings:` or the `*.dbgconf` file.
 &nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 &nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>@<target-set>.TB.raw`.
 
-The generated [`trace-sinks:` node](YML-CBuild-Format.md#debug-topology) under `debug-topology:` in `*.cbuild-run.yml` lists the `tracebuffer` elements available for selection. The optional `trace-buffer:` value selects one of them. It may be empty when exactly one is listed without a value.
+The optional `trace-buffer:` value selects a trace buffer. When multiple trace buffers are available, its value must match the name of the selected trace buffer. The [`trace-sinks:`](YML-CBuild-Format.md#debug-topology) node under `debug-topology:` in `*.cbuild-run.yml` lists PDSC `tracebuffer` elements and their names. The name value may be omitted when exactly one trace buffer is listed without a name.
 
 #### Trace Clocks
 
