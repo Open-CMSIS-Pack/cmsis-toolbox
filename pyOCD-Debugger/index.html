@@ -797,7 +797,7 @@ The <code>&lt;channel&gt;</code> part is derived from the type node as it follow
 <p>The <code>trace:</code> node is implemented as a list. However, currently only one node is supported. Additional nodes are ignored.</p>
 </div>
 <pre><code class="language-yml">trace:
-  - swo-uart: TraceConfigName # Trace mode is SWO UART
+  - swo-uart:                 # Trace mode is SWO UART
     input-clock: 120000000    # Trace clock = 120 MHz
 </code></pre>
 <h4 id="swo-uart"><code>swo-uart</code></h4>
@@ -814,7 +814,7 @@ The <code>&lt;channel&gt;</code> part is derived from the type node as it follow
 <tr>
 <td style="text-align: left;"><code>- swo-uart:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Transport mode is SWO UART. The node allows an optional name (default: <code>null</code>).</td>
+<td style="text-align: left;">Transport mode is SWO UART. This node does not have a value.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>mode:</code></td>
@@ -861,7 +861,7 @@ and configured through the <code>device-settings:</code> or the <code>*.dbgconf<
 <tr>
 <td style="text-align: left;"><code>- trace-buffer:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Transport mode is (on-chip) trace buffer. The node allows an optional name (default: <code>null</code>).</td>
+<td style="text-align: left;">Transport mode is (on-chip) trace buffer. See <a href="../Experimental-Features/#selecting-trace-buffers">Selecting Trace Buffers</a> for value rules.</td>
 </tr>
 <tr>
 <td style="text-align: left;">    <code>mode:</code></td>
@@ -1840,6 +1840,11 @@ the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code>
 <td style="text-align: left;">Map of <code>pname</code> identifiers to access port IDs (mandatory for multi-processor devices).</td>
 </tr>
 <tr>
+<td style="text-align: left;">    <code>trace-sinks:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Trace sinks supported by the device.</td>
+</tr>
+<tr>
 <td style="text-align: left;">    <code>swj:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Device allows switching between Serial Wire Debug (SWD) and JTAG protocols (<code>true</code> or <code>false</code>).</td>
@@ -1928,6 +1933,24 @@ the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code>
 </tr>
 </tbody>
 </table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>trace-sinks:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- &lt;trace-sink-type&gt;:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Trace sink type: <code>serialwire</code> or <code>tracebuffer</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>trace-sinks:</code> lists device trace sinks from the DFP <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace"><code>trace</code></a> element. <code>serialwire</code> has no value. A <code>tracebuffer</code> value is its optional PDSC <code>name</code> attribute and becomes mandatory when multiple trace buffers exist.</p>
+<p>pyOCD uses this information to verify that a trace type is supported and that a selected named trace buffer exists.</p>
 <p><strong>Default values:</strong></p>
 <pre><code class="language-yml">debug-topology:
   dormant: false
@@ -1937,9 +1960,13 @@ the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code>
       accessports:
         - apid: 0
           index: 0
+  trace-sinks:
+    - serialwire:
+    - tracebuffer:
 </code></pre>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  debug-topology:
+    dormant: true
     debugports:
       - dpid: 0
         accessports:
@@ -1952,7 +1979,10 @@ the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code>
         apid: 0
       - pname: M55_HE
         apid: 1
-    dormant: true
+    trace-sinks:
+      - serialwire:
+      - tracebuffer: ETF
+      - tracebuffer: MTB
 </code></pre>
 <h2 id="debug-access-sequence-usage-for-pyocd-commands">Debug Access Sequence Usage for pyOCD Commands</h2>
 <p>The sequence diagrams below show the usage of the debug access sequences for pyOCD commands. The specification <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences">Open-CMSIS-Pack - Usage of debug access sequences</a> describes the following sequence blocks. pyOCD uses these concepts, but implements these deviations:</p>

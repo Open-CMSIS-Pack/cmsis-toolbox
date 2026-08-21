@@ -2790,6 +2790,9 @@ The following default values for <code>debug-topology:</code> are used:</p>
       accessports:
         - apid: 0
           index: 0
+  trace-sinks:
+    - serialwire:
+    - tracebuffer:
 </code></pre>
 <table>
 <thead>
@@ -2809,6 +2812,11 @@ The following default values for <code>debug-topology:</code> are used:</p>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>processors:</code></td>
 <td>Optional</td>
 <td style="text-align: left;">Map of <code>pname</code> identifiers to access port IDs (mandatory for multi-processor devices).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>trace-sinks:</code></td>
+<td>Optional</td>
+<td style="text-align: left;">Trace sinks supported by the device.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>swj:</code></td>
@@ -2949,6 +2957,35 @@ The following default values for <code>debug-topology:</code> are used:</p>
 </tr>
 </tbody>
 </table>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>trace-sinks:</code></th>
+<th></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- &lt;trace-sink-type&gt;:</code></td>
+<td><strong>Required</strong></td>
+<td style="text-align: left;">Trace sink type: <code>serialwire</code> or <code>tracebuffer</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>trace-sinks:</code> lists device trace sinks from the DFP <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace"><code>trace</code></a> element. <code>serialwire</code> has no value. A <code>tracebuffer</code> value is its optional PDSC <code>name</code> attribute and becomes mandatory when multiple trace buffers exist.</p>
+<p>A debugger may use this information to verify that a trace type is supported and that a selected named trace buffer exists.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unlike the PDSC <code>&lt;trace&gt;</code> element, <code>trace-sinks:</code> must list every trace type explicitly. If the PDSC has no <code>&lt;trace&gt;</code> element, a tool generating <code>*.cbuild-run.yml</code> must populate <code>trace-sinks:</code> with <code>serialwire</code> and <code>tracebuffer</code>.</p>
+</div>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">debug-topology:
+  trace-sinks:
+    - serialwire:
+    - tracebuffer: ETF
+    - tracebuffer: MTB
+</code></pre>
 <table>
 <thead>
 <tr>

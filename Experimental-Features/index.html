@@ -111,6 +111,10 @@
     <li class="toctree-l2"><a class="reference internal" href="#trace">Trace</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#trace-stream-channels">Trace Stream Channels</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#selecting-trace-buffers">Selecting Trace Buffers</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#directory-and-file-structure">Directory and File Structure</a>
     </li>
@@ -416,6 +420,21 @@
 </tr>
 </tbody>
 </table>
+<p>For <code>TB</code>, the trace buffer name is appended to the channel name when present. For example, a trace buffer named <code>MTB</code> uses the <code>TB_MTB</code> channel.</p>
+<h4 id="selecting-trace-buffers">Selecting Trace Buffers</h4>
+<p>The optional <code>trace-buffer:</code> node under <code>trace:</code> in the <a href="../YML-Input-Format/#debugger"><code>debugger:</code></a> configuration selects a trace buffer. When multiple trace buffers are available, its value must match the name of the selected trace buffer. The <a href="../YML-CBuild-Format/#debug-topology"><code>trace-sinks:</code></a> node under <code>debug-topology:</code> in <code>*.cbuild-run.yml</code> lists PDSC <code>tracebuffer</code> elements and their names. The name value may be omitted when exactly one trace buffer is listed without a name.</p>
+<p>For example, the following selects the <code>MTB</code> trace buffer:</p>
+<pre><code class="language-yml">debug-topology:
+  trace-sinks:
+    - serialwire:
+    - tracebuffer: MTB
+    - tracebuffer: ETB_0
+</code></pre>
+<pre><code class="language-yml">debugger:
+  trace:
+    - trace-buffer: MTB
+</code></pre>
+<p>This selection lets DFP debug sequences use <code>TraceBufferSelected("MTB")</code>, and lets a <code>TraceFlush</code> sequence direct <code>BufferStreamOut</code> to the selected named trace buffer in the debugger.</p>
 <h3 id="directory-and-file-structure">Directory and File Structure</h3>
 <p>Trace-related files are stored relative to the directory that contains the <code>*.csolution.yml</code> file.</p>
 <table>
