@@ -1355,13 +1355,17 @@ debug-topology:
       accessports:
         - apid: 0
           index: 0
+  trace-sinks:
+    - serialwire:
+    - traceport:
+    - tracebuffer:
 ```
 
 `debug-topology:`                                 |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `debugports:`                  |   Optional   | Describes the CoreSight debug ports of the device and its capabilities.
 &nbsp;&nbsp;&nbsp; `processors:`                  |   Optional   | Map of `pname` identifiers to access port IDs (mandatory for multi-processor devices).
-&nbsp;&nbsp;&nbsp; `trace-sinks:`                 |   Optional   | List of selectable trace sinks from the DFP [`trace`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace) element. This information verifies a valid sink is checked in `TraceSinkSelected`.
+&nbsp;&nbsp;&nbsp; `trace-sinks:`                 |   Optional   | Trace sinks supported by the device.
 &nbsp;&nbsp;&nbsp; `swj:`                         |   Optional   | Device allows switching between Serial Wire Debug (SWD) and JTAG protocols (`true` or `false`).
 &nbsp;&nbsp;&nbsp; `dormant:`                     |   Optional   | Device requires the dormant state to switch debug protocols (`true` or `false`).
 &nbsp;&nbsp;&nbsp; *`sdf:`*                       |   Optional   | [System Description File (`*.sdf`)](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/sdf_pg.html) specified in the [DFP](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugconfig).
@@ -1397,7 +1401,14 @@ debug-topology:
 
 `trace-sinks:`                                    |              | Content
 :-------------------------------------------------|--------------|:------------------------------------
-`- <pdsc-type>:`                                  | **Required** | A trace sink. Supported keys are `serialwire` and `tracebuffer`. The value is the optional PDSC `name` attribute. The value becomes mandatory if multiple entries of the same type exist.
+`- <trace-sink-type>:`                            | **Required** | Trace sink type: `serialwire` or `tracebuffer`.
+
+`trace-sinks:` lists device trace sinks from the DFP [`trace`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace) element. `serialwire` has no value. A `tracebuffer` value is its optional PDSC `name` attribute and becomes mandatory when multiple trace buffers exist.
+
+A debugger may use this information to verify that a trace type is supported and that a selected named trace buffer exists.
+
+!!! Note
+    Unlike the PDSC `<trace>` element, `trace-sinks:` does not assume a default set if not present. A tool that generates a `*.cbuild-run.yml` file from a PDSC without a `<trace>` element must fill in the assumed defaults.
 
 **Example:**
 

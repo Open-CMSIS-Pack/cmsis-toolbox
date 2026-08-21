@@ -330,7 +330,7 @@ debugger:
 CMSIS-DAP supports the SWO trace output of Cortex-M devices. The raw trace data are made available from pyOCD through a TCP connection or a binary file.
 Device-specific trace capture capabilities are configured using the [`device-settings`](#device-settings) node under `debugger:`.
 
-The `trace:` node has one child type per supported trace transport mode which offers mode-specific options. Currently, the [`swo-uart`](#swo-uart) type and the [`trace-buffer`](#trace-buffer) type are supported. The value of a transport node selects the corresponding named trace sink in the device Pack's applicable [`<trace>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace) configuration.
+The `trace:` node has one child type per supported trace transport mode which offers mode-specific options. Currently, the [`swo-uart`](#swo-uart) type and the [`trace-buffer`](#trace-buffer) type are supported.
 
 The default trace output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management). It
 is located in the solution's `.trace/` sub-folder and uses the format `<solution-name>+<target-type>@<target-set>.<channel>.raw`.
@@ -346,7 +346,7 @@ Type node                          | `<channel>` |
 
 ```yml
 trace:
-  - swo-uart: SWO             # Name of the PDSC <serialwire> trace sink
+  - swo-uart:                 # Trace mode is SWO UART
     input-clock: 120000000    # Trace clock = 120 MHz
 ```
 
@@ -356,7 +356,7 @@ Configuration for the SWO trace output in UART mode.
 
 `trace:`                                 |              | Description
 :----------------------------------------|:-------------|:------------------------------------
-`- swo-uart:`                            | **Required** | Transport mode is SWO UART. Its value selects a PDSC `<serialwire>` trace sink by exact `name`-attribute match. When the value is empty, the debugger selects the first available `<serialwire>` entry in the applicable PDSC `<trace>` configuration, in XML order.
+`- swo-uart:`                            | **Required** | Transport mode is SWO UART. This node does not have a value.
 &nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 &nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>@<target-set>.SWO.raw`.
@@ -374,10 +374,12 @@ and configured through the `device-settings:` or the `*.dbgconf` file.
 
 `trace:`                                 |              | Description
 :----------------------------------------|:-------------|:------------------------------------
-`- trace-buffer:`                        | **Required** | Transport mode is (on-chip) trace buffer. Its value selects a PDSC `<tracebuffer>` trace sink by exact `name`-attribute match. When the value is empty, the debugger selects the first available `<tracebuffer>` entry in the applicable PDSC `<trace>` configuration, in XML order.
+`- trace-buffer:`                        | **Required** | Transport mode is (on-chip) trace buffer. Its value can be a name (see below for applying rules).
 &nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 &nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>@<target-set>.TB.raw`.
+
+The generated [`trace-sinks:` node](YML-CBuild-Format.md#debug-topology) under `debug-topology:` in `*.cbuild-run.yml` lists the `tracebuffer` elements available for selection. The optional `trace-buffer:` value selects one of them. It may be empty when exactly one is listed without a value.
 
 #### Trace Clocks
 
@@ -1021,7 +1023,7 @@ the DFP. If the information is not provided in the `*.cbuild-run.yml` file, pyOC
 :-------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `debugports:`                  |   Optional   | Describes the CoreSight debug ports of the device and its capabilities.
 &nbsp;&nbsp;&nbsp; `processors:`                  |   Optional   | Map of `pname` identifiers to access port IDs (mandatory for multi-processor devices).
-&nbsp;&nbsp;&nbsp; `trace-sinks:`                 |   Optional   | List of selectable trace sinks from the DFP [`trace`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace) element. pyOCD uses this information to verify a valid sink is checked in `TraceSinkSelected`.
+&nbsp;&nbsp;&nbsp; `trace-sinks:`                 |   Optional   | Trace sinks supported by the device.
 &nbsp;&nbsp;&nbsp; `swj:`                         |   Optional   | Device allows switching between Serial Wire Debug (SWD) and JTAG protocols (`true` or `false`).
 &nbsp;&nbsp;&nbsp; `dormant:`                     |   Optional   | Device requires the dormant state to switch debug protocols (`true` or `false`).
 
@@ -1047,7 +1049,11 @@ the DFP. If the information is not provided in the `*.cbuild-run.yml` file, pyOC
 
 `trace-sinks:`                                    |              | Content
 :-------------------------------------------------|:-------------|:------------------------------------
-`- <pdsc-type>:`                                  | **Required** | A trace sink. Supported keys are `serialwire` and `tracebuffer`. The value is the optional PDSC `name` attribute. The value becomes mandatory if multiple entries of the same type exist.
+`- <trace-sink-type>:`                            | **Required** | Trace sink type: `serialwire` or `tracebuffer`.
+
+`trace-sinks:` lists device trace sinks from the DFP [`trace`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace) element. `serialwire` has no value. A `tracebuffer` value is its optional PDSC `name` attribute and becomes mandatory when multiple trace buffers exist.
+
+pyOCD uses this information to verify that a trace type is supported and that a selected named trace buffer exists.
 
 **Default values:**
 
@@ -1060,12 +1066,17 @@ debug-topology:
       accessports:
         - apid: 0
           index: 0
+  trace-sinks:
+    - serialwire:
+    - traceport:
+    - tracebuffer:
 ```
 
 **Example:**
 
 ```yml
   debug-topology:
+    dormant: true
     debugports:
       - dpid: 0
         accessports:
@@ -1082,7 +1093,6 @@ debug-topology:
       - serialwire:
       - tracebuffer: ETF
       - tracebuffer: MTB
-    dormant: true
 ```
 
 ## Debug Access Sequence Usage for pyOCD Commands

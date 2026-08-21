@@ -163,31 +163,25 @@ SWO           | Serial-Wire Output: one-pin interface that sends trace informati
 TB            | [Embedded Trace Buffer or Micro Trace Buffer](pyOCD-Debugger.md#trace-buffer) that stores trace information in memory.
 ER            | Event Recorder: uses code annotations that store program events in memory.
 
-#### Binding Trace Channels to PDSC Trace Sinks
+#### Selecting Trace Buffers
 
-The trace transport selected in `target-set:` must identify the physical trace sink described by the device Pack. The scalar value of `swo-uart:` or `trace-buffer:` is therefore the exact `name` of the respective child in the applicable PDSC `<trace>` element.
+The generated [`trace-sinks:` node](YML-CBuild-Format.md#debug-topology) under `debug-topology:` in `*.cbuild-run.yml` lists the `tracebuffer` elements available for selection. The optional `trace-buffer:` value selects one of them. It may be empty when exactly one is listed without a value.
 
-YAML transport node              | PDSC trace-sink element
-:---------------------------------|:-------------------------------------------
-`swo-uart: <name>`                | `<serialwire name="<name>"/>`
-`trace-buffer: <name>`            | `<tracebuffer name="<name>" .../>`
+For example, the following selects the `MTB` trace buffer:
 
-For example, the following selected SWO transport binds to the `SWO` sink in the Pack:
-
-```xml
-<trace Pname="Cortex-M4">
-  <serialwire name="SWO"/>
-  <tracebuffer name="MTB" start="0x20000000" size="0x1000"/>
-</trace>
+```yml
+debug-topology:
+  trace-sinks:
+    - serialwire:
+    - tracebuffer: MTB
 ```
 
 ```yml
 trace:
-  - swo-uart: SWO
-    input-clock: 120000000
+  - trace-buffer: MTB
 ```
 
-When the YAML value is specified, it must match the PDSC `name` attribute of the selected sink. When the YAML value is empty, the debugger selects the first available sink of that type in the applicable PDSC `<trace>` configuration, in XML order. This binding lets device debug sequences use `TraceSinkSelected("serialwire", "SWO")` or `TraceSinkSelected("tracebuffer", "MTB")`, and lets a `TraceFlush` sequence direct `BufferStreamOut` to the selected named trace buffer.
+This selection lets device debug sequences use `TraceSinkSelected("tracebuffer", "MTB")`, and lets a `TraceFlush` sequence direct `BufferStreamOut` to the selected named trace buffer.
 
 ### Directory and File Structure
 
@@ -198,7 +192,7 @@ Directory or File                      | Created by                | Description
 `.`                                    | User                      | Contains the `*.csolution.yml` project file.
 `.cmsis/<solution-set>.ctrace.yml`     | CMSIS-Debugger            | User trace intent and "solution-set specific" trace capture configuration.
 `.trace/<solution-set>.ctrace-run.yml` | [pyTS](#pyts-utility)     | Generated trace run information, including resolved symbols and register values.
-`.trace/<solution-set>.<channel>[-<trace-sink>].raw` | pyOCD        | Raw trace data files, specific to a `<channel>` (`SWO`, `TB`, or `ER`) and, when named, a PDSC trace sink.
+`.trace/<solution-set>.<channel>.raw`  | pyOCD                     | Raw trace data files, specific to a `<channel>` (`SWO`, `TB`, or `ER`).
 `.trace/<solution-set>.<channel>.csv`  | [ctrace](#ctrace-utility) | CSV files that represent raw trace data files.
 `.trace/<solution-set>.ctf/`           | [ctrace](#ctrace-utility) | Directory for CTF files such as `metadata`, `stream_0`, and `stream_1`.
 
@@ -206,7 +200,9 @@ The file `.cmsis/<solution-set>.ctrace.yml` configures the trace generation. It 
 
 The [`pyTS`](#pyts-utility) utility resolves symbol-based settings in `*.ctrace.yml` against the ELF/DWARF information of the active `<solution-set>` and generates the register setup for the hardware configuration. The output is the file `.trace/<solution-set>.ctrace-run.yml` which is used by the debugger for register setup in target hardware. During trace analysis the information of this file connects the raw trace data back to the `*.ctrace.yml` configuration.
 
-Raw trace streams are stored as binary files. The filename is `.trace/<solution-set>.<channel>.raw` for an unnamed selected sink, or `.trace/<solution-set>.<channel>-<trace-sink>.raw` when the selected PDSC trace sink has a `name` attribute. For example, an SWO sink named `SWO0` is stored as `.trace/<solution-set>.SWO-SWO0.raw`. The [`ctrace`](#ctrace-utility) utility converts raw trace data files into [CSV](#csv-format) and [CTF](#ctf-format) for viewers and analysis tools.
+Raw trace streams are stored as binary files named `.trace/<solution-set>.<channel>.raw`. For `TB`, the trace buffer name is appended when present. For example, a trace buffer named `MTB` is stored as `.trace/<solution-set>.TB_MTB.raw`.
+
+The [`ctrace`](#ctrace-utility) utility converts raw trace data files into [CSV](#csv-format) and [CTF](#ctf-format) for viewers and analysis tools.
 
 ### Name Conventions
 
