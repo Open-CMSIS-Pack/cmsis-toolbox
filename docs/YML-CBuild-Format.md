@@ -1357,7 +1357,6 @@ debug-topology:
           index: 0
   trace-sinks:
     - serialwire:
-    - traceport:
     - tracebuffer:
 ```
 
@@ -1408,7 +1407,7 @@ debug-topology:
 A debugger may use this information to verify that a trace type is supported and that a selected named trace buffer exists.
 
 !!! Note
-    Unlike the PDSC `<trace>` element, `trace-sinks:` does not assume a default set if not present. A tool that generates a `*.cbuild-run.yml` file from a PDSC without a `<trace>` element must fill in the assumed defaults.
+    Unlike the PDSC `<trace>` element, `trace-sinks:` must list every trace type explicitly. If the PDSC has no `<trace>` element, a tool generating `*.cbuild-run.yml` must populate `trace-sinks:` with `serialwire` and `tracebuffer`.
 
 **Example:**
 

@@ -1068,7 +1068,6 @@ debug-topology:
           index: 0
   trace-sinks:
     - serialwire:
-    - traceport:
     - tracebuffer:
 ```
 

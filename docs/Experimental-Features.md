@@ -204,9 +204,7 @@ The file `.cmsis/<solution-set>.ctrace.yml` configures the trace generation. It 
 
 The [`pyTS`](#pyts-utility) utility resolves symbol-based settings in `*.ctrace.yml` against the ELF/DWARF information of the active `<solution-set>` and generates the register setup for the hardware configuration. The output is the file `.trace/<solution-set>.ctrace-run.yml` which is used by the debugger for register setup in target hardware. During trace analysis the information of this file connects the raw trace data back to the `*.ctrace.yml` configuration.
 
-Raw trace streams are stored as binary files named `.trace/<solution-set>.<channel>.raw`.
-
-The [`ctrace`](#ctrace-utility) utility converts raw trace data files into [CSV](#csv-format) and [CTF](#ctf-format) for viewers and analysis tools.
+Raw trace streams are stored as binary files, for example `.trace/<solution-set>.SWO.raw`. The [`ctrace`](#ctrace-utility) utility converts raw trace data files into [CSV](#csv-format) and [CTF](#ctf-format) for viewers and analysis tools.
 
 ### Name Conventions
 
