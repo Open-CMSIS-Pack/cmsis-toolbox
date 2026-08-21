@@ -109,7 +109,7 @@ The `trace:` node has one child type per supported trace transport mode which of
 
 ```yml
 trace:
-  - swo-uart: TraceConfigName # Trace mode is SWO UART
+  - swo-uart:                 # Trace mode is SWO UART
     input-clock: 120000000    # Trace clock = 120 MHz
 ```
 
@@ -117,7 +117,7 @@ trace:
 
 `trace:`                                  |              | Description
 :-----------------------------------------|:-------------|:------------------------------------
-`- swo-uart:`                             | **Required** | Transport mode is SWO UART. The node allows an optional name (default: `null`).
+`- swo-uart:`                             | **Required** | Transport mode is SWO UART. This node does not have a value.
 &nbsp;&nbsp;&nbsp; `mode:`                |   Optional   | Trace: `off` (default), `server`.
 &nbsp;&nbsp;&nbsp; `input-clock:`         | **Required** | Trace input clock frequency in Hz.
 &nbsp;&nbsp;&nbsp; `output-clock:`        |   Optional   | Trace output clock frequency in Hz, i.e. the baudrate, for the SWO output.

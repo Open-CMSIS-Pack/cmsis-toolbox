@@ -160,8 +160,32 @@ The trace stream channels are configured using the [`trace:`](pyOCD-Debugger.md#
 `<channel>`   | Description
 :-------------|:------------------------
 SWO           | Serial-Wire Output: one-pin interface that sends trace information using [UART](pyOCD-Debugger.md#swo-uart) or Manchester mode (tbd).
-TB            | [Embedded Trace Buffer or Micro Trace Buffer](pyOCD-Debugger.md#trace-buffer) that stores trace information in memory. 
+TB            | [Embedded Trace Buffer or Micro Trace Buffer](pyOCD-Debugger.md#trace-buffer) that stores trace information in memory.
 ER            | Event Recorder: uses code annotations that store program events in memory.
+
+For `TB`, the trace buffer name is appended to the channel name when present. For example, a trace buffer named `MTB` uses the `TB_MTB` channel.
+
+#### Selecting Trace Buffers
+
+The optional `trace-buffer:` node under `trace:` in the [`debugger:`](YML-Input-Format.md#debugger) configuration selects a trace buffer. When multiple trace buffers are available, its value must match the name of the selected trace buffer. The [`trace-sinks:`](YML-CBuild-Format.md#debug-topology) node under `debug-topology:` in `*.cbuild-run.yml` lists PDSC `tracebuffer` elements and their names. The name value may be omitted when exactly one trace buffer is listed without a name.
+
+For example, the following selects the `MTB` trace buffer:
+
+```yml
+debug-topology:
+  trace-sinks:
+    - serialwire:
+    - tracebuffer: MTB
+    - tracebuffer: ETB_0
+```
+
+```yml
+debugger:
+  trace:
+    - trace-buffer: MTB
+```
+
+This selection lets DFP debug sequences use `TraceBufferSelected("MTB")`, and lets a `TraceFlush` sequence direct `BufferStreamOut` to the selected named trace buffer in the debugger.
 
 ### Directory and File Structure
 

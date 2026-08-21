@@ -346,7 +346,7 @@ Type node                          | `<channel>` |
 
 ```yml
 trace:
-  - swo-uart: TraceConfigName # Trace mode is SWO UART
+  - swo-uart:                 # Trace mode is SWO UART
     input-clock: 120000000    # Trace clock = 120 MHz
 ```
 
@@ -356,7 +356,7 @@ Configuration for the SWO trace output in UART mode.
 
 `trace:`                                 |              | Description
 :----------------------------------------|:-------------|:------------------------------------
-`- swo-uart:`                            | **Required** | Transport mode is SWO UART. The node allows an optional name (default: `null`).
+`- swo-uart:`                            | **Required** | Transport mode is SWO UART. This node does not have a value.
 &nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 &nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>@<target-set>.SWO.raw`.
@@ -374,7 +374,7 @@ and configured through the `device-settings:` or the `*.dbgconf` file.
 
 `trace:`                                 |              | Description
 :----------------------------------------|:-------------|:------------------------------------
-`- trace-buffer:`                        | **Required** | Transport mode is (on-chip) trace buffer. The node allows an optional name (default: `null`).
+`- trace-buffer:`                        | **Required** | Transport mode is (on-chip) trace buffer. See [Selecting Trace Buffers](Experimental-Features.md#selecting-trace-buffers) for value rules.
 &nbsp;&nbsp;&nbsp; `mode:`               |   Optional   | Trace: `off` (default), `server`, `file`.
 &nbsp;&nbsp;&nbsp; `server-port:`        |   Optional   | Set TCP/IP port number of trace server in `server` mode (default: 5555).
 &nbsp;&nbsp;&nbsp; `file:`               |   Optional   | Explicit path and name of the trace output file in `file` mode. Default: `<solution-name>+<target-type>@<target-set>.TB.raw`.
@@ -1021,6 +1021,7 @@ the DFP. If the information is not provided in the `*.cbuild-run.yml` file, pyOC
 :-------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `debugports:`                  |   Optional   | Describes the CoreSight debug ports of the device and its capabilities.
 &nbsp;&nbsp;&nbsp; `processors:`                  |   Optional   | Map of `pname` identifiers to access port IDs (mandatory for multi-processor devices).
+&nbsp;&nbsp;&nbsp; `trace-sinks:`                 |   Optional   | Trace sinks supported by the device.
 &nbsp;&nbsp;&nbsp; `swj:`                         |   Optional   | Device allows switching between Serial Wire Debug (SWD) and JTAG protocols (`true` or `false`).
 &nbsp;&nbsp;&nbsp; `dormant:`                     |   Optional   | Device requires the dormant state to switch debug protocols (`true` or `false`).
 
@@ -1044,6 +1045,14 @@ the DFP. If the information is not provided in the `*.cbuild-run.yml` file, pyOC
 &nbsp;&nbsp;&nbsp; `apid:`                        |   Optional   | Access port ID to use for this processor.
 &nbsp;&nbsp;&nbsp; `reset-sequence:`              |   Optional   | Name of debug sequence for reset operation (default: `ResetSystem` sequence).
 
+`trace-sinks:`                                    |              | Content
+:-------------------------------------------------|:-------------|:------------------------------------
+`- <trace-sink-type>:`                            | **Required** | Trace sink type: `serialwire` or `tracebuffer`.
+
+`trace-sinks:` lists device trace sinks from the DFP [`trace`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace) element. `serialwire` has no value. A `tracebuffer` value is its optional PDSC `name` attribute and becomes mandatory when multiple trace buffers exist.
+
+pyOCD uses this information to verify that a trace type is supported and that a selected named trace buffer exists.
+
 **Default values:**
 
 ```yml
@@ -1055,12 +1064,16 @@ debug-topology:
       accessports:
         - apid: 0
           index: 0
+  trace-sinks:
+    - serialwire:
+    - tracebuffer:
 ```
 
 **Example:**
 
 ```yml
   debug-topology:
+    dormant: true
     debugports:
       - dpid: 0
         accessports:
@@ -1073,7 +1086,10 @@ debug-topology:
         apid: 0
       - pname: M55_HE
         apid: 1
-    dormant: true
+    trace-sinks:
+      - serialwire:
+      - tracebuffer: ETF
+      - tracebuffer: MTB
 ```
 
 ## Debug Access Sequence Usage for pyOCD Commands
