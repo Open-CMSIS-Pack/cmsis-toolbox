@@ -1797,11 +1797,12 @@ The YAML structure of the section `projects:` is:
 :---------------------------------------------------------|:-------------|:------------------------------------
 [`- project:`](#project)                                  |   Optional   | Path to the `*.cproject.yml` file.
 &nbsp;&nbsp;&nbsp; [`west:`](#west)                       |   Optional   | Enable West "build orchestration wrapper" for Zephyr projects.
+&nbsp;&nbsp;&nbsp; [`cmake:`](#cmake)                     |   Optional   | Enable native CMake project build orchestration.
 &nbsp;&nbsp;&nbsp; [`for-context:`](#for-context)         |   Optional   | Include project for a list of *build* and *target* types.
 &nbsp;&nbsp;&nbsp; [`not-for-context:`](#not-for-context) |   Optional   | Exclude project for a list of *build* and *target* types.
 
 !!! Note
-    - The nodes `project:` and `west:` are mutually exclusive in one list node. But you a list may contain several `project:` and `west:` nodes.
+  - The nodes `project:`, `west:`, and `cmake:` are mutually exclusive in one list node. A list may contain several nodes of each type.
 
 **Examples:**
 
@@ -1828,6 +1829,9 @@ This example uses multiple projects but with additional controls.
 
     - west:                                # enable west build orchestration wrapper
         app-path: ./blinky                 # specify a zephyr application path
+
+    - cmake:                               # enable native CMake build orchestration
+        source: ./native-cmake             # specify the CMake source directory
 ```
 
 ## Source File Management
@@ -2155,6 +2159,54 @@ The information provided with the `west:` and `west-def:` nodes are used to gene
 **Example:**
 
 [Arm-Examples/CMSIS-Zephyr](https://github.com/Arm-Examples/CMSIS-Zephyr) explains the setup of a Zephyr project.
+
+## CMake Build
+
+Enable native CMake project build orchestration and add its output images to the *csolution project*.
+
+### `cmake:`
+
+Use CMake to configure and build the source directory specified in the `cmake:` node. Relative paths are based on the directory of the `*.csolution.yml` file.
+
+`cmake:`                                                  |              | Content
+:---------------------------------------------------------|:-------------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `source:`                              | **Required** | Path to the CMake source directory.
+&nbsp;&nbsp;&nbsp; `project-id:`                          |   Optional   | Project identifier used for the context name and output path (default: last sub-dir name of `source`).
+&nbsp;&nbsp;&nbsp; `generator:`                           |   Optional   | CMake generator to use for the build (default: `Ninja`).
+&nbsp;&nbsp;&nbsp; `configure:`                           |   Optional   | List of options for the CMake configure command.
+&nbsp;&nbsp;&nbsp; `target:`                              |   Optional   | CMake build target.
+&nbsp;&nbsp;&nbsp; [`images:`](#cmake-images)             |   Optional   | List of output images produced by the CMake project.
+&nbsp;&nbsp;&nbsp; [`device:`](#device)                   |   Optional   | Specify the processor core for execution of the generated images (used in `*.cbuild-run.yml`).
+
+#### CMake `images:`
+
+The `images:` node lists the output images produced by the native CMake project. Each output type can be specified only once.
+
+`images:`                                                 |              | Content
+:---------------------------------------------------------|:-------------|:------------------------------------
+`- image:`                                                | **Required** | Path to the CMake build output image.
+&nbsp;&nbsp;&nbsp; [`type:`](#type)                       | **Required** | Output image type: `elf`, `hex`, `bin`, or `lib`.
+
+**Example:**
+
+```yml
+  projects:
+    - cmake:
+        source: ./cmake/core0
+        project-id: core0
+        device: :cm0_core0
+        generator: Ninja
+        configure:
+          - -DCMAKE_BUILD_TYPE=Debug
+        target: core0-target
+        images:
+          - image: build/core0.elf
+            type: elf
+          - image: build/core0.hex
+            type: hex
+          - image: build/core0.bin
+            type: bin
+```
 
 ## Pre/Post Build Steps
 

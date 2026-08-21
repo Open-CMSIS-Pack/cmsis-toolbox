@@ -1101,6 +1101,29 @@ This file can be configured to reflect user settings.
 
 An explicit `*.dbgconf` configuration file can be specified using the [`debugger:` node](YML-Input-Format.md#debugger) in the `*.csolution.yml` file.
 
+## Native CMake Build Integration
+
+Native CMake projects can be integrated into a *csolution project* without a `*.cproject.yml` file. The CMSIS-Toolbox configures and builds each project using the source directory, generator, configure options, and optional build target specified in the [`cmake:` node](YML-Input-Format.md#cmake-build).
+
+CMake projects are listed under `projects:` in the `*.csolution.yml` file and participate in the solution's `target-types:` and `build-types:`. Their declared output images are included in the generated [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management) file and can therefore be combined with images from other project contexts for programming and debugging.
+
+**Example:**
+
+```yml
+solution:
+  target-types:
+    - type: DualCoreDevice
+      device: Vendor::DualCoreDevice
+
+  projects:
+    - cmake:
+        source: ./core0
+        device: :Core0
+        images:
+          - image: build/core0.elf
+            type: elf
+```
+
 ## West Build System Integration
 
 The West build system is a project management system used primarily in the [Zephyr](https://www.zephyrproject.org/) ecosystem. The integration in the CMSIS-Toolbox acts as a "build orchestration wrapper" around CMake.
