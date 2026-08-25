@@ -260,6 +260,16 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cmake-build">CMake Build</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#cmake">cmake:</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#cmake-images">CMake images:</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#prepost-build-steps">Pre/Post Build Steps</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#executes">executes:</a>
@@ -3438,6 +3448,11 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 <td style="text-align: left;">Enable West "build orchestration wrapper" for Zephyr projects.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#cmake"><code>cmake:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Enable native CMake project build orchestration.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#for-context"><code>for-context:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Include project for a list of <em>build</em> and <em>target</em> types.</td>
@@ -3451,10 +3466,10 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<ul>
-<li>The nodes <code>project:</code> and <code>west:</code> are mutually exclusive in one list node. But you a list may contain several <code>project:</code> and <code>west:</code> nodes.</li>
-</ul>
 </div>
+<ul>
+<li>The nodes <code>project:</code>, <code>west:</code>, and <code>cmake:</code> are mutually exclusive in one list node. A list may contain several nodes of each type.</li>
+</ul>
 <p><strong>Examples:</strong></p>
 <p>This example uses two projects that are built in parallel using the same <code>build-type:</code> and <code>target-type:</code>.  Such a setup is typical for multi-processor systems.</p>
 <pre><code class="language-yml">  projects:
@@ -3474,6 +3489,9 @@ organization of multiple projects. The file <code>*.csolution.yml</code> describ
 
     - west:                                # enable west build orchestration wrapper
         app-path: ./blinky                 # specify a zephyr application path
+
+    - cmake:                               # enable native CMake build orchestration
+        source: ./native-cmake             # specify the CMake source directory
 </code></pre>
 <h2 id="source-file-management">Source File Management</h2>
 <table>
@@ -4078,6 +4096,97 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </div>
 <p><strong>Example:</strong></p>
 <p><a href="https://github.com/Arm-Examples/CMSIS-Zephyr">Arm-Examples/CMSIS-Zephyr</a> explains the setup of a Zephyr project.</p>
+<h2 id="cmake-build">CMake Build</h2>
+<p>Enable native CMake project build orchestration and add its output images to the <em>csolution project</em>.</p>
+<h3 id="cmake"><code>cmake:</code></h3>
+<p>Use CMake to configure and build the source directory specified in the <code>cmake:</code> node. Relative paths are based on the directory of the <code>*.csolution.yml</code> file.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>cmake:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>source:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Path to the CMake source directory.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>project-id:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Project identifier used for the context name and output path (default: last sub-dir name of <code>source</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>generator:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">CMake generator to use for the build (default: <code>Ninja</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>configure:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of options for the CMake configure command.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">CMake build target.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#cmake-images"><code>images:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of output images produced by the CMake project.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#device"><code>device:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Specify the processor core for execution of the generated images (used in <code>*.cbuild-run.yml</code>).</td>
+</tr>
+</tbody>
+</table>
+<h4 id="cmake-images">CMake <code>images:</code></h4>
+<p>The <code>images:</code> node lists the output images produced by the native CMake project. Each output type can be specified only once.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>images:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- image:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Path to the CMake build output image.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#type"><code>type:</code></a></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Output image type: <code>elf</code>, <code>hex</code>, <code>bin</code>, or <code>lib</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example:</strong></p>
+<pre><code class="language-yml">  projects:
+    - cmake:
+        source: ./cmake/core0
+        project-id: core0
+        device: :cm0_core0
+        generator: Ninja
+        configure:
+          - -DCMAKE_BUILD_TYPE=Debug
+        target: core0-target
+        images:
+          - image: build/core0.elf
+            type: elf
+          - image: build/core0.hex
+            type: hex
+          - image: build/core0.bin
+            type: bin
+</code></pre>
 <h2 id="prepost-build-steps">Pre/Post Build Steps</h2>
 <p>The CMSIS-Toolbox supports pre-build and post-build steps that utilize external tools or scripts. Such external commands can be used for various tasks such as:</p>
 <ul>
