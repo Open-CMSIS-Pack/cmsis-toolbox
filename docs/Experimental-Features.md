@@ -1349,6 +1349,8 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
           // STS.Full distinguishes a wrapped/full buffer from an empty buffer
           // when the read and write pointers are equal.
           wordsToRead = bufferWords;
+          // RWP identifies the oldest retained trace after the buffer wraps.
+          Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x014, writePointer); // Rebase RRP for chronological output
         </block>
       </control>
       <control if="(etbStatus &amp; 0x00000001) == 0">
@@ -1575,6 +1577,8 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
           // STS.Full distinguishes a wrapped/full buffer from an empty buffer
           // when the read and write pointers are equal.
           bytesToRead = bufferSize;
+          // RWP identifies the oldest retained trace after the buffer wraps.
+          Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, writePointer); // Rebase RRP for chronological output
         </block>
       </control>
       <control if="(etfStatus &amp; 0x00000001) == 0">
@@ -1869,6 +1873,9 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
         <block>
           // STS.Full indicates that the circular buffer contains a complete capture.
           bytesToRead = bufferSize;
+          // RWP identifies the oldest retained trace after the buffer wraps.
+          Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x014, Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x018)); // Rebase RRP for chronological output
+          Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x038, Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x03C)); // Rebase RRPHI for chronological output
         </block>
       </control>
       <control if="(etrStatus &amp; 0x00000001) == 0">
@@ -2564,6 +2571,8 @@ cbuild-run:
                     // STS.Full distinguishes a wrapped/full buffer from an empty buffer
                     // when the read and write pointers are equal.
                     wordsToRead = bufferWords;
+                    // RWP identifies the oldest retained trace after the buffer wraps.
+                    Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x014, writePointer); // Rebase RRP for chronological output
             - if: '(etbStatus & 0x00000001) == 0'
               blocks:
                 - if: 'writePointer >= readPointer'
@@ -2775,6 +2784,8 @@ cbuild-run:
                     // STS.Full distinguishes a wrapped/full buffer from an empty buffer
                     // when the read and write pointers are equal.
                     bytesToRead = bufferSize;
+                    // RWP identifies the oldest retained trace after the buffer wraps.
+                    Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, writePointer); // Rebase RRP for chronological output
             - if: '(etfStatus & 0x00000001) == 0'
               blocks:
                 - if: 'writePointer >= readPointer'
@@ -3056,6 +3067,9 @@ cbuild-run:
                 - execute: |
                     // STS.Full indicates that the circular buffer contains a complete capture.
                     bytesToRead = bufferSize;
+                    // RWP identifies the oldest retained trace after the buffer wraps.
+                    Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x014, Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x018)); // Rebase RRP for chronological output
+                    Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x038, Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x03C)); // Rebase RRPHI for chronological output
             - if: '(etrStatus & 0x00000001) == 0'
               blocks:
                 - execute: |
