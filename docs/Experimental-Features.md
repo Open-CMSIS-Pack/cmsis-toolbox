@@ -1823,7 +1823,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
         status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
     </block>
-    <control while="(status &amp; 0x0100) == 1" info="Wait for READY cleared" timeout="100">
+    <control while="(status &amp; 0x0100) != 0" info="Wait for READY cleared" timeout="100">
       <block>
         status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
       </block>
@@ -1850,7 +1850,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
 
       status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
     </block>
-    <control while="(status &amp; 0x0100) == 1" info="Wait for READY cleared" timeout="100">
+    <control while="(status &amp; 0x0100) != 0" info="Wait for READY cleared" timeout="100">
       <block>
         status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
       </block>
@@ -3011,7 +3011,7 @@ cbuild-run:
             // Enable CATU after configuration
             Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
               status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-        - while: '(status & 0x0100) == 1'
+        - while: '(status & 0x0100) != 0'
           info: 'Wait for READY cleared'
           timeout: 100
           blocks:
@@ -3038,7 +3038,7 @@ cbuild-run:
             Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
 
             status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-        - while: '(status & 0x0100) == 1'
+        - while: '(status & 0x0100) != 0'
           info: 'Wait for READY cleared'
           timeout: 100
           blocks:
