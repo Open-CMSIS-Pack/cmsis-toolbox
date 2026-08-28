@@ -882,8 +882,8 @@ Component | Default AP | Default Base Address | Sequence Snippets | PDSC (XML) |
 :---------|:-----------|:---------------------|:------------------|:-----------|:-------------------
 Trace Port Interface Unit (TPIU) | `0` | `0xE0040000` | `Configure`, `Capture`, `Flush` | [TPIU](#trace-port-interface-unit-tpiu) | [TPIU](#trace-port-interface-unit-tpiu-cbuild-runyml)
 Serial Wire Output (SWO) | `0` | `0xE0040000` | `Configure` | [SWO](#serial-wire-output-swo) | [SWO](#serial-wire-output-swo-cbuild-runyml)
-Embedded Trace Buffer (ETB) | `0` | `0xE0042000` | `Configure`, `Capture`, `Flush`, `ReadBuffer` | [ETB](#embedded-trace-buffer-etb) | [ETB](#embedded-trace-buffer-etb-cbuild-runyml)
-Embedded Trace FIFO (ETF) | `0` | `0xE0042000` | `Configure_HWFIFO`, `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush`, `ReadBuffer` | [ETF](#embedded-trace-fifo-etf) | [ETF](#embedded-trace-fifo-etf-cbuild-runyml)
+Embedded Trace Buffer (ETB) | `0` | `0xE0042000` | `Configure`, `Capture`, `Flush`, `Read_Buffer` | [ETB](#embedded-trace-buffer-etb) | [ETB](#embedded-trace-buffer-etb-cbuild-runyml)
+Embedded Trace FIFO (ETF) | `0` | `0xE0042000` | `Configure_HWFIFO`, `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush`, `Read_CircularBuffer` | [ETF](#embedded-trace-fifo-etf) | [ETF](#embedded-trace-fifo-etf-cbuild-runyml)
 Trace Funnel | `0` | `0xE0043000` | `Configure` | [Trace Funnel](#trace-funnel) | [Trace Funnel](#trace-funnel-cbuild-runyml)
 Trace Replicator | `0` | `0x00000000` | `Configure` | [Trace Replicator](#trace-replicator) | [Trace Replicator](#trace-replicator-cbuild-runyml)
 Embedded Trace Router (ETR) | `0` | `0x00000000` | `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush` | [ETR](#embedded-trace-router-etr) | [ETR](#embedded-trace-router-etr-cbuild-runyml)
@@ -1186,7 +1186,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </block>
   </sequence>
 
-  <sequence name="CS_ETB___INSTANCE_INDEX___ReadBuffer">
+  <sequence name="CS_ETB___INSTANCE_INDEX___Read_Buffer">
     <block>
       // Helper variables
       __var savedAP       = __ap;
@@ -1198,7 +1198,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var bytesToRead   = 0x00000000;
       __var bytesStreamed = 0x00000000;
 
-      Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
       __ap = ETB___INSTANCE_INDEX___AP; // Set AP
 
@@ -1247,7 +1247,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1413,7 +1413,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </block>
   </sequence>
 
-  <sequence name="CS_ETF___INSTANCE_INDEX___ReadBuffer">
+  <sequence name="CS_ETF___INSTANCE_INDEX___Read_CircularBuffer">
     <block>
       // Helper variables
       __var savedAP       = __ap;
@@ -1424,7 +1424,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var bytesToRead   = 0x00000000;
       __var bytesStreamed = 0x00000000;
 
-      Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
       __ap = ETF___INSTANCE_INDEX___AP; // Set AP
 
@@ -1470,7 +1470,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -2347,7 +2347,7 @@ cbuild-run:
             __ap = savedAP;
             Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
-    - name: CS_ETB___INSTANCE_INDEX___ReadBuffer
+    - name: CS_ETB___INSTANCE_INDEX___Read_Buffer
       blocks:
         - execute: |
             // Helper variables
@@ -2360,7 +2360,7 @@ cbuild-run:
             __var bytesToRead   = 0x00000000;
             __var bytesStreamed = 0x00000000;
 
-            Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
             __ap = ETB___INSTANCE_INDEX___AP; // Set AP
 
@@ -2402,7 +2402,7 @@ cbuild-run:
                     Message(1, "ETB trace buffer is empty");
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 ~~~
 
 #### Embedded Trace FIFO (ETF) `*.cbuild-run.yml`
@@ -2559,7 +2559,7 @@ cbuild-run:
             __ap = savedAP;
             Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
-    - name: CS_ETF___INSTANCE_INDEX___ReadBuffer
+    - name: CS_ETF___INSTANCE_INDEX___Read_CircularBuffer
       blocks:
         - execute: |
             // Helper variables
@@ -2571,7 +2571,7 @@ cbuild-run:
             __var bytesToRead   = 0x00000000;
             __var bytesStreamed = 0x00000000;
             
-            Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
             
             __ap = ETF___INSTANCE_INDEX___AP; // Set AP
             
@@ -2611,7 +2611,7 @@ cbuild-run:
                     Message(1, "ETF trace buffer is empty");
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 ~~~
 
 #### Trace Funnel `*.cbuild-run.yml`
