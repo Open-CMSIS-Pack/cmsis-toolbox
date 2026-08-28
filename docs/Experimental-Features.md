@@ -886,7 +886,8 @@ Embedded Trace Buffer (ETB) | `0` | `0xE0042000` | `Configure`, `Capture`, `Flus
 Embedded Trace FIFO (ETF) | `0` | `0xE0042000` | `Configure_HWFIFO`, `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush`, `ReadBuffer` | [ETF](#embedded-trace-fifo-etf) | [ETF](#embedded-trace-fifo-etf-cbuild-runyml)
 Trace Funnel | `0` | `0xE0043000` | `Configure` | [Trace Funnel](#trace-funnel) | [Trace Funnel](#trace-funnel-cbuild-runyml)
 Trace Replicator | `0` | `0x00000000` | `Configure` | [Trace Replicator](#trace-replicator) | [Trace Replicator](#trace-replicator-cbuild-runyml)
-Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR: `0`<br/>CATU: `0` | ETR: `0x00000000`<br/>CATU: `0x00000000` | ETR: `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush`<br/>CATU: `Configure`, `Capture`, `Flush` | [ETR and CATU](#embedded-trace-router-etr-and-coresight-address-translation-unit-catu) | [ETR and CATU](#embedded-trace-router-etr-and-coresight-address-translation-unit-catu-cbuild-runyml)
+Embedded Trace Router (ETR) | `0` | `0x00000000` | `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush` | [ETR](#embedded-trace-router-etr) | [ETR](#embedded-trace-router-etr-cbuild-runyml)
+CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `Capture`, `Flush` | [CATU](#coresight-address-translation-unit-catu) | [CATU](#coresight-address-translation-unit-catu-cbuild-runyml)
 
 ### PDSC (XML) Implementations
 
@@ -1555,11 +1556,11 @@ Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR:
 </cmsis-pack-trace-snippet>
 ~~~
 
-#### Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU)
+#### Embedded Trace Router (ETR)
 
 ~~~xml
-<!-- CMSIS-Pack ETR-CATU template. Replace __INSTANCE_INDEX__ with the stable numeric instance suffix. -->
-<cmsis-pack-trace-snippet component="ETR-CATU">
+<!-- CMSIS-Pack ETR template. Replace __INSTANCE_INDEX__ with the stable numeric instance suffix. -->
+<cmsis-pack-trace-snippet component="ETR">
   <debugvars>
     // ETR
     __var ETR___INSTANCE_INDEX___ADDRESS           = 0x00000000;
@@ -1578,17 +1579,6 @@ Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR:
                                               // [7:6]: stashMode
                                               // [4:0]: tlbLimit
 
-    // CATU
-    // Additional settings if CATU implemented
-    __var CATU___INSTANCE_INDEX___ADDRESS             = 0x00000000;
-    __var CATU___INSTANCE_INDEX___AP                  = 0x00000000;
-    __var CATU___INSTANCE_INDEX___MODE                = 0x00000000;            // [0]: 1- Translate, 0 - Pass-through
-    __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR    = 0x00000000;            // Lookup table in RAM for translation
-    __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR_HI = 0x00000000;
-    __var CATU___INSTANCE_INDEX___INPUT_ADDR          = ETR___INSTANCE_INDEX___BUFFER_ADDRESS;    // Virtual base address
-    __var CATU___INSTANCE_INDEX___INPUT_ADDR_HI       = ETR___INSTANCE_INDEX___BUFFER_ADDRESS_HI;
-    __var CATU___INSTANCE_INDEX___AXI_CTRL = (((ETR___INSTANCE_INDEX___AXI_CTL &gt;&gt; 16) &amp; 0xF) &lt;&lt; 4) | (ETR___INSTANCE_INDEX___AXI_CTL &amp; 0x3); // [7:4]: ARCACHE, [1:0]: ARPROT (Secure|Privileged)
-    __var CATU___INSTANCE_INDEX___IRQEN               = 0x00000000;            // [0]: Enable/Disable
   </debugvars>
 
   <sequence name="CS_ETR___INSTANCE_INDEX___Configure_CircularBuffer">
@@ -1598,7 +1588,7 @@ Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR:
       __var ffcrValue = 0x00000000;
       __var etrStatus = 0x00000000;
 
-      Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___ConfigureETRCircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETR___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
       __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
 
       // Configure ETR to HW FIFO for Sync Trace
@@ -1630,52 +1620,7 @@ Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR:
     </block>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___ConfigureETRCircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
-    </block>
-  </sequence>
-
-  <sequence name="CS_CATU___INSTANCE_INDEX___Configure" info="Scatterlist expected to be programmed separately, too complex">
-    <block>
-      // Helper variables
-      __var savedAP = __ap;
-      __var status = 0x00000000;
-
-      Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___ConfigureCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
-
-      __ap = CATU___INSTANCE_INDEX___AP;                                                              // Set AP
-
-      // Disable CATU before configuration
-      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000000);  
-
-      status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-    </block>
-    <control while="(status &amp; 0x0100) == 0" info="Wait for READY" timeout="100">
-      <block>
-        status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-      </block>
-    </control>
-    <block>
-      // Configure
-      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x004, CATU___INSTANCE_INDEX___MODE);                 // Set MODE
-      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x008, CATU___INSTANCE_INDEX___AXI_CTRL);             // Set AXICTRL
-      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x00C, CATU___INSTANCE_INDEX___IRQEN);                // Set IRQEN
-      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x020, CATU___INSTANCE_INDEX___SCATTERLIST_ADDR);     // Set SLADDRLO
-      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x024, CATU___INSTANCE_INDEX___SCATTERLIST_ADDR_HI);  // Set SLADDRHI
-      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x028, CATU___INSTANCE_INDEX___INPUT_ADDR);           // Set INADDRLO
-      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x02C, CATU___INSTANCE_INDEX___INPUT_ADDR_HI);        // Set INADDRHI
-
-      // Enable CATU after configuration
-      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
-        status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-    </block>
-    <control while="(status &amp; 0x0100) == 1" info="Wait for READY cleared" timeout="100">
-      <block>
-        status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-      </block>
-    </control>
-    <block>
-      __ap = savedAP;
-      Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___ConfigureCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETR___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1685,7 +1630,7 @@ Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR:
       __var ffcrValue = 0x00000000;
       __var savedAP = __ap;
 
-      Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___CaptureETRCircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETR___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
 
       // Ensure involved components are in a well-defined state.
       Sequence("DoTraceFlush");
@@ -1708,37 +1653,7 @@ Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR:
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);                                // Enable ETR
       __ap = savedAP;
 
-      Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___CaptureETRCircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
-    </block>
-  </sequence>
-
-  <sequence name="CS_CATU___INSTANCE_INDEX___Capture" info="Restart address translation unit">
-    <block>
-      // Helper variables
-      __var savedAP = __ap;
-      __var status = 0x00000000;
-
-      Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___CaptureCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
-
-      // Ensure involved components are in a well-defined state.
-      Sequence("DoTraceFlush");
-
-      __ap = CATU___INSTANCE_INDEX___AP; // Set AP
-
-      // Keep initial values and re-enable CATU before next capture.
-      // Clears any remaning error bits.
-      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
-
-      status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-    </block>
-    <control while="(status &amp; 0x0100) == 1" info="Wait for READY cleared" timeout="100">
-      <block>
-        status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-      </block>
-    </control>
-    <block>
-      __ap = savedAP;
-      Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___CaptureCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETR___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1749,7 +1664,7 @@ Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR:
       __var ffcrValue   = 0x00000000;
       __var etrStatus   = 0x00000000;
 
-      Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___FlushETR @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETR___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
 
       __ap = ETR___INSTANCE_INDEX___AP;  // Set AP
     </block>
@@ -1790,7 +1705,100 @@ Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR:
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___FlushETR @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETR___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+    </block>
+  </sequence>
+</cmsis-pack-trace-snippet>
+~~~
+
+#### CoreSight Address Translation Unit (CATU)
+
+~~~xml
+<!-- CMSIS-Pack CATU template. Replace __INSTANCE_INDEX__ with the stable numeric instance suffix. -->
+<cmsis-pack-trace-snippet component="CATU">
+  <debugvars>
+    // CATU
+    // Additional settings if CATU implemented
+    __var CATU___INSTANCE_INDEX___ADDRESS             = 0x00000000;
+    __var CATU___INSTANCE_INDEX___AP                  = 0x00000000;
+    __var CATU___INSTANCE_INDEX___MODE                = 0x00000000;            // [0]: 1- Translate, 0 - Pass-through
+    __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR    = 0x00000000;            // Lookup table in RAM for translation
+    __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR_HI = 0x00000000;
+    __var CATU___INSTANCE_INDEX___INPUT_ADDR          = ETR___INSTANCE_INDEX___BUFFER_ADDRESS;    // Virtual base address
+    __var CATU___INSTANCE_INDEX___INPUT_ADDR_HI       = ETR___INSTANCE_INDEX___BUFFER_ADDRESS_HI;
+    __var CATU___INSTANCE_INDEX___AXI_CTRL = (((ETR___INSTANCE_INDEX___AXI_CTL &gt;&gt; 16) &amp; 0xF) &lt;&lt; 4) | (ETR___INSTANCE_INDEX___AXI_CTL &amp; 0x3); // [7:4]: ARCACHE, [1:0]: ARPROT (Secure|Privileged)
+    __var CATU___INSTANCE_INDEX___IRQEN               = 0x00000000;            // [0]: Enable/Disable
+  </debugvars>
+
+  <sequence name="CS_CATU___INSTANCE_INDEX___Configure" info="Scatterlist expected to be programmed separately, too complex">
+    <block>
+      // Helper variables
+      __var savedAP = __ap;
+      __var status = 0x00000000;
+
+      Message(0, "Begin CS_CATU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+
+      __ap = CATU___INSTANCE_INDEX___AP;                                                              // Set AP
+
+      // Disable CATU before configuration
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000000);
+
+      status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+    </block>
+    <control while="(status &amp; 0x0100) == 0" info="Wait for READY" timeout="100">
+      <block>
+        status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+      </block>
+    </control>
+    <block>
+      // Configure
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x004, CATU___INSTANCE_INDEX___MODE);                 // Set MODE
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x008, CATU___INSTANCE_INDEX___AXI_CTRL);             // Set AXICTRL
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x00C, CATU___INSTANCE_INDEX___IRQEN);                // Set IRQEN
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x020, CATU___INSTANCE_INDEX___SCATTERLIST_ADDR);     // Set SLADDRLO
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x024, CATU___INSTANCE_INDEX___SCATTERLIST_ADDR_HI);  // Set SLADDRHI
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x028, CATU___INSTANCE_INDEX___INPUT_ADDR);           // Set INADDRLO
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x02C, CATU___INSTANCE_INDEX___INPUT_ADDR_HI);        // Set INADDRHI
+
+      // Enable CATU after configuration
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
+        status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+    </block>
+    <control while="(status &amp; 0x0100) == 1" info="Wait for READY cleared" timeout="100">
+      <block>
+        status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+      </block>
+    </control>
+    <block>
+      __ap = savedAP;
+      Message(0, "End CS_CATU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+    </block>
+  </sequence>
+
+  <sequence name="CS_CATU___INSTANCE_INDEX___Capture" info="Restart address translation unit">
+    <block>
+      // Helper variables
+      __var savedAP = __ap;
+      __var status = 0x00000000;
+
+      Message(0, "Begin CS_CATU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+
+      __ap = CATU___INSTANCE_INDEX___AP; // Set AP
+
+      // Keep initial values and re-enable CATU before next capture.
+      // Clears any remaning error bits.
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
+
+      status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+    </block>
+    <control while="(status &amp; 0x0100) == 1" info="Wait for READY cleared" timeout="100">
+      <block>
+        status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+      </block>
+    </control>
+    <block>
+      __ap = savedAP;
+      Message(0, "End CS_CATU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1800,11 +1808,11 @@ Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR:
       __var savedAP = __ap;
       __var status = 0x00000000;
 
-      Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___FlushCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_CATU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
       __ap = CATU___INSTANCE_INDEX___AP; // Set AP
 
       // Disable CATU before configuration
-      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000000);  
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000000);
 
       status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
     </block>
@@ -1815,9 +1823,10 @@ Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR:
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___FlushCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+      Message(0, "End CS_CATU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
+
 </cmsis-pack-trace-snippet>
 ~~~
 
@@ -2682,7 +2691,7 @@ cbuild-run:
             Message(0, "End CS_REPLICATOR___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
 ~~~
 
-#### Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) `*.cbuild-run.yml`
+#### Embedded Trace Router (ETR) `*.cbuild-run.yml`
 
 ~~~yml
 cbuild-run:
@@ -2705,18 +2714,7 @@ cbuild-run:
       __var ETR___INSTANCE_INDEX___AXI_CTL1          = 0x00020000;     // [27:16]: tlbXlateSlots
                                                 // [7:6]: stashMode
                                                 // [4:0]: tlbLimit
-      
-      // CATU
-      // Additional settings if CATU implemented
-      __var CATU___INSTANCE_INDEX___ADDRESS             = 0x00000000;
-      __var CATU___INSTANCE_INDEX___AP                  = 0x00000000;
-      __var CATU___INSTANCE_INDEX___MODE                = 0x00000000;  // [0]: 1- Translate, 0 - Pass-through
-      __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR    = 0x00000000;  // Lookup table in RAM for translation
-      __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR_HI = 0x00000000;
-      __var CATU___INSTANCE_INDEX___INPUT_ADDR          = ETR___INSTANCE_INDEX___BUFFER_ADDRESS;    // Virtual base address
-      __var CATU___INSTANCE_INDEX___INPUT_ADDR_HI       = ETR___INSTANCE_INDEX___BUFFER_ADDRESS_HI;
-      __var CATU___INSTANCE_INDEX___AXI_CTRL = (((ETR___INSTANCE_INDEX___AXI_CTL >> 16) & 0xF) << 4) | (ETR___INSTANCE_INDEX___AXI_CTL & 0x3); // [7:4]: ARCACHE, [1:0]: ARPROT (Secure|Privileged)
-      __var CATU___INSTANCE_INDEX___IRQEN               = 0x00000000;  // [0]: Enable/Disable
+
 
   debug-sequences:
 
@@ -2727,10 +2725,10 @@ cbuild-run:
             __var savedAP = __ap;
             __var ffcrValue = 0x00000000;
             __var etrStatus = 0x00000000;
-            
-            Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___ConfigureETRCircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+
+            Message(0, "Begin CS_ETR___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
             __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
-            
+
             // Configure ETR to HW FIFO for Sync Trace
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000000);                                // Disable ETR before configuring
             etrStatus = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x00C);
@@ -2759,51 +2757,8 @@ cbuild-run:
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);                                // Enable ETR
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___ConfigureETRCircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETR___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
 
-    - name: CS_CATU___INSTANCE_INDEX___Configure
-      blocks:
-        - execute: |
-            // Helper variables
-            __var savedAP = __ap;
-            __var status = 0x00000000;
-            
-            Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___ConfigureCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
-            
-            __ap = CATU___INSTANCE_INDEX___AP;                                                              // Set AP
-            
-            // Disable CATU before configuration
-            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000000);
-            
-            status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-        - while: '(status & 0x0100) == 0'
-          info: 'Wait for READY'
-          timeout: 100
-          blocks:
-            - execute: |
-                status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-        - execute: |
-            // Configure
-            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x004, CATU___INSTANCE_INDEX___MODE);                 // Set MODE
-            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x008, CATU___INSTANCE_INDEX___AXI_CTRL);             // Set AXICTRL
-            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x00C, CATU___INSTANCE_INDEX___IRQEN);                // Set IRQEN
-            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x020, CATU___INSTANCE_INDEX___SCATTERLIST_ADDR);     // Set SLADDRLO
-            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x024, CATU___INSTANCE_INDEX___SCATTERLIST_ADDR_HI);  // Set SLADDRHI
-            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x028, CATU___INSTANCE_INDEX___INPUT_ADDR);           // Set INADDRLO
-            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x02C, CATU___INSTANCE_INDEX___INPUT_ADDR_HI);        // Set INADDRHI
-            
-            // Enable CATU after configuration
-            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
-              status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-        - while: '(status & 0x0100) == 1'
-          info: 'Wait for READY cleared'
-          timeout: 100
-          blocks:
-            - execute: |
-                status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-        - execute: |
-            __ap = savedAP;
-            Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___ConfigureCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
 
     - name: CS_ETR___INSTANCE_INDEX___Capture_CircularBuffer
       blocks:
@@ -2811,12 +2766,12 @@ cbuild-run:
             // Helper variables
             __var ffcrValue = 0x00000000;
             __var savedAP = __ap;
-            
-            Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___CaptureETRCircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
-            
+
+            Message(0, "Begin CS_ETR___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+
             // Ensure involved components are in a well-defined state.
             Sequence("DoTraceFlush");
-            
+
             __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
             ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue |= 0x00000002;                                                                    // FFCR: Enable Formatter
@@ -2834,37 +2789,9 @@ cbuild-run:
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x038, ETR___INSTANCE_INDEX___BUFFER_ADDRESS_HI);  // Init RRPHI
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);                                // Enable ETR
             __ap = savedAP;
-            
-            Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___CaptureETRCircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
 
-    - name: CS_CATU___INSTANCE_INDEX___Capture
-      blocks:
-        - execute: |
-            // Helper variables
-            __var savedAP = __ap;
-            __var status = 0x00000000;
-            
-            Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___CaptureCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
-            
-            // Ensure involved components are in a well-defined state.
-            Sequence("DoTraceFlush");
-            
-            __ap = CATU___INSTANCE_INDEX___AP; // Set AP
-            
-            // Keep initial values and re-enable CATU before next capture.
-            // Clears any remaning error bits.
-            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
-            
-            status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-        - while: '(status & 0x0100) == 1'
-          info: 'Wait for READY cleared'
-          timeout: 100
-          blocks:
-            - execute: |
-                status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
-        - execute: |
-            __ap = savedAP;
-            Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___CaptureCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETR___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+
 
     - name: CS_ETR___INSTANCE_INDEX___Flush
       blocks:
@@ -2873,9 +2800,9 @@ cbuild-run:
             __var savedAP     = __ap;
             __var ffcrValue   = 0x00000000;
             __var etrStatus   = 0x00000000;
-            
-            Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___FlushETR @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
-            
+
+            Message(0, "Begin CS_ETR___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+
             __ap = ETR___INSTANCE_INDEX___AP;  // Set AP
         - execute: |
             // Flush ETR first so the HW FIFO drains towards the TPIU.
@@ -2913,7 +2840,101 @@ cbuild-run:
                 etrStatus = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x00C);
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___FlushETR @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETR___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+
+~~~
+
+#### CoreSight Address Translation Unit (CATU) `*.cbuild-run.yml`
+
+~~~yml
+cbuild-run:
+
+  debug-vars:
+    vars: |
+      // CATU
+      // Additional settings if CATU implemented
+      __var CATU___INSTANCE_INDEX___ADDRESS             = 0x00000000;
+      __var CATU___INSTANCE_INDEX___AP                  = 0x00000000;
+      __var CATU___INSTANCE_INDEX___MODE                = 0x00000000;  // [0]: 1- Translate, 0 - Pass-through
+      __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR    = 0x00000000;  // Lookup table in RAM for translation
+      __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR_HI = 0x00000000;
+      __var CATU___INSTANCE_INDEX___INPUT_ADDR          = ETR___INSTANCE_INDEX___BUFFER_ADDRESS;    // Virtual base address
+      __var CATU___INSTANCE_INDEX___INPUT_ADDR_HI       = ETR___INSTANCE_INDEX___BUFFER_ADDRESS_HI;
+      __var CATU___INSTANCE_INDEX___AXI_CTRL = (((ETR___INSTANCE_INDEX___AXI_CTL >> 16) & 0xF) << 4) | (ETR___INSTANCE_INDEX___AXI_CTL & 0x3); // [7:4]: ARCACHE, [1:0]: ARPROT (Secure|Privileged)
+      __var CATU___INSTANCE_INDEX___IRQEN               = 0x00000000;  // [0]: Enable/Disable
+
+  debug-sequences:
+
+    - name: CS_CATU___INSTANCE_INDEX___Configure
+      blocks:
+        - execute: |
+            // Helper variables
+            __var savedAP = __ap;
+            __var status = 0x00000000;
+
+            Message(0, "Begin CS_CATU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+
+            __ap = CATU___INSTANCE_INDEX___AP;                                                              // Set AP
+
+            // Disable CATU before configuration
+            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000000);
+
+            status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+        - while: '(status & 0x0100) == 0'
+          info: 'Wait for READY'
+          timeout: 100
+          blocks:
+            - execute: |
+                status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+        - execute: |
+            // Configure
+            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x004, CATU___INSTANCE_INDEX___MODE);                 // Set MODE
+            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x008, CATU___INSTANCE_INDEX___AXI_CTRL);             // Set AXICTRL
+            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x00C, CATU___INSTANCE_INDEX___IRQEN);                // Set IRQEN
+            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x020, CATU___INSTANCE_INDEX___SCATTERLIST_ADDR);     // Set SLADDRLO
+            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x024, CATU___INSTANCE_INDEX___SCATTERLIST_ADDR_HI);  // Set SLADDRHI
+            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x028, CATU___INSTANCE_INDEX___INPUT_ADDR);           // Set INADDRLO
+            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x02C, CATU___INSTANCE_INDEX___INPUT_ADDR_HI);        // Set INADDRHI
+
+            // Enable CATU after configuration
+            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
+              status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+        - while: '(status & 0x0100) == 1'
+          info: 'Wait for READY cleared'
+          timeout: 100
+          blocks:
+            - execute: |
+                status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+        - execute: |
+            __ap = savedAP;
+            Message(0, "End CS_CATU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+
+
+    - name: CS_CATU___INSTANCE_INDEX___Capture
+      blocks:
+        - execute: |
+            // Helper variables
+            __var savedAP = __ap;
+            __var status = 0x00000000;
+
+            Message(0, "Begin CS_CATU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+
+            __ap = CATU___INSTANCE_INDEX___AP; // Set AP
+
+            // Keep initial values and re-enable CATU before next capture.
+            // Clears any remaning error bits.
+            Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
+
+            status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+        - while: '(status & 0x0100) == 1'
+          info: 'Wait for READY cleared'
+          timeout: 100
+          blocks:
+            - execute: |
+                status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+        - execute: |
+            __ap = savedAP;
+            Message(0, "End CS_CATU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
 
     - name: CS_CATU___INSTANCE_INDEX___Flush
       blocks:
@@ -2921,13 +2942,13 @@ cbuild-run:
             // Helper variables
             __var savedAP = __ap;
             __var status = 0x00000000;
-            
-            Message(0, "Begin CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___FlushCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+
+            Message(0, "Begin CS_CATU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
             __ap = CATU___INSTANCE_INDEX___AP; // Set AP
-            
+
             // Disable CATU before configuration
             Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000000);
-            
+
             status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
         - while: '(status & 0x0100) == 0'
           info: 'Wait for READY'
@@ -2937,7 +2958,9 @@ cbuild-run:
                 status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETR___INSTANCE_INDEX___CATU___INSTANCE_INDEX_____INSTANCE_INDEX___FlushCATU @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+            Message(0, "End CS_CATU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+
+
 ~~~
 
 #### Full Trace Scaffold `*.cbuild-run.yml`
