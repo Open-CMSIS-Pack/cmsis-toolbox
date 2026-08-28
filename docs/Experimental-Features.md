@@ -886,7 +886,7 @@ Embedded Trace Buffer (ETB) | `0` | `0xE0042000` | `Configure`, `Capture`, `Flus
 Embedded Trace FIFO (ETF) | `0` | `0xE0042000` | `Configure_HWFIFO`, `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush`, `Read_CircularBuffer` | [ETF](#embedded-trace-fifo-etf) | [ETF](#embedded-trace-fifo-etf-cbuild-runyml)
 Trace Funnel | `0` | `0xE0043000` | `Configure` | [Trace Funnel](#trace-funnel) | [Trace Funnel](#trace-funnel-cbuild-runyml)
 Trace Replicator | `0` | `0x00000000` | `Configure` | [Trace Replicator](#trace-replicator) | [Trace Replicator](#trace-replicator-cbuild-runyml)
-Embedded Trace Router (ETR) | `0` | `0x00000000` | `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush` | [ETR](#embedded-trace-router-etr) | [ETR](#embedded-trace-router-etr-cbuild-runyml)
+Embedded Trace Router (ETR) | `0` | `0x00000000` | `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush`, `Read_CircularBuffer` | [ETR](#embedded-trace-router-etr) | [ETR](#embedded-trace-router-etr-cbuild-runyml)
 CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `Capture`, `Flush` | [CATU](#coresight-address-translation-unit-catu) | [CATU](#coresight-address-translation-unit-catu-cbuild-runyml)
 
 ### PDSC (XML) Implementations
@@ -1706,6 +1706,58 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     <block>
       __ap = savedAP;
       Message(0, "End CS_ETR___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+    </block>
+  </sequence>
+
+  <sequence name="CS_ETR___INSTANCE_INDEX___Read_CircularBuffer">
+    <block>
+      // Helper variables
+      __var savedAP       = __ap;
+      __var etrStatus     = 0x00000000;
+      __var bufferSize    = 0x00000000;
+      __var readPointer   = 0x0000000000000000;
+      __var writePointer  = 0x0000000000000000;
+      __var bytesToRead   = 0x00000000;
+      __var bytesStreamed = 0x00000000;
+
+      Message(0, "Begin CS_ETR___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+      __ap = ETR___INSTANCE_INDEX___AP; // Set AP
+
+      // ETR RSZ is expressed in 32-bit words. RRP and RWP identify the valid capture range.
+      bufferSize   = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x004) * 4;
+      etrStatus    = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x00C);
+      readPointer  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x014) | (Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x038) &lt;&lt; 32);
+      writePointer = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x018) | (Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x03C) &lt;&lt; 32);
+    </block>
+    <control if="bufferSize != 0">
+      <control if="(etrStatus &amp; 0x00000001) != 0">
+        <block>
+          // STS.Full indicates that the circular buffer contains a complete capture.
+          bytesToRead = bufferSize;
+        </block>
+      </control>
+      <control if="(etrStatus &amp; 0x00000001) == 0">
+        <block>
+          bytesToRead = writePointer - readPointer;
+        </block>
+      </control>
+      <control if="bytesToRead != 0">
+        <block>
+          // Read through RRD, which advances RRP through the ETR trace memory.
+          BufferRead(0, 0, ETR___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
+          bytesStreamed = BufferStreamOut(0, 0, bytesToRead, ".trace/TraceBufferOutput.TB.raw", 0, 0);
+          Message(0, "Streamed %d of %d ETR trace bytes", bytesStreamed, bytesToRead);
+        </block>
+      </control>
+      <control if="bytesToRead == 0">
+        <block>
+          Message(1, "ETR trace buffer is empty");
+        </block>
+      </control>
+    </control>
+    <block>
+      __ap = savedAP;
+      Message(0, "End CS_ETR___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -2841,6 +2893,52 @@ cbuild-run:
         - execute: |
             __ap = savedAP;
             Message(0, "End CS_ETR___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+
+    - name: CS_ETR___INSTANCE_INDEX___Read_CircularBuffer
+      blocks:
+        - execute: |
+            // Helper variables
+            __var savedAP       = __ap;
+            __var etrStatus     = 0x00000000;
+            __var bufferSize    = 0x00000000;
+            __var readPointer   = 0x0000000000000000;
+            __var writePointer  = 0x0000000000000000;
+            __var bytesToRead   = 0x00000000;
+            __var bytesStreamed = 0x00000000;
+
+            Message(0, "Begin CS_ETR___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
+            __ap = ETR___INSTANCE_INDEX___AP; // Set AP
+
+            // ETR RSZ is expressed in 32-bit words. RRP and RWP identify the valid capture range.
+            bufferSize   = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x004) * 4;
+            etrStatus    = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x00C);
+            readPointer  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x014) | (Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x038) << 32);
+            writePointer = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x018) | (Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x03C) << 32);
+        - if: 'bufferSize != 0'
+          blocks:
+            - if: '(etrStatus & 0x00000001) != 0'
+              blocks:
+                - execute: |
+                    // STS.Full indicates that the circular buffer contains a complete capture.
+                    bytesToRead = bufferSize;
+            - if: '(etrStatus & 0x00000001) == 0'
+              blocks:
+                - execute: |
+                    bytesToRead = writePointer - readPointer;
+            - if: 'bytesToRead != 0'
+              blocks:
+                - execute: |
+                    // Read through RRD, which advances RRP through the ETR trace memory.
+                    BufferRead(0, 0, ETR___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
+                    bytesStreamed = BufferStreamOut(0, 0, bytesToRead, ".trace/TraceBufferOutput.TB.raw", 0, 0);
+                    Message(0, "Streamed %d of %d ETR trace bytes", bytesStreamed, bytesToRead);
+            - if: 'bytesToRead == 0'
+              blocks:
+                - execute: |
+                    Message(1, "ETR trace buffer is empty");
+        - execute: |
+            __ap = savedAP;
+            Message(0, "End CS_ETR___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
 
 ~~~
 
