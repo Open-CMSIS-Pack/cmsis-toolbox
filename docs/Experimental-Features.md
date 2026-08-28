@@ -875,11 +875,14 @@ The snippets currently contain instance-index placeholders for replacement by te
 
 The [Full Trace Scaffold](#full-trace-scaffold) is a template that can be used as the starting point for a complete sequence implementation.
 
+!!! Note
+    The examples use `__ap` for access-port selection. They apply equally when using `__apid`.
+
 Component | Default AP | Default Base Address | Sequence Snippets | PDSC (XML) | `*.cbuild-run.yml`
 :---------|:-----------|:---------------------|:------------------|:-----------|:-------------------
 Trace Port Interface Unit (TPIU) | `0` | `0xE0040000` | `Configure`, `Capture`, `Flush` | [TPIU](#trace-port-interface-unit-tpiu) | [TPIU](#trace-port-interface-unit-tpiu-cbuild-runyml)
 Serial Wire Output (SWO) | `0` | `0xE0040000` | `Configure` | [SWO](#serial-wire-output-swo) | [SWO](#serial-wire-output-swo-cbuild-runyml)
-Embedded Trace Buffer (ETB) | `0` | `0xE0042000` | `Configure`, `Capture`, `Flush` | [ETB](#embedded-trace-buffer-etb) | [ETB](#embedded-trace-buffer-etb-cbuild-runyml)
+Embedded Trace Buffer (ETB) | `0` | `0xE0042000` | `Configure`, `Capture`, `Flush`, `ReadBuffer` | [ETB](#embedded-trace-buffer-etb) | [ETB](#embedded-trace-buffer-etb-cbuild-runyml)
 Embedded Trace FIFO (ETF) | `0` | `0xE0042000` | `Configure_HWFIFO`, `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush`, `ReadBuffer` | [ETF](#embedded-trace-fifo-etf) | [ETF](#embedded-trace-fifo-etf-cbuild-runyml)
 Trace Funnel | `0` | `0xE0043000` | `Configure` | [Trace Funnel](#trace-funnel) | [Trace Funnel](#trace-funnel-cbuild-runyml)
 Trace Replicator | `0` | `0x00000000` | `Configure` | [Trace Replicator](#trace-replicator) | [Trace Replicator](#trace-replicator-cbuild-runyml)
@@ -1179,6 +1182,71 @@ Embedded Trace Router (ETR) and CoreSight Address Translation Unit (CATU) | ETR:
     <block>
       __ap = savedAP;
       Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+    </block>
+  </sequence>
+
+  <sequence name="CS_ETB___INSTANCE_INDEX___ReadBuffer">
+    <block>
+      // Helper variables
+      __var savedAP       = __ap;
+      __var etbStatus     = 0x00000000;
+      __var bufferWords   = 0x00000000;
+      __var readPointer   = 0x00000000;
+      __var writePointer  = 0x00000000;
+      __var wordsToRead   = 0x00000000;
+      __var bytesToRead   = 0x00000000;
+      __var bytesStreamed = 0x00000000;
+
+      Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+
+      __ap = ETB___INSTANCE_INDEX___AP; // Set AP
+
+      // The legacy ETB RDP, RRP, and RWP registers use trace-RAM word counts.
+      bufferWords  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x004);
+      etbStatus    = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x00C);
+      readPointer  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x014);
+      writePointer = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x018);
+    </block>
+    <control if="bufferWords != 0">
+      <control if="(etbStatus &amp; 0x00000001) != 0">
+        <block>
+          // STS.Full distinguishes a wrapped/full buffer from an empty buffer
+          // when the read and write pointers are equal.
+          wordsToRead = bufferWords;
+        </block>
+      </control>
+      <control if="(etbStatus &amp; 0x00000001) == 0">
+        <control if="writePointer &gt;= readPointer">
+          <block>
+            wordsToRead = writePointer - readPointer;
+          </block>
+        </control>
+        <control if="writePointer &lt; readPointer">
+          <block>
+            wordsToRead = (bufferWords - readPointer) + writePointer;
+          </block>
+        </control>
+      </control>
+      <block>
+        bytesToRead = wordsToRead * 4;
+      </block>
+      <control if="bytesToRead != 0">
+        <block>
+          // RRD reads 32-bit trace-RAM words and advances the ETB RRP register.
+          BufferRead(0, 0, ETB___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
+          bytesStreamed = BufferStreamOut(0, 0, bytesToRead, ".trace/TraceBufferOutput.TB.raw", 0, 0);
+          Message(0, "Streamed %d of %d ETB trace bytes", bytesStreamed, bytesToRead);
+        </block>
+      </control>
+      <control if="bytesToRead == 0">
+        <block>
+          Message(1, "ETB trace buffer is empty");
+        </block>
+      </control>
+    </control>
+    <block>
+      __ap = savedAP;
+      Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -2269,6 +2337,63 @@ cbuild-run:
         - execute: |
             __ap = savedAP;
             Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+
+    - name: CS_ETB___INSTANCE_INDEX___ReadBuffer
+      blocks:
+        - execute: |
+            // Helper variables
+            __var savedAP       = __ap;
+            __var etbStatus     = 0x00000000;
+            __var bufferWords   = 0x00000000;
+            __var readPointer   = 0x00000000;
+            __var writePointer  = 0x00000000;
+            __var wordsToRead   = 0x00000000;
+            __var bytesToRead   = 0x00000000;
+            __var bytesStreamed = 0x00000000;
+
+            Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+
+            __ap = ETB___INSTANCE_INDEX___AP; // Set AP
+
+            // The legacy ETB RDP, RRP, and RWP registers use trace-RAM word counts.
+            bufferWords  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x004);
+            etbStatus    = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x00C);
+            readPointer  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x014);
+            writePointer = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x018);
+        - if: 'bufferWords != 0'
+          blocks:
+            - if: '(etbStatus & 0x00000001) != 0'
+              blocks:
+                - execute: |
+                    // STS.Full distinguishes a wrapped/full buffer from an empty buffer
+                    // when the read and write pointers are equal.
+                    wordsToRead = bufferWords;
+            - if: '(etbStatus & 0x00000001) == 0'
+              blocks:
+                - if: 'writePointer >= readPointer'
+                  blocks:
+                    - execute: |
+                        wordsToRead = writePointer - readPointer;
+                - if: 'writePointer < readPointer'
+                  blocks:
+                    - execute: |
+                        wordsToRead = (bufferWords - readPointer) + writePointer;
+            - execute: |
+                bytesToRead = wordsToRead * 4;
+            - if: 'bytesToRead != 0'
+              blocks:
+                - execute: |
+                    // RRD reads 32-bit trace-RAM words and advances the ETB RRP register.
+                    BufferRead(0, 0, ETB___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
+                    bytesStreamed = BufferStreamOut(0, 0, bytesToRead, ".trace/TraceBufferOutput.TB.raw", 0, 0);
+                    Message(0, "Streamed %d of %d ETB trace bytes", bytesStreamed, bytesToRead);
+            - if: 'bytesToRead == 0'
+              blocks:
+                - execute: |
+                    Message(1, "ETB trace buffer is empty");
+        - execute: |
+            __ap = savedAP;
+            Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___ReadBuffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 ~~~
 
 #### Embedded Trace FIFO (ETF) `*.cbuild-run.yml`
