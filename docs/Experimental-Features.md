@@ -957,9 +957,6 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
 
       Message(0, "Begin CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
 
-      // Ensure involved components are in a well-defined state.
-      Sequence("DoTraceFlush");
-
       // Configure TPIU if needed and enable formatter
       __ap = TPIU___INSTANCE_INDEX___AP;                            // Set AP
       ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -1116,9 +1113,6 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var savedAP = __ap;
 
       Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
-
-      // Ensure involved components are in a well-defined state.
-      Sequence("DoTraceFlush");
 
       __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
       ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -1345,9 +1339,6 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var traceBufferSyncCnt = 0xA;
 
       Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
-
-      // Ensure involved components are in a well-defined state.
-      Sequence("DoTraceFlush");
 
       __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
       ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -1636,9 +1627,6 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
 
       Message(0, "Begin CS_ETR___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
 
-      // Ensure involved components are in a well-defined state.
-      Sequence("DoTraceFlush");
-
       __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
       ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
       ffcrValue |= 0x00000002;                                                                    // FFCR: Enable Formatter
@@ -1924,6 +1912,9 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
         __var swoTrace = __traceout &amp; 0x1;
         __var syncTrace = __traceout &amp; 0x2;
         __var bufferTrace = __traceout &amp; 0x4;
+
+        // Flush the active trace route before preparing any components for the next capture.
+        Sequence("DoTraceFlush");
       </block>
       <!-- CMSIS-PACK-TRACE: ADD-DEVICE-SPECIFIC-HERE BEGIN -->
       <!-- Add verified device-specific capture work here, including migrated legacy setup when applicable. -->
@@ -2190,9 +2181,6 @@ cbuild-run:
             
             Message(0, "Begin CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
             
-            // Ensure involved components are in a well-defined state.
-            Sequence("DoTraceFlush");
-            
             // Configure TPIU if needed and enable formatter
             __ap = TPIU___INSTANCE_INDEX___AP;                            // Set AP
             ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -2341,9 +2329,6 @@ cbuild-run:
             __var savedAP = __ap;
             
             Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
-            
-            // Ensure involved components are in a well-defined state.
-            Sequence("DoTraceFlush");
             
             __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
             ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -2555,9 +2540,6 @@ cbuild-run:
             __var traceBufferSyncCnt = 0xA;
             
             Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
-            
-            // Ensure involved components are in a well-defined state.
-            Sequence("DoTraceFlush");
             
             __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
             ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -2832,9 +2814,6 @@ cbuild-run:
 
             Message(0, "Begin CS_ETR___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
 
-            // Ensure involved components are in a well-defined state.
-            Sequence("DoTraceFlush");
-
             __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
             ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue |= 0x00000002;                                                                    // FFCR: Enable Formatter
@@ -3107,6 +3086,9 @@ cbuild-run:
             __var swoTrace = __traceout & 0x1;
             __var syncTrace = __traceout & 0x2;
             __var bufferTrace = __traceout & 0x4;
+
+            // Flush the active trace route before preparing any components for the next capture.
+            Sequence("DoTraceFlush");
         - if: 'swoTrace'
           blocks:
             - execute: |
