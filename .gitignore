@@ -3,6 +3,7 @@
 **/run
 **/__pycache__
 **/site
+.cmsis-dev/**
 
 # Files
 **/stdout.txt

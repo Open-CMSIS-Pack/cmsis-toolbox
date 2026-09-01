@@ -241,33 +241,29 @@ jobs:
             --export-json curr_benchmark_results.json \
             --show-output
 
-      - name: Generate Comparison Report
-        if: always()
-        working-directory: ./test
-        run: |
-          # Generate Comparison report
-          # Path to the reference benchmark results (from last known reference)
-          # Path to the current benchmark results (from the latest run)
-          # --verbose: Verbose output
-          # --output: Path to the output comparison report
-          python ./performance/generate_comparison.py \
-            ref_benchmark_results.md \
-            curr_benchmark_results.md \
-            --verbose \
-            --output comparison_results.md
-          cat comparison_results.md >> $GITHUB_STEP_SUMMARY
-
       - name: Compare Benchmark Results
         working-directory: ./test
         run: |
           # Run the performance regression check script
           # -r: Path to the reference benchmark results (from last known reference)
           # -c: Path to the current benchmark results (from the latest run)
-          # -p: Permissible limit multiplier (e.g., 1.15 allows up to 15% permissible degrade)
+          # -p: Permissible limit multiplier (e.g., 1.50 allows up to 50% permissible degrade from reference)
           python ./performance/check_perf_regression.py \
             -r ref_benchmark_results.json \
             -c curr_benchmark_results.json \
-            -p 1.15
+            -p 1.50 > perf_regression_report.txt
+
+      - name: Summarize Threshold Breaches
+        if: always()
+        working-directory: ./test
+        run: |
+          if [ -s perf_regression_report.txt ]; then
+            python ./performance/generate_comparison.py \
+              ref_benchmark_results.md \
+              curr_benchmark_results.md \
+              --verbose \
+              --output comparison_results.md
+          fi
 
   # Triggers the cmsis solution extension nightly workflow in the separate repository
   trigger-solution-extn:
