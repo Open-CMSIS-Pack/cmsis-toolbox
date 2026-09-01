@@ -122,7 +122,7 @@ jobs:
         uses: robinraju/release-downloader@28fc21f50d76778e7023361aa1f863e717d3d56f # v1.13
         with:
           repository: Open-CMSIS-Pack/cmsis-toolbox
-          tag: "2.12.0-test-reference"
+          tag: "2.14.1-test-reference"
           fileName: "cmsis-toolbox-linux-amd64.zip"
 
       - name: Unzip Reference cmsis-toolbox
@@ -263,15 +263,14 @@ jobs:
           # Run the performance regression check script
           # -r: Path to the reference benchmark results (from last known reference)
           # -c: Path to the current benchmark results (from the latest run)
-          # -p: Permissible limit multiplier (e.g., 1.15 allows up to 15% permissible degrade)
+          # -p: Permissible limit multiplier (e.g., 1.10 allows up to 10% permissible degrade)
           python ./performance/check_perf_regression.py \
             -r ref_benchmark_results.json \
             -c curr_benchmark_results.json \
-            -p 1.15
+            -p 1.10
 
   # Triggers the cmsis solution extension nightly workflow in the separate repository
   trigger-solution-extn:
-    needs: [ performance-check ]
     if: >-
       success() &&
       github.repository == 'Open-CMSIS-Pack/cmsis-toolbox' &&
