@@ -271,8 +271,9 @@ jobs:
 
   # Triggers the cmsis solution extension nightly workflow in the separate repository
   trigger-solution-extn:
+    needs: [ performance-check ]
     if: >-
-      success() &&
+      always() &&
       github.repository == 'Open-CMSIS-Pack/cmsis-toolbox' &&
       github.event_name == 'workflow_dispatch' &&
       inputs.trigger_extension_build
