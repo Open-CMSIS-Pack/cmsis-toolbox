@@ -513,6 +513,8 @@ The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of
 
 The trace source types are: `dwt`, `event`, `exception`, `itm`, `pmu`, `overflow`, `pcsample`, `global_ts`.
 
+Each of the `info:`, `warning:`, and `error:` nodes accepts either a string or a list of strings, allowing multiple messages to be represented separately.
+
 Multiple `ctrace-ref` entries may reference the same configuration node when it generates setups for multiple streams. The combination of `ctrace-ref` and `stream` identifies each generated setup.
 
 The `data-type` in combination with `size` provides a hint for the display format. Other information required for generating CTF data can be extracted from the referenced setting node in the `ctrace-setup:` section.
