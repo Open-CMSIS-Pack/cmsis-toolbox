@@ -749,6 +749,9 @@ The following table contains details about the packet type. Information is empty
 `overflow`  | Marks an overflow, reason can be an overflow packet or an internal decoder overflow.
 `error`     | Decode error, for example unexpected trace byte values. `note` field carries details.
 
+!!! Note
+    The timestamp packet type information is provided in the `cycles` column.
+
 #### Variable Data Sizes
 
 For the `value`, `pc`, and `address` columns, the number of hex digits represents the payload size: 1 byte: `0x00`, 2 bytes: `0x0000`, 4 bytes: `0x00000000`.
@@ -763,10 +766,14 @@ Column      | Armv7-M       | Armv8-M
 
 `pc` and `address` payloads shorter than 4 bytes replace the corresponding lower bytes of the address programmed into the DWT comparator.
 
-For packet type `pcsample`, `pc` normally has a 4-byte payload. 1 byte payloads have a special meaning: `0x00` indicates that the processor is sleeping. Armv8-M adds `0xFF` to indicate that trace is prohibited for the executed code region.
+#### PC Sampling Markers
 
-!!! Note
-    The timestamp packet type information is provided in the `cycles` column.
+For packet type `pcsample`, raw trace data normally has a 4-byte payload which is shown in the `pc` column. 1 byte payloads are special markers indicating that the program counter value could not be traced. `pc` is empty in these cases, and the corresponding message is written to the `note` column.
+
+Value                 | `note`
+:---------------------|:--------------
+`0x00`                | `CPU Sleeping`
+`0xFF` (Armv8-M only) | `Trace prohibited`
 
 **Exception State Transition:**
 
