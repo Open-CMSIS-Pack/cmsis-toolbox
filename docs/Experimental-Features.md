@@ -733,10 +733,7 @@ Column         | Description
 `address`      | Data address for packet type `dwt`.
 `note`         | Additional details, used for error notification.
 
-The `value`, `pc`, and `address` columns use hexadecimal form. The number of hex digits represents the payload width:
-1 byte: `0x00`, 2 bytes: `0x0000`, 4 bytes: `0x00000000`. `value` can have any of these sizes on all architectures;
-`pc` and `address` can have them only on Armv8-M. Except for special values, `pc` and `address` payloads shorter than
-4 bytes replace the corresponding lower bytes of the address programmed into the DWT comparator.
+The `value`, `pc`, and `address` columns use hexadecimal form. See [Variable Data Sizes](#variable-data-sizes) for details.
 
 The following table contains details about the packet type. Information is empty when not provided by the trace packet.
 
@@ -747,10 +744,27 @@ The following table contains details about the packet type. Information is empty
 `event`     | Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.
 `pmu`       | Reserved for PMU counter rows. Detailed semantics will be specified in a future version.
 `exception` | `source` = exception number. `value` = exception state transition.
-`pcsample`  | `pc` = program counter. For Armv8-M, 1-byte payloads have special meaning: `0x00` - processor is sleeping, `0xFF` trace is prohibited for the code region.
+`pcsample`  | `pc` = program counter.
 `global_ts` | Global timestamp for synchronization between streams.
 `overflow`  | Marks an overflow, reason can be an overflow packet or an internal decoder overflow.
 `error`     | Decode error, for example unexpected trace byte values. `note` field carries details.
+
+#### Variable Data Sizes
+
+For the `value`, `pc`, and `address` columns, the number of hex digits represents the payload size: 1 byte: `0x00`, 2 bytes: `0x0000`, 4 bytes: `0x00000000`.
+
+For packet type `dwt`, payload sizes depend on the architecture:
+
+Column      | Armv7-M       | Armv8-M
+:-----------|:--------------|:--------------
+`value`     | 1, 2, or 4 bytes | 1, 2, or 4 bytes
+`pc`        | 4 bytes       | 1, 2, or 4 bytes
+`address`   | 2 bytes       | 1, 2, or 4 bytes
+
+`pc` and `address` payloads shorter than 4 bytes replace the corresponding lower bytes of the address programmed into the DWT comparator.
+
+For packet type `pcsample`, `pc` has a 4-byte payload. On Armv8-M, 1-byte payloads have special meanings: `0x00`
+indicates that the processor is sleeping, and `0xFF` indicates that trace is prohibited for the code region.
 
 !!! Note
     The timestamp packet type information is provided in the `cycles` column.
