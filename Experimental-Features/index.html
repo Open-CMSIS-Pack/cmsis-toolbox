@@ -1168,6 +1168,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 </tbody>
 </table>
 <p>The trace source types are: <code>dwt</code>, <code>event</code>, <code>exception</code>, <code>itm</code>, <code>pmu</code>, <code>overflow</code>, <code>pcsample</code>, <code>global_ts</code>.</p>
+<p>Each of the <code>info:</code>, <code>warning:</code>, and <code>error:</code> nodes accepts either a string or a list of strings, allowing multiple messages to be represented separately.</p>
 <p>Multiple <code>ctrace-ref</code> entries may reference the same configuration node when it generates setups for multiple streams. The combination of <code>ctrace-ref</code> and <code>stream</code> identifies each generated setup.</p>
 <p>The <code>data-type</code> in combination with <code>size</code> provides a hint for the display format. Other information required for generating CTF data can be extracted from the referenced setting node in the <code>ctrace-setup:</code> section.</p>
 <p><code>size</code> can be extracted from symbol information or provided in the <code>ctrace</code> file. If both are present, user input takes precedence.</p>
