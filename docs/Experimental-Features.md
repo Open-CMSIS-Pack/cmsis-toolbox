@@ -763,8 +763,7 @@ Column      | Armv7-M       | Armv8-M
 
 `pc` and `address` payloads shorter than 4 bytes replace the corresponding lower bytes of the address programmed into the DWT comparator.
 
-For packet type `pcsample`, `pc` has a 4-byte payload. On Armv8-M, 1-byte payloads have special meanings: `0x00`
-indicates that the processor is sleeping, and `0xFF` indicates that trace is prohibited for the code region.
+For packet type `pcsample`, `pc` normally has a 4-byte payload. 1 byte payloads have a special meaning: `0x00` indicates that the processor is sleeping. Armv8-M adds `0xFF` to indicate that trace is prohibited for the executed code region.
 
 !!! Note
     The timestamp packet type information is provided in the `cycles` column.
