@@ -357,8 +357,8 @@ Refer to [MLOps Information](build-overview.md#mlops-information) for more infor
 &nbsp;&nbsp;&nbsp; `npu:`                                   | NPU type and MAC configuration (only present for devices with NPU).
 &nbsp;&nbsp;&nbsp; `vela:`                                  | Vela INI file and option string (only present for Ethos-U NPUs).
 &nbsp;&nbsp;&nbsp; `model:`                                 | Location of the ML model layer and optional model name.
-&nbsp;&nbsp;&nbsp; `hardware:`                              | Hardware test configuration (active target-set, `cbuild-run` file, and output image list).
-&nbsp;&nbsp;&nbsp; `simulator:`                             | Simulator test configuration (active target-set, output image list, and FVP invocation details).
+&nbsp;&nbsp;&nbsp; `hardware:`                              | Hardware test configuration (active target, `cbuild-run` file, and output image list).
+&nbsp;&nbsp;&nbsp; `simulator:`                             | Simulator test configuration (active target, output image list, and FVP invocation details).
 
 **Example:**
 
@@ -903,7 +903,7 @@ The following describes the overall structure of the `*.cbuild-run.yml` file.  W
 &nbsp;&nbsp;&nbsp; `generated-by:`                                        |  Optional  | Tool name that generated this file.
 &nbsp;&nbsp;&nbsp; `solution:`                                            |  Optional  | Name of the `*.csolution.yml` file.
 &nbsp;&nbsp;&nbsp; [`target-type:`](YML-Input-Format.md#target-types)     |  Optional  | Name of the target-type that was selected.
-&nbsp;&nbsp;&nbsp; [`target-set:`](YML-Input-Format.md#target-set)        |  Optional  | Name of the target-set that was selected (format `<target-type>[@<set>]`).
+&nbsp;&nbsp;&nbsp; [`target-set:`](YML-Input-Format.md#target-set)        |  Optional  | Name of the target-set that was selected.
 &nbsp;&nbsp;&nbsp; `compiler:`                                            |  Optional  | [Compiler toolchain](YML-Input-Format.md#compiler) used for code generation.
 &nbsp;&nbsp;&nbsp; `board:`                                               |  Optional  | [Board name](YML-Input-Format.md#board) used for this target.
 &nbsp;&nbsp;&nbsp; `board-pack:`                                          |  Optional  | BSP that is defining the [Board name](YML-Input-Format.md#board) used for this target.

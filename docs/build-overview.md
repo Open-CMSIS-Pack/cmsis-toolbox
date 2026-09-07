@@ -1078,7 +1078,7 @@ The following example uses a CMSIS-DAP debugger with JTAG protocol and configure
 
 ### Using pyOCD
 
-A *csolution project* that uses `target-set:` to configure the debugger should be build using the option `--active` to select the target-type.  The `cbuild` command creates then a corresponding `*.build-run.yml` file that can be used with [pyOCD version 0.37.0](https://pyocd.io/) or higher. This `*.build-run.yml` file contains all information to [program and debug the application](YML-CBuild-Format.md#run-and-debug-management).
+A *csolution project* that uses `target-set:` to configure the debugger should be build using the option `--active` to select the target in the format `<target-type>[@<target-set>]`.  The `cbuild` command creates then a corresponding `*.build-run.yml` file that can be used with [pyOCD version 0.37.0](https://pyocd.io/) or higher. This `*.build-run.yml` file contains all information to [program and debug the application](YML-CBuild-Format.md#run-and-debug-management).
 
 **Example:**
 
