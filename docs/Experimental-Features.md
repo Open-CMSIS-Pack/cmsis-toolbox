@@ -728,21 +728,26 @@ Column         | Description
 `stream`       | Stream ID (CoreSight ATB ID) of the trace packet. Empty if no formatting.
 `type`         | Packet type: `itm`, `dwt`, `event`, `pmu`, `exception`, `pcsample`, `global_ts`, `overflow`, `error`.
 `source`       | Source ID: ITM channel, DWT comparator, exception number, or hardware discriminator.
-`value`        | Value in hexadecimal form. Payload width is represented by the number of hex digits: 1 byte: `0x00`, 2 bytes: `0x0000`, 4 bytes: `0x00000000`. For packet type `exception` state transition: `0x1` enter, `0x2` exit, `0x3` return.
-`pc`           | Program counter for packet types `dwt` and `pcsample` (hexadecimal format, example `0x08001234`).
-`offset`       | Data address offset for packet type `dwt` (hexadecimal format, example `0xfdf9`).
+`value`        | Value in hexadecimal form. For packet type `exception` state transition: `0x1` enter, `0x2` exit, `0x3` return.
+`pc`           | Program counter for packet types `dwt` and `pcsample`.
+`address`      | Data address for packet type `dwt`.
 `note`         | Additional details, used for error notification.
+
+The `value`, `pc`, and `address` columns use hexadecimal form. The number of hex digits represents the payload width:
+1 byte: `0x00`, 2 bytes: `0x0000`, 4 bytes: `0x00000000`. `value` can have any of these sizes on all architectures;
+`pc` and `address` can have them only on Armv8-M. Except for special values, `pc` and `address` payloads shorter than
+4 bytes replace the corresponding lower bytes of the address programmed into the DWT comparator.
 
 The following table contains details about the packet type. Information is empty when not provided by the trace packet.
 
 `type`      | Description
 :-----------|:------------------------------------
 `itm`       | `source` = ITM channel.
-`dwt`       | `source` = DWT comparator, `value` = data value, `offset` = data address offset, `pc` = program counter.
+`dwt`       | `source` = DWT comparator, `value` = data value, `address` = data address, `pc` = program counter.
 `event`     | Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.
 `pmu`       | Reserved for PMU counter rows. Detailed semantics will be specified in a future version.
 `exception` | `source` = exception number. `value` = exception state transition.
-`pcsample`  | `pc` = program counter.
+`pcsample`  | `pc` = program counter. For Armv8-M, 1-byte payloads have special meaning: `0x00` - processor is sleeping, `0xFF` trace is prohibited for the code region.
 `global_ts` | Global timestamp for synchronization between streams.
 `overflow`  | Marks an overflow, reason can be an overflow packet or an internal decoder overflow.
 `error`     | Decode error, for example unexpected trace byte values. `note` field carries details.
@@ -762,7 +767,7 @@ Value | State    | Meaning
 **Example:**
 
 ```csv
-cycles,stream,type,source,value,pc,offset,note
+cycles,stream,type,source,value,pc,address,note
 2518192,,itm,0,0x53,,,
 2518404,,itm,0,0x54,,,
 2518616,,itm,0,0x4d,,,
@@ -776,7 +781,7 @@ cycles,stream,type,source,value,pc,offset,note
 950389420,,exception,0,0x3,,,
 ```
 
-cycles    | stream | type      | source | value      | pc         | offset  | note
+cycles    | stream | type      | source | value      | pc         | address | note
 :---------|:-------|:----------|:-------|:-----------|:-----------|:--------|:-----
 2518192   |        | itm       | 0      | 0x53       |            |         |
 2518404   |        | itm       | 0      | 0x54       |            |         |
