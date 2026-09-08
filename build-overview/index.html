@@ -1399,7 +1399,7 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
             - project-context: core1.Release
 </code></pre>
 <h3 id="using-pyocd">Using pyOCD</h3>
-<p>A <em>csolution project</em> that uses <code>target-set:</code> to configure the debugger should be build using the option <code>--active</code> to select the target-type.  The <code>cbuild</code> command creates then a corresponding <code>*.build-run.yml</code> file that can be used with <a href="https://pyocd.io/">pyOCD version 0.37.0</a> or higher. This <code>*.build-run.yml</code> file contains all information to <a href="../YML-CBuild-Format/#run-and-debug-management">program and debug the application</a>.</p>
+<p>A <em>csolution project</em> that uses <code>target-set:</code> to configure the debugger and select the images/projects and build-types should be build using the option <code>--active</code> to select the target in the format <code>&lt;target-type&gt;[@&lt;target-set&gt;]</code>.  The <code>cbuild</code> command creates then a corresponding <code>*.build-run.yml</code> file that can be used with <a href="https://pyocd.io/">pyOCD version 0.37.0</a> or higher. This <code>*.build-run.yml</code> file contains all information to <a href="../YML-CBuild-Format/#run-and-debug-management">program and debug the application</a>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-shell">cbuild MyApplication.csolution.yml --active MyBoard                       # build application
 pyocd load --cbuild-run MyApplication+MyBoard.cbuild-run.yml              # download image to target

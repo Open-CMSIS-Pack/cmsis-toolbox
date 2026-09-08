@@ -412,6 +412,10 @@
 <td style="text-align: left;">Relative path and name of the <a href="../YML-Input-Format/#solution"><code>*.csolution.yml</code></a> input file used to generate this application.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target:</code></td>
+<td style="text-align: left;">Selected target in the format <code>&lt;target-type&gt;[@&lt;target-set&gt;]</code>.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#configurations"><code>configurations:</code></a></td>
 <td style="text-align: left;">For reference applications with undefined layers: list of potential project configurations for a reference application with undefined layers</td>
 </tr>
@@ -435,6 +439,7 @@
   description: USB application examples sharing board layers.
   cdefault: cdefault.yml
   csolution: USB.csolution.yml
+  target: B-U585I-IOT02A
   configurations:
     - target-type: B-U585I-IOT02A
       target-configurations:
@@ -780,11 +785,11 @@
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>hardware:</code></td>
-<td style="text-align: left;">Hardware test configuration (active target-set, <code>cbuild-run</code> file, and output image list).</td>
+<td style="text-align: left;">Hardware test configuration (active target, <code>cbuild-run</code> file, and output image list).</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>simulator:</code></td>
-<td style="text-align: left;">Simulator test configuration (active target-set, output image list, and FVP invocation details).</td>
+<td style="text-align: left;">Simulator test configuration (active target, output image list, and FVP invocation details).</td>
 </tr>
 </tbody>
 </table>
@@ -1830,7 +1835,7 @@
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../YML-Input-Format/#target-set"><code>target-set:</code></a></td>
 <td style="text-align: left;">Optional</td>
-<td>Name of the target-set that was selected (format <code>&lt;target-type&gt;[@&lt;set&gt;]</code>).</td>
+<td>Name of the target-set that was selected.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>compiler:</code></td>
