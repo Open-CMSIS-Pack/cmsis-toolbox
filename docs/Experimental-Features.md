@@ -728,17 +728,19 @@ Column         | Description
 `stream`       | Stream ID (CoreSight ATB ID) of the trace packet. Empty if no formatting.
 `type`         | Packet type: `itm`, `dwt`, `event`, `pmu`, `exception`, `pcsample`, `global_ts`, `overflow`, `error`.
 `source`       | Source ID: ITM channel, DWT comparator, exception number, or hardware discriminator.
-`value`        | Value in hexadecimal form. Payload width is represented by the number of hex digits: 1 byte: `0x00`, 2 bytes: `0x0000`, 4 bytes: `0x00000000`. For packet type `exception` state transition: `0x1` enter, `0x2` exit, `0x3` return.
-`pc`           | Program counter for packet types `dwt` and `pcsample` (hexadecimal format, example `0x08001234`).
-`offset`       | Data address offset for packet type `dwt` (hexadecimal format, example `0xfdf9`).
+`value`        | Value in hexadecimal form. For packet type `exception` state transition: `0x1` enter, `0x2` exit, `0x3` return.
+`pc`           | Program counter for packet types `dwt` and `pcsample`.
+`address`      | Data address for packet type `dwt`.
 `note`         | Additional details, used for error notification.
+
+The `value`, `pc`, and `address` columns use hexadecimal form. See [Variable Data Sizes](#variable-data-sizes) for details.
 
 The following table contains details about the packet type. Information is empty when not provided by the trace packet.
 
 `type`      | Description
 :-----------|:------------------------------------
 `itm`       | `source` = ITM channel.
-`dwt`       | `source` = DWT comparator, `value` = data value, `offset` = data address offset, `pc` = program counter.
+`dwt`       | `source` = DWT comparator, `value` = data value, `address` = data address, `pc` = program counter.
 `event`     | Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.
 `pmu`       | Reserved for PMU counter rows. Detailed semantics will be specified in a future version.
 `exception` | `source` = exception number. `value` = exception state transition.
@@ -749,6 +751,29 @@ The following table contains details about the packet type. Information is empty
 
 !!! Note
     The timestamp packet type information is provided in the `cycles` column.
+
+#### Variable Data Sizes
+
+For the `value`, `pc`, and `address` columns, the number of hex digits represents the payload size: 1 byte: `0x00`, 2 bytes: `0x0000`, 4 bytes: `0x00000000`.
+
+For packet type `dwt`, payload sizes depend on the architecture:
+
+Column      | Armv7-M       | Armv8-M
+:-----------|:--------------|:--------------
+`value`     | 1, 2, or 4 bytes | 1, 2, or 4 bytes
+`pc`        | 4 bytes       | 1, 2, or 4 bytes
+`address`   | 2 bytes       | 1, 2, or 4 bytes
+
+`pc` and `address` payloads shorter than 4 bytes replace the corresponding lower bytes of the address programmed into the DWT comparator.
+
+#### PC Sampling Markers
+
+For packet type `pcsample`, raw trace data normally has a 4-byte payload which is shown in the `pc` column. 1 byte payloads are special markers indicating that the program counter value could not be traced. `pc` is empty in these cases, and the corresponding message is written to the `note` column.
+
+Value                 | `note`
+:---------------------|:--------------
+`0x00`                | `CPU Sleeping`
+`0xFF` (Armv8-M only) | `Trace prohibited`
 
 **Exception State Transition:**
 
@@ -762,7 +787,7 @@ Value | State    | Meaning
 **Example:**
 
 ```csv
-cycles,stream,type,source,value,pc,offset,note
+cycles,stream,type,source,value,pc,address,note
 2518192,,itm,0,0x53,,,
 2518404,,itm,0,0x54,,,
 2518616,,itm,0,0x4d,,,
@@ -776,7 +801,7 @@ cycles,stream,type,source,value,pc,offset,note
 950389420,,exception,0,0x3,,,
 ```
 
-cycles    | stream | type      | source | value      | pc         | offset  | note
+cycles    | stream | type      | source | value      | pc         | address | note
 :---------|:-------|:----------|:-------|:-----------|:-----------|:--------|:-----
 2518192   |        | itm       | 0      | 0x53       |            |         |
 2518404   |        | itm       | 0      | 0x54       |            |         |
