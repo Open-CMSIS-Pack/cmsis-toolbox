@@ -6,7 +6,6 @@ on:
     types: [ completed ]
 
 permissions:
-  actions: write
   contents: read
 
 jobs:
@@ -17,6 +16,9 @@ jobs:
       github.event.workflow_run.conclusion == 'failure' &&
       github.event.workflow_run.run_attempt == 1
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
 
     steps:
       - name: Harden Runner
