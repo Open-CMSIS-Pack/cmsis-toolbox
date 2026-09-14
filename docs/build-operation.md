@@ -72,7 +72,7 @@ Typical IDE environments use a `--context-set` that specifies the [context](buil
 The operation is further controlled by options:
 
 - The option `--packs` downloads missing software packs.
-- The option `--active` selects a [target-set or build variant](build-overview.md#working-with-target-set) that combines various projects with defined build-types.
+- The option `--active` selects a [target with optional set](build-overview.md#working-with-target-set) that combines various projects with defined build-types.
 - The option [`--update-rte`](build-overview.md#rte-directory-structure) updates the configuration files of the application.
 - With the option `--frozen-packs` the file `*.cbuild-pack.yml` is used as input. An error is issued when a pack version changes.
 - The option `--toolchain` can be used to explicitly select a compiler.

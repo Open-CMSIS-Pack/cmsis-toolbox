@@ -23,18 +23,18 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.14.0 (C) 2022-2026 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.15.0 (C) 2022-2026 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
 
 Commands:
   help        Help about any command
-  list        List information about contexts, environment, target-sets and toolchains
+  list        List information about contexts, environment, targets and toolchains
   setup       Generate project data for IDE environment
 
 Options:
-  -a, --active arg         Select active target-set: <target-type>[@<set>]
+  -a, --active arg         Select active target: <target-type>[@<target-set>]
       --cbuildgen          Generate legacy *.cprj files and use cbuildgen backend
   -C, --clean              Remove intermediate and output directories
   -c, --context arg [...]  Input context names [<project-name>][.<build-type>][+<target-type>]
@@ -78,7 +78,7 @@ Use "cbuild [command] --help" for more information about a command.
 Create build information for embedded applications that consist of one or more related projects.
 
 ```text
-csolution: Project Manager 2.14.0 (C) 2022-2026 Arm Ltd. and Contributors
+csolution: Project Manager 2.15.0 (C) 2022-2026 Arm Ltd. and Contributors
 
 Commands:
   check pack-updates            Check existing project for potential pack updates
@@ -97,14 +97,14 @@ Commands:
   list layers                   Print list of available, referenced and compatible layers
   list npus                     Print list of available NPUs
   list packs                    Print list of used packs from the pack repository
-  list target-sets              Print list of target-sets in a <name>.csolution.yml
+  list targets                  Print list of targets (<target-type>[@<target-set>]) in a <name>.csolution.yml
   list toolchains               Print list of supported toolchains
   run                           Run code generator
   rpc                           Run remote procedure call server
   update-rte                    Create/update configuration files and validate solution
 
 Options:
-  -a, --active arg              Select active target-set: <target-type>[@<set>]
+  -a, --active arg              Select active target: <target-type>[@<target-set>]
   -c, --context arg [...]       Input context names [<project-name>][.<build-type>][+<target-type>]
   -d, --debug                   Enable debug messages
   -D, --dry-run                 Enable dry-run
@@ -190,7 +190,7 @@ This command builds a project that is defined in the file `example.csolution.yml
 cbuild example.csolution.yml
 ```
 
-A *csolution project* that defines a [debugger](build-overview.md#run-and-debug-configuration) using `target-set:` should be build using the option `--active` that selects the target-type.
+A *csolution project* that defines a [debugger](build-overview.md#run-and-debug-configuration) using `target-set:` should be build using the option `--active` that selects the target in the format `<target-type>[@<target-set>]`.
 
 ```shell
 cbuild example.csolution.yml --active MyBoard
@@ -628,7 +628,7 @@ The commands below show typical builds in a CI system. Using `--packs` installs 
 
 ```shell
 cbuild Hello.csolution.yml --packs                          # install packs and build all targets
-cbuild Hello.csolution.yml --packs --active AVH-SSE-300     # build target-set AVH-SSE-300
+cbuild Hello.csolution.yml --packs --active AVH-SSE-300     # build target AVH-SSE-300
 cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack versions of *.cbuild-pack.yml
 ```
 
@@ -665,12 +665,12 @@ Example            | Description
 An IDE may use the following `cbuild setup` command to set up the project outline view and get information about components and software layers.
 
 ```shell
-cbuild setup example.csolution.yml --active target-set [--packs] [--update-rte]
+cbuild setup example.csolution.yml --active <target-type>[@<target-set>] [--packs] [--update-rte]
 ```
 
 The command above is used when the IDE starts:
 
-- The option `--active` uses one `target-set` that may specify multiple related projects.
+- The option `--active` uses one `target` in the format `<target-type>[@<target-set>]` that may specify multiple related projects.
 - The option `--packs` can enable the download of missing software packs that are public.
 - The option `--update-rte` is used when the IDE changes `device:`, `board:` or `component:` settings.
 
@@ -693,7 +693,7 @@ The `cbuild-idx.yml` file provides the exact location of all `*.cbuild.<context>
 An IDE may use the following `cbuild` command to build the overall application.
 
 ```shell
-cbuild example.csolution.yml --active target-set [--packs] [--quite] [--rebuild]
+cbuild example.csolution.yml --active <target-type>[@<target-set>] [--packs] [--quite] [--rebuild]
 ```
 
 - The option `--active` selects a target along with projects and debugger configuration.
