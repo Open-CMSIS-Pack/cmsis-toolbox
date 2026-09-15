@@ -735,7 +735,7 @@ Example            | Description
 
 ## Static Code Analysis
 
-For a standard *csolution project*, `cbuild setup` generates the compiler input required by static code analysis tools for each selected context:
+For a standard *csolution project*, `cbuild setup` generates the compiler input required by static code analysis tools for every context that belongs to the active target-set:
 
 ```shell
 cbuild setup MyApp.csolution.yml --active MyTarget --packs --frozen-packs
