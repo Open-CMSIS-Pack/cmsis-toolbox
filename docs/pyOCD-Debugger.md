@@ -14,11 +14,11 @@ This chapter describes how to use the [pyOCD](https://pyocd.io/) Debugger with t
 Other manual sections describe how to configure debuggers:
 
 - [Run and Debug Configuration](build-overview.md#run-and-debug-configuration) explains overall structure and how projects and images are configured.
-- [Debugger Configuration - pyOCD](YML-Input-Format.md#pyocd) contains details about the options that are specific to pyOCD.
+- [Debugger Configuration: pyOCD](YML-Input-Format.md#pyocd) contains details about the options that are specific to pyOCD.
 
 ## Extended Options
 
-The section [CSolution Project Format - pyOCD](YML-Input-Format.md#pyocd) contains the pyOCD configuration for typical systems.
+The section [CSolution Project Format: pyOCD](YML-Input-Format.md#pyocd) contains the pyOCD configuration for typical systems.
 
 Extended YAML options are required to configure specific use-cases or overwrite information that is typically provided in the [DFP](build-overview.md#overview-of-operation).
 
@@ -449,7 +449,7 @@ If a `*.csolution.yml` specifies a `dbgconf:` node instead of a `device-settings
 
 ## Minimal Setup
 
-pyOCD uses the information from the CMSIS system as explained under [Build Information Files - Run and Debug Management](YML-CBuild-Format.md#run-and-debug-management). The following section shows a minimal setup for configuring pyOCD using a `*.cbuild-run.yml` file.
+pyOCD uses the information from the CMSIS system as explained under [Build Information Files: Run and Debug Management](YML-CBuild-Format.md#run-and-debug-management). The following section shows a minimal setup for configuring pyOCD using a `*.cbuild-run.yml` file.
 
 **Example:** MySetup.csolution.yml
 
@@ -831,7 +831,7 @@ processed by pyOCD to present debug views and decode register reads/writes.
 ### `debugger:`
 
 Contains the user's debugger configuration settings. The available options are described in detail in the
-CSolution Project Format section [Debugger Configuration - pyOCD](YML-Input-Format.md#debugger-for-pyocd)
+CSolution Project Format section [Debugger Configuration: pyOCD](YML-Input-Format.md#debugger-for-pyocd)
 and pyOCD Debugger [Extended Options](#extended-options).
 
 **Example:**
@@ -1094,7 +1094,7 @@ debug-topology:
 
 ## Debug Access Sequence Usage for pyOCD Commands
 
-The sequence diagrams below show the usage of the debug access sequences for pyOCD commands. The specification [Open-CMSIS-Pack - Usage of debug access sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences) describes the following sequence blocks. pyOCD uses these concepts, but implements these deviations:
+The sequence diagrams below show the usage of the debug access sequences for pyOCD commands. The specification [Open-CMSIS-Pack: Usage of debug access sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences) describes the following sequence blocks. pyOCD uses these concepts, but implements these deviations:
 
 - **Connect Debugger to Device**:  
     - For the [`connect:`](#connect) mode `attach`, no reset or halt operations are issued.

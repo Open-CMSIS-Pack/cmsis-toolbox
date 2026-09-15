@@ -13,7 +13,7 @@ This chapter outlines the structure of *csolution project files* that contain th
 - [Generator Support](#generator-support) integrates configuration tools such as STM32CubeMX or MCUXpresso Config.
 - [Run and Debug Configuration](#run-and-debug-configuration) explains how to configure debug adapters such as CMSIS-DAP or J-Link.
 - [West Build System Integration](#west-build-system-integration) allows to manage Zephyr applications in context with a *csolution project*.
-- [MLOps Information](#mlops-information) describes how to generate ML model and NPU parameters for MLOps systems.
+- [MLOps Integration](#mlops-integration) describes how to generate an ML model layer and integrate it into an application.
 
 ## Overview of Operation
 
@@ -38,14 +38,13 @@ Input Files              | Description
 Input/Output Files       | Description
 :------------------------|:---------------------------------
 [*.cbuild-pack.yml](YML-CBuild-Format.md#cbuild-packyml)  | Exact list of the packs that are used by the application; enables [reproducible builds](#reproducible-builds) as it locks the pack versions.
-[*.cbuild-set.yml](YML-CBuild-Format.md#cbuild-setyml)    | Specifies the [context set](#working-with-context-set) of projects, target-types, and build-types that are used to generate the application image.
 
 Output Files             | Description
 :------------------------|:---------------------------------
 [*.cbuild-idx.yml](YML-CBuild-Format.md#cbuild-idxyml)  | Index file of all `*.cbuild.yml` build descriptions; contains also overall information for the application.
 [*.cbuild.yml](YML-CBuild-Format.md#cbuild-idxyml)      | Build description of a single [`*.cproject.yml`](YML-Input-Format.md#project-file-structure) input file for each context.
 [*.cbuild-run.yml](YML-CBuild-Format.md#run-and-debug-management)      | Configuration file of a *csolution project* to run and debug an application on a target.
-[*.cbuild-mlops.yml](YML-CBuild-Format.md#cbuild-mlopsyml)     | Information file for [MLOps systems](#mlops-information) that is enabled with [`mlops:`](YML-Input-Format.md#mlops) in the `*.csolution.yml` file.
+[*.cbuild-mlops.yml](YML-CBuild-Format.md#cbuild-mlopsyml)     | Information file for [MLOps integration](#mlops-integration) that is enabled with [`mlops:`](YML-Input-Format.md#mlops) in the `*.csolution.yml` file.
 [Run-Time Environment (RTE)](#rte-directory-structure) | Contains the user-configured files of a project along with the `RTE_Components.h` inventory file.
 [Linker Script Files](#automatic-linker-script-generation) | Header file that describes the memory resources.
 
@@ -179,7 +178,9 @@ Generic [**Translation Control**](YML-Input-Format.md#translation-control) setti
 The `cdefault.yml` file contains a common set of compiler-specific settings that select reasonable defaults with [`misc:`](YML-Input-Format.md#misc) controls for each compiler. The [`cdefault:`](YML-Input-Format.md#cdefault) node in the `*.csolution.yml` file enables the usage of this file. The directory [`<cmsis-toolbox-installation-dir>/etc`](installation.md) contains a `cdefault.yml` file that is used when no local copy of the `cdefault.yml` file is provided.
 
 !!! Note
-    It is recommended that a local copy of the `cdefault.yml` file is provided in the same directory that stores the `*.csolution.yml` file.
+    - For reproducible builds, place a local copy of `cdefault.yml` in the directory containing the `*.csolution.yml` file.
+    - Keep the default configuration options in `cdefault.yml` unless the project requires different settings.
+    - For IAR, `-e` enables embedded language extensions, including CMSIS attributes such as `__weak`, `__packed`, `__noreturn`, and `__aligned`.
 
 **Example:**
 
@@ -254,6 +255,8 @@ solution:
 cbuild Hello.csolution.yml --toolchain GCC
 ```
 
+The solution-level [`compiler-alias:`](YML-Input-Format.md#compiler-alias) node accepts software components and pack conditions defined for compatible compiler toolchains while retaining the selected compiler for the build.
+
 !!! Tip
     - [Toolchain agnostic example projects](pack-tools.md#project-examples) do not contain a [`compiler:`](YML-Input-Format.md#compiler) selection in the [`*.csolution.yml`](YML-Input-Format.md#solution) project file.
     - Instead the [`select-compiler:`](YML-Input-Format.md#select-compiler) node list the compilers that this *csolution project* is tested with. The [VS Code extension Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) adds the [`compiler:`](YML-Input-Format.md#compiler) node based on the installed compiler in your environment.
@@ -268,7 +271,7 @@ Reproducible builds are supported by the [*.cbuild-pack.yml](YML-CBuild-Format.m
 !!! Note
     - The [*.cbuild-pack.yml](YML-CBuild-Format.md#cbuild-packyml) file should be committed to a repository to ensure reproducible builds.
     - The `cbuild` option `--frozen-packs` checks that the [*.cbuild-pack.yml](YML-CBuild-Format.md#cbuild-packyml) file exists and reports an error if any pack is changed or not available.
-    - To update a pack to a new version, delete the file [*.cbuild-pack.yml](YML-CBuild-Format.md#cbuild-packyml) or remove the information about a specific pack in this file.
+    - Before updating, use `csolution check pack-updates` to review available versions and release notes. Then change the applicable `pack:` requirement or remove only that pack's `resolved-pack:` entry from `*.cbuild-pack.yml` and run `cbuild setup <solution>.csolution.yml --update-rte` or `csolution update-rte`. Review the resulting configuration-file changes before committing the updated `*.cbuild-pack.yml` and RTE files. Deleting the entire file resolves every pack again and should be reserved for an intentional full refresh.
 
 #### Repository Contents
 
@@ -279,10 +282,6 @@ To support reproducible builds, the following files should be committed to a rep
 - All files in the RTE directory
     - Ensure that there are no files with the extension *.update@* as this indicates that configuration files are not up-to-date due to updated software packs.
 - The file `*.cbuild-pack.yml` to allow [reproducible builds](#reproducible-builds).
-Optionally, the file `*.cbuild-set.yml` defines the application's context set that should be generated.
-
-!!! Note
-    If the file `*.cbuild-set.yml` file is missing, the `setup` command creates a `*.cbuild-set` file with a selection of the first `target-type` and the first `build-type`.
 
 ### Configure Related Projects
 
@@ -389,6 +388,8 @@ cbuild iot-product.csolution.yml -a Production-HW           # target-type Produc
 cbuild iot-product.csolution.yml -a Production-HW@Debug     # target-type Production-HW with Debug set
 ```
 
+When `--active <target-type>` omits the target-set name, the unnamed target-set is selected when available; otherwise, the first named target-set is used. If the selected target-set has no `project-context` entries, or the target type defines no `target-set`, the default context is the first project with the first build type and the selected target type. Specifying `--active <target-type>@<target-set>` selects that set explicitly and uses the same default-context rule when it has no `project-context` entries. An empty selection (`--active ""`) uses the first target type and its first target-set, if present, with the same fallback to the default context.
+
 #### Load Attributes
 
 Load attributes are typically used when testing a bootloader or a bank-swapping mechanism. In such cases, often only symbol information is required. Using `load-offset:` (supported by pyOCD) allows loading the content of a binary image at a different physical address.
@@ -418,45 +419,19 @@ solution:
     - project: test_v1.cproject.yml
 ```
 
-### Working with context-set
-
-!!! Note
-    With CMSIS-Toolbox version 2.9 or higher the [`target-set:`](YML-Input-Format.md#target-set) is introduced. It is recommended to use [`target-set:`](YML-Input-Format.md#target-set) instead of the `--context-set` option as the `--context-set` option may be deprecated.
-
-Frequently, it is required to build applications with different [context](#context) types. The following command line example generates the `iot-product.csolution.yml` with build type `Debug` for the project `MQTT_AWS.cproject.yml`, while the other projects use the build type `Release`. When using the option `-S` or `--context-set`, this selection is saved to the file `iot-product.cbuild-set.yml` located in the same directory as the `*.csolution.yml` file. Refer to [File Structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-setyml) for details.
-
-```txt
-cbuild iot-product.csolution.yml -c TFM.Release+Board -c MQTT_AWS.Debug+Board -c Bootloader.Release+Board -S
-```
-
-The saved context-set (`iot-product.cbuild-set.yml`) is used when the option `-S` or `--context-set` is used without option `--context` or `-c`.
-
-```txt
-cbuild iot-product.csolution.yml -S
-```
-
-**Rules for context-set**
-
-- The same [target-type](#context) must be selected for all projects.
-- Only one [build-type](#context)  can be selected for a project.
-- Projects that are not required can be excluded.
-
-!!! Note
-    The [VS Code extension Arm CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) always uses a `context-set` that is selected in the Manage Solution view.
-
 ### External Tools and Build Order
 
-The [`executes:`](YML-Input-Format.md#executes) node integrates [CMake](build-operation.md#cmake-integration) scripts, projects, and external tools. The `input:` and  `output:` list typically refers to files and therefore define the build order of projects:
+The [`executes:`](YML-Input-Format.md#executes) node integrates [CMake scripts](build-operation.md#cmake-script-integration-with-executes) and external tools. The `input:` and `output:` lists typically refer to files and therefore define the build order of projects:
 
 - When `input:` contains files that are the [output](YML-Input-Format.md#output) of a `cproject.yml`, this project part is built first.
 - When `output:` contains files that are the input of a `cproject.yml`, the `execute:` node is built first.
 
 **Example:**
 
-The `KeyGenerator` tool builds the file `keys.c`, which is added as a source [file:](YML-Input-Format.md#files) for other projects. Using `cbuild My.csolution.yml [--context-set]` starts the build process of the application and runs the `KeyGenerator` before building projects that use the source file `keys.c` as input.
+The `KeyGenerator` tool builds the file `keys.c`, which is added as a source [file:](YML-Input-Format.md#files) for other projects. Using `cbuild My.csolution.yml --active <target-type>[@<target-set>]` starts the build process of the application and runs the `KeyGenerator` before building projects that use the source file `keys.c` as input.
 
 !!! Note
-    Using `cbuild` with the option `--context` does not run `execute:` nodes as it triggers project builds only. The option `--context-set` must be used.
+    Using `cbuild` with the option `--context` does not run `execute:` nodes as it triggers project builds only. Use an application build, optionally selected with `--active`.
 
 ```yml
 solution:
@@ -636,7 +611,7 @@ solution:
 
 ### Test Case Project
 
-Modern software design mandates for [test-driven development](https://en.wikipedia.org/wiki/Test-driven_development) that utilize DevOps or CI principals. Simulation models such as the [Arm Virtual Hardware (AVH) FVP](https://arm-software.github.io/AVH/main/overview/html/index.html) allow test automation without target hardware.
+Modern software design mandates for [test-driven development](https://en.wikipedia.org/wiki/Test-driven_development) that utilize DevOps or CI principals. [Arm Fixed Virtual Platform (FVP)](YML-Input-Format.md#arm-fvp) simulation models allow test automation without target hardware.
 
 However, in some cases, tests should also be performed on physical hardware. A test case project may, therefore, contain targets for simulation and physical hardware. The *csolution project* format allows multiple test projects to be combined to validate different parts of the application.
 
@@ -652,10 +627,10 @@ solution:
       variables:
         - Board-Layer: ./Board/NUCLEO-L552ZE-Q/Board.clayer.yml
 
-    - type: Virtual
-      board: VHT-Corstone-300      # Virtual Hardware platform (appears as a board)
+    - type: FVP
+      board: VHT-Corstone-300      # FVP platform (appears as a board)
       variables:
-        - Board-Layer: ./Board/Corstone-300/AVH.clayer.yml
+        - Board-Layer: ./Board/Corstone-300/FVP.clayer.yml
 
   projects:
     - project: ./TestSuite1/TestCases.cproject.yml
@@ -664,7 +639,7 @@ solution:
 ```
 
 !!! Tip
-    - Several [examples for Arm Virtual Hardware (AVH) FVP simulation models](https://github.com/Arm-Examples#avh-fvp-examples) show usage of *csolution projects* in CI workflows.
+    - Several [examples for Arm FVP simulation models](https://github.com/Arm-Examples#avh-fvp-examples) show usage of *csolution projects* in CI workflows.
     - The project [AVH-MLOps-Main](https://github.com/Arm-Examples/AVH-MLOps_Examples/tree/main/AVH-MLOps-main) is a test project that shows retargeting to different processors using a layer.
     - The project [AWS_MQTT_Demo](https://github.com/Arm-Examples/AWS_MQTT_Demo) extends this concept with retargeting of an IP communication to virtual or physical hardware.
 
@@ -678,7 +653,7 @@ can share a `layer` with common configuration settings.
 
 ### Software Layers in Packs
 
-Software layers for [*reference applications*](ReferenceApplications.md) may be published in software packs. For more information, refer to [Pack Creation &raquo; Layers](pack-tools.md#layers).
+Software layers for [*reference applications*](ReferenceApplications.md) may be published in software packs. For more information, refer to [Pack Creation: Layers](pack-tools.md#layers).
 
 ## Directory Structure
 
@@ -736,15 +711,21 @@ Directory Structure                 | Content
 The `<context-dir>` has the following format: `_<build-type>_<target-type>`.
 
 !!! Note
-    `cbuild` no longer generates the `<context-dir>` by default. It is, therefore, required to align the naming of `<context-dir>` with other tools (MDK, CMSIS-Pack-Eclipse, etc.) that support the CMSIS-Pack system.
+    The `<context-dir>` is generated when RTE files are updated. Use `cbuild setup <solution>.csolution.yml --update-rte` to prepare or refresh these files for development, or add `--update-rte` to a `cbuild` invocation. Without this option, `cbuild` leaves the RTE directory unchanged. The directory naming is aligned with other tools that support the CMSIS-Pack system.
 
 ### Output Directory Structure
 
-By default, the following output directories are used. Use [`cbuild`](build-tools.md#build-a-project) to generate the content of these output directories.
+By default, the following output directories and build information files are generated using the [`cbuild`](build-tools.md#build-a-project) command.
 
 Output                                        | Content
 :---------------------------------------------|:---------------
 `./out/<project>/<target>/<build>`            | Contains the final binary and symbol files of a project context.
+`./out/<project>/<target>/<build>/<project>.<build>+<target>.cbuild.yml` | [Build description](YML-CBuild-Format.md#cbuildyml) generated for a project context.
+`./out/<project>/<target>/<build>/compile_commands.json` | Compilation database generated by `cbuild setup` for [Static Code Analysis](build-tools.md#static-code-analysis).
+`./out/<project>/<target>/<build>/compile_macros.h` | Compiler built-in macros referenced by the [compilation database](build-tools.md#static-code-analysis).
+`./out/<solution>+<target>.cbuild-run.yml`     | [Programming and debugging description](YML-CBuild-Format.md#run-and-debug-management) generated for the active target-set.
+
+The actual directories are controlled by [`output-dirs:`](YML-Input-Format.md#output-dirs). Tools should resolve these files through the references in `<solution>.cbuild-idx.yml` instead of constructing their paths.
 
 ### Software Components
 
@@ -758,13 +739,22 @@ Optionally, configurable source and header files are provided to allow the setti
 - An include path to the header files of the software component is added to the C/C++ Compiler control string.
 
 !!! Notes
-    - The `csolution` command `convert` provides the option `--no-update-rte` that disables the generation of files in the `./RTE` directory and, therefore the management of configuration files and the `RTE_Components.h` file.
+    - The command `cbuild setup <solution>.csolution.yml --update-rte` prepares the build information and updates the files in the `./RTE` directory.
     - The `csolution` command `update-rte` only updates the configuration files in the `RTE` directory.
+    - A normal `cbuild` invocation does not change RTE configuration files. Add `--update-rte` when an update is required.
     - Using the option `--verbose` outputs additional version details.
 
 ### PLM of Software Packs
 
 Software packs evolve over time (bug fixes, new features, dependency and component updates). Checking the installed vs. available software pack versions helps you decide when to upgrade (or stay pinned) to keep builds reproducible and to avoid unexpected behavior changes caused by a pack update.
+
+Use these steps to update packs and configuration files:
+
+1. **Update available pack information:** `cpackget update-index` updates the public index and cached PDSC metadata. With `--sparse`, only the index is updated.
+2. **Install required packs:** `cpackget add` installs the requested pack and its dependencies. During an automatic index update, only the PDSC metadata required for these packs is refreshed. This does not change a project's resolved versions or RTE files.
+3. **Review available project updates:** `csolution check pack-updates` reports newer versions and optionally their release notes. It does not modify the project.
+4. **Resolve project pack versions:** `csolution` records exact versions in `*.cbuild-pack.yml`. Existing entries keep the project reproducible; changing a `pack:` requirement or deliberately removing a `resolved-pack:` entry allows that pack to be resolved again.
+5. **Update configuration files:** `csolution update-rte` updates the configuration-management files in the RTE directory. Alternatively, use `cbuild --update-rte` to request the same update before building. A normal `cbuild` invocation leaves RTE configuration files unchanged. User-edited configuration files are not overwritten; changed pack files are provided separately for review and merging.
 
 In the example below, `csolution check pack-updates` reports that `Keil::MDK-Middleware` can be updated from `8.1.0` to `8.2.0` (shown as `8.1.0 -> 8.2.0`). Using the option `--verbose` prints the relevant release notes. The option `--filter "USB"` narrows the output to USB-related entries.
 
@@ -787,9 +777,7 @@ Keil::MDK-Middleware@8.1.0 -> 8.2.0
 
 ### PLM of Configuration Files
 
-Configurable source and header files have a piece of version information that is required during Project Lifetime Management
-(PLM) of a project. The version number is important when the underlying software pack changes and provides a newer
-configuration file version.
+Configurable source and header files use an effective version during Project Lifetime Management (PLM). A file may specify its own version; otherwise, it inherits the component version or, when that is absent, the pack version. This version identifies changes when a newer or older pack is selected.
 
 Depending on the PLM status of the application, `csolution` performs the following operation for configuration files:
 
@@ -821,13 +809,12 @@ second copy is an unmodified  backup file with the format `<configfile>.<ext>.ba
 
 #### **Upgrade**
 
-When upgrading (or downgrading) a software component, the version information of the configuration file is considered.
-If a configuration file does not explicitly specify a version in the pack description file (`*.pdsc`), it uses the version of its parent component.
+When upgrading (or downgrading) a software component, the effective version and file contents are considered. Selecting or installing another pack version alone does not overwrite the user-editable configuration file; the following processing occurs only when the RTE files are updated. A configuration file does not require a dedicated version in the pack description file (`*.pdsc`); when omitted, the version of its parent component is used, or the pack version if the component has no version.
 
 - If the version of the unmodified backup file `<configfile>.<ext>.base@<version>` is identical, no operation is performed.
 - If the version differs, the new configuration file is copied with the format `<configfile>.<ext>.update@<version>`.
 
-In addition to version comparison, the contents of the `base` file and the corresponding file from the pack are compared. If both files are identical, the `base` file is automatically updated to the new version. In this case, no `update` file is created. This automatic rebase mechanism prevents configuration files without an explicit version from being incorrectly marked as out-of-date when using newer pack releases.
+In addition to version comparison, the contents of the `base` file and the corresponding file in the newly resolved pack are compared. If both files are identical, the unmodified `base` file is rebased to the new effective version without changing the user-editable file, and no `update` file is created. If the pack content differs, the new pack file is written as `update@<version>` for review and merging; the user-editable file is still not overwritten. This automatic rebase mechanism prevents unchanged configuration files without an explicit version from being incorrectly marked as out-of-date when using newer pack releases.
 
 **Example:** after updating the configuration file `ConfigFile.h` to version `1.3.0`, the directory contains these files:
 
@@ -869,7 +856,7 @@ The system is also capable of handling multiple instances of configuration files
 
 ### RTE_Components.h
 
-The file `./RTE/RTE_Components.h` is created by the CMSIS Project Manager when the option `--update-rte` is used. This option is the default for the `csolution convert` command. For each selected software component, it contains `#define` statements required by the component. These statements are defined in the `*.PDSC` file for that component. The following example shows a sample content of a RTE_Components.h file:
+The file `./RTE/RTE_Components.h` is created by the CMSIS Project Manager when the option `--update-rte` is used with `cbuild setup` or `cbuild`. For each selected software component, it contains `#define` statements required by the component. These statements are defined in the `*.PDSC` file for that component. The following example shows a sample content of a RTE_Components.h file:
 
 ```c
 /* Auto generated Run-Time-Environment Component Configuration File *** Do not modify ! *** */
@@ -901,7 +888,7 @@ The `RTE_Components.h` file is typically used in other header files to control t
 
 ### CMSIS_device_header
 
-The preprocessor symbol `CMSIS_device_header` represents the [device header file](https://arm-software.github.io/CMSIS_6/latest/Core/using_pg.html#using_packs) provided by the CMSIS-Core. It defines the registers and interrupt mapping of the device that is used. Refer to [Reference Applications > Header File Structure](ReferenceApplications.md#header-file-structure) for more information.
+The preprocessor symbol `CMSIS_device_header` represents the [device header file](https://arm-software.github.io/CMSIS_6/latest/Core/using_pg.html#using_packs) provided by the CMSIS-Core. It defines the registers and interrupt mapping of the device that is used. Refer to [Reference Applications: Header File Structure](ReferenceApplications.md#header-file-structure) for more information.
 
 ### \_RTE\_ Preprocessor Symbol
 
@@ -959,7 +946,7 @@ Both files, the Linker Script template and the `<regions>.h` are located in the 
 Both files, the Linker Script template and the `<regions>.h` can be modified by the user as it might be required to adjust the memory regions or give additional attributes (such as `noinit`).
 
 !!! Note
-    For more information, refer to [Create Applications—Configure Linker Scripts](CreateApplications.md#configure-linker-scripts).
+    For more information, refer to [Create Applications: Configure Linker Scripts](CreateApplications.md#configure-linker-scripts).
 
 #### Linker Script Templates
 
@@ -971,6 +958,9 @@ Linker Script Template       | Linker control file for ...
 `gcc_linker_script.ld.src`   | GCC Compiler
 `iar_linker_script.icf.src`  | IAR Compiler
 `clang_linker_script.ld.src` | CLANG Compiler (LLVM)
+
+!!! Important
+    [CLANG v21 (ATfE)](https://developer.arm.com/Tools%20and%20Software/Arm%20Toolchain%20for%20Embedded) uses picolibc initialization support that requires the linker symbols `__bothinit_array_start` and `__bothinit_array_end`. The current `clang_linker_script.ld.src` template defines these symbols around the pre-initialization and initialization arrays. When upgrading an existing project to CLANG v21 (ATfE), update any customized or previously copied CLANG linker script accordingly.
 
 ## Generator Support
 
@@ -1096,16 +1086,26 @@ With the VS Code extension [CMSIS Solution](https://marketplace.visualstudio.com
 
 Several DFP contain `*.dbgconf` files that configure device-specific debug and trace parameters. The CMSIS-Toolbox provides this configuration information in the `*.cbuild-run.yml` file for [debuggers with Debug Access Sequence support](YML-CBuild-Format.md#run-and-debug-management).
 
-The `.cmsis` directory in the *csolution project* directory contains for each target a default `*.dbgconf` configuration file. For example: `.\.cmsis\MyApplication+MyBoard`.
-This file can be configured to reflect user settings.
+The CMSIS-Toolbox creates the `.cmsis` directory in the *csolution project* directory and generates a default `*.dbgconf` file for each target, for example `.cmsis/MyApplication+MyBoard.dbgconf`. This file can be modified to reflect user settings.
 
-An explicit `*.dbgconf` configuration file can be specified using the [`debugger:` node](YML-Input-Format.md#debugger) in the `*.csolution.yml` file.
+An explicit user-managed `*.dbgconf` configuration file can instead be specified using the [`debugger:` node](YML-Input-Format.md#debugger) in the `*.csolution.yml` file.
 
 ## Native CMake Build Integration
 
 Native CMake projects can be integrated into a *csolution project* without a `*.cproject.yml` file. The CMSIS-Toolbox configures and builds each project using the source directory, generator, configure options, and optional build target specified in the [`cmake:` node](YML-Input-Format.md#cmake-build).
 
 CMake projects are listed under `projects:` in the `*.csolution.yml` file and participate in the solution's `target-types:` and `build-types:`. Their declared output images are included in the generated [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management) file and can therefore be combined with images from other project contexts for programming and debugging.
+
+The standard build commands also apply to native CMake project contexts:
+
+```shell
+cbuild setup MySolution.csolution.yml --active DualCoreDevice
+cbuild MySolution.csolution.yml --active DualCoreDevice
+cbuild MySolution.csolution.yml --active DualCoreDevice --clean
+cbuild MySolution.csolution.yml --active DualCoreDevice --rebuild
+```
+
+The native project remains responsible for its `CMakeLists.txt`, toolchain setup, build targets, and generated files. CMSIS-Toolbox provides orchestration and records the declared images; it does not translate the native project into a `*.cproject.yml` file. Paths under `images:` identify outputs relative to the native project's context output directory.
 
 **Example:**
 
@@ -1132,6 +1132,8 @@ The CMSIS-Toolbox connects the `west build` command with the information of the 
 ![West Build System Integration](./images/west-integration.png "West Build System Integration")
 
 West projects are specified using the [`west:`](YML-Input-Format.md#west) node under `projects:` in the `*.csolution.yml` file and can be managed with the `target-types` and `build-types` of the *csolution project*. Note that the `sysbuild` feature of `west` is not supported as the CMSIS-Toolbox manages already related projects.
+
+The usual `cbuild` setup, build, clean, and rebuild operations also apply to West projects. During setup, the integration requests a `compile_commands.json` database from West for editor and language-server support. See [West Integration](build-operation.md#west-integration) for the command mapping.
 
 **Example:**
 
@@ -1186,13 +1188,13 @@ solution:
         device: :M55_HP
 ```
 
-## MLOps Information
+## MLOps Integration
 
 An MLOps (Machine Learning Operations) system automates the process of generating and maintaining machine learning (ML) models. Often described as "DevOps for ML", it bridges the gap between data scientists who build ML models and embedded developers that integrate these models into real-world applications.
 
-The CMSIS-Toolbox can generate the file [`*.cbuild-mlops.yml`](YML-CBuild-Format.md#cbuild-mlopsyml) with information for MLOps system about the NPU accelerator, test environment and integration of the ML model into the build. To achieve that, the CMSIS-Toolbox combines DFP information (about NPU hardware configuration and processor) and *csolution project* configuration as shown in the following diagram.
+The CMSIS-Toolbox generates the file [`*.cbuild-mlops.yml`](YML-CBuild-Format.md#cbuild-mlopsyml) as the interface between a *csolution project* and an MLOps system. It combines DFP information about the processor and NPU with project settings so that model conversion does not duplicate target-specific configuration.
 
-![MLOps Information](./images/mlops.png "MLOps Information")
+![MLOps Integration](./images/mlops.png "MLOps Integration")
 
 The `*.cbuild-mlops.yml` file provides information about:
 
@@ -1204,6 +1206,34 @@ The `*.cbuild-mlops.yml` file provides information about:
 - Build information (using `cbuild` with simulator target) for testing on FVP simulation models along with information for FVP invocation
 
 The [`*.cbuild-mlops.yml`](YML-CBuild-Format.md#cbuild-mlopsyml) file is designed for applications that use one or more ML models and optional NPUs. It is assumed that the MLOps system creates **only one ML model at a time** and therefore needs information about the ML model to target. The [`mlops:`](YML-Input-Format.md#mlops) node in the `*.csolution.yml` file specifies these parameters. When this node is used, the CMSIS-Toolbox generates the `*.cbuild-mlops.yml` file with the base name of the `*.csolution.yml` file (in the same folder).
+
+### Model Integration Workflow
+
+Model creation is separate from the application build. A typical command-line workflow is:
+
+1. Generate the resolved MLOps information for the selected target:
+
+    ```bash
+    cbuild setup MyApp.csolution.yml --active SSE-320-U85@FVP-Test --packs
+    ```
+
+    This creates `MyApp.cbuild-mlops.yml` with the processor, NPU, Vela options, model metadata, AI-layer location, and test target information.
+
+2. Pass that file to the framework-specific model integration script:
+
+    ```bash
+    python create_ai_layer.py MyApp.cbuild-mlops.yml
+    ```
+
+    The script performs model export or conversion and writes a complete AI layer, including the generated C/C++ model data and the `*.clayer.yml` file with the required software components. The script is part of the framework integration, not the CMSIS-Toolbox.
+
+3. Build the application with the generated layer:
+
+    ```bash
+    cbuild MyApp.csolution.yml --active SSE-320-U85@FVP-Test
+    ```
+
+    This is a normal application build and does not run the model conversion. After changing the model or target, repeat the setup and AI-layer creation steps before rebuilding.
 
 **Example:**
 
@@ -1222,6 +1252,12 @@ solution:
     model:
       clayer: $AI-Layer$        # Layer that contains the ML model
       name: RPS                 # Name for the ML model (default Algorithm)
+      framework: ExecuTorch     # Custom metadata passed to the MLOps system
+      source: $Model-Source$    # Undefined variables produce an empty value
+    hardware:
+      target: AppKit-E8-U85@HIL # Hardware target used for testing
+    simulator:
+      target: SSE-320-U85@FVP-Test # FVP target used for testing
     :
   # List different hardware targets that are used to deploy the solution.
   target-types:
@@ -1288,6 +1324,8 @@ cbuild-mlops:
   model:
     clayer: ai_layer/ai_layer.clayer.yml
     name: RPS
+    framework: ExecuTorch
+    source:
   hardware:
     active: AppKit-E8-U85@HIL
     cbuild-run: out/MyApp+AppKit-E8-U85.cbuild-run.yml
@@ -1304,57 +1342,15 @@ cbuild-mlops:
     config-file: Board/Corstone-320/fvp_config.txt
 ```
 
-Using the information in the `*.cbuild-mlops.yml` file, the MLOps system can build the ML model and execute tests on hardware or simulation targets.
+Using the information in the `*.cbuild-mlops.yml` file, the MLOps system can create the AI layer and execute tests on hardware or simulation targets.
 
-### Generate ML Model with Vela
+### Framework Integration Examples
 
-The Vela invocation uses:
+The [`CMSIS-ExecuTorch` preview workflow](https://github.com/Arm-Examples/CMSIS-Executorch/tree/preview) uses an isolated `model/model.py`. A new model can replace this file without changing the build environment. Its `create_ai_layer.py` script exports and delegates the model, selects the required ExecuTorch CMSIS components, and writes the ExecuTorch program as C source into the AI layer.
 
-- `cbuild-mlops.vela.ini` as the Vela configuration file.
-- `cbuild-mlops.vela.options` as the (device-specific) option string.
+The [`CMSIS-LiteRT` preview workflow](https://github.com/MatthiasHertelArm/cmsis-litert/tree/preview) applies the same interface to LiteRT. Its `create_ai_layer.py` consumes the Vela parameters, converts the model data to C source, and selects either the Ethos-U or CMSIS-NN kernel components for the generated layer.
 
-Generate ML Model from quantized `*.tflite` flatbuffer file using the LiteRT (TensorFlow) framework:
-
-```bash
->vela --config .cmsis/ensemble_vela.ini --accelerator-config ethos-u85-256 --system-config RTSS_HE_SRAM_MRAM --memory-mode Shared_Sram RPS.tflite --output-dir ai_layer
-```
-
-Generate ML Model with ExecuTorch (PyTorch) framework:
-
-ExecuTorch model generation is typically done by a project-specific Python export script that produces an ExecuTorch program (commonly `*.pte`) and places it into the ML model layer.
-
-```bash
->python export_executorch_model.py --model RPS --output ai_layer/RPS.pte
-```
-
-In this Python export script, Vela can be called like this (values typically come from `*.cbuild-mlops.yml`):
-
-```py
-from pathlib import Path
-import shlex
-import subprocess
-
-
-def run_vela(*, tflite_in: Path, out_dir: Path, vela_ini: Path, vela_options: str) -> None:
-    cmd = [
-        "vela",
-        "--config",
-        str(vela_ini),
-        *shlex.split(vela_options),
-        str(tflite_in),
-        "--output-dir",
-        str(out_dir),
-    ]
-    subprocess.run(cmd, check=True)
-
-
-run_vela(
-    tflite_in=Path("RPS.tflite"),
-    out_dir=Path("ai_layer"),
-    vela_ini=Path(".cmsis/ensemble_vela.ini"),
-    vela_options="--accelerator-config ethos-u85-256 --system-config RTSS_HE_SRAM_MRAM --memory-mode Shared_Sram",
-)
-```
+Both examples keep target and NPU settings in the *csolution project* and pass framework-specific model parameters as custom keys under `mlops.model:`. This separation allows a framework pack to supply the integration script while the application supplies only its model and target configuration. For ExecuTorch with Zephyr, refer also to [`CMSIS-Zephyr-ExecuTorch`](https://github.com/Arm-Examples/CMSIS-Zephyr-Executorch).
 
 ### Test on Hardware
 

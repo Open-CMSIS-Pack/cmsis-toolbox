@@ -11,11 +11,11 @@ This chapter explains the usage of the [Segger J-Link GDB Server](https://kb.seg
 Other manual sections describe how to configure debuggers:
 
 - [Run and Debug Configuration](build-overview.md#run-and-debug-configuration) explains overall structure and how projects and images are configured.
-- [Debugger Configuration - J-Link Server](YML-Input-Format.md#j-link-server) contains details about the options that are specific to J-Link.
+- [Debugger Configuration: J-Link Server](YML-Input-Format.md#j-link-server) contains details about the options that are specific to J-Link.
 
 ## Extended Options
 
-The section [Debugger Configuration - J-Link Server](YML-Input-Format.md#j-link-server) contains the J-Link configuration for typical systems.
+The section [Debugger Configuration: J-Link Server](YML-Input-Format.md#j-link-server) contains the J-Link configuration for typical systems.
 
 ### `stdio:`
 
