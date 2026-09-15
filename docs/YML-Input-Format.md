@@ -48,7 +48,9 @@ Element      |              | Description
 `@~version`  |   Optional   | Automatically update patch version, i.e. `@~1.2.3` uses releases from `1.2.3` to `< 1.3.0`.
 
 !!! Note
+    - Pack vendor and pack names are matched case-insensitively. Their spelling does not need to match the `<vendor>` and `<name>` values in the PDSC file. Generated build information uses the canonical spelling from the PDSC file.
     - When no version is specified, the **`csolution` Project Manager** only loads the latest installed version of a software pack. This also applies when wildcards are used in the `pack-name`.
+    - When the same pack is specified both without a version and with an exact version, the exact version is used for both requirements, even if a newer version is installed. This rule applies across all input files of the solution.
     - Use [**`cpackget`**](build-tools.md#cpackget-invocation) to download and install new pack versions.
     - To accept a [pre-release version of a pack](pack-tools.md#versioning) specify the `-pre-release` label. Use for example `- pack: Keil::MDK-Middleware@^8.0.0-0` to accept any pre-release version that is higher or equal.
 
@@ -56,6 +58,7 @@ Element      |              | Description
 
 ```yml
 - pack:   ARM::CMSIS@5.9.0                 # 'CMSIS' Pack with version 5.9.0
+- pack:   arm::cmsis@^6.0.0                # Pack vendor and name matching is case-insensitive
 - pack:   Keil::MDK-Middleware@>=7.13.0    # latest version 7.13.0 or higher
 - pack:   Keil::MDK-Middleware@^7.13.0     # latest version 7.13.0 or higher, but lower than 8.0.0
 - pack:   Keil::TFM                        # 'TFM' Pack from vendor Keil, latest installed version
@@ -63,6 +66,8 @@ Element      |              | Description
 - pack:   Keil::STM*                       # Software Packs that start with 'STM' from vendor 'Keil'
 - pack:   Keil::MDK-Middleware@>=8.0.0-0   # version 8.0.0 or higher including pre-release versions
 ```
+
+For example, if one input file specifies `ARM::CMSIS` and another specifies `ARM::CMSIS@6.1.0`, both requirements resolve to `ARM::CMSIS@6.1.0`; a separately installed version 6.2.0 does not override the exact selection.
 
 ### `component:` Name Conventions
 
@@ -72,7 +77,7 @@ The **`csolution` Project Manager** uses the following syntax to specify the `co
 [Cvendor::] Cclass [&Cbundle] :Cgroup [:Csub] [&Cvariant] [@[>=]Cversion]
 ```
 
-Components are defined using the [Open-CMSIS-Pack - `<component>` element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#element_component). Several parts of a `component` are optional.  For example, it is possible to just define a component using the `Cclass` and `Cgroup` names. All elements of a component name are summarized in the following table.
+Components are defined using the [Open-CMSIS-Pack: `<component>` element](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#element_component). Several parts of a `component` are optional.  For example, it is possible to just define a component using the `Cclass` and `Cgroup` names. All elements of a component name are summarized in the following table.
 
 Element    |              | Description
 :----------|:-------------|:---------------------
@@ -210,10 +215,10 @@ Show the different possible context settings of a `*.csolution.yml` file.
 
 ```txt
 AWS_MQTT_MutualAuth_SW_Framework>csolution list contexts -s Demo.csolution.yml
-Demo.Debug+AVH
+Demo.Debug+FVP
 Demo.Debug+IP-Stack
 Demo.Debug+WiFi
-Demo.Release+AVH
+Demo.Release+FVP
 Demo.Release+IP-Stack
 Demo.Release+WiFi
 ```
@@ -237,6 +242,7 @@ Access Sequence                                | Description
 `$Pname$`                                      | [Pname](#device-name-conventions) of the selected device as specified in the [`device:`](#device) node.
 `$BuildType$`                                  | [Build-type](#build-types) name of the currently processed project.
 `$TargetType$`                                 | [Target-type](#target-types) name of the currently processed project.
+`$TargetSet$`                                  | Name of the target-set selected with `--active`; expands to `default` for an unnamed target-set.
 `$Compiler$`                                   | [Compiler](#compiler) name of the compiler used in this project context as specified in the [`compiler:`](#compiler) node.
 **YAML Input**                                 | **Access to YAML Input Directories and Files**
 `$Solution$`                                   | Solution name (base name of the *.csolution.yml file).
@@ -378,7 +384,7 @@ The `default:` node is the start of a [`cdefault.yml`](build-overview.md#cdefaul
 
 `default:`                                                |            | Content
 :---------------------------------------------------------|:-----------|:------------------------------------
-&nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls. Refer to [CSolution Project Structure - `cdefault.yml`](build-overview.md#cdefaultyml) for an example.
+&nbsp;&nbsp; [`misc:`](#misc)                             |  Optional  | Literal tool-specific controls. Refer to [CSolution Project Structure: `cdefault.yml`](build-overview.md#cdefaultyml) for an example.
 
 !!! Note
     The [`compiler:`](#compiler) selection in `cdefault.yml` has been deprecated in CMSIS-Toolbox 2.6.0.
@@ -396,6 +402,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`select-compiler:`](#select-compiler) |   Optional   | Lists the possible compiler selection that this project is tested with.
 &nbsp;&nbsp;&nbsp; [`cdefault:`](#cdefault)               |   Optional   | When specified, the [`cdefault.yml`](build-overview.md#cdefaultyml) file is used to setup compiler specific controls.
 &nbsp;&nbsp;&nbsp; [`compiler:`](#compiler)               |   Optional   | Overall toolchain selection for this solution.
+&nbsp;&nbsp;&nbsp; [`compiler-alias:`](#compiler-alias)   |   Optional   | Accept components and conditions defined for compatible compiler toolchains.
 &nbsp;&nbsp;&nbsp; [`language-C:`](#language-c)           |   Optional   | Set the language standard for C source file compilation.
 &nbsp;&nbsp;&nbsp; [`language-CPP:`](#language-cpp)       |   Optional   | Set the language standard for C++ source file compilation.
 &nbsp;&nbsp;&nbsp; [`output-dirs:`](#output-dirs)         |   Optional   | Control the output directories for the build output.
@@ -404,7 +411,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 &nbsp;&nbsp;&nbsp; [`mlops:`](#mlops)                     |   Optional   | Parameters for MLOps systems; generates `*.cbuild-mlops.yml` with ML model and NPU parameters.
 &nbsp;&nbsp;&nbsp; [`target-types:`](#target-types)       | **Required** | List of target-types that define the target system (device or board).
 &nbsp;&nbsp;&nbsp; [`build-types:`](#build-types)         |   Optional   | List of build-types (i.e. Release, Debug, Test).
-&nbsp;&nbsp;&nbsp; [`projects:`](#projects)               | **Required** | List of projects that belong to the solution.
+&nbsp;&nbsp;&nbsp; [`projects:`](#projects)               |   Optional   | List of projects that belong to the solution. May be omitted for an [image-only solution](#image-only-solution).
 &nbsp;&nbsp;&nbsp; [`executes:`](#executes)               |   Optional   | Additional pre or post build steps using external tools.
 &nbsp;&nbsp;&nbsp; [`misc:`](#misc)                       |   Optional   | Literal tool-specific controls.
 
@@ -412,7 +419,7 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 
 ```yml
 solution:
-  created-for: cmsis-toolbox@2.6  # minimum CMSIS-Toolbox version required for project build
+  created-for: cmsis-toolbox@2.14 # minimum CMSIS-Toolbox version required for project build
   cdefault:                       # use default setup of toolchain-specific controls.
   compiler: GCC                   # overwrite compiler definition in 'cdefaults.yml'
 
@@ -439,6 +446,28 @@ solution:
     - project: /security/TFM.cproject.yml
     - project: /application/MQTT_AWS.cproject.yml
 ```
+
+#### Image-only solution
+
+A solution may configure programming and debugging for images produced by another build system without specifying a `projects:` node. Such an image-only solution requires a `target-set:` that lists the image files and debugger configuration. An optional [`executes:`](#executes) node can invoke the external build system before the image is used.
+
+```yml
+solution:
+  created-for: cmsis-toolbox@2.15.0
+
+  target-types:
+    - type: Hardware
+      device: Vendor::Device
+      target-set:
+        - set:
+          images:
+            - image: ./build/application.elf
+              load: image+symbols
+          debugger:
+            name: CMSIS-DAP@pyOCD
+```
+
+Select the target-set with `cbuild <solution>.csolution.yml --active Hardware`. The generated `*.cbuild-run.yml` describes the external images and debugger configuration even though the solution has no project context.
 
 ### `project:`
 
@@ -556,7 +585,7 @@ Allows control of the directory structure for building output files and temporar
 
 !!! Note
     - This control is only possible at `csolution.yml` level.
-    - CMake manages the temporary directory of all projects therefore `tmpdir:` does not support access sequences.
+    - With an active target selection, `tmpdir:` supports the access sequences [`$TargetType$`](#access-sequences) and [`$TargetSet$`](#access-sequences).
 
 `output-dirs:`                     |              | Content
 :----------------------------------|:-------------|:------------------------------------
@@ -564,11 +593,17 @@ Allows control of the directory structure for building output files and temporar
 &nbsp;&nbsp;&nbsp; `tmpdir:`       |  Optional    | Specifies the directory for the interim temporary files.
 &nbsp;&nbsp;&nbsp; `intdir:`       |  Optional    | Legacy node, applied instead of `tmpdir:` when using `cbuild` with option `--cbuildgen`.
 
-The default setting for the `output-dirs:` are:
+Without an active target selection, the default settings for `output-dirs:` are:
 
 ```yml
   tmpdir:  tmp                          # All projects use the same temporary directory
   outdir:  $SolutionDir()$/out/$TargetType$/$BuildType$
+```
+
+With `--active`, the default temporary directory separates the selected target type and target-set. `$TargetSet$` expands to the value of `set:` or to `default` for an unnamed target-set:
+
+```yml
+  tmpdir:  tmp/$TargetType$/$TargetSet$
 ```
 
 With the tool option `--output`, a top-level prefix directory can be added. The effective `outdir:` with the command below is: `MyOut/out/$TargetType$/$BuildType$`.
@@ -581,8 +616,8 @@ cbuild <name>.csolution.yml --output MyOut
 
 ```yml
 output-dirs:
-  tmpdir: ./tmp2                         # relative path to csolution.yml file
-  outdir: ./out/$Project$/$TargetType$   # $BuildType$ no longer part of the outdir
+  tmpdir: ./tmp2/$TargetType$/$TargetSet$ # relative path to csolution.yml file
+  outdir: ./out/$Project$/$TargetType$    # $BuildType$ no longer part of the outdir
 ```
 
 ### `generators:`
@@ -696,7 +731,7 @@ Compiler ID                                           | Supported Compiler
 `XC`                                                  | Microchip variant of the GCC Compiler
 
 !!! Note
-    Refer to [Installation - Compiler Toolchains](installation.md#compiler-toolchains) for details about the supported compilers.
+    Refer to [Installation: Compiler Toolchains](installation.md#compiler-toolchains) for details about the supported compilers.
 
 **Example:**
 
@@ -706,6 +741,25 @@ compiler: GCC              # Select GCC Compiler
 
 ```yml
 compiler: AC6@6.18.0       # Select Arm Compiler version 6.18.0
+```
+
+### `compiler-alias:`
+
+Declares a compiler toolchain that is compatible with the toolchain selected by [`compiler:`](#compiler). This allows the solution to use software components and other pack content whose conditions specify the aliased compiler. The selected compiler still performs the build.
+
+`compiler-alias:`                                      |            | Content
+:------------------------------------------------------|:-----------|:------------------------------------
+`compiler-alias:`                                      |  Optional  | Compiler ID that is compatible with the selected compiler.
+
+!!! Note
+    `compiler-alias:` is supported only at the [`solution:`](#solution) level. The alias uses a compiler ID without a version.
+
+**Example:** Use the XC compiler and accept pack content defined for GCC:
+
+```yml
+solution:
+  compiler: XC
+  compiler-alias: GCC
 ```
 
 ### `linker:`
@@ -917,7 +971,7 @@ groups:
 
 ### `link:`
 
-Apply link attributes to library archive files. This feature is only available with the LLVM and GCC compiler. 
+Apply a link attribute to an individual library archive file. Use `whole-archive` for libraries that rely on static initialization, registration, or other objects that do not satisfy an unresolved symbol. It prevents the linker from discarding those objects while leaving normal archive selection unchanged for other libraries. This feature is available with the CLANG and GCC compilers.
 
 !!! Note
     For other compilers (AC6, IAR, etc.) the `link:` node is ignored.
@@ -1471,7 +1525,7 @@ The `images:` node under `target-set:` specifies the projects with build-type an
 
 #### `load:`
 
-Specifies the load mode for an image file. This information is used by programmers and debug tools.
+Specifies the load mode for an `image:` file or the output of a `project-context:`. This information is used by programmers and debug tools and overrides the default inferred from the file type.
 
 `load:`                              | Description
 :------------------------------------|:-------------
@@ -1479,6 +1533,8 @@ Specifies the load mode for an image file. This information is used by programme
 &nbsp;&nbsp;&nbsp; `symbols`         | Load only the debug symbol information.
 &nbsp;&nbsp;&nbsp; `image`           | Load only the binary image (default `image` for other file types).
 &nbsp;&nbsp;&nbsp; `none`            | No content is loaded for this image, however it is part of the build process.
+
+For example, set `load: none` on a `project-context:` when its output is embedded in another project image and must not be programmed separately.
 
 **Example:**
 
@@ -1668,7 +1724,7 @@ The following example uses three projects: `Demo`, `TFM`, and `Boot`. The projec
         - TFM.Release+LibMode              # for project TFM use build-type: Release, target-type: LibMode
         - Boot+Flash                       # for project Boot use target-type: Flash
       board: B-U585I-IOT02A
-    - type: AVH                            # When applying target-type: 'AVH':
+    - type: FVP                            # When applying target-type: 'FVP':
       context-map:
         - context: TFM.Release+LibMode     # for project TFM use build-type: Release, target-type: LibMode
       device: ARM::SSE-300-MPS3
@@ -2015,7 +2071,7 @@ Add a software layer to a project. Used in `*.cproject.yml` files.
         - +WiFi
     - layer: ./Socket/VSocket/Socket.clayer.yml
       for-context:
-        - +AVH
+        - +FVP
 
     # Board
     - layer: ./Board/IMXRT1050-EVKB/Board.clayer.yml
@@ -2027,7 +2083,7 @@ Add a software layer to a project. Used in `*.cproject.yml` files.
         - +WiFi
     - layer: ./Board/AVH_MPS3_Corstone-300/Board.clayer.yml
       for-context:
-        - +AVH
+        - +FVP
 ```
 
 #### `layer:` `type:`
@@ -2095,12 +2151,12 @@ Add software components to a project or a software layer. Used in `*.cproject.ym
 ```
 
 !!! Note
-    The name format for a software component is described under  [Name Conventions - Component Name Conventions](#component-name-conventions).
+    The name format for a software component is described under [Name Conventions: Component Name Conventions](#component-name-conventions).
 
 ### `instances:`
 
 Allows to add multiple instances of a component and actually applies to configuration files.
-For detailed description refer to [Open-CMSIS-Pack specification - Component Instances](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances)
+For a detailed description, refer to [Open-CMSIS-Pack specification: Component Instances](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances).
 
 **Example:**
 
@@ -2162,11 +2218,13 @@ The information provided with the `west:` and `west-def:` nodes are used to gene
 
 ## CMake Build
 
-Enable native CMake project build orchestration and add its output images to the *csolution project*.
+Enable native CMake project build orchestration and add its output images to the *csolution project*. This project type is supported with CMSIS-Toolbox 2.15 or higher and does not require a `*.cproject.yml` file.
 
 ### `cmake:`
 
 Use CMake to configure and build the source directory specified in the `cmake:` node. Relative paths are based on the directory of the `*.csolution.yml` file.
+
+The `project:`, `west:`, and `cmake:` descriptors are mutually exclusive within one `projects:` list entry. A solution may combine separate entries of all three types.
 
 `cmake:`                                                  |              | Content
 :---------------------------------------------------------|:-------------|:------------------------------------
@@ -2181,6 +2239,8 @@ Use CMake to configure and build the source directory specified in the `cmake:` 
 #### CMake `images:`
 
 The `images:` node lists the output images produced by the native CMake project. Each output type can be specified only once.
+
+Image paths are relative to the context output directory. CMSIS-Toolbox records these files as build outputs but does not define how the native CMake project creates them.
 
 `images:`                                                 |              | Content
 :---------------------------------------------------------|:-------------|:------------------------------------
@@ -2222,7 +2282,7 @@ The CMSIS-Toolbox supports pre-build and post-build steps that utilize external 
 
 Execute an external command for pre or post-build steps used in the `*.csolution.yml` and `*.cproject.yml` files. The `input:` and `output:` files are used for dependency checking and scheduling the execution (as a pre-build or post-build step) during the build process of an application (option `--context` is not used).
 
-Other CMake Build scripts may be integrated into the overall build process using the `executes:` node. Refer to [Build Operation - CMake Integration](build-operation.md#cmake-integration) for an example that utilizes a file converter for website images.
+Other CMake build scripts may be integrated into the overall build process using the `executes:` node. Refer to [Build Operation: CMake Script Integration with `executes:`](build-operation.md#cmake-script-integration-with-executes) for an example that utilizes a file converter for website images.
 
 The structure of the `executes:` node is:
 
@@ -2251,7 +2311,7 @@ Consider the following:
 
 - The `execute:` node is processed by the CMake build system. The order of execution depends on `$input$` and `$output$` files and is evaluated by CMake.
 
-- The `execute:` node is processed only for an application build when no `--context` option is specified. The option `--context-set` can be used.
+- The `execute:` node is processed only for an application build when no `--context` option is specified. The option `--active` can select a target-set for the application build.
 
 - CMake uses Linux-style path names with `/` characters; it does not accept the Windows-style `\` characters in the `run:` node to specify the location of an executable tool.
 
@@ -2646,7 +2706,7 @@ debugger:                         |              | Description
 &nbsp;&nbsp;&nbsp; `args:`        |   Optional   | Miscellaneous [command line arguments](https://arm-software.github.io/AVH/main/simulation/html/using.html).
 
 The following `model:` executables are installed from the [Arm Tools Artifactory](https://www.keil.arm.com/artifacts/#models/arm/avh-fvp). You should use these models in combination with a `pack:` and `device:` as listed under 
-["CMSIS-based projects for AVH FVPs"](https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html). The PATH environment variable of your system can define the path to the FVP executable (then only the `model:` name from the list below is required). Optionally an explicit path can be specified in the `model:` node.
+["CMSIS-based projects for FVPs"](https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html). The PATH environment variable of your system can define the path to the FVP executable (then only the `model:` name from the list below is required). Optionally an explicit path can be specified in the `model:` node.
 
 `model:`                         | Simulation Model Represents
 :--------------------------------|:---------------------------------
@@ -2737,6 +2797,10 @@ This information is used for the [Run and Debug Management](YML-CBuild-Format.md
 &nbsp;&nbsp;&nbsp; `size:`      | **Required** | Size of the memory.
 &nbsp;&nbsp;&nbsp; `pname:`     |   Optional   | Only accessible by the specified processor.
 &nbsp;&nbsp;&nbsp; `algorithm:` |   Optional   | Programming algorithm for download.
+&nbsp;&nbsp;&nbsp; `ram-start:` |   Optional   | Start address of the RAM region used to execute the programming algorithm.
+&nbsp;&nbsp;&nbsp; `ram-size:`  |   Optional   | Maximum RAM size available for executing the programming algorithm.
+
+The `ram-start:` and `ram-size:` values apply when `algorithm:` specifies a custom flash programming algorithm. When they are omitted, CMSIS-Toolbox uses the first memory region marked as default with `rwx` access. If no such region exists, it uses the RAM settings of another programming algorithm defined by the DFP. An error is reported when no suitable default RAM region or algorithm RAM settings are available.
 
 The table lists the letters and their meaning for use in the access attribute string.
 
@@ -2763,16 +2827,19 @@ solution:
           start: 0x40000000
           size: 0x200000
           algorithm: Flash/Ext-Flash.flm       # Programming algorithm
+          ram-start: 0x20000000                # RAM used to execute the algorithm
+          ram-size: 0x20000
 ```
 
 ## MLOps Management
 
-The `mlops:` node can be specified in the `*.csolution.yml` file to provide parameters for an [MLOps system](build-overview.md#mlops-information).
+The `mlops:` node can be specified in the `*.csolution.yml` file to provide parameters for [MLOps integration](build-overview.md#mlops-integration).
 
 When `mlops:` is present, the CMSIS-Toolbox generates an additional information file `*.cbuild-mlops.yml` (in the same folder as the `*.csolution.yml` file) that contains parameters such as processor/NPU configuration, Vela options (for Ethos-U), and information required for building and running tests.
 
 !!! Note
-    This node is intended for workflows where an MLOps system creates **only one ML model at a time**.
+    - This node is intended for workflows where an MLOps system creates **only one ML model at a time**.
+    - String values under `mlops:` support `$variable$` expansion. This allows target-specific `variables:` to adjust the generated MLOps parameters. An undefined variable expands to an empty string, and the corresponding key is emitted without a value in `*.cbuild-mlops.yml`.
 
 ### `mlops:`
 
@@ -2781,7 +2848,7 @@ When `mlops:` is present, the CMSIS-Toolbox generates an additional information 
 &nbsp;&nbsp;&nbsp; `description:`                        |   Optional   | Descriptive text of the ML model under development.
 &nbsp;&nbsp;&nbsp; [`npu:`](#npu)                        |   Optional   | Select the NPU type and MAC configuration.
 &nbsp;&nbsp;&nbsp; [`vela:`](#vela)                      |   Optional   | Vela configuration (only applicable for Ethos-U NPUs).
-&nbsp;&nbsp;&nbsp; [`model:`](#model)                    |   Optional   | Location and name of the ML model layer.
+&nbsp;&nbsp;&nbsp; [`model:`](#model)                    |   Optional   | Location, name, and custom metadata for the ML model layer.
 &nbsp;&nbsp;&nbsp; [`hardware:`](#hardware)              |   Optional   | Select the hardware target-set used for tests.
 &nbsp;&nbsp;&nbsp; [`simulator:`](#simulator)            |   Optional   | Select the simulator target-set used for tests.
 
@@ -2809,20 +2876,19 @@ The `vela:` node is only relevant for Ethos-U NPUs.
 :--------------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `clayer:`                             |   Optional   | Path to the layer (or variable) that contains the ML model under development.
 &nbsp;&nbsp;&nbsp; `name:`                               |   Optional   | Optional model name (default: `Algorithm`); serves as a namespace.
+&nbsp;&nbsp;&nbsp; `<key>:`                              |   Optional   | Custom model metadata. Any additional key/value pair is preserved in the generated `model:` node after variable expansion.
 
 ### `hardware:`
 
 `hardware:`                                              |              | Content
 :--------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `target-type:`                        |   Optional   | Explicit target-type name (default: first `target-types:` entry).
-&nbsp;&nbsp;&nbsp; `target-set:`                         |   Optional   | Explicit target-set name (default: first `target-set:` entry for the selected target-type).
+&nbsp;&nbsp;&nbsp; `target:`                             |   Optional   | Explicit target selection in the format `<target-type>[@<target-set>]` (default: first `target-types:` entry and its first target-set).
 
 ### `simulator:`
 
 `simulator:`                                             |              | Content
 :--------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `target-type:`                        |   Optional   | Explicit target-type name (default: last `target-types:` entry; typically a target-type using an Arm FVP debugger).
-&nbsp;&nbsp;&nbsp; `target-set:`                         |   Optional   | Explicit target-set name (default: first `target-set:` entry for the selected target-type).
+&nbsp;&nbsp;&nbsp; `target:`                             |   Optional   | Explicit target selection in the format `<target-type>[@<target-set>]` (default: last `target-types:` entry and its first target-set; typically a target using an Arm FVP debugger).
 
 **Example:**
 
@@ -2841,10 +2907,10 @@ solution:
     model:
       clayer: $AI-Layer$
       name: RPS
+      framework: ExecuTorch
+      source: $Model-Source$
     hardware:
-      target-type: AppKit-E8-U85
-      target-set: HIL
+      target: AppKit-E8-U85@HIL
     simulator:
-      target-type: SSE-320-U85
-      target-set: FVP-Test
+      target: SSE-320-U85@FVP-Test
 ```

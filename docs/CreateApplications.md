@@ -356,16 +356,16 @@ Adding more components, such as an IoT Client, would be the next step.
 An update of a software pack can be performed with these steps:
 
 - Download new software packs as needed using `cpackget`.
-- Use the command `csolution convert` with the option `--load latest` to update the software packs.
+- Use `csolution update-rte` with the option `--load latest` to select the latest pack versions and update the RTE configuration files.
 
 ```bash
-csolution convert Hello.csolution.yml --load latest
+csolution update-rte Hello.csolution.yml --load latest
 ```
 
 - List potentially outdated configuration files using the command `csolution list configs`.
 
 ```bash
-csolution list configs Hello.csolution.yml --context-set
+csolution list configs Hello.csolution.yml --active <target-type>[@<target-set>]
 ../RTE/CMSIS/RTX_Config.c@5.1.1 (update@5.2.0) from ARM::CMSIS:RTOS2:Keil RTX5&Source@5.8.0
 ../RTE/Device/SSE-300-MPS3/startup_SSE300MPS3.c@1.1.1 (up to date) from ARM::Device:Startup&C Startup@2.0.0
 ../RTE/Device/SSE-300-MPS3/system_SSE300MPS3.c@1.1.1 (up to date) from ARM::Device:Startup&C Startup@2.0.0
