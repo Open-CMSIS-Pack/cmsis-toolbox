@@ -520,14 +520,14 @@
 <p>An update of a software pack can be performed with these steps:</p>
 <ul>
 <li>Download new software packs as needed using <code>cpackget</code>.</li>
-<li>Use the command <code>csolution convert</code> with the option <code>--load latest</code> to update the software packs.</li>
+<li>Use <code>csolution update-rte</code> with the option <code>--load latest</code> to select the latest pack versions and update the RTE configuration files.</li>
 </ul>
-<pre><code class="language-bash">csolution convert Hello.csolution.yml --load latest
+<pre><code class="language-bash">csolution update-rte Hello.csolution.yml --load latest
 </code></pre>
 <ul>
 <li>List potentially outdated configuration files using the command <code>csolution list configs</code>.</li>
 </ul>
-<pre><code class="language-bash">csolution list configs Hello.csolution.yml --context-set
+<pre><code class="language-bash">csolution list configs Hello.csolution.yml --active &lt;target-type&gt;[@&lt;target-set&gt;]
 ../RTE/CMSIS/RTX_Config.c@5.1.1 (update@5.2.0) from ARM::CMSIS:RTOS2:Keil RTX5&amp;Source@5.8.0
 ../RTE/Device/SSE-300-MPS3/startup_SSE300MPS3.c@1.1.1 (up to date) from ARM::Device:Startup&amp;C Startup@2.0.0
 ../RTE/Device/SSE-300-MPS3/system_SSE300MPS3.c@1.1.1 (up to date) from ARM::Device:Startup&amp;C Startup@2.0.0

@@ -91,6 +91,10 @@
     <li class="toctree-l3"><a class="reference internal" href="#cdefault">cdefault:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#solution">solution:</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#image-only-solution">Image-only solution</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#project">project:</a>
     </li>
@@ -117,6 +121,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#select-compiler">select-compiler:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#compiler">compiler:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#compiler-alias">compiler-alias:</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#linker">linker:</a>
     </li>
@@ -544,13 +550,16 @@ vendor::pack-name@~version       # With version equal or higher but the same maj
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
+<li>Pack vendor and pack names are matched case-insensitively. Their spelling does not need to match the <code>&lt;vendor&gt;</code> and <code>&lt;name&gt;</code> values in the PDSC file. Generated build information uses the canonical spelling from the PDSC file.</li>
 <li>When no version is specified, the <strong><code>csolution</code> Project Manager</strong> only loads the latest installed version of a software pack. This also applies when wildcards are used in the <code>pack-name</code>.</li>
+<li>When the same pack is specified both without a version and with an exact version, the exact version is used for both requirements, even if a newer version is installed. This rule applies across all input files of the solution.</li>
 <li>Use <a href="../build-tools/#cpackget-invocation"><strong><code>cpackget</code></strong></a> to download and install new pack versions.</li>
 <li>To accept a <a href="../pack-tools/#versioning">pre-release version of a pack</a> specify the <code>-pre-release</code> label. Use for example <code>- pack: Keil::MDK-Middleware@^8.0.0-0</code> to accept any pre-release version that is higher or equal.</li>
 </ul>
 </div>
 <p><strong>Examples:</strong></p>
 <pre><code class="language-yml">- pack:   ARM::CMSIS@5.9.0                 # 'CMSIS' Pack with version 5.9.0
+- pack:   arm::cmsis@^6.0.0                # Pack vendor and name matching is case-insensitive
 - pack:   Keil::MDK-Middleware@&gt;=7.13.0    # latest version 7.13.0 or higher
 - pack:   Keil::MDK-Middleware@^7.13.0     # latest version 7.13.0 or higher, but lower than 8.0.0
 - pack:   Keil::TFM                        # 'TFM' Pack from vendor Keil, latest installed version
@@ -558,11 +567,12 @@ vendor::pack-name@~version       # With version equal or higher but the same maj
 - pack:   Keil::STM*                       # Software Packs that start with 'STM' from vendor 'Keil'
 - pack:   Keil::MDK-Middleware@&gt;=8.0.0-0   # version 8.0.0 or higher including pre-release versions
 </code></pre>
+<p>For example, if one input file specifies <code>ARM::CMSIS</code> and another specifies <code>ARM::CMSIS@6.1.0</code>, both requirements resolve to <code>ARM::CMSIS@6.1.0</code>; a separately installed version 6.2.0 does not override the exact selection.</p>
 <h3 id="component-name-conventions"><code>component:</code> Name Conventions</h3>
 <p>The <strong><code>csolution</code> Project Manager</strong> uses the following syntax to specify the <code>component:</code> names in the <code>*.yml</code> files.</p>
 <pre><code class="language-yml">[Cvendor::] Cclass [&amp;Cbundle] :Cgroup [:Csub] [&amp;Cvariant] [@[&gt;=]Cversion]
 </code></pre>
-<p>Components are defined using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#element_component">Open-CMSIS-Pack - <code>&lt;component&gt;</code> element</a>. Several parts of a <code>component</code> are optional.  For example, it is possible to just define a component using the <code>Cclass</code> and <code>Cgroup</code> names. All elements of a component name are summarized in the following table.</p>
+<p>Components are defined using the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#element_component">Open-CMSIS-Pack: <code>&lt;component&gt;</code> element</a>. Several parts of a <code>component</code> are optional.  For example, it is possible to just define a component using the <code>Cclass</code> and <code>Cgroup</code> names. All elements of a component name are summarized in the following table.</p>
 <table>
 <thead>
 <tr>
@@ -779,10 +789,10 @@ Using the <a href="#context-map"><code>context-map:</code></a> node, it is possi
 <p><strong>Example:</strong></p>
 <p>Show the different possible context settings of a <code>*.csolution.yml</code> file.</p>
 <pre><code class="language-txt">AWS_MQTT_MutualAuth_SW_Framework&gt;csolution list contexts -s Demo.csolution.yml
-Demo.Debug+AVH
+Demo.Debug+FVP
 Demo.Debug+IP-Stack
 Demo.Debug+WiFi
-Demo.Release+AVH
+Demo.Release+FVP
 Demo.Release+IP-Stack
 Demo.Release+WiFi
 </code></pre>
@@ -828,6 +838,10 @@ can specify a different project and describe, therefore, project dependencies.</
 <tr>
 <td style="text-align: left;"><code>$TargetType$</code></td>
 <td style="text-align: left;"><a href="#target-types">Target-type</a> name of the currently processed project.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>$TargetSet$</code></td>
+<td style="text-align: left;">Name of the target-set selected with <code>--active</code>; expands to <code>default</code> for an unnamed target-set.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>$Compiler$</code></td>
@@ -1020,7 +1034,7 @@ the compiler with specific default controls. The search order for this file is:<
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp; <a href="#misc"><code>misc:</code></a></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Literal tool-specific controls. Refer to <a href="../build-overview/#cdefaultyml">CSolution Project Structure - <code>cdefault.yml</code></a> for an example.</td>
+<td style="text-align: left;">Literal tool-specific controls. Refer to <a href="../build-overview/#cdefaultyml">CSolution Project Structure: <code>cdefault.yml</code></a> for an example.</td>
 </tr>
 </tbody>
 </table>
@@ -1071,6 +1085,11 @@ the compiler with specific default controls. The search order for this file is:<
 <td style="text-align: left;">Overall toolchain selection for this solution.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#compiler-alias"><code>compiler-alias:</code></a></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Accept components and conditions defined for compatible compiler toolchains.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#language-c"><code>language-C:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Set the language standard for C source file compilation.</td>
@@ -1112,8 +1131,8 @@ the compiler with specific default controls. The search order for this file is:<
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#projects"><code>projects:</code></a></td>
-<td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">List of projects that belong to the solution.</td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">List of projects that belong to the solution. May be omitted for an <a href="#image-only-solution">image-only solution</a>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#executes"><code>executes:</code></a></td>
@@ -1129,7 +1148,7 @@ the compiler with specific default controls. The search order for this file is:<
 </table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">solution:
-  created-for: cmsis-toolbox@2.6  # minimum CMSIS-Toolbox version required for project build
+  created-for: cmsis-toolbox@2.14 # minimum CMSIS-Toolbox version required for project build
   cdefault:                       # use default setup of toolchain-specific controls.
   compiler: GCC                   # overwrite compiler definition in 'cdefaults.yml'
 
@@ -1156,6 +1175,23 @@ the compiler with specific default controls. The search order for this file is:<
     - project: /security/TFM.cproject.yml
     - project: /application/MQTT_AWS.cproject.yml
 </code></pre>
+<h4 id="image-only-solution">Image-only solution</h4>
+<p>A solution may configure programming and debugging for images produced by another build system without specifying a <code>projects:</code> node. Such an image-only solution requires a <code>target-set:</code> that lists the image files and debugger configuration. An optional <a href="#executes"><code>executes:</code></a> node can invoke the external build system before the image is used.</p>
+<pre><code class="language-yml">solution:
+  created-for: cmsis-toolbox@2.15.0
+
+  target-types:
+    - type: Hardware
+      device: Vendor::Device
+      target-set:
+        - set:
+          images:
+            - image: ./build/application.elf
+              load: image+symbols
+          debugger:
+            name: CMSIS-DAP@pyOCD
+</code></pre>
+<p>Select the target-set with <code>cbuild &lt;solution&gt;.csolution.yml --active Hardware</code>. The generated <code>*.cbuild-run.yml</code> describes the external images and debugger configuration even though the solution has no project context.</p>
 <h3 id="project"><code>project:</code></h3>
 <p>The <code>project:</code> node is the start of a <code>*.cproject.yml</code> file and can contain the following:</p>
 <table>
@@ -1472,7 +1508,7 @@ the compiler with specific default controls. The search order for this file is:<
 <p class="admonition-title">Note</p>
 <ul>
 <li>This control is only possible at <code>csolution.yml</code> level.</li>
-<li>CMake manages the temporary directory of all projects therefore <code>tmpdir:</code> does not support access sequences.</li>
+<li>With an active target selection, <code>tmpdir:</code> supports the access sequences <a href="#access-sequences"><code>$TargetType$</code></a> and <a href="#access-sequences"><code>$TargetSet$</code></a>.</li>
 </ul>
 </div>
 <table>
@@ -1501,17 +1537,20 @@ the compiler with specific default controls. The search order for this file is:<
 </tr>
 </tbody>
 </table>
-<p>The default setting for the <code>output-dirs:</code> are:</p>
+<p>Without an active target selection, the default settings for <code>output-dirs:</code> are:</p>
 <pre><code class="language-yml">  tmpdir:  tmp                          # All projects use the same temporary directory
   outdir:  $SolutionDir()$/out/$TargetType$/$BuildType$
+</code></pre>
+<p>With <code>--active</code>, the default temporary directory separates the selected target type and target-set. <code>$TargetSet$</code> expands to the value of <code>set:</code> or to <code>default</code> for an unnamed target-set:</p>
+<pre><code class="language-yml">  tmpdir:  tmp/$TargetType$/$TargetSet$
 </code></pre>
 <p>With the tool option <code>--output</code>, a top-level prefix directory can be added. The effective <code>outdir:</code> with the command below is: <code>MyOut/out/$TargetType$/$BuildType$</code>.</p>
 <pre><code class="language-bash">cbuild &lt;name&gt;.csolution.yml --output MyOut
 </code></pre>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">output-dirs:
-  tmpdir: ./tmp2                         # relative path to csolution.yml file
-  outdir: ./out/$Project$/$TargetType$   # $BuildType$ no longer part of the outdir
+  tmpdir: ./tmp2/$TargetType$/$TargetSet$ # relative path to csolution.yml file
+  outdir: ./out/$Project$/$TargetType$    # $BuildType$ no longer part of the outdir
 </code></pre>
 <h3 id="generators"><code>generators:</code></h3>
 <p>Allows control of the directory structure for generator output files.</p>
@@ -1706,12 +1745,39 @@ Optionally the compiler can have a version number specification.</p>
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Refer to <a href="../installation/#compiler-toolchains">Installation - Compiler Toolchains</a> for details about the supported compilers.</p>
+<p>Refer to <a href="../installation/#compiler-toolchains">Installation: Compiler Toolchains</a> for details about the supported compilers.</p>
 </div>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">compiler: GCC              # Select GCC Compiler
 </code></pre>
 <pre><code class="language-yml">compiler: AC6@6.18.0       # Select Arm Compiler version 6.18.0
+</code></pre>
+<h3 id="compiler-alias"><code>compiler-alias:</code></h3>
+<p>Declares a compiler toolchain that is compatible with the toolchain selected by <a href="#compiler"><code>compiler:</code></a>. This allows the solution to use software components and other pack content whose conditions specify the aliased compiler. The selected compiler still performs the build.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>compiler-alias:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>compiler-alias:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Compiler ID that is compatible with the selected compiler.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>compiler-alias:</code> is supported only at the <a href="#solution"><code>solution:</code></a> level. The alias uses a compiler ID without a version.</p>
+</div>
+<p><strong>Example:</strong> Use the XC compiler and accept pack content defined for GCC:</p>
+<pre><code class="language-yml">solution:
+  compiler: XC
+  compiler-alias: GCC
 </code></pre>
 <h3 id="linker"><code>linker:</code></h3>
 <p>The <code>linker:</code> node specifies an explicit Linker Script and/or memory regions header file.  It can be applied in <code>*.cproject.yml</code> and <code>*.clayer.yml</code> files.
@@ -2064,7 +2130,7 @@ Refer to <a href="../build-overview/#linker-script-management">Linker Script Man
 <p>This feature is not available with the IAR compiler.</p>
 </div>
 <h3 id="link"><code>link:</code></h3>
-<p>Apply link attributes to library archive files. This feature is only available with the LLVM and GCC compiler. </p>
+<p>Apply a link attribute to an individual library archive file. Use <code>whole-archive</code> for libraries that rely on static initialization, registration, or other objects that do not satisfy an unresolved symbol. It prevents the linker from discarding those objects while leaving normal archive selection unchanged for other libraries. This feature is available with the CLANG and GCC compilers.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For other compilers (AC6, IAR, etc.) the <code>link:</code> node is ignored.</p>
@@ -3073,7 +3139,7 @@ Refer to the section <a href="../build-overview/#configure-related-projects">"Co
 </ul>
 </div>
 <h4 id="load"><code>load:</code></h4>
-<p>Specifies the load mode for an image file. This information is used by programmers and debug tools.</p>
+<p>Specifies the load mode for an <code>image:</code> file or the output of a <code>project-context:</code>. This information is used by programmers and debug tools and overrides the default inferred from the file type.</p>
 <table>
 <thead>
 <tr>
@@ -3100,6 +3166,7 @@ Refer to the section <a href="../build-overview/#configure-related-projects">"Co
 </tr>
 </tbody>
 </table>
+<p>For example, set <code>load: none</code> on a <code>project-context:</code> when its output is embedded in another project image and must not be programmed separately.</p>
 <p><strong>Example:</strong></p>
 <p>On devices with two flash banks that can be swapped (for example some STM32 devices), you may want to program a new firmware version into the inactive bank while keeping the link address at the normal execution base (so symbols match after a bank swap). With pyOCD this can be achieved by loading a <code>.bin</code> with a <code>load-offset:</code> while loading only symbols from the related <code>project-context:</code>.</p>
 <pre><code class="language-yml">target-types:
@@ -3303,7 +3370,7 @@ Refer to the section <a href="../build-overview/#configure-related-projects">"Co
         - TFM.Release+LibMode              # for project TFM use build-type: Release, target-type: LibMode
         - Boot+Flash                       # for project Boot use target-type: Flash
       board: B-U585I-IOT02A
-    - type: AVH                            # When applying target-type: 'AVH':
+    - type: FVP                            # When applying target-type: 'FVP':
       context-map:
         - context: TFM.Release+LibMode     # for project TFM use build-type: Release, target-type: LibMode
       device: ARM::SSE-300-MPS3
@@ -3865,7 +3932,7 @@ target-type and/or build-type using <a href="#for-context"><code>for-context:</c
         - +WiFi
     - layer: ./Socket/VSocket/Socket.clayer.yml
       for-context:
-        - +AVH
+        - +FVP
 
     # Board
     - layer: ./Board/IMXRT1050-EVKB/Board.clayer.yml
@@ -3877,7 +3944,7 @@ target-type and/or build-type using <a href="#for-context"><code>for-context:</c
         - +WiFi
     - layer: ./Board/AVH_MPS3_Corstone-300/Board.clayer.yml
       for-context:
-        - +AVH
+        - +FVP
 </code></pre>
 <h4 id="layer-type"><code>layer:</code> <code>type:</code></h4>
 <p>The <code>layer:</code> - <code>type:</code> is used in combination with the meta-data of the <a href="#connections"><code>connections:</code></a> to check the list of available <code>*.clayer.yml</code> files for matching layers. Instead of an explicit <code>layer:</code> node that specifies a <code>*.clayer.yml</code> file, the <code>type:</code> is used to search for matching layers with the <code>csolution</code> command <code>list layers</code>.</p>
@@ -4014,11 +4081,11 @@ target-type and/or build-type using <a href="#for-context"><code>for-context:</c
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The name format for a software component is described under  <a href="#component-name-conventions">Name Conventions - Component Name Conventions</a>.</p>
+<p>The name format for a software component is described under <a href="#component-name-conventions">Name Conventions: Component Name Conventions</a>.</p>
 </div>
 <h3 id="instances"><code>instances:</code></h3>
 <p>Allows to add multiple instances of a component and actually applies to configuration files.
-For detailed description refer to <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances">Open-CMSIS-Pack specification - Component Instances</a></p>
+For a detailed description, refer to <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_components_pg.html#Component_Instances">Open-CMSIS-Pack specification: Component Instances</a>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  components:
     - component: USB:Device
@@ -4097,9 +4164,10 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p><strong>Example:</strong></p>
 <p><a href="https://github.com/Arm-Examples/CMSIS-Zephyr">Arm-Examples/CMSIS-Zephyr</a> explains the setup of a Zephyr project.</p>
 <h2 id="cmake-build">CMake Build</h2>
-<p>Enable native CMake project build orchestration and add its output images to the <em>csolution project</em>.</p>
+<p>Enable native CMake project build orchestration and add its output images to the <em>csolution project</em>. This project type is supported with CMSIS-Toolbox 2.15 or higher and does not require a <code>*.cproject.yml</code> file.</p>
 <h3 id="cmake"><code>cmake:</code></h3>
 <p>Use CMake to configure and build the source directory specified in the <code>cmake:</code> node. Relative paths are based on the directory of the <code>*.csolution.yml</code> file.</p>
+<p>The <code>project:</code>, <code>west:</code>, and <code>cmake:</code> descriptors are mutually exclusive within one <code>projects:</code> list entry. A solution may combine separate entries of all three types.</p>
 <table>
 <thead>
 <tr>
@@ -4148,6 +4216,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </table>
 <h4 id="cmake-images">CMake <code>images:</code></h4>
 <p>The <code>images:</code> node lists the output images produced by the native CMake project. Each output type can be specified only once.</p>
+<p>Image paths are relative to the context output directory. CMSIS-Toolbox records these files as build outputs but does not define how the native CMake project creates them.</p>
 <table>
 <thead>
 <tr>
@@ -4198,7 +4267,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </ul>
 <h3 id="executes"><code>executes:</code></h3>
 <p>Execute an external command for pre or post-build steps used in the <code>*.csolution.yml</code> and <code>*.cproject.yml</code> files. The <code>input:</code> and <code>output:</code> files are used for dependency checking and scheduling the execution (as a pre-build or post-build step) during the build process of an application (option <code>--context</code> is not used).</p>
-<p>Other CMake Build scripts may be integrated into the overall build process using the <code>executes:</code> node. Refer to <a href="../build-operation/#cmake-integration">Build Operation - CMake Integration</a> for an example that utilizes a file converter for website images.</p>
+<p>Other CMake build scripts may be integrated into the overall build process using the <code>executes:</code> node. Refer to <a href="../build-operation/#cmake-script-integration-with-executes">Build Operation: CMake Script Integration with <code>executes:</code></a> for an example that utilizes a file converter for website images.</p>
 <p>The structure of the <code>executes:</code> node is:</p>
 <table>
 <thead>
@@ -4280,7 +4349,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <p>The <code>execute:</code> node is processed by the CMake build system. The order of execution depends on <code>$input$</code> and <code>$output$</code> files and is evaluated by CMake.</p>
 </li>
 <li>
-<p>The <code>execute:</code> node is processed only for an application build when no <code>--context</code> option is specified. The option <code>--context-set</code> can be used.</p>
+<p>The <code>execute:</code> node is processed only for an application build when no <code>--context</code> option is specified. The option <code>--active</code> can select a target-set for the application build.</p>
 </li>
 <li>
 <p>CMake uses Linux-style path names with <code>/</code> characters; it does not accept the Windows-style <code>\</code> characters in the <code>run:</code> node to specify the location of an executable tool.</p>
@@ -4806,7 +4875,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </tbody>
 </table>
 <p>The following <code>model:</code> executables are installed from the <a href="https://www.keil.arm.com/artifacts/#models/arm/avh-fvp">Arm Tools Artifactory</a>. You should use these models in combination with a <code>pack:</code> and <code>device:</code> as listed under 
-<a href="https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html">"CMSIS-based projects for AVH FVPs"</a>. The PATH environment variable of your system can define the path to the FVP executable (then only the <code>model:</code> name from the list below is required). Optionally an explicit path can be specified in the <code>model:</code> node.</p>
+<a href="https://arm-software.github.io/AVH/main/simulation/html/avh_fvp_cmsis.html">"CMSIS-based projects for FVPs"</a>. The PATH environment variable of your system can define the path to the FVP executable (then only the <code>model:</code> name from the list below is required). Optionally an explicit path can be specified in the <code>model:</code> node.</p>
 <table>
 <thead>
 <tr>
@@ -5022,8 +5091,19 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Programming algorithm for download.</td>
 </tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ram-start:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Start address of the RAM region used to execute the programming algorithm.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ram-size:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Maximum RAM size available for executing the programming algorithm.</td>
+</tr>
 </tbody>
 </table>
+<p>The <code>ram-start:</code> and <code>ram-size:</code> values apply when <code>algorithm:</code> specifies a custom flash programming algorithm. When they are omitted, CMSIS-Toolbox uses the first memory region marked as default with <code>rwx</code> access. If no such region exists, it uses the RAM settings of another programming algorithm defined by the DFP. An error is reported when no suitable default RAM region or algorithm RAM settings are available.</p>
 <p>The table lists the letters and their meaning for use in the access attribute string.</p>
 <table>
 <thead>
@@ -5071,13 +5151,18 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
           start: 0x40000000
           size: 0x200000
           algorithm: Flash/Ext-Flash.flm       # Programming algorithm
+          ram-start: 0x20000000                # RAM used to execute the algorithm
+          ram-size: 0x20000
 </code></pre>
 <h2 id="mlops-management">MLOps Management</h2>
-<p>The <code>mlops:</code> node can be specified in the <code>*.csolution.yml</code> file to provide parameters for an <a href="../build-overview/#mlops-information">MLOps system</a>.</p>
+<p>The <code>mlops:</code> node can be specified in the <code>*.csolution.yml</code> file to provide parameters for <a href="../build-overview/#mlops-integration">MLOps integration</a>.</p>
 <p>When <code>mlops:</code> is present, the CMSIS-Toolbox generates an additional information file <code>*.cbuild-mlops.yml</code> (in the same folder as the <code>*.csolution.yml</code> file) that contains parameters such as processor/NPU configuration, Vela options (for Ethos-U), and information required for building and running tests.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This node is intended for workflows where an MLOps system creates <strong>only one ML model at a time</strong>.</p>
+<ul>
+<li>This node is intended for workflows where an MLOps system creates <strong>only one ML model at a time</strong>.</li>
+<li>String values under <code>mlops:</code> support <code>$variable$</code> expansion. This allows target-specific <code>variables:</code> to adjust the generated MLOps parameters. An undefined variable expands to an empty string, and the corresponding key is emitted without a value in <code>*.cbuild-mlops.yml</code>.</li>
+</ul>
 </div>
 <h3 id="mlops"><code>mlops:</code></h3>
 <table>
@@ -5107,7 +5192,7 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#model"><code>model:</code></a></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Location and name of the ML model layer.</td>
+<td style="text-align: left;">Location, name, and custom metadata for the ML model layer.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#hardware"><code>hardware:</code></a></td>
@@ -5196,6 +5281,11 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Optional model name (default: <code>Algorithm</code>); serves as a namespace.</td>
 </tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>&lt;key&gt;:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Custom model metadata. Any additional key/value pair is preserved in the generated <code>model:</code> node after variable expansion.</td>
+</tr>
 </tbody>
 </table>
 <h3 id="hardware"><code>hardware:</code></h3>
@@ -5209,14 +5299,9 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target-type:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Explicit target-type name (default: first <code>target-types:</code> entry).</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target-set:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Explicit target-set name (default: first <code>target-set:</code> entry for the selected target-type).</td>
+<td style="text-align: left;">Explicit target selection in the format <code>&lt;target-type&gt;[@&lt;target-set&gt;]</code> (default: first <code>target-types:</code> entry and its first target-set).</td>
 </tr>
 </tbody>
 </table>
@@ -5231,14 +5316,9 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target-type:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Explicit target-type name (default: last <code>target-types:</code> entry; typically a target-type using an Arm FVP debugger).</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target-set:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Explicit target-set name (default: first <code>target-set:</code> entry for the selected target-type).</td>
+<td style="text-align: left;">Explicit target selection in the format <code>&lt;target-type&gt;[@&lt;target-set&gt;]</code> (default: last <code>target-types:</code> entry and its first target-set; typically a target using an Arm FVP debugger).</td>
 </tr>
 </tbody>
 </table>
@@ -5257,12 +5337,12 @@ This information is used for the <a href="../YML-CBuild-Format/#run-and-debug-ma
     model:
       clayer: $AI-Layer$
       name: RPS
+      framework: ExecuTorch
+      source: $Model-Source$
     hardware:
-      target-type: AppKit-E8-U85
-      target-set: HIL
+      target: AppKit-E8-U85@HIL
     simulator:
-      target-type: SSE-320-U85
-      target-set: FVP-Test
+      target: SSE-320-U85@FVP-Test
 </code></pre>
               
             </div>

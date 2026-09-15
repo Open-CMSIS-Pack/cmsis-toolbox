@@ -243,10 +243,10 @@ This chapter describes how to use the <a href="https://pyocd.io/">pyOCD</a> Debu
 <p>Other manual sections describe how to configure debuggers:</p>
 <ul>
 <li><a href="../build-overview/#run-and-debug-configuration">Run and Debug Configuration</a> explains overall structure and how projects and images are configured.</li>
-<li><a href="../YML-Input-Format/#pyocd">Debugger Configuration - pyOCD</a> contains details about the options that are specific to pyOCD.</li>
+<li><a href="../YML-Input-Format/#pyocd">Debugger Configuration: pyOCD</a> contains details about the options that are specific to pyOCD.</li>
 </ul>
 <h2 id="extended-options">Extended Options</h2>
-<p>The section <a href="../YML-Input-Format/#pyocd">CSolution Project Format - pyOCD</a> contains the pyOCD configuration for typical systems.</p>
+<p>The section <a href="../YML-Input-Format/#pyocd">CSolution Project Format: pyOCD</a> contains the pyOCD configuration for typical systems.</p>
 <p>Extended YAML options are required to configure specific use-cases or overwrite information that is typically provided in the <a href="../build-overview/#overview-of-operation">DFP</a>.</p>
 <p>CMSIS-DAP based Debug Adapters implement <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#pdsc_SequenceNameEnum_pg">debug access sequences</a> that are configured in the <a href="../build-overview/#overview-of-operation">DFP for a device</a>.</p>
 <h3 id="gdbserver"><code>gdbserver:</code></h3>
@@ -942,7 +942,7 @@ For more complex multi-core systems, the clock is normally derived from the syst
       TraceD3_Pin: 0x00040006  # Pin PE6
 </code></pre>
 <h2 id="minimal-setup">Minimal Setup</h2>
-<p>pyOCD uses the information from the CMSIS system as explained under <a href="../YML-CBuild-Format/#run-and-debug-management">Build Information Files - Run and Debug Management</a>. The following section shows a minimal setup for configuring pyOCD using a <code>*.cbuild-run.yml</code> file.</p>
+<p>pyOCD uses the information from the CMSIS system as explained under <a href="../YML-CBuild-Format/#run-and-debug-management">Build Information Files: Run and Debug Management</a>. The following section shows a minimal setup for configuring pyOCD using a <code>*.cbuild-run.yml</code> file.</p>
 <p><strong>Example:</strong> MySetup.csolution.yml</p>
 <pre><code class="language-yml">solution:
   packs:
@@ -1489,7 +1489,7 @@ processed by pyOCD to present debug views and decode register reads/writes.</p>
 </code></pre>
 <h3 id="debugger"><code>debugger:</code></h3>
 <p>Contains the user's debugger configuration settings. The available options are described in detail in the
-CSolution Project Format section <a href="../YML-Input-Format/#debugger-for-pyocd">Debugger Configuration - pyOCD</a>
+CSolution Project Format section <a href="../YML-Input-Format/#debugger-for-pyocd">Debugger Configuration: pyOCD</a>
 and pyOCD Debugger <a href="#extended-options">Extended Options</a>.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  debugger:
@@ -1985,7 +1985,7 @@ the DFP. If the information is not provided in the <code>*.cbuild-run.yml</code>
       - tracebuffer: MTB
 </code></pre>
 <h2 id="debug-access-sequence-usage-for-pyocd-commands">Debug Access Sequence Usage for pyOCD Commands</h2>
-<p>The sequence diagrams below show the usage of the debug access sequences for pyOCD commands. The specification <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences">Open-CMSIS-Pack - Usage of debug access sequences</a> describes the following sequence blocks. pyOCD uses these concepts, but implements these deviations:</p>
+<p>The sequence diagrams below show the usage of the debug access sequences for pyOCD commands. The specification <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#usage_of_sequences">Open-CMSIS-Pack: Usage of debug access sequences</a> describes the following sequence blocks. pyOCD uses these concepts, but implements these deviations:</p>
 <ul>
 <li><strong>Connect Debugger to Device</strong>:  <ul>
 <li>For the <a href="#connect"><code>connect:</code></a> mode <code>attach</code>, no reset or halt operations are issued.</li>

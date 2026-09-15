@@ -86,6 +86,12 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#list-devices-boards-or-npus">List Devices, Boards or NPUs</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#list-debug-adapters">List Debug Adapters</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#list-examples">List Examples</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#list-project-templates">List Project Templates</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#list-unresolved-dependencies">List Unresolved Dependencies</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#create-build-information">Create Build Information</a>
@@ -94,7 +100,7 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#use-generators">Use Generators</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#use-context-set">Use context set</a>
+    <li class="toctree-l3"><a class="reference internal" href="#legacy-context-set">Legacy Context Set</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#list-configuration-files">List configuration files</a>
     </li>
@@ -133,6 +139,8 @@
     <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a>
     </li>
         </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#static-code-analysis">Static Code Analysis</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#ide-usage">IDE Usage</a>
         <ul>
@@ -248,6 +256,7 @@ Commands:
   help        Help about any command
   list        List information about contexts, environment, targets and toolchains
   setup       Generate project data for IDE environment
+  zephyr      Generate Zephyr module files from clayer input
 
 Options:
   -a, --active arg         Select active target: &lt;target-type&gt;[@&lt;target-set&gt;]
@@ -321,7 +330,7 @@ Options:
   -d, --debug                   Enable debug messages
   -D, --dry-run                 Enable dry-run
   -e, --export arg              Set suffix for exporting &lt;context&gt;&lt;suffix&gt;.cprj retaining only specified versions
-  -f, --filter arg [...]        Filter output by word or &quot;string&quot;; repeat the option for multiple filters
+  -f, --filter arg [...]        Filter output by word or string; repeat the option for multiple filters
   -g, --generator arg           Code generator identifier
   -l, --load arg                Set policy for packs loading [latest | all | required]
   -L, --clayer-path arg         Set search path for external clayers
@@ -334,13 +343,12 @@ Options:
   -t, --toolchain arg           Selection of the toolchain used in the project optionally with version
   -v, --verbose                 Enable verbose messages
   -V, --version                 Print version|
-c
+
 Use 'csolution &lt;command&gt; -h' for more information about a command.
 </code></pre>
 <h2 id="cpackget-invocation"><code>cpackget</code> Invocation</h2>
 <p>Manage the installation of <em>software packs</em> on the host computer.</p>
-<pre><code class="language-txt">cpackget version 2.2.0
- (C) 2021-2023 Linaro, 2024-2026 Arm Ltd.
+<pre><code class="language-txt">cpackget version 2.2.1 (C) 2021-2023 Linaro, 2024-2026 Arm Ltd.
 
 Usage:
   cpackget [command] [flags]
@@ -371,6 +379,7 @@ Flags:
 
 Use &quot;cpackget [command] --help&quot; for more information about a command and command-specific flags.
 </code></pre>
+<p>By default, <code>cpackget</code> reports warnings, errors, and a concise summary of operations and progress. Use <code>--verbose</code> to include debugging details or <code>--quiet</code> to print only error messages.</p>
 <h2 id="command-examples">Command Examples</h2>
 <h3 id="list-environment">List Environment</h3>
 <p>Print the settings of the host development environment to verify the correctness of the tool installation.</p>
@@ -442,6 +451,41 @@ cpackget add -f packs.txt
 csolution list boards --filter NXP
 csolution list npus --filter Ethos-U55 --filter 128MACs
 </code></pre>
+<h3 id="list-debug-adapters">List Debug Adapters</h3>
+<p>List the debug adapters registered with the CMSIS-Toolbox. The names in the default output are the values accepted by <a href="../YML-Input-Format/#debugger"><code>debugger: name:</code></a>. Use <code>--verbose</code> to show aliases that are also accepted, and <code>--filter</code> to restrict the list.</p>
+<pre><code class="language-shell">csolution list debuggers
+csolution list debuggers --filter pyOCD --verbose
+</code></pre>
+<p>Example output:</p>
+<pre><code class="language-text">CMSIS-DAP@pyOCD
+  CMSIS-DAP
+  DAP-Link
+ST-Link@pyOCD
+  ST-LINK
+</code></pre>
+<h3 id="list-examples">List Examples</h3>
+<p>List examples provided by the installed software packs. Each entry identifies the example and its originating pack. Use one or more <code>--filter</code> options to find matching examples. The <code>--verbose</code> option adds the description, documentation, supported development environments, source folder, load file, and supported boards when that information is provided by the pack.</p>
+<pre><code class="language-shell">csolution list examples
+csolution list examples --filter Blinky
+csolution list examples --filter Blinky --filter STM32 --verbose
+</code></pre>
+<p>Example output:</p>
+<pre><code class="language-text">Blinky (Keil::B-U585I-IOT02A_BSP@3.0.0)
+  description: CMSIS-RTOS2 Blinky example with VIO
+  environment: csolution
+    load: &lt;pack-root&gt;/Keil/B-U585I-IOT02A_BSP/3.0.0/Examples/Blinky/Blinky.csolution.yml
+</code></pre>
+<h3 id="list-project-templates">List Project Templates</h3>
+<p>List project templates provided by installed software packs. Each entry identifies the template and its originating pack. Use <code>--filter</code> to restrict the list. The <code>--verbose</code> option adds the template description, directory, and <code>*.csolution.yml</code> file.</p>
+<pre><code class="language-shell">csolution list templates
+csolution list templates --filter CubeMX --verbose
+</code></pre>
+<p>Example output:</p>
+<pre><code class="language-text">CubeMX Basic solution (Keil::STM32U5xx_DFP@3.2.0)
+  description: Create a CubeMX basic solution with project
+  path: &lt;pack-root&gt;/Keil/STM32U5xx_DFP/3.2.0/Templates/CubeMX
+  file: &lt;pack-root&gt;/Keil/STM32U5xx_DFP/3.2.0/Templates/CubeMX/CubeMX.csolution.yml
+</code></pre>
 <h3 id="list-unresolved-dependencies">List Unresolved Dependencies</h3>
 <p>Device, board, and software components are specified as part of the <code>*.csolution.yml</code> and <code>*.cproject.yml</code> files. Print a list of unresolved project dependencies. The list can be filtered by words provided with the option <code>--filter</code>:</p>
 <pre><code class="language-shell">csolution list dependencies mysolution.csolution.yml [-f &quot;WORDS&quot; | -f WORD [-f WORD]...]
@@ -451,7 +495,7 @@ csolution list npus --filter Ethos-U55 --filter 128MACs
 <pre><code class="language-shell">csolution convert example.csolution.yml
 </code></pre>
 <p>Convert specific contexts of a <code>*.csolution.yml</code> file into build information files.</p>
-<pre><code class="language-shell">csolution convert SimpleTZ.csolution.yml -c CM33_s.Debug -c CM33_ns.Release+AVH
+<pre><code class="language-shell">csolution convert SimpleTZ.csolution.yml -c CM33_s.Debug -c CM33_ns.Release+FVP
 </code></pre>
 <h3 id="list-compatible-layers">List Compatible Layers</h3>
 <p>List compatible layers for <code>./fxls8962_normal_spi.csolution.yml</code> and the context <code>*+frdmk22f_agmp03</code>. This contains also setup information.</p>
@@ -465,13 +509,12 @@ csolution list npus --filter Ethos-U55 --filter 128MACs
 <p>Run a generator (in this case, STM32CubeMX) for a specific project context.  Note that the context can be omitted when the same generator output directory is used.</p>
 <pre><code class="language-shell">csolution run -g CubeMX mysolution.csolution.yml -c Blinky.Debug+STM32L4
 </code></pre>
-<h3 id="use-context-set">Use context set</h3>
+<h3 id="legacy-context-set">Legacy Context Set</h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>A context set is no longer recommended. Use a <a href="../build-overview/#working-with-target-set">target-set</a> instead.</p>
+<p>Use a <a href="../build-overview/#working-with-target-set"><code>target-set:</code></a> and <code>--active</code> for new projects. Context sets are retained for legacy projects.</p>
 </div>
-<p>When working with <a href="../build-overview/#configure-related-projects">multiple related projects</a>, it might be necessary to combine different build types for debugging and downloading in the target hardware. The option <code>--context-set</code> allows you to save and reuse the selected <code>--context</code> options.</p>
-<p>Write the selected <code>--context</code> options to the file <code>SimpleTZ.cbuild-set.yml</code>. Refer to <a href="../YML-CBuild-Format/#cbuild-setyml">file structure of <code>*.cbuild-set.yml</code></a> for details.</p>
+<p>The option <code>--context-set</code> saves selected <code>--context</code> options in <code>SimpleTZ.cbuild-set.yml</code> or reuses that selection. Refer to <a href="../YML-CBuild-Format/#cbuild-setyml">file structure of <code>*.cbuild-set.yml</code></a> for details.</p>
 <pre><code class="language-shell">cbuild SimpleTZ.csolution.yml -S -c CM33_s.Release -c CM33_ns.Debug
 </code></pre>
 <p>Read the previously stored <code>--context</code> setup from the file <code>SimpleTZ.cbuild-set.yml</code>.</p>
@@ -483,7 +526,7 @@ csolution list npus --filter Ethos-U55 --filter 128MACs
 </code></pre>
 <h3 id="setup-project-for-ide">Setup Project (for IDE)</h3>
 <p>In an IDE environment, this command downloads missing packs creates <a href="../YML-CBuild-Format/">build information files</a>, and generates the file <code>compile_commands.json</code> for IntelliSense. Refer to <a href="../build-operation/#details-of-the-setup-mode">cbuild setup command</a> for more information.</p>
-<pre><code class="language-shell">cbuild setup example.csolution.yml --context-set --packs
+<pre><code class="language-shell">cbuild setup example.csolution.yml --active &lt;target-type&gt;[@&lt;target-set&gt;] --packs
 </code></pre>
 <h3 id="specify-cmsis-pack-root-directory">Specify CMSIS-Pack root directory</h3>
 <p><code>cpackget</code> is compatible with other CMSIS-Pack management tools, such as the Pack Installer, available in MDK or Eclipse
@@ -491,7 +534,7 @@ variants. There are two ways to specify the CMSIS-PACK root directory:</p>
 <ol>
 <li>
 <p>With the <code>CMSIS_PACK_ROOT</code> environment variable.
-   Refer to <a href="../installation/#environment-variables">Installation - Environment Variables</a>.</p>
+   Refer to <a href="../installation/#environment-variables">Installation: Environment Variables</a>.</p>
 </li>
 <li>
 <p>With the option <code>--pack-root &lt;path&gt;</code>, for example:</p>
@@ -520,7 +563,7 @@ of available software packs. To initialize the CMSIS-Pack root directory, run th
 <tbody>
 <tr>
 <td style="text-align: left;"><code>.Web</code></td>
-<td style="text-align: left;"><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#packIndexFile"><strong>Pack Index File</strong></a> of a public web service and <code>*.PDSC</code> files.</td>
+<td style="text-align: left;"><a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#packIndexFile"><strong>Pack Index File</strong></a> of a public web service and cached <code>*.PDSC</code> files for packs that have been requested.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>.Download</code></td>
@@ -532,8 +575,9 @@ of available software packs. To initialize the CMSIS-Pack root directory, run th
 </tr>
 </tbody>
 </table>
-<p>The <code>cpackget init</code> command <a href="#initialize-cmsis-pack-root-directory">initializes the CMSIS-Pack root directory</a> but does not download PDSC files. Combined with the option <code>--all-pdsc-files</code> it also downloads all PDSC files that are available in the public index.</p>
-<pre><code class="language-shell">cpackget init https://www.keil.com/pack/indexpidx --all-pdsc-files
+<p>The <code>cpackget init</code> command <a href="#initialize-cmsis-pack-root-directory">initializes the CMSIS-Pack root directory</a> but does not download PDSC files. Combined with the option <code>--all-pdsc-files</code> it also downloads the PDSC files available in the public index, except those of deprecated packs. Add <code>--deprecated</code> to include deprecated PDSC files.</p>
+<pre><code class="language-shell">cpackget init https://www.keil.com/pack/index.pidx --all-pdsc-files
+cpackget init https://www.keil.com/pack/index.pidx --all-pdsc-files --deprecated
 </code></pre>
 <h3 id="update-pack-index">Update Pack Index</h3>
 <p>When new software packs are available on a public web service, the local copy of the <strong>Pack Index File</strong> requires an update. To update the <strong>Pack Index File</strong>, run:</p>
@@ -542,13 +586,15 @@ of available software packs. To initialize the CMSIS-Pack root directory, run th
 <p>The option <code>--sparse</code> avoids updating the PDSC files and improves, therefore, the speed.</p>
 <pre><code class="language-shell">cpackget update-index --sparse
 </code></pre>
-<p>Use the option <code>--all-pdsc-files</code> to download all PDSC files available in the public index.</p>
+<p>Use the option <code>--all-pdsc-files</code> to download all current PDSC files available in the public index. PDSC files of deprecated packs are excluded by default; add <code>--deprecated</code> to include them.</p>
 <pre><code class="language-shell">cpackget update-index --all-pdsc-files
+cpackget update-index --all-pdsc-files --deprecated
 </code></pre>
 <h3 id="add-packs">Add packs</h3>
 <p>There are different ways to install software packs.</p>
 <h4 id="install-public-packs">Install public packs</h4>
 <p>The commands below install software packs from a public web service. The available packs along with download URL and version information are listed in the <strong>Pack Index File</strong>.</p>
+<p>When adding a public pack, <code>cpackget</code> updates the public index when its daily update is due. It downloads or refreshes only the PDSC files required for the requested pack and its dependencies; a local copy of every PDSC file listed in the public index is not required. Other PDSC files already cached in <code>.Web</code> are not refreshed by this operation. The default output summarizes the index operation and reports progress for PDSC files that were actually updated. It does not check local pack repositories during this automatic update. If downloading a valid new <code>index.pidx</code> fails, <code>cpackget</code> issues a warning and uses the existing index, when available.</p>
 <p>Check if a pack is installed. If not, install the latest version of a public software pack:</p>
 <pre><code class="language-shell">cpackget add Vendor.PackName                   # or
 cpackget add Vendor::PackName
@@ -614,6 +660,7 @@ export HTTPS_PROXY=https://my-https-proxy # proxy used for HTTPS requests
 itself:</p>
 <pre><code class="language-shell">cpackget add &lt;path&gt;/Vendor.PackName.x.y.z.pack
 </code></pre>
+<p>For a local <code>*.pack</code> file, <code>cpackget</code> automatically skips the public-index update. The installation therefore works without a network connection; no offline option is required. Pack dependencies must already be locally available, or the pack can be installed with <code>--no-dependencies</code> when resolving them is not required.</p>
 <p>A software pack that is available for download via a URL can be downloaded and installed with:</p>
 <pre><code class="language-shell">cpackget add https://vendor.com/example/Vendor.PackName.x.y.z.pack
 </code></pre>
@@ -633,9 +680,13 @@ pack. There are also a couple of flags that allow listing extra information.</p>
 <p>List all cached packs that are present in the <code>.Download/</code> folder:</p>
 <pre><code class="language-shell">cpackget list --cached
 </code></pre>
-<p>List all packs present in the local copy of the <strong>Pack Index File</strong> (<code>index.pidx</code>):</p>
+<p>List all non-deprecated packs present in the local copy of the <strong>Pack Index File</strong> (<code>index.pidx</code>):</p>
 <pre><code class="language-shell">cpackget list --public
 </code></pre>
+<p>List only deprecated packs in the public index:</p>
+<pre><code class="language-shell">cpackget list --deprecated
+</code></pre>
+<p>Deprecated packs and their PDSC files are excluded from normal public listings and bulk PDSC downloads, but a deprecated pack can still be installed by specifying its pack ID explicitly.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><a href="#update-pack-index">Update Pack Index File</a> before using the <code>list</code> command to list all public software packs.</p>
@@ -656,11 +707,15 @@ cpackget rm Vendor::PackName
 <p>Remove a pack that was <a href="#install-a-repository">installed via a repository</a>.</p>
 <pre><code class="language-shell">cpackget rm Vendor.PackName.pdsc
 </code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Remove a local pack with <code>cpackget rm</code> before deleting or moving its PDSC file.</p>
+</div>
 <h2 id="devops-usage">DevOps Usage</h2>
-<p>The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The <code>./out</code> directory contains all build artifacts of an application for execution on physical hardware or simulation models. <a href="https://github.com/ARM-software/AVH">Arm Virtual Hardware - Fixed Virtual Platforms (AVH FVP)</a> enables unit tests and integration tests with simulation models and various virtual interfaces. Using <a href="../build-overview/#software-layers">software layers</a> allows, for example, to test on physical hardware or AVH-FVP simulation models. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.</p>
+<p>The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The <code>./out</code> directory contains all build artifacts of an application for execution on physical hardware or simulation models. <a href="../YML-Input-Format/#arm-fvp">Arm Fixed Virtual Platforms (FVPs)</a> enable unit and integration testing with simulation models and virtual interfaces. Using <a href="../build-overview/#software-layers">software layers</a> allows the same application to be tested on physical hardware or an FVP simulation model. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.</p>
 <p>The commands below show typical builds in a CI system. Using <code>--packs</code> installs all public packs with implicit acceptance of licenses. This command builds all projects, target-types, and build-types. Using <a href="../build-overview/#context"><code>--context</code></a> reduces the scope of the build. Using <a href="../build-overview/#reproducible-builds"><code>--frozen-packs</code></a> uses exactly the packs that are specified in the file <code>*.cbuild-pack.yml</code>.</p>
 <pre><code class="language-shell">cbuild Hello.csolution.yml --packs                          # install packs and build all targets
-cbuild Hello.csolution.yml --packs --active AVH-SSE-300     # build target AVH-SSE-300
+cbuild Hello.csolution.yml --packs --active FVP-SSE-300     # build FVP target
 cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack versions of *.cbuild-pack.yml
 </code></pre>
 <p>Packs that are not public are installed using <code>cpackget</code>.  The following commands use the MDK-Middleware development repository to install a pre-release pack in a GitHub Actions CI workflow.</p>
@@ -688,7 +743,7 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
 <tbody>
 <tr>
 <td style="text-align: left;"><a href="https://github.com/Arm-Examples/AVH-Hello">AVH-Hello</a></td>
-<td style="text-align: left;">Build and execution test for "Hello World" example using a GitHub Action matrix to target all Cortex-M processors, Arm Compiler or GCC, and AVH simulation.</td>
+<td style="text-align: left;">Build and execution test for a "Hello World" example using a GitHub Actions matrix with Cortex-M FVP simulation models and Arm Compiler or GCC.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="https://github.com/Arm-Examples/AVH_CI_Template">AVH_CI_Template</a></td>
@@ -708,6 +763,30 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
 </tr>
 </tbody>
 </table>
+<h2 id="static-code-analysis">Static Code Analysis</h2>
+<p>For a standard <em>csolution project</em>, <code>cbuild setup</code> generates the compiler input required by static code analysis tools for every context that belongs to the active target-set:</p>
+<pre><code class="language-shell">cbuild setup MyApp.csolution.yml --active MyTarget --packs --frozen-packs
+</code></pre>
+<p>By default, the files are generated in <code>out/&lt;project&gt;/&lt;target&gt;/&lt;build&gt;</code>:</p>
+<ul>
+<li><code>compile_commands.json</code> lists each source file with its working directory, compiler, and command-line options.</li>
+<li><code>compile_macros.h</code> contains the compiler's built-in macros. It is already included by the commands in <code>compile_commands.json</code> and normally does not need to be configured separately in the analyzer.</li>
+</ul>
+<p>The actual location is controlled by <a href="../YML-Input-Format/#output-dirs"><code>output-dirs:</code></a>. Use the generated context information referenced by <code>&lt;solution&gt;.cbuild-idx.yml</code> to locate the output directory instead of assuming the default path.</p>
+<p>For desktop use, select <code>compile_commands.json</code> as the compilation database in the analyzer. In CI, install the required packs, run <code>cbuild setup</code> in a clean workspace, and pass the generated database to the analysis step. The option <code>--frozen-packs</code> ensures that the pack versions recorded in <code>*.cbuild-pack.yml</code> are used, which makes the analysis configuration reproducible. For example, an analyzer that accepts a compilation database may be invoked as follows (replace the option with that tool's syntax):</p>
+<pre><code class="language-shell">cbuild setup MyApp.csolution.yml --active MyTarget --packs --frozen-packs
+analyzer --compilation-database out/MyApp/MyTarget/Debug/compile_commands.json
+</code></pre>
+<p>Some analyzers capture compiler invocations instead of importing a compilation database. For example, configure <a href="https://support-resources.codesecure.com/integrations/gitlab/documentation">CodeSonar C/C++ build analysis</a> to observe a clean build after project setup:</p>
+<pre><code class="language-shell">cbuild setup MyApp.csolution.yml --active MyTarget --packs --frozen-packs
+cbuild MyApp.csolution.yml --active MyTarget --rebuild --frozen-packs
+</code></pre>
+<p>Run the second command under the CodeSonar build-capture command for the installed CodeSonar version, then perform the CodeSonar analysis and upload. The generated <code>compile_commands.json</code> and <code>compile_macros.h</code> remain useful for checking the resolved compiler configuration and for integrations that accept a compilation database directly.</p>
+<p>For other project types, the analysis input differs:</p>
+<ul>
+<li>A <a href="../build-operation/#native-cmake-project-integration">native CMake project</a> generates its own compilation database when <code>configure:</code> contains <code>-DCMAKE_EXPORT_COMPILE_COMMANDS=ON</code>.</li>
+<li>A <a href="../build-operation/#west-integration">West project</a> uses the compilation database generated by West; CMSIS-Toolbox does not add <code>compile_macros.h</code> to it.</li>
+</ul>
 <h2 id="ide-usage">IDE Usage</h2>
 <p>An IDE may use the following <code>cbuild setup</code> command to set up the project outline view and get information about components and software layers.</p>
 <pre><code class="language-shell">cbuild setup example.csolution.yml --active &lt;target-type&gt;[@&lt;target-set&gt;] [--packs] [--update-rte]
@@ -718,7 +797,7 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
 <li>The option <code>--packs</code> can enable the download of missing software packs that are public.</li>
 <li>The option <code>--update-rte</code> is used when the IDE changes <code>device:</code>, <code>board:</code> or <code>component:</code> settings.</li>
 </ul>
-<p>The <code>cbuild setup</code> command creates <a href="../YML-CBuild-Format/">build information files</a> and generates the file <code>compile_commands.json</code> for IntelliSense in an VS Code IDE environment. Refer to <a href="../build-operation/#details-of-the-setup-mode">cbuild setup command</a> for more information.</p>
+<p>The <code>cbuild setup</code> command creates <a href="../YML-CBuild-Format/">build information files</a>, <code>compile_commands.json</code>, and <code>compile_macros.h</code> for IDE language services and <a href="#static-code-analysis">Static Code Analysis</a>. Refer to <a href="../build-operation/#details-of-the-setup-mode">cbuild setup command</a> for more information.</p>
 <h3 id="project-outline-view">Project Outline View</h3>
 <p>The project outline view in an IDE may utilize the project files as described below:</p>
 <ul>
@@ -727,7 +806,7 @@ cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack ver
 <li>The files <code>*.clayer.yml</code> or <code>*.cgen.yml</code> contain software layers with additional source groups, source files, and components. The <code>*.cbuild.&lt;context&gt;.yml</code> files provide the exact location of these files, for example, when variables are used.</li>
 </ul>
 <p>Using the above information, it is possible to create an outline view, but without the file list for components. For software layers, the content may require the <code>*.cbuild.&lt;context&gt;.yml</code> files that are generated with the <code>cbuild setup</code> command.</p>
-<p>The <code>cbuild-idx.yml</code> file provides the exact location of all <code>*.cbuild.&lt;context&gt;.yml</code> files that are used in this context-set. The <code>*.cbuild.&lt;context&gt;.yml</code> files contain for the components source files, configuration file information, API header files, user code templates, generator information, and links to documentation. The project outline view may provide access to this information.</p>
+<p>The <code>cbuild-idx.yml</code> file provides the exact location of all <code>*.cbuild.&lt;context&gt;.yml</code> files that are used for the selected target. The <code>*.cbuild.&lt;context&gt;.yml</code> files contain for the components source files, configuration file information, API header files, user code templates, generator information, and links to documentation. The project outline view may provide access to this information.</p>
 <h3 id="build-process">Build Process</h3>
 <p>An IDE may use the following <code>cbuild</code> command to build the overall application.</p>
 <pre><code class="language-shell">cbuild example.csolution.yml --active &lt;target-type&gt;[@&lt;target-set&gt;] [--packs] [--quite] [--rebuild]

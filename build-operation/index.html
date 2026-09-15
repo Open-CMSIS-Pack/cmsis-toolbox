@@ -112,7 +112,9 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#cmake-integration">CMake Integration</a>
+    <li class="toctree-l2"><a class="reference internal" href="#native-cmake-project-integration">Native CMake Project Integration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#cmake-script-integration-with-executes">CMake Script Integration with executes:</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#example">Example</a>
     </li>
@@ -199,7 +201,8 @@
 <ul>
 <li><a href="#build-process-overview">Build Process Overview</a> details the build process.</li>
 <li><a href="#adding-a-toolchain-to-cmsis-toolbox">Adding a Toolchain to CMSIS-Toolbox</a> contains details about the Compiler support.</li>
-<li><a href="#cmake-integration">CMake Integration</a> describes the integration of CMake.</li>
+<li><a href="#native-cmake-project-integration">Native CMake Project Integration</a> describes direct orchestration of CMake projects.</li>
+<li><a href="#cmake-script-integration-with-executes">CMake Script Integration with <code>executes:</code></a> describes CMake-based custom build steps.</li>
 <li><a href="#west-integration">West Integration</a> describes the integration of the West build system for Zephyr applications.</li>
 <li><a href="#generator-integration">Generator Integration</a> explains the integration of device configuration tools.</li>
 <li><a href="#debug-adapter-integration">Debug Adapter Integration</a> explains the integration of debuggers.</li>
@@ -221,14 +224,14 @@
 </ul>
 <h4 id="details-of-the-build-mode">Details of the build mode</h4>
 <p>Without a specific <code>cbuild</code> command, the application is built. The typical invocation is:</p>
-<pre><code class="language-bash">cbuild &lt;name&gt;.csolution.yml [--packs] [--context-set] [--update-rte] [--frozen-packs]
+<pre><code class="language-bash">cbuild &lt;name&gt;.csolution.yml --active &lt;target-type&gt;[@&lt;target-set&gt;] [--packs] [--update-rte] [--frozen-packs]
 </code></pre>
 <p>It generates the application program that is described with the <code>&lt;name&gt;.csolution.yml</code> project.</p>
 <ul>
 <li>When option <code>--packs</code> is used, it downloads missing <em>software packs</em> using <a href="../build-tools/#cpackget-invocation"><code>cpackget</code></a>.</li>
 <li>It calls <a href="../build-tools/#csolution-invocation"><code>csolution</code></a> to process the the <code>&lt;name&gt;.csolution.yml</code> project.<ul>
 <li>With option <code>--update-rte</code> new configuration files from <em>software packs</em> are updated and the <a href="../build-overview/#rte_componentsh"><code>RTE_Components.h</code></a> file is recreated.</li>
-<li>With option <code>--context-set</code> the file <code>*.cbuild-set.yml</code> specifies the <a href="../build-overview/#context">context</a> configuration of the application.</li>
+<li>With option <code>--active</code> a <a href="../build-overview/#working-with-target-set">target with optional set</a> selects the projects and build-types that form the application.</li>
 <li>With option <code>--frozen-packs</code> the file <code>*.cbuild-pack.yml</code> is used as input to issue an error when a pack version changes.</li>
 </ul>
 </li>
@@ -241,19 +244,19 @@
 </div>
 <h4 id="details-of-the-setup-mode">Details of the setup mode</h4>
 <p>The <code>cbuild setup</code> command prepares the data for an IDE environment. This command is called at the start of an IDE or whenever a <em>csolution project</em> file is modified. The typical invocation is:</p>
-<pre><code class="language-bash">cbuild setup &lt;name&gt;.csolution.yml [--packs] [--context-set] [--update-rte] [--frozen-packs]
+<pre><code class="language-bash">cbuild setup &lt;name&gt;.csolution.yml --active &lt;target-type&gt;[@&lt;target-set&gt;] [--packs] [--update-rte] [--frozen-packs]
 </code></pre>
-<p>Typical IDE environments use a <code>--context-set</code> that specifies the <a href="../build-overview/#context">context</a> configuration of the application. For an application described by a <code>&lt;name&gt;.csolution.yml</code> file, these steps are executed:</p>
+<p>The option <code>--active</code> selects the <a href="../build-overview/#working-with-target-set">target-set</a> that specifies the application configuration. For an application described by a <code>&lt;name&gt;.csolution.yml</code> file, these steps are executed:</p>
 <ul>
 <li>Check YML file syntax against schema for all files specified by <code>&lt;name&gt;.csolution.yml</code>.</li>
 <li>Check the correctness of all files specified by <code>&lt;name&gt;.csolution.yml</code>.</li>
 <li>Evaluate the potential <a href="../YML-CBuild-Format/#configurations">software layers</a> for <a href="../ReferenceApplications/">Reference Applications</a> using <code>variables:</code> to refer to layers (if the value is undefined). All projects are considered in this step.</li>
 <li>Evaluate the <a href="../YML-CBuild-Format/#select-compiler">selectable compiler toolchains</a> when the <em>csolution project</em> does not contain a <code>compiler:</code> selection or the <code>--toolchain</code> option is not applied. The available toolchains are based on the <a href="../installation/#compiler-registration">compiler registration</a> and the <code>select-compiler:</code> node in the file <a href="../YML-Input-Format/#solution"><code>&lt;name&gt;.csolution.yml</code></a> or <a href="../YML-Input-Format/#cdefault"><code>cdefault.yml</code></a>.</li>
-<li>Create the file <code>compile_commands.json</code> in the <a href="../build-overview/#output-directory-structure">output directory</a> for the context defined in <a href="../YML-CBuild-Format/"><code>*.cbuild-set.yml</code></a>.</li>
+<li>Create the files <code>compile_commands.json</code> and <code>compile_macros.h</code> in the <a href="../build-overview/#output-directory-structure">output directory</a> for every context that belongs to the active target-set.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The file <code>compile_commands.json</code> is generated by <code>CMake</code> with the option <code>--target &lt;context&gt;-database</code> and contains all source files of the <code>context</code> along with compiler options. It is used by various code analyzer tools and the <a href="https://code.visualstudio.com/docs/editor/intellisense">IntelliSense</a> system of an IDE.</p>
+<p>The file <code>compile_commands.json</code> is generated by <code>CMake</code> with the target <code>&lt;context&gt;-database</code> and contains all source files of the context along with compiler options. The generated <code>compile_macros.h</code> records the selected toolchain's built-in macros and is included by the compilation database commands. This makes the macros available to code-analysis tools that consume only <code>compile_commands.json</code>, without requiring IDE-specific configuration. These files are used by various code analyzer tools and the <a href="https://code.visualstudio.com/docs/editor/intellisense">IntelliSense</a> system of an IDE. For practical desktop and CI workflows, refer to <a href="../build-tools/#static-code-analysis">Static Code Analysis</a>.</p>
 </div>
 <p>The operation is further controlled by options:</p>
 <ul>
@@ -277,7 +280,6 @@
 </li>
 <li>In the <a href="../build-overview/#project-area"><strong>base directory of the solution</strong></a>:<ul>
 <li>Generate the file <code>*.cbuild-pack.yml</code> that records all used <em>software packs</em>. With the option <code>--frozen-packs</code>, this file is used as input.</li>
-<li>With the option <code>--context-set</code> the file <code>*.cbuild-set.yml</code> specifies the <a href="../build-overview/#context">context</a> configuration of the application. When <code>--context</code> names are specified this file is updated with this selection.</li>
 </ul>
 </li>
 </ul>
@@ -330,7 +332,7 @@
 </ul>
 <p><code>cmake --build &lt;tmpdir&gt; -j &lt;n&gt; --target &lt;context&gt;</code></p>
 <ul>
-<li>CMake build command to generate the database file <code>compile_commands.json</code> (used by the command <code>cbuild setup</code>) for each <a href="../build-overview/#context">context</a> with:</li>
+<li>CMake build command automatically executed by <code>cbuild setup</code> to generate <code>compile_commands.json</code> for each <a href="../build-overview/#context">context</a>:</li>
 </ul>
 <p><code>cmake --build &lt;tmpdir&gt; -j &lt;n&gt; --target &lt;context&gt;-database</code></p>
 <h2 id="adding-a-toolchain-to-cmsis-toolbox">Adding a Toolchain to CMSIS-Toolbox</h2>
@@ -348,7 +350,7 @@
 <p class="admonition-title">Note</p>
 <ul>
 <li><code>&lt;version&gt;</code> refers to the minimum version number (major, minor and patch) of the compiler toolchain that should be supported. Higher versions are accepted.</li>
-<li>Refer to <a href="../installation/#compiler-registration">Installation - Compiler Registration</a> for more information.</li>
+<li>Refer to <a href="../installation/#compiler-registration">Installation: Compiler Registration</a> for more information.</li>
 </ul>
 </div>
 <h3 id="cmake-variables">CMake Variables</h3>
@@ -511,7 +513,12 @@
 </tr>
 </tbody>
 </table>
-<h2 id="cmake-integration">CMake Integration</h2>
+<h2 id="native-cmake-project-integration">Native CMake Project Integration</h2>
+<p>CMSIS-Toolbox 2.15 can orchestrate a native CMake project directly from a <a href="../YML-Input-Format/#cmake-build"><code>cmake:</code> project entry</a>. Such an entry creates a synthetic project context and generated <code>*.cbuild.yml</code> metadata, but bypasses processing that is specific to <code>*.cproject.yml</code> files, such as CMSIS component, translation-control, and linker-script generation.</p>
+<p>For each selected native CMake context, <code>cbuild</code> uses the specified source directory and generator, appends the entries under <code>configure:</code> to the CMake configure operation, and builds the optional <code>target:</code>. If <code>target:</code> is omitted, the native CMake project's default target is built. The normal clean and rebuild operations apply to these contexts. To generate a compilation database, add <code>-DCMAKE_EXPORT_COMPILE_COMMANDS=ON</code> under <code>configure:</code>.</p>
+<p>Files declared under <code>images:</code> are treated as outputs of the native build. They are copied into the generated context information and, when selected by a <code>target-set:</code>, into <code>*.cbuild-run.yml</code> for programming and debugging. The optional <code>device:</code> identifies the processor that executes those images in a multi-processor target.</p>
+<p>This direct project integration differs from the following mechanism, which invokes CMake only as a custom build step.</p>
+<h2 id="cmake-script-integration-with-executes">CMake Script Integration with <code>executes:</code></h2>
 <p>The <a href="../YML-Input-Format/#executes"><code>executes:</code></a> node in the <em>csolution project</em> files allows the integration of other CMake projects or scripts.</p>
 <h3 id="example">Example</h3>
 <p>The following <code>CMakeLists.txt</code> file integrates the <a href="https://arm-software.github.io/MDK-Middleware/latest/Network/group__nw__sw__util__fcarm.html">FCARM file converter</a> that is part of the MDK-Middleware. The FCARM file converter reformats all web files into a single C-file which is then included and compiled into the project.</p>
@@ -570,7 +577,7 @@ add_custom_command(OUTPUT ${OUTPUT} DEPENDS ${INPUT}
         - project/Web.c  # Output file for FCARM
 </code></pre>
 <h2 id="west-integration">West Integration</h2>
-<p>The west build system uses two environment variables to configure the toolchain. These variables are set when the <code>*.csolution.yml</code> contains the <a href="../YML-Input-Format/#west"><code>west:</code></a> node. It is created by the VS Code CMSIS Solution extension when a terminal is opened (ToDo) or by the cbuild orchestration when west build is called during the setup and build process.</p>
+<p>The west build system uses two environment variables to configure the toolchain. These variables are set when the <code>*.csolution.yml</code> contains the <a href="../YML-Input-Format/#west"><code>west:</code></a> node. The cbuild orchestration sets them when West is called during setup and build operations; the VS Code CMSIS Solution extension also provides them in its build environment.</p>
 <p>The <code>west build</code> command is called for each <code>app-path:</code> that is specified in the <a href="../YML-Input-Format/#west"><code>west:</code></a> node.</p>
 <table>
 <thead>
@@ -692,6 +699,7 @@ add_custom_command(OUTPUT ${OUTPUT} DEPENDS ${INPUT}
 <p>An example project where you can explore this process is <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/CubeMX">CubeMX</a>. It contains an example for a <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/blob/main/CubeMX/STM32CubeMX/MyBoard_ROM/CubeMX.cgen.yml">*.cgen.yml file</a>.</p>
 <h2 id="debug-adapter-integration">Debug Adapter Integration</h2>
 <p>The file <code>debug-adapters.yml</code> in the CMSIS-Toolbox <code>./etc</code> directory contains the list of supported debug adapters. If no debugger is specified for a <em>csolution project</em>, the first debug adapter ("CMSIS-DAP@pyOCD") contained in this file will be used.</p>
+<p>The master definitions are maintained in the <a href="https://github.com/Open-CMSIS-Pack/debug-adapter-registry">Open-CMSIS-Pack Debug Adapter Registry</a> and deployed with CMSIS-Toolbox. Support for a new or updated third-party debug adapter should be contributed to that registry rather than added to an application project or a local CMSIS-Toolbox installation.</p>
 <p>The <code>debug-adapters:</code> node in this YAML file registers the supported debug adapters with the following keys:</p>
 <table>
 <thead>
@@ -776,7 +784,7 @@ add_custom_command(OUTPUT ${OUTPUT} DEPENDS ${INPUT}
       protocol: swd
       clock: auto
 
-  - name: &quot;AVH-FVP&quot;
+  - name: &quot;Arm-FVP&quot;
     template: FVP.adapter.json                # template file
 
   - name: &quot;Keil uVision&quot;

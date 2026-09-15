@@ -80,6 +80,8 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#mdk-middleware-reference-applications">MDK-Middleware Reference Applications</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#targeting-fvp-simulation-models">Targeting FVP Simulation Models</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#sensor-reference-applications">Sensor Reference Applications</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#targeting-custom-hardware">Targeting Custom Hardware</a>
@@ -218,43 +220,49 @@
 <!-- markdownlint-disable MD013 -->
 <!-- markdownlint-disable MD036 -->
 
-<p>This chapter explains how to work with <em>Reference Applications</em> that can run on several evaluation boards.</p>
+<p>This chapter explains how to work with <em>Reference Applications</em> that can run on evaluation boards or FVP simulation models.</p>
 <h2 id="introduction">Introduction</h2>
 <p>The CMSIS-Pack format supports different types of project examples:</p>
 <ul>
 <li><em>Template Projects</em> are <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates">stub projects</a> that help getting started. Some software packs may contain device-specific templates.</li>
 <li><em>Examples</em> are created for a specific hardware or evaluation board. These are typically complete projects that directly interface with board and device peripherals.</li>
-<li><em>Reference Applications</em> use defined interfaces (APIs) and are therefore hardware agnostic. These project examples show the usage of middleware components and require additional <a href="../build-overview/#software-layers">software layers</a> with API drivers for the specific target hardware, typically an evaluation board.</li>
+<li><em>Reference Applications</em> use defined interfaces (APIs) and are therefore target agnostic. These project examples show the usage of middleware components and require additional <a href="../build-overview/#software-layers">software layers</a> with API drivers for an evaluation board or an FVP simulation model.</li>
 </ul>
-<p>The following sections explain the usage, structure, and creation of <em>Reference Applications</em> that can target many different evaluation boards.</p>
-<p>Refer to <a href="../pack-tools/#project-examples">Pack Creation s&raquo; Project Examples</a> for information on how to publish project examples as part of software packs.</p>
+<p>The following sections explain the usage, structure, and creation of <em>Reference Applications</em> that can target different evaluation boards and FVP simulation models.</p>
+<p>Refer to <a href="../pack-tools/#project-examples">Pack Creation: Project Examples</a> for information on how to publish project examples as part of software packs.</p>
 <h2 id="types-of-reference-applications">Types of Reference Applications</h2>
-<p><em>Reference Applications</em> may show the usage of middleware, software libraries, and custom code that can run on many different target hardware boards. Such software uses <a href="https://en.wikipedia.org/wiki/API">application programming interfaces (APIs)</a> to interface with hardware interfaces or other software components.</p>
+<p><em>Reference Applications</em> may show the usage of middleware, software libraries, and custom code that can run on physical hardware or an FVP simulation model. Such software uses <a href="https://en.wikipedia.org/wiki/API">application programming interfaces (APIs)</a> to interface with hardware interfaces or other software components.</p>
 <h3 id="mdk-middleware-reference-applications">MDK-Middleware Reference Applications</h3>
 <p>The <a href="https://www.keil.arm.com/packs/mdk-middleware-keil">MDK-Middleware</a> provides software components for IPv4/IPv6 networking, USB Host/Device communication, and a variety of file systems for data storage.</p>
-<p>The MDK-Middleware software pack contains Reference Applications that show how to use these software components. These examples are hardware agnostic; adding a board layer that provides the required APIs allows running the example project on specific target hardware.</p>
+<p>The MDK-Middleware software pack contains Reference Applications that show how to use these software components. These examples are target agnostic; adding a compatible layer that provides the required APIs allows running the example project on physical hardware or an FVP simulation model.</p>
 <p><img alt="MDK-Middleware Example" src="../images/MDK-MW-Example.png" title="MDK-Middleware Example" /></p>
 <p>The picture above shows how a USB HID example connects to a board-specific software layer.
-The <em>Reference Application</em> does not specify a target hardware. For execution on target hardware, a software layer is required that provides the hardware-specific APIs. These board-specific layers are provided in BSP packs, which allows the example to run on many different hardware targets.</p>
+The <em>Reference Application</em> does not specify a target. For execution, a software layer is required that provides the target-specific APIs. These layers may support a physical board or an FVP simulation model and are typically provided in BSP packs.</p>
 <p>The Reference example uses <a href="../YML-Input-Format/#connections"><code>connections:</code></a> to list the consumed (required) APIs. The board layer in the BSP pack provides these <a href="../YML-Input-Format/#connections"><code>connections:</code></a> and may offer several additional <code>connections:</code>, making the layer suitable for a wide range of Reference Applications.</p>
-<p>As the <em>Reference Application</em> is not hardware-specific, it does not define a target type. Also, it does not add the board-specific software layer. It requires two steps to configure the <code>*.csolution.yml</code> file of such an example for an evaluation board. Refer to the <a href="#usage">Usage</a> section for more information.</p>
+<p>As the <em>Reference Application</em> is not target-specific, it does not define a target type or add a target-specific software layer. It requires two steps to configure the <code>*.csolution.yml</code> file for an evaluation board or FVP simulation model. Refer to the <a href="#usage">Usage</a> section for more information.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Keep the Reference Application valid for <code>csolution</code>: do not add a placeholder target such as <code>${Name}</code>. Omit <code>target-types:</code> when the application provides no target, or retain only fully configured targets such as an FVP test target. A target for the selected hardware can be added when the application is configured.</p>
+</div>
+<h3 id="targeting-fvp-simulation-models">Targeting FVP Simulation Models</h3>
+<p>An <a href="../YML-Input-Format/#arm-fvp">Arm Fixed Virtual Platform (FVP)</a> can replace a physical board when the required interfaces are provided by an FVP-compatible software layer. Configure the Reference Application with the DFP or BSP that describes the simulated platform, select its virtual board or device, and add the compatible layer. A <code>target-set:</code> using the <code>Arm-FVP</code> debugger can then identify the model and its configuration file. The application sources remain unchanged when switching between compatible physical and simulated targets.</p>
 <p><strong><em>Reference Application</em> <code>*.csolution.yml</code> file</strong></p>
 <pre><code class="language-yml">solution:
   cdefault:
   compiler: AC6
-  :
+  :
   packs:
 # Step 1: Specify DFP and BSP for the device and board, for example with:
 #   - pack: Keil::STM32U5xx_DFP
 #   - pack: Keil::B-U585I-IOT02A_BSP
 
-  target-types:
 # Step 1: Specify your board, for example with:
+# target-types:
 #   - type: STM32U585
 #     board: B-U585I-IOT02A
 # Step 2: Run `cbuild setup` and use cbuild-idx.yml to identify variables, for example:
-#     variables:
-#       - Board-Layer:  $SolutionDir()$/Board/B-U585I-IOT02A/Board.clayer.yml
+#     variables:
+#       - Board-Layer: $SolutionDir()$/Board/B-U585I-IOT02A/Board.clayer.yml
 </code></pre>
 <h3 id="sensor-reference-applications">Sensor Reference Applications</h3>
 <p>The overall concept of <em>Reference Applications</em> and the same board-specific software layers can be used for a wide range of software stacks. For example, a sensor SDK pack may provide <em>Reference Applications</em> that show the usage of a MEMS sensor. This MEMS sensor is additional hardware that could be provided by a widely supported Arduino UNO shield.</p>
@@ -305,7 +313,7 @@ The <em>Reference Application</em> does not specify a target hardware. For execu
 <p>A <em>Reference Application</em> is an incomplete <code>*.csolution.yml</code> project file that requires additional intervention.</p>
 <p>The following steps explain how to compile the project:</p>
 <h3 id="step-1-add-dfp-and-bsp">Step 1: Add DFP and BSP</h3>
-<p>In the <code>*.csolution.yml</code> file under the <code>packs:</code> node, add the DFP (for the device) and the BSP (for the board). Under <code>target-types:</code>, add your board.</p>
+<p>In the <code>*.csolution.yml</code> file under the <code>packs:</code> node, add the DFP and, when available, the BSP for the selected physical or simulated target. Under <code>target-types:</code>, add the board or device represented by that target.</p>
 <pre><code class="language-yml">solution:
   cdefault:
   :
@@ -376,8 +384,8 @@ To resolve undefined variables, copy the settings from cbuild-idx.yml to csoluti
 <p>The following section describes the overall file structure of <em>Reference Applications</em>.</p>
 <h3 id="project-files">Project Files</h3>
 <p>A <code>*.csolution.yml</code> project file containing software layers for two different evaluation boards should look like the one shown below. This project contains three examples that show the different features of USB device middleware.</p>
-<p>The actual example project (HID, MSC, or CDC1) is selected using a <a href="../build-overview/#working-with-context-set">context set</a>; the compiler is selected using the <code>--toolchain</code> option. To translate the completed <em>Reference Applications</em> use:</p>
-<pre><code class="language-bash">cbuild USB_Device.csolution.yml --context-set --toolchain AC6
+<p>The actual example project (HID, MSC, or CDC1) is selected using a <a href="../build-overview/#working-with-target-set">target-set</a>; the compiler is selected using the <code>--toolchain</code> option. To translate the HID <em>Reference Application</em> for the B-U585I-IOT02A board, use:</p>
+<pre><code class="language-bash">cbuild USB_Device.csolution.yml --active B-U585I-IOT02A@HID --toolchain AC6
 </code></pre>
 <p><strong>Example <code>USB_Device.csolution.yml</code> file for two boards with three projects</strong></p>
 <pre><code class="language-yml">solution:
@@ -389,11 +397,31 @@ To resolve undefined variables, copy the settings from cbuild-idx.yml to csoluti
       board: B-U585I-IOT02A
       variables:
         - Board-Layer: $SolutionDir()$\Board\B-U585I-IOT02A\Board.clayer.yml
+      target-set:
+        - set: HID
+          images:
+            - project-context: HID.Debug
+        - set: MSC
+          images:
+            - project-context: MassStorage.Debug
+        - set: CDC1
+          images:
+            - project-context: VirtualCOM.Debug
 
     - type: LPC55S69-EVK            # type name identical with board name?
       board: LPC55S69-EVK
       variables:
         - Board-Layer: $SolutionDir()$\Board\LPC55S69-EVK\Board.clayer.yml
+      target-set:
+        - set: HID
+          images:
+            - project-context: HID.Debug
+        - set: MSC
+          images:
+            - project-context: MassStorage.Debug
+        - set: CDC1
+          images:
+            - project-context: VirtualCOM.Debug
 
   build-types:
     - type: Debug
