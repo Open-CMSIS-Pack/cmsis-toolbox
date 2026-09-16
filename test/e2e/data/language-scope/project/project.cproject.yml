@@ -6,8 +6,13 @@ project:
     - component: ARM::CMSIS:CORE
     - component: ARM::Device:Startup&C Startup
     - component: RteTest:LanguageAndScope
+    - component: CMSIS-Compiler:CORE
+      for-context: .CLANG
 
   groups:
     - group: Source
       files:
         - file: ./main.c
+  packs:
+    - pack: ARM::CMSIS-Compiler
+      for-context: .CLANG
