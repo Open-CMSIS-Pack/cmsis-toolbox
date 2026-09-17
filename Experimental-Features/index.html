@@ -179,6 +179,12 @@
     <li class="toctree-l3"><a class="reference internal" href="#-type-option">--type option</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#csv-format">CSV Format</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#variable-data-sizes">Variable Data Sizes</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#pc-sampling-markers">PC Sampling Markers</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#ctf-format">CTF Format</a>
     </li>
@@ -1521,15 +1527,15 @@ When no option for generating files is specified, the raw trace data files are v
 </tr>
 <tr>
 <td style="text-align: left;"><code>value</code></td>
-<td style="text-align: left;">Value in hexadecimal form. Payload width is represented by the number of hex digits: 1 byte: <code>0x00</code>, 2 bytes: <code>0x0000</code>, 4 bytes: <code>0x00000000</code>. For packet type <code>exception</code> state transition: <code>0x1</code> enter, <code>0x2</code> exit, <code>0x3</code> return.</td>
+<td style="text-align: left;">Value in hexadecimal form. For packet type <code>exception</code> state transition: <code>0x1</code> enter, <code>0x2</code> exit, <code>0x3</code> return.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>pc</code></td>
-<td style="text-align: left;">Program counter for packet types <code>dwt</code> and <code>pcsample</code> (hexadecimal format, example <code>0x08001234</code>).</td>
+<td style="text-align: left;">Program counter for packet types <code>dwt</code> and <code>pcsample</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>offset</code></td>
-<td style="text-align: left;">Data address offset for packet type <code>dwt</code> (hexadecimal format, example <code>0xfdf9</code>).</td>
+<td style="text-align: left;"><code>address</code></td>
+<td style="text-align: left;">Data address for packet type <code>dwt</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>note</code></td>
@@ -1537,6 +1543,7 @@ When no option for generating files is specified, the raw trace data files are v
 </tr>
 </tbody>
 </table>
+<p>The <code>value</code>, <code>pc</code>, and <code>address</code> columns use hexadecimal form. See <a href="#variable-data-sizes">Variable Data Sizes</a> for details.</p>
 <p>The following table contains details about the packet type. Information is empty when not provided by the trace packet.</p>
 <table>
 <thead>
@@ -1552,7 +1559,7 @@ When no option for generating files is specified, the raw trace data files are v
 </tr>
 <tr>
 <td style="text-align: left;"><code>dwt</code></td>
-<td style="text-align: left;"><code>source</code> = DWT comparator, <code>value</code> = data value, <code>offset</code> = data address offset, <code>pc</code> = program counter.</td>
+<td style="text-align: left;"><code>source</code> = DWT comparator, <code>value</code> = data value, <code>address</code> = data address, <code>pc</code> = program counter.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>event</code></td>
@@ -1588,6 +1595,56 @@ When no option for generating files is specified, the raw trace data files are v
 <p class="admonition-title">Note</p>
 <p>The timestamp packet type information is provided in the <code>cycles</code> column.</p>
 </div>
+<h4 id="variable-data-sizes">Variable Data Sizes</h4>
+<p>For the <code>value</code>, <code>pc</code>, and <code>address</code> columns, the number of hex digits represents the payload size: 1 byte: <code>0x00</code>, 2 bytes: <code>0x0000</code>, 4 bytes: <code>0x00000000</code>.</p>
+<p>For packet type <code>dwt</code>, payload sizes depend on the architecture:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Column</th>
+<th style="text-align: left;">Armv7-M</th>
+<th style="text-align: left;">Armv8-M</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>value</code></td>
+<td style="text-align: left;">1, 2, or 4 bytes</td>
+<td style="text-align: left;">1, 2, or 4 bytes</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>pc</code></td>
+<td style="text-align: left;">4 bytes</td>
+<td style="text-align: left;">1, 2, or 4 bytes</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>address</code></td>
+<td style="text-align: left;">2 bytes</td>
+<td style="text-align: left;">1, 2, or 4 bytes</td>
+</tr>
+</tbody>
+</table>
+<p><code>pc</code> and <code>address</code> payloads shorter than 4 bytes replace the corresponding lower bytes of the address programmed into the DWT comparator.</p>
+<h4 id="pc-sampling-markers">PC Sampling Markers</h4>
+<p>For packet type <code>pcsample</code>, raw trace data normally has a 4-byte payload which is shown in the <code>pc</code> column. 1 byte payloads are special markers indicating that the program counter value could not be traced. <code>pc</code> is empty in these cases, and the corresponding message is written to the <code>note</code> column.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Value</th>
+<th style="text-align: left;"><code>note</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>0x00</code></td>
+<td style="text-align: left;"><code>CPU Sleeping</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>0xFF</code> (Armv8-M only)</td>
+<td style="text-align: left;"><code>Trace prohibited</code></td>
+</tr>
+</tbody>
+</table>
 <p><strong>Exception State Transition:</strong></p>
 <table>
 <thead>
@@ -1621,7 +1678,7 @@ When no option for generating files is specified, the raw trace data files are v
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
-<pre><code class="language-csv">cycles,stream,type,source,value,pc,offset,note
+<pre><code class="language-csv">cycles,stream,type,source,value,pc,address,note
 2518192,,itm,0,0x53,,,
 2518404,,itm,0,0x54,,,
 2518616,,itm,0,0x4d,,,
@@ -1643,7 +1700,7 @@ When no option for generating files is specified, the raw trace data files are v
 <th style="text-align: left;">source</th>
 <th style="text-align: left;">value</th>
 <th style="text-align: left;">pc</th>
-<th style="text-align: left;">offset</th>
+<th style="text-align: left;">address</th>
 <th style="text-align: left;">note</th>
 </tr>
 </thead>
