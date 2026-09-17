@@ -877,10 +877,10 @@ A CSV consumer can request that the **Trace Generation Setup** dialog opens the 
 
 Parameter      |             | Description
 :--------------|:------------|:------------------------------------
-`solution-set` |**Required** | The `<solution-set>` part of the CSV filename `.trace/<solution-set>.<channel>.csv`.
 `type`         |**Required** | The CSV entry `type`. It identifies trace settings associated with this entry.
 `stream`       |  Optional   | The CSV `stream` value. It identifies the trace stream which contains the setting. An empty value indicates unformatted trace; filtering settings by `stream` can then be skipped.
 `source`       |  Optional   | The CSV `source` value, when present. It identifies a source within the stream, such as an ITM channel or DWT comparator, and hence a setting child. This parameter is ignored for type `exception` where the setting does not provide the needed level of granularity.
+`solution-set` |  Optional   | The `<solution-set>` part of the CSV filename `.trace/<solution-set>.<channel>.csv`. It helps filter requests so they apply to the active solution-set when the `.trace` directory contains multiple solution-sets.
 
 Requests are used to look up `ctrace-ref` entries from `.trace/<solution-set>.ctrace-run.yml`. More than one may match.
 
