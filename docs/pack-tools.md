@@ -251,18 +251,12 @@ Refer to [GitHub-hosted packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack
 
 ## Project Examples
 
-Project examples help to get started with new devices, boards, and middleware software components. The CMSIS-Pack format supports, therefore, different types of project examples:
-
-- [*Template Projects*](#template-projects) are [stub projects](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) that help to get started. Some software packs may contain device-specific templates.
-- [*Examples*](#examples) are created for a specific hardware or evaluation board. These are typically complete projects that directly interface with board and device peripherals.
-- [*Reference Applications*](#reference-applications) are hardware-agnostic project examples that required [layers](#layers) to add the hardware abstraction of a target (typically a board).
+CMSIS-Pack supports *Template Projects*, *Examples*, and *Reference Applications*. Refer to [Project Example Types](ReferenceApplications.md#introduction) for details. This section explains how these project types are structured and registered within a software pack.
 
 In addition, packs may contain:
 
 - [*Layers*](#layers) are  pre-configured software components or source code that can be shared across multiple projects.
 - [*Code Templates*](#code-templates) are stub source files for middleware components that can be incorporated into user code.
-
-The following section explains how the different types of project examples are structured and registered within a CMSIS-Pack.
 
 ### Support Multiple Compilers
 

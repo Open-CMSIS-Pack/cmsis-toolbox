@@ -86,18 +86,7 @@ The section below explains the overall concepts considered by the **`csolution` 
 
 ### Template Projects
 
-The following `*.csolution.yml` templates may be used to create embedded applications.
-
-Template    | Description
-:-----------|:------------------------------
-[Simple](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/Simple)        | A csolution.yml template with a single `*.cproject.yml`.
-[Multicore](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/Multicore)  | A csolution.yml template with multiple `*.cproject.yml` files, each targeting one processor of a multicore device.
-[TrustZone](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/TrustZone)  | A csolution.yml template with a non-secure `*.cproject.yml` and an optional secure `*.cproject.yml` file.
-[UnitTest](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/UnitTest)    | A csolution.yml template that shares one HAL `*.clayer.yml` with multiple `*.cproject.yml` files for unit testing.
-
-To use these templates, copy the content of the folder to your own application folder. Then adapt the names accordingly and add missing information.
-
-Refer to [CMSIS-Toolbox Templates](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) for more details.
+The [CMSIS-Toolbox Templates](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) show the file structure for several types of `csolution` projects and may be used as a starting point for an application. Refer to [Create Applications](CreateApplications.md#start-a-project) for the workflow to select target hardware and software packs, add software components, and build the application.
 
 ### Minimal Project Setup
 
@@ -986,18 +975,17 @@ An example that uses STM32CubeMX is provided in [github.com/Open-CMSIS-Pack/csol
 To list the *Generator* configuration of a `*.csolution.yml` use:
 
 ```bash
-csolution CubeMX.csolution.yml list generators --verbose
+csolution CubeMX.csolution.yml list generators --active MyBoard@Debug --verbose
 CubeMX (Global Registered Generator)                 # Name of the Generator
-  base-dir: STM32CubeMX/MyBoard                      # Generator output directory for contexts listed below
-    cgen-file: STM32CubeMX/MyBoard/CubeMX.cgen.yml   # Generator import file for contexts listed below
+  base-dir: STM32CubeMX/MyBoard                      # Generator output directory for context listed below
+    cgen-file: STM32CubeMX/MyBoard/CubeMX.cgen.yml
       context: CubeMX.Debug+MyBoard
-      context: CubeMX.Release+MyBoard
 ```
 
 To run the generator (in this case CubeMX) use:
 
 ```bash
-csolution CubeMX.csolution.yml run --generator CubeMX
+csolution CubeMX.csolution.yml run --generator CubeMX --active MyBoard@Debug
 ```
 
 ### Configure Generator Output
@@ -1048,6 +1036,8 @@ The following example configures the ST-LINK debugger for the project  `MyProjec
           images:
             -  project-context: MyProject.Debug
 ```
+
+A target set can combine project contexts with different build types. This allows the project being debugged to use `Debug`, while size-sensitive supporting images use `Release`.
 
 The following example uses a CMSIS-DAP debugger with JTAG protocol and configures a multi-core application with two projects. The project `core0` uses the build-type `Debug`. The project `core1` uses the build-type `Release`.
 
