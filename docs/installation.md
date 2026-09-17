@@ -31,6 +31,9 @@ The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The instal
 | [**CMake**](https://cmake.org/download) | 3.31.5 or higher | For Win64, enable the install option add *CMake* to the system *Path* |
 | [**Ninja**](https://github.com/ninja-build/ninja/releases) | 1.12.0 or higher | May be copied to the `<cmsis-toolbox-installation-dir>/bin` directory |
 
+!!! Note
+    **Windows:** To use international characters in project names, filenames, or paths, enable [**Use Unicode UTF-8 for worldwide language support**](https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page) in the system locale settings and restart Windows.
+
 ### Compiler Toolchains
 
 The CMSIS-Toolbox works with the following compiler toolchains. Install one or more compilers, depending on your requirements.

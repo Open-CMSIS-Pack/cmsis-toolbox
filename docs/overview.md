@@ -46,8 +46,8 @@ The build steps are:
 
 Further information:
 
-- [Theory of Operation - Build Process Overview](build-operation.md#build-process-overview) for details about the build process.
-- [Installation - Compiler Toolchains](installation.md#compiler-toolchains) for a list of supported compilers.
+- [Theory of Operation: Build Process Overview](build-operation.md#build-process-overview) for details about the build process.
+- [Installation: Compiler Toolchains](installation.md#compiler-toolchains) for a list of supported compilers.
   
 !!! Notes
     - This documentation uses the filename extension `*.yml`, but the extension `*.yaml` is also supported.
@@ -79,4 +79,4 @@ The overall benefits of the CMSIS-Toolbox are:
 
 - Provides a [list of software licenses](YML-CBuild-Format.md#nodes-for-license-information) used by the various software packs and software components.
 
-- Generates information for [MLOps systems](build-overview.md#mlops-information) for generating and testing of machine learning models that optionally use an NPU.
+- Supports [MLOps integration](build-overview.md#mlops-integration) for generating AI layers and testing machine learning models that optionally use an NPU.

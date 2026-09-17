@@ -32,6 +32,7 @@ Commands:
   help        Help about any command
   list        List information about contexts, environment, targets and toolchains
   setup       Generate project data for IDE environment
+  zephyr      Generate Zephyr module files from clayer input
 
 Options:
   -a, --active arg         Select active target: <target-type>[@<target-set>]
@@ -109,7 +110,7 @@ Options:
   -d, --debug                   Enable debug messages
   -D, --dry-run                 Enable dry-run
   -e, --export arg              Set suffix for exporting <context><suffix>.cprj retaining only specified versions
-  -f, --filter arg [...]        Filter output by word or "string"; repeat the option for multiple filters
+  -f, --filter arg [...]        Filter output by word or string; repeat the option for multiple filters
   -g, --generator arg           Code generator identifier
   -l, --load arg                Set policy for packs loading [latest | all | required]
   -L, --clayer-path arg         Set search path for external clayers
@@ -122,7 +123,7 @@ Options:
   -t, --toolchain arg           Selection of the toolchain used in the project optionally with version
   -v, --verbose                 Enable verbose messages
   -V, --version                 Print version|
-c
+
 Use 'csolution <command> -h' for more information about a command.
 ```
 
@@ -131,8 +132,7 @@ Use 'csolution <command> -h' for more information about a command.
 Manage the installation of *software packs* on the host computer.
 
 ``` txt
-cpackget version 2.2.0
- (C) 2021-2023 Linaro, 2024-2026 Arm Ltd.
+cpackget version 2.2.1 (C) 2021-2023 Linaro, 2024-2026 Arm Ltd.
 
 Usage:
   cpackget [command] [flags]
@@ -163,6 +163,8 @@ Flags:
 
 Use "cpackget [command] --help" for more information about a command and command-specific flags.
 ```
+
+By default, `cpackget` reports warnings, errors, and a concise summary of operations and progress. Use `--verbose` to include debugging details or `--quiet` to print only error messages.
 
 ## Command Examples
 
@@ -289,6 +291,62 @@ csolution list boards --filter NXP
 csolution list npus --filter Ethos-U55 --filter 128MACs
 ```
 
+### List Debug Adapters
+
+List the debug adapters registered with the CMSIS-Toolbox. The names in the default output are the values accepted by [`debugger: name:`](YML-Input-Format.md#debugger). Use `--verbose` to show aliases that are also accepted, and `--filter` to restrict the list.
+
+```shell
+csolution list debuggers
+csolution list debuggers --filter pyOCD --verbose
+```
+
+Example output:
+
+```text
+CMSIS-DAP@pyOCD
+  CMSIS-DAP
+  DAP-Link
+ST-Link@pyOCD
+  ST-LINK
+```
+
+### List Examples
+
+List examples provided by the installed software packs. Each entry identifies the example and its originating pack. Use one or more `--filter` options to find matching examples. The `--verbose` option adds the description, documentation, supported development environments, source folder, load file, and supported boards when that information is provided by the pack.
+
+```shell
+csolution list examples
+csolution list examples --filter Blinky
+csolution list examples --filter Blinky --filter STM32 --verbose
+```
+
+Example output:
+
+```text
+Blinky (Keil::B-U585I-IOT02A_BSP@3.0.0)
+  description: CMSIS-RTOS2 Blinky example with VIO
+  environment: csolution
+    load: <pack-root>/Keil/B-U585I-IOT02A_BSP/3.0.0/Examples/Blinky/Blinky.csolution.yml
+```
+
+### List Project Templates
+
+List project templates provided by installed software packs. Each entry identifies the template and its originating pack. Use `--filter` to restrict the list. The `--verbose` option adds the template description, directory, and `*.csolution.yml` file.
+
+```shell
+csolution list templates
+csolution list templates --filter CubeMX --verbose
+```
+
+Example output:
+
+```text
+CubeMX Basic solution (Keil::STM32U5xx_DFP@3.2.0)
+  description: Create a CubeMX basic solution with project
+  path: <pack-root>/Keil/STM32U5xx_DFP/3.2.0/Templates/CubeMX
+  file: <pack-root>/Keil/STM32U5xx_DFP/3.2.0/Templates/CubeMX/CubeMX.csolution.yml
+```
+
 ### List Unresolved Dependencies
 
 Device, board, and software components are specified as part of the `*.csolution.yml` and `*.cproject.yml` files. Print a list of unresolved project dependencies. The list can be filtered by words provided with the option `--filter`:
@@ -308,7 +366,7 @@ csolution convert example.csolution.yml
 Convert specific contexts of a `*.csolution.yml` file into build information files.
 
 ```shell
-csolution convert SimpleTZ.csolution.yml -c CM33_s.Debug -c CM33_ns.Release+AVH
+csolution convert SimpleTZ.csolution.yml -c CM33_s.Debug -c CM33_ns.Release+FVP
 ```
 
 ### List Compatible Layers
@@ -335,14 +393,12 @@ Run a generator (in this case, STM32CubeMX) for a specific project context.  Not
 csolution run -g CubeMX mysolution.csolution.yml -c Blinky.Debug+STM32L4
 ```
 
-### Use context set
+### Legacy Context Set
 
 !!! Note
-    A context set is no longer recommended. Use a [target-set](build-overview.md#working-with-target-set) instead.
+    Use a [`target-set:`](build-overview.md#working-with-target-set) and `--active` for new projects. Context sets are retained for legacy projects.
 
-When working with [multiple related projects](build-overview.md#configure-related-projects), it might be necessary to combine different build types for debugging and downloading in the target hardware. The option `--context-set` allows you to save and reuse the selected `--context` options.
-
-Write the selected `--context` options to the file `SimpleTZ.cbuild-set.yml`. Refer to [file structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-setyml) for details.
+The option `--context-set` saves selected `--context` options in `SimpleTZ.cbuild-set.yml` or reuses that selection. Refer to [file structure of `*.cbuild-set.yml`](YML-CBuild-Format.md#cbuild-setyml) for details.
 
 ```shell
 cbuild SimpleTZ.csolution.yml -S -c CM33_s.Release -c CM33_ns.Debug
@@ -367,7 +423,7 @@ csolution list configs SimpleTZ.csolution.yml -S
 In an IDE environment, this command downloads missing packs creates [build information files](YML-CBuild-Format.md), and generates the file `compile_commands.json` for IntelliSense. Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
 
 ```shell
-cbuild setup example.csolution.yml --context-set --packs
+cbuild setup example.csolution.yml --active <target-type>[@<target-set>] --packs
 ```
 
 ### Specify CMSIS-Pack root directory
@@ -376,7 +432,7 @@ cbuild setup example.csolution.yml --context-set --packs
 variants. There are two ways to specify the CMSIS-PACK root directory:
 
 1. With the `CMSIS_PACK_ROOT` environment variable.
-   Refer to [Installation - Environment Variables](installation.md#environment-variables).
+   Refer to [Installation: Environment Variables](installation.md#environment-variables).
 
 2. With the option `--pack-root <path>`, for example:
 
@@ -401,14 +457,15 @@ This command creates in the CMSIS-PACK root directory the following sub-director
 
 Sub-Directory   | Content
 :---------------|:------------------------
-`.Web`          | [**Pack Index File**](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#packIndexFile) of a public web service and `*.PDSC` files.
+`.Web`          | [**Pack Index File**](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#packIndexFile) of a public web service and cached `*.PDSC` files for packs that have been requested.
 `.Download`     | Packs that are installed from a web service. Stores `*.PDSC` pack description file, `*.pack` content file, and related license information.
 `.Local`        | Index file `local_repository.pidx` that points to local installations for the development of a software pack. Contains also the `*.PDSC` files from private software packs.
 
-The `cpackget init` command [initializes the CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory) but does not download PDSC files. Combined with the option `--all-pdsc-files` it also downloads all PDSC files that are available in the public index.
+The `cpackget init` command [initializes the CMSIS-Pack root directory](#initialize-cmsis-pack-root-directory) but does not download PDSC files. Combined with the option `--all-pdsc-files` it also downloads the PDSC files available in the public index, except those of deprecated packs. Add `--deprecated` to include deprecated PDSC files.
 
 ```shell
-cpackget init https://www.keil.com/pack/indexpidx --all-pdsc-files
+cpackget init https://www.keil.com/pack/index.pidx --all-pdsc-files
+cpackget init https://www.keil.com/pack/index.pidx --all-pdsc-files --deprecated
 ```
 
 ### Update Pack Index
@@ -425,10 +482,11 @@ The option `--sparse` avoids updating the PDSC files and improves, therefore, th
 cpackget update-index --sparse
 ```
 
-Use the option `--all-pdsc-files` to download all PDSC files available in the public index.
+Use the option `--all-pdsc-files` to download all current PDSC files available in the public index. PDSC files of deprecated packs are excluded by default; add `--deprecated` to include them.
 
 ```shell
 cpackget update-index --all-pdsc-files
+cpackget update-index --all-pdsc-files --deprecated
 ```
 
 ### Add packs
@@ -438,6 +496,8 @@ There are different ways to install software packs.
 #### Install public packs
 
 The commands below install software packs from a public web service. The available packs along with download URL and version information are listed in the **Pack Index File**.
+
+When adding a public pack, `cpackget` updates the public index when its daily update is due. It downloads or refreshes only the PDSC files required for the requested pack and its dependencies; a local copy of every PDSC file listed in the public index is not required. Other PDSC files already cached in `.Web` are not refreshed by this operation. The default output summarizes the index operation and reports progress for PDSC files that were actually updated. It does not check local pack repositories during this automatic update. If downloading a valid new `index.pidx` fails, `cpackget` issues a warning and uses the existing index, when available.
 
 Check if a pack is installed. If not, install the latest version of a public software pack:
 
@@ -544,6 +604,8 @@ itself:
 cpackget add <path>/Vendor.PackName.x.y.z.pack
 ```
 
+For a local `*.pack` file, `cpackget` automatically skips the public-index update. The installation therefore works without a network connection; no offline option is required. Pack dependencies must already be locally available, or the pack can be installed with `--no-dependencies` when resolving them is not required.
+
 A software pack that is available for download via a URL can be downloaded and installed with:
 
 ```shell
@@ -581,11 +643,19 @@ List all cached packs that are present in the `.Download/` folder:
 cpackget list --cached
 ```
 
-List all packs present in the local copy of the **Pack Index File** (`index.pidx`):
+List all non-deprecated packs present in the local copy of the **Pack Index File** (`index.pidx`):
 
 ```shell
 cpackget list --public
 ```
+
+List only deprecated packs in the public index:
+
+```shell
+cpackget list --deprecated
+```
+
+Deprecated packs and their PDSC files are excluded from normal public listings and bulk PDSC downloads, but a deprecated pack can still be installed by specifying its pack ID explicitly.
 
 !!! Note
     [Update Pack Index File](#update-pack-index) before using the `list` command to list all public software packs.
@@ -620,15 +690,18 @@ Remove a pack that was [installed via a repository](#install-a-repository).
 cpackget rm Vendor.PackName.pdsc
 ```
 
+!!! Note
+    Remove a local pack with `cpackget rm` before deleting or moving its PDSC file.
+
 ## DevOps Usage
 
-The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The `./out` directory contains all build artifacts of an application for execution on physical hardware or simulation models. [Arm Virtual Hardware - Fixed Virtual Platforms (AVH FVP)](https://github.com/ARM-software/AVH) enables unit tests and integration tests with simulation models and various virtual interfaces. Using [software layers](build-overview.md#software-layers) allows, for example, to test on physical hardware or AVH-FVP simulation models. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.
+The CMSIS-Toolbox supports Continuous Integration (CI) tests in DevOps systems. The `./out` directory contains all build artifacts of an application for execution on physical hardware or simulation models. [Arm Fixed Virtual Platforms (FVPs)](YML-Input-Format.md#arm-fvp) enable unit and integration testing with simulation models and virtual interfaces. Using [software layers](build-overview.md#software-layers) allows the same application to be tested on physical hardware or an FVP simulation model. The following commands show typical usage of the CMSIS-Toolbox build system in CI environments.
 
 The commands below show typical builds in a CI system. Using `--packs` installs all public packs with implicit acceptance of licenses. This command builds all projects, target-types, and build-types. Using [`--context`](build-overview.md#context) reduces the scope of the build. Using [`--frozen-packs`](build-overview.md#reproducible-builds) uses exactly the packs that are specified in the file `*.cbuild-pack.yml`.
 
 ```shell
 cbuild Hello.csolution.yml --packs                          # install packs and build all targets
-cbuild Hello.csolution.yml --packs --active AVH-SSE-300     # build target AVH-SSE-300
+cbuild Hello.csolution.yml --packs --active FVP-SSE-300     # build FVP target
 cbuild Hello.csolution.yml --packs --frozen-packs           # use exact pack versions of *.cbuild-pack.yml
 ```
 
@@ -654,11 +727,47 @@ Several [Arm examples](https://github.com/Arm-Examples) show CI workflows using 
 
 Example            | Description
 :------------------|:------------------
-[AVH-Hello](https://github.com/Arm-Examples/AVH-Hello) | Build and execution test for "Hello World" example using a GitHub Action matrix to target all Cortex-M processors, Arm Compiler or GCC, and AVH simulation.
+[AVH-Hello](https://github.com/Arm-Examples/AVH-Hello) | Build and execution test for a "Hello World" example using a GitHub Actions matrix with Cortex-M FVP simulation models and Arm Compiler or GCC.
 [AVH_CI_Template](https://github.com/Arm-Examples/AVH_CI_Template)     | CI Template for unit test automation that uses GitHub Actions.
 [CMSIS Version 6](https://github.com/ARM-software/CMSIS_6/actions) | Runs a CMSIS-Core validation test across the supported processors using multiple compilers.
 [RTOS2 Validation](https://github.com/ARM-software/CMSIS-RTX/actions) | Runs the CMSIS-RTOS2 validation across Keil RTX using source and library variants.
 [STM32H743I-EVAL_BSP](https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP) | Build test of a Board Support Pack (BSP) with MDK-Middleware [Reference Applications](ReferenceApplications.md) using Arm Compiler or GCC. The artifacts store the various example projects for testing on the hardware board.
+
+## Static Code Analysis
+
+For a standard *csolution project*, `cbuild setup` generates the compiler input required by static code analysis tools for every context that belongs to the active target-set:
+
+```shell
+cbuild setup MyApp.csolution.yml --active MyTarget --packs --frozen-packs
+```
+
+By default, the files are generated in `out/<project>/<target>/<build>`:
+
+- `compile_commands.json` lists each source file with its working directory, compiler, and command-line options.
+- `compile_macros.h` contains the compiler's built-in macros. It is already included by the commands in `compile_commands.json` and normally does not need to be configured separately in the analyzer.
+
+The actual location is controlled by [`output-dirs:`](YML-Input-Format.md#output-dirs). Use the generated context information referenced by `<solution>.cbuild-idx.yml` to locate the output directory instead of assuming the default path.
+
+For desktop use, select `compile_commands.json` as the compilation database in the analyzer. In CI, install the required packs, run `cbuild setup` in a clean workspace, and pass the generated database to the analysis step. The option `--frozen-packs` ensures that the pack versions recorded in `*.cbuild-pack.yml` are used, which makes the analysis configuration reproducible. For example, an analyzer that accepts a compilation database may be invoked as follows (replace the option with that tool's syntax):
+
+```shell
+cbuild setup MyApp.csolution.yml --active MyTarget --packs --frozen-packs
+analyzer --compilation-database out/MyApp/MyTarget/Debug/compile_commands.json
+```
+
+Some analyzers capture compiler invocations instead of importing a compilation database. For example, configure [CodeSonar C/C++ build analysis](https://support-resources.codesecure.com/integrations/gitlab/documentation) to observe a clean build after project setup:
+
+```shell
+cbuild setup MyApp.csolution.yml --active MyTarget --packs --frozen-packs
+cbuild MyApp.csolution.yml --active MyTarget --rebuild --frozen-packs
+```
+
+Run the second command under the CodeSonar build-capture command for the installed CodeSonar version, then perform the CodeSonar analysis and upload. The generated `compile_commands.json` and `compile_macros.h` remain useful for checking the resolved compiler configuration and for integrations that accept a compilation database directly.
+
+For other project types, the analysis input differs:
+
+- A [native CMake project](build-operation.md#native-cmake-project-integration) generates its own compilation database when `configure:` contains `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON`.
+- A [West project](build-operation.md#west-integration) uses the compilation database generated by West; CMSIS-Toolbox does not add `compile_macros.h` to it.
 
 ## IDE Usage
 
@@ -674,7 +783,7 @@ The command above is used when the IDE starts:
 - The option `--packs` can enable the download of missing software packs that are public.
 - The option `--update-rte` is used when the IDE changes `device:`, `board:` or `component:` settings.
 
-The `cbuild setup` command creates [build information files](YML-CBuild-Format.md) and generates the file `compile_commands.json` for IntelliSense in an VS Code IDE environment. Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
+The `cbuild setup` command creates [build information files](YML-CBuild-Format.md), `compile_commands.json`, and `compile_macros.h` for IDE language services and [Static Code Analysis](#static-code-analysis). Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
 
 ### Project Outline View
 
@@ -686,7 +795,7 @@ The project outline view in an IDE may utilize the project files as described be
 
 Using the above information, it is possible to create an outline view, but without the file list for components. For software layers, the content may require the `*.cbuild.<context>.yml` files that are generated with the `cbuild setup` command.
 
-The `cbuild-idx.yml` file provides the exact location of all `*.cbuild.<context>.yml` files that are used in this context-set. The `*.cbuild.<context>.yml` files contain for the components source files, configuration file information, API header files, user code templates, generator information, and links to documentation. The project outline view may provide access to this information.
+The `cbuild-idx.yml` file provides the exact location of all `*.cbuild.<context>.yml` files that are used for the selected target. The `*.cbuild.<context>.yml` files contain for the components source files, configuration file information, API header files, user code templates, generator information, and links to documentation. The project outline view may provide access to this information.
 
 ### Build Process
 

@@ -14,7 +14,7 @@ The CMSIS-Toolbox version 2.7 implements the experimental features for:
 
 Hardening and finalizing of these features is planned for a later CMSIS-Toolbox version.
 
-In a multi-processor or multi-project application, the `target type` describes the target hardware. A solution is a collection of related projects, and the context set defines the projects that are deployed to the target hardware. A project uses a subset of resources (called regions at linker level).
+In a multi-processor or multi-project application, the `target type` describes the target hardware. A solution is a collection of related projects, and the target-set defines the projects that are deployed to the target hardware. A project uses a subset of resources (called regions at linker level).
 
 The [linker script management](build-overview.md#linker-script-management) is extended for multi-processor or multi-project applications with the following features:
 
