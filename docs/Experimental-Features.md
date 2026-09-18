@@ -705,16 +705,21 @@ Usage:
   ctrace <trace-dir> [options]
 
 Options:
-      --csv                Generate only CSV files (default: generate CSV and CTF)
-      --ctf                Generate only CTF files (default: generate CSV and CTF)
+      --csv                Generate CSV files
+      --ctf                Generate CTF files
   -a  --all                Generate both CSV and CTF files
       --type sel [...]     Filter output for specific packet types (default: all packet types)
       --stream sel [...]   Filter output for specific streams (default: all streams)
+  -c, --channel arg        Specify <channel> to decode; repeat to decode multiple channels
+                           (default: process all channels for specified solution sets in trace-dir)
   -t, --target arg         Specify <solution-set> (default: process all solution sets in trace-dir)
   -V, --version            Print version
 ```
 
-`ctrace` processes files in the specified `<trace-dir>`. If this directory contains more than one `<solution-set>`, each solution set is processed separately.
+`ctrace` processes files in the specified `<trace-dir>`:
+- If this directory contains more than one `<solution-set>`, each solution set is processed separately.
+- If a solution set contains more than one `<channel>`, each channel is processed separately.
+
 CSV and CTF output files are written to the `<trace-dir>` as explained under [directory and file structure](#directory-and-file-structure).
 When no option for generating files is specified, the raw trace data files are validated.
 
