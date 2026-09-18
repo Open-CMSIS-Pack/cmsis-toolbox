@@ -34,7 +34,7 @@
           <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a>
         <div class="version">
-          2.14.0
+          2.15.0
         </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -109,6 +109,12 @@
     <li class="toctree-l2"><a class="reference internal" href="#versioning">Versioning</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#pack-distribution">Pack Distribution</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#validate-a-pack-index">Validate a Pack Index</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#github-pack-distribution">GitHub Pack Distribution</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#project-examples">Project Examples</a>
         <ul>
@@ -487,6 +493,16 @@ packchk &lt;workdir&gt;/BSP-Pack-Handson/ACME.ACME_BSP.pdsc -i &lt;workdir&gt;/D
 </div>
 <h2 id="pack-distribution">Pack Distribution</h2>
 <p>The section <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html">Publish a CMSIS-Pack</a> in the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec">Open-CMSIS-Pack specification</a> describes the pack distribution process. There are multiple distribution options, ranging from <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_LocalInstallation">local installation</a> to publishing via <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_WebDownload">web services</a>.</p>
+<h3 id="validate-a-pack-index">Validate a Pack Index</h3>
+<p>Before publishing a vendor index (<code>*.vidx</code>), convert it to a package index (<code>*.pidx</code>) and test the result in a separate pack root:</p>
+<pre><code class="language-shell">vidx2pidx &lt;index&gt;.vidx --output index.pidx
+cpackget init --pack-root packroot index.pidx
+cpackget list --public --pack-root packroot
+</code></pre>
+<p>The <code>list</code> command shows the packs found in the generated package index. Install each listed pack to verify that it can be downloaded and installed successfully:</p>
+<pre><code class="language-shell">cpackget add Vendor::PackName --pack-root packroot
+</code></pre>
+<h3 id="github-pack-distribution">GitHub Pack Distribution</h3>
 <p>Several vendors use GitHub for pack distribution today. <a href="https://www.keil.arm.com/packs/?q=Alif&amp;pack">Alif Semiconductor</a> is a good example:</p>
 <ul>
 <li><a href="https://github.com/alifsemi/alif_cmsis_packs">github.com/alifsemi/alif_cmsis_packs</a> contains the <code>*.pidx</code> index file that references all public packs (including versions) provided by Alif.<ul>
@@ -498,18 +514,12 @@ packchk &lt;workdir&gt;/BSP-Pack-Handson/ACME.ACME_BSP.pdsc -i &lt;workdir&gt;/D
 </ul>
 <p>Refer to <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_GitHubHosting">GitHub-hosted packs</a> in the  <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec">Open-CMSIS-Pack specification</a> for details on the <code>*.pidx</code> and <code>*.pdsc</code> file content.</p>
 <h2 id="project-examples">Project Examples</h2>
-<p>Project examples help to get started with new devices, boards, and middleware software components. The CMSIS-Pack format supports, therefore, different types of project examples:</p>
-<ul>
-<li><a href="#template-projects"><em>Template Projects</em></a> are <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates">stub projects</a> that help to get started. Some software packs may contain device-specific templates.</li>
-<li><a href="#examples"><em>Examples</em></a> are created for a specific hardware or evaluation board. These are typically complete projects that directly interface with board and device peripherals.</li>
-<li><a href="#reference-applications"><em>Reference Applications</em></a> are hardware-agnostic project examples that required <a href="#layers">layers</a> to add the hardware abstraction of a target (typically a board).</li>
-</ul>
+<p>CMSIS-Pack supports <em>Template Projects</em>, <em>Examples</em>, and <em>Reference Applications</em>. Refer to <a href="../ReferenceApplications/#introduction">Project Example Types</a> for details. This section explains how these project types are structured and registered within a software pack.</p>
 <p>In addition, packs may contain:</p>
 <ul>
 <li><a href="#layers"><em>Layers</em></a> are  pre-configured software components or source code that can be shared across multiple projects.</li>
 <li><a href="#code-templates"><em>Code Templates</em></a> are stub source files for middleware components that can be incorporated into user code.</li>
 </ul>
-<p>The following section explains how the different types of project examples are structured and registered within a CMSIS-Pack.</p>
 <h3 id="support-multiple-compilers">Support Multiple Compilers</h3>
 <p>To make project examples independent of a specific compiler toolchain, the <code>*.csolution.yml</code> file should include the <code>select-compiler:</code> node with a list of tested compilers. When a user or IDE starts such an example, the <code>compiler:</code> node that selects the compiler gets added.</p>
 <p><strong>Example:</strong></p>

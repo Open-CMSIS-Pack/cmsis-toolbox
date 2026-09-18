@@ -34,7 +34,7 @@
           <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a>
         <div class="version">
-          2.14.0
+          2.15.0
         </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -787,7 +787,15 @@
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>model:</code></td>
-<td style="text-align: left;">Location, name, and custom key/value metadata for the ML model layer.</td>
+<td style="text-align: left;">Layer location and custom properties for ML model generation. Custom properties may contain scalar values, lists, and nested maps.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>clayer:</code></td>
+<td style="text-align: left;">Path to the ML model layer, relative to the generated <code>*.cbuild-mlops.yml</code> file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <code>&lt;key&gt;:</code></td>
+<td style="text-align: left;">Custom property preserved from the input <code>model:</code> node after recursive variable expansion.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>hardware:</code></td>
@@ -812,9 +820,12 @@
     options: --accelerator-config ethos-u85-256 --system-config RTSS_HE_SRAM_MRAM --memory-mode Shared_Sram
   model:
     clayer: ai_layer/ai_layer.clayer.yml
-    name: RPS
     framework: ExecuTorch
     source:
+      - models/rps_detector.pte
+    settings:
+      delegate: Ethos-U
+      quantize: true
   hardware:
     active: AppKit-E8-U85@HIL
     cbuild-run: out/MyApp+AppKit-E8-U85.cbuild-run.yml
@@ -1992,7 +2003,7 @@ The <code>output:</code> node also contains other required files that are added 
 <p><em>For <code>compiler: AC6</code>:</em></p>
 <ul>
 <li>When only a file with <code>type: elf</code> is generated, the file gets <code>load: image+symbols</code>.</li>
-<li>When a file with <code>type: elf</code> and a file with <code>type: hex</code> is generated, the <code>type: elf</code> file gets <code>load: symbols</code> and the <code>type: hex</code> file gets <code>load: image</code>. This allows to bypass <a href="../Troubleshooting/#gnu-loader-issues-with-arm-compiler-6">GNU loader issues with Arm Compiler 6</a>.</li>
+<li>When a file with <code>type: elf</code> and a file with <code>type: hex</code> is generated, the <code>type: elf</code> file gets <code>load: symbols</code> and the <code>type: hex</code> file gets <code>load: image</code>. This allows to bypass <a href="../Troubleshooting/#gnu-debugger-issues-with-ac6-or-clang">GNU debugger issues with AC6 or CLANG</a>.</li>
 <li>All other file types get <code>load: none</code>.</li>
 </ul>
 <p><em>For any other compiler:</em></p>

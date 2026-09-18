@@ -34,7 +34,7 @@
           <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a>
         <div class="version">
-          2.14.0
+          2.15.0
         </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -192,7 +192,10 @@
 <h3 id="step-2-use-a-template-project-and-add-dfp-and-bsp">Step 2: Use a Template Project and add DFP and BSP</h3>
 <ul>
 <li>
-<p>Select a suitable generic <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates">Template Project</a> or refer to the DFP documentation as some devices have specific template projects.</p>
+<p>Select a suitable generic <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates">Template Project</a>. These templates show the file structure for different types of <code>csolution</code> projects. Replace the placeholders and add the application content required for your project.</p>
+</li>
+<li>
+<p>Alternatively, refer to the DFP or BSP documentation, as some software packs provide device-specific or board-specific template projects.</p>
 </li>
 <li>
 <p>Copy the template project and open the <code>*.csolution.yml</code> file.  Add under <a href="../YML-Input-Format/#packs"><code>packs:</code></a> the packs identified in step (1). You may omit the version number during initial project development.</p>
@@ -242,7 +245,7 @@
 <p>Refer to <a href="#using-components">Using Components</a> for more information.</p>
 </li>
 <li>
-<p>Now, the project should already compile with the command <code>cbuild &lt;name&gt;.csolution.yml --update-rte --packs --context .Debug</code>. Note that this step downloads missing packs and copies configuration files to the <a href="../build-overview/#rte-directory-structure">RTE directory</a>.</p>
+<p>Once the referenced application source files are present, verify the project with <code>cbuild &lt;name&gt;.csolution.yml --update-rte --packs --context .Debug</code>. This command is suitable for a single project and for independent projects such as the UnitTest template. For Multicore and TrustZone templates, build the related application images through their target set with <code>cbuild &lt;name&gt;.csolution.yml --update-rte --packs --active &lt;target-type&gt;</code>. These commands download missing packs and copy configuration files to the <a href="../build-overview/#rte-directory-structure">RTE directory</a>.</p>
 </li>
 </ul>
 <h3 id="step-5-review-and-configure-rte-files">Step 5: Review and configure RTE files</h3>
@@ -273,7 +276,7 @@
   :
 </code></pre>
 <ul>
-<li>Again, the project should compile with the command <code>cbuild &lt;name&gt;.csolution.yml --update-rte --packs --context .Debug</code>. Repeat step (4) when you add new components that require configuration.</li>
+<li>Build the project again using the command appropriate for the selected template, as described in step (4). Repeat step (4) when you add new components that require configuration.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

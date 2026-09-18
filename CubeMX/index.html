@@ -34,7 +34,7 @@
           <a href=".." class="icon icon-home"> CMSIS-Toolbox
         </a>
         <div class="version">
-          2.14.0
+          2.15.0
         </div><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
       <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
@@ -199,7 +199,7 @@
 </div>
 <p><strong>File: <code>CubeMX.csolution.yml</code></strong></p>
 <pre><code class="language-yml">solution:
-  created-for: CMSIS-Toolbox@2.3.0
+  created-for: CMSIS-Toolbox@2.14.0
   description: Simple CubeMX example
   cdefault:                                   # use toolchain default settings
   compiler: AC6                               # select toolchain
@@ -208,18 +208,25 @@
   packs:
     - pack: ARM::CMSIS                        # CMSIS pack is required for most projects
     - pack: Keil::B-U585I-IOT02A_BSP
-    - pack: Keil::STM32U5xx_DFP@&gt;=3.0.0-0
+    - pack: Keil::STM32U5xx_DFP@^3.0.0
 
   target-types:
     - type: MyBoard                           # My evaluation kit
       board: B-U585I-IOT02A                   # Board name as defined by the pack
+      target-set:
+        - set: Debug
+          images:
+            - project-context: CubeMX.Debug
+        - set: Release
+          images:
+            - project-context: CubeMX.Release
 
-  build-types:                                # defines toolchain options for 'debug' and 'release'
-    - type: Debug
+  build-types:
+    - type: Debug                             # toolchain options for 'debug'
       debug: on
       optimize: none
 
-    - type: Release
+    - type: Release                           # toolchain options for 'release'
       debug: off
       optimize: balanced
 
@@ -236,22 +243,21 @@
 <ul>
 <li>Identify the required generator and the directory where the generated files are stored with:</li>
 </ul>
-<pre><code class="language-bash">csolution CubeMX.csolution.yml list generators --verbose
+<pre><code class="language-bash">csolution CubeMX.csolution.yml list generators --active MyBoard@Debug --verbose
 CubeMX (Global Registered Generator)    # generator name
   base-dir: STM32CubeMX/MyBoard         # directory for generated files
-    context: CubeMX.Debug+MyBoard       # list of context that uses this directory
-    context: CubeMX.Release+MyBoard
+    context: CubeMX.Debug+MyBoard       # context that uses this directory
 </code></pre>
 <ul>
 <li>Use the information above to run the generator:</li>
 </ul>
-<pre><code class="language-bash">csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
+<pre><code class="language-bash">csolution CubeMX.csolution.yml run --generator CubeMX --active MyBoard@Debug
 </code></pre>
-<p>This starts CubeMX and passes the information about the selected board, device, and select toolchain. For a project that selects a board, CubeMX imports the default configuration for it. In CubeMX, review and adjust configuration options as required for your application, then just click the button <code>GENERATE CODE</code>. The generated files will be stored in the directory <code>STM32CubeMX/MyBoard</code>.</p>
+<p>This starts CubeMX and passes the information about the selected board, device, and selected toolchain. For a project that selects a board, CubeMX imports the default configuration for it. In CubeMX, review and adjust configuration options as required for your application, then click the button <code>GENERATE CODE</code>. The generated files will be stored in the directory <code>STM32CubeMX/MyBoard</code>.</p>
 <ul>
 <li>Build the project using this command:</li>
 </ul>
-<pre><code class="language-bash">cbuild CubeMX.csolution.yml --update-rte
+<pre><code class="language-bash">cbuild CubeMX.csolution.yml --active MyBoard@Debug --update-rte
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -368,7 +374,7 @@ Other kernels require different components and packs, but the concept is similar
 </code></pre>
 <h3 id="step-2-configure-interrupt-handlers">Step 2: Configure interrupt handlers</h3>
 <p>Configure the interrupt handlers by running CubeMX with:</p>
-<pre><code class="language-bash">csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
+<pre><code class="language-bash">csolution CubeMX.csolution.yml run --generator CubeMX --active MyBoard@Debug
 </code></pre>
 <p>Open the dialog <em>Pinout &amp; Configuration - System Core NVIC - Code generation</em> and disable <em>Generate IRQ handler</em> for:</p>
 <ul>
@@ -377,7 +383,7 @@ Other kernels require different components and packs, but the concept is similar
 <li>System tick timer</li>
 </ul>
 <p><img alt="STM32CubeMX - configure interrupt handlers" src="../images/CubeMX_NVIC_RTOS.png" title="configure interrupt handlers" /></p>
-<p>Then click the button <code>GENERATE CODE</code> to update the generated files in the directory <code>STM32CubeMX/MyBoard</code></p>
+<p>Then click the button <code>GENERATE CODE</code> to update the generated files in the directory <code>STM32CubeMX/MyBoard</code>.</p>
 <h2 id="linker-script">Linker Script</h2>
 <p>Usually, STM32CubeMX generates a linker script file that is tightly coupled with the generated startup and system
 initialization code. To ensure proper memory layout and application behavior, the generated linker script file must be
