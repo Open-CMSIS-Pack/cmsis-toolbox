@@ -361,7 +361,9 @@ Refer to [MLOps Integration](build-overview.md#mlops-integration) for more infor
 &nbsp;&nbsp;&nbsp; `processor:`                             | Processor information for the ML model.
 &nbsp;&nbsp;&nbsp; `npu:`                                   | NPU type and MAC configuration (only present for devices with NPU).
 &nbsp;&nbsp;&nbsp; `vela:`                                  | Vela INI file and option string (only present for Ethos-U NPUs).
-&nbsp;&nbsp;&nbsp; `model:`                                 | Location, name, and custom key/value metadata for the ML model layer.
+&nbsp;&nbsp;&nbsp; `model:`                                 | Layer location and custom properties for ML model generation. Custom properties may contain scalar values, lists, and nested maps.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `clayer:`                | Path to the ML model layer, relative to the generated `*.cbuild-mlops.yml` file.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `<key>:`                 | Custom property preserved from the input `model:` node after recursive variable expansion.
 &nbsp;&nbsp;&nbsp; `hardware:`                              | Hardware test configuration (active target, `cbuild-run` file, and output image list).
 &nbsp;&nbsp;&nbsp; `simulator:`                             | Simulator test configuration (active target, output image list, and FVP invocation details).
 
@@ -380,9 +382,13 @@ cbuild-mlops:
     options: --accelerator-config ethos-u85-256 --system-config RTSS_HE_SRAM_MRAM --memory-mode Shared_Sram
   model:
     clayer: ai_layer/ai_layer.clayer.yml
-    name: RPS
     framework: ExecuTorch
     source:
+      - models/rps_detector.pte
+      - ""
+    settings:
+      delegate: Ethos-U
+      quantize: true
   hardware:
     active: AppKit-E8-U85@HIL
     cbuild-run: out/MyApp+AppKit-E8-U85.cbuild-run.yml
@@ -957,7 +963,7 @@ For files that are the output of a `cproject.yml` project, the `output:` node li
 *For `compiler: AC6`:*
 
 - When only a file with `type: elf` is generated, the file gets `load: image+symbols`.
-- When a file with `type: elf` and a file with `type: hex` is generated, the `type: elf` file gets `load: symbols` and the `type: hex` file gets `load: image`. This allows to bypass [GNU loader issues with Arm Compiler 6](Troubleshooting.md#gnu-loader-issues-with-arm-compiler-6).
+- When a file with `type: elf` and a file with `type: hex` is generated, the `type: elf` file gets `load: symbols` and the `type: hex` file gets `load: image`. This allows to bypass [GNU debugger issues with AC6 or CLANG](Troubleshooting.md#gnu-debugger-issues-with-ac6-or-clang).
 - All other file types get `load: none`.
 
 *For any other compiler:*

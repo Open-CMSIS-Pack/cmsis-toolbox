@@ -114,12 +114,12 @@ solution:
     - type: FRDM-K32L3A6
       board: FRDM-K32L3A6
 
-  build-types:                                # defines toolchain options for 'debug' and 'release'
-    - type: Debug
+  build-types:
+    - type: Debug                             # toolchain options for 'debug'
       debug: on
       optimize: debug
 
-    - type: Release
+    - type: Release                           # toolchain options for 'release'
       debug: off
       optimize: balanced
 
@@ -1192,10 +1192,11 @@ The `*.cbuild-mlops.yml` file provides information about:
 - NPU type with MAC configuration
 - Vela INI file and parameters (only for Ethos-U NPUs)
 - Location of the `*.clayer.yml` file that contains the ML model under development
+- Custom model properties, including simple values, lists, and grouped settings with additional levels
 - Build information (using `cbuild` with hardware target) for testing on hardware
 - Build information (using `cbuild` with simulator target) for testing on FVP simulation models along with information for FVP invocation
 
-The [`*.cbuild-mlops.yml`](YML-CBuild-Format.md#cbuild-mlopsyml) file is designed for applications that use one or more ML models and optional NPUs. It is assumed that the MLOps system creates **only one ML model at a time** and therefore needs information about the ML model to target. The [`mlops:`](YML-Input-Format.md#mlops) node in the `*.csolution.yml` file specifies these parameters. When this node is used, the CMSIS-Toolbox generates the `*.cbuild-mlops.yml` file with the base name of the `*.csolution.yml` file (in the same folder).
+The [`*.cbuild-mlops.yml`](YML-CBuild-Format.md#cbuild-mlopsyml) file is designed for applications that use one or more ML models and optional NPUs. Custom properties in the [`model:`](YML-Input-Format.md#model) node can describe framework-specific inputs as simple values, lists, or grouped settings with additional levels. This allows a model integration script to process several models or related artifacts in one workflow. When [`mlops:`](YML-Input-Format.md#mlops) is used, the CMSIS-Toolbox generates the `*.cbuild-mlops.yml` file with the base name of the `*.csolution.yml` file in the same folder.
 
 ### Model Integration Workflow
 
@@ -1241,9 +1242,13 @@ solution:
       memory: Shared_Sram       # Choose memory configuration from Vela.ini file
     model:
       clayer: $AI-Layer$        # Layer that contains the ML model
-      name: RPS                 # Name for the ML model (default Algorithm)
       framework: ExecuTorch     # Custom metadata passed to the MLOps system
-      source: $Model-Source$    # Undefined variables produce an empty value
+      source:                   # Lists support workflows with multiple models
+        - models/rps_detector.pte
+        - $Model-Source$        # Undefined variables produce an empty string
+      settings:                 # Nested maps are also preserved
+        delegate: Ethos-U
+        quantize: true
     hardware:
       target: AppKit-E8-U85@HIL # Hardware target used for testing
     simulator:
@@ -1313,9 +1318,13 @@ cbuild-mlops:
     options: --accelerator-config ethos-u85-256 --system-config RTSS_HE_SRAM_MRAM --memory-mode Shared_Sram
   model:
     clayer: ai_layer/ai_layer.clayer.yml
-    name: RPS
     framework: ExecuTorch
     source:
+      - models/rps_detector.pte
+      - ""
+    settings:
+      delegate: Ethos-U
+      quantize: true
   hardware:
     active: AppKit-E8-U85@HIL
     cbuild-run: out/MyApp+AppKit-E8-U85.cbuild-run.yml

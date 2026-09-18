@@ -240,6 +240,24 @@ Product Lifecycle Management (PLM) and versioning are closely connected. Version
 
 The section [Publish a CMSIS-Pack](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html) in the [Open-CMSIS-Pack specification](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec) describes the pack distribution process. There are multiple distribution options, ranging from [local installation](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_LocalInstallation) to publishing via [web services](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_WebDownload).
 
+### Validate a Pack Index
+
+Before publishing a vendor index (`*.vidx`), convert it to a package index (`*.pidx`) and test the result in a separate pack root:
+
+```shell
+vidx2pidx <index>.vidx --output index.pidx
+cpackget init --pack-root packroot index.pidx
+cpackget list --public --pack-root packroot
+```
+
+The `list` command shows the packs found in the generated package index. Install each listed pack to verify that it can be downloaded and installed successfully:
+
+```shell
+cpackget add Vendor::PackName --pack-root packroot
+```
+
+### GitHub Pack Distribution
+
 Several vendors use GitHub for pack distribution today. [Alif Semiconductor](https://www.keil.arm.com/packs/?q=Alif&pack) is a good example:
 
 - [github.com/alifsemi/alif_cmsis_packs](https://github.com/alifsemi/alif_cmsis_packs) contains the `*.pidx` index file that references all public packs (including versions) provided by Alif.

@@ -56,12 +56,12 @@ solution:
           images:
             - project-context: CubeMX.Release
 
-  build-types:                                # defines toolchain options for 'debug' and 'release'
-    - type: Debug
+  build-types:
+    - type: Debug                             # toolchain options for 'debug'
       debug: on
       optimize: none
 
-    - type: Release
+    - type: Release                           # toolchain options for 'release'
       debug: off
       optimize: balanced
 
