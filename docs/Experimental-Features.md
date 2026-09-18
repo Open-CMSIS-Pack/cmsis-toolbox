@@ -187,6 +187,16 @@ debugger:
 
 This selection lets DFP debug sequences use `TraceBufferSelected("MTB")`, and lets a `TraceFlush` sequence direct `BufferStreamOut` to the selected named trace buffer in the debugger.
 
+#### Trace Formatting
+
+Some trace stream channel types may transport formatted trace data from multiple source streams, e.g. ITM data from multiple processors in the system. For simplicity, the formatter is always enabled in this solution.
+
+Trace stream channel | Formatter usage
+:--------------------|:----------------
+SWO                  | Not supported
+TB                   | Always enabled
+ER                   | Not supported
+
 ### Directory and File Structure
 
 Trace-related files are stored relative to the directory that contains the `*.csolution.yml` file.
@@ -987,6 +997,8 @@ PMU resources depend on the processor and selected debug implementation.
 
 ### Related
 
+- [Arm CoreSight Architecture Specification v3.0](https://support.arm.com/documentation/ihi0029/latest/)
+    - Trace Formatter
 - [v8-M Architecture Reference Manual](https://developer.arm.com/documentation/ddi0553/latest/)
     - The Instrumentation Trace Macrocell (B14.1)
     - The Data Watchpoint and Trace unit (B14.2)
