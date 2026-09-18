@@ -2874,10 +2874,10 @@ The `vela:` node is only relevant for Ethos-U NPUs.
 `model:`                                                 |              | Content
 :--------------------------------------------------------|:-------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `clayer:`                             |   Optional   | Path to the layer that contains the ML model under development. The path is resolved and emitted relative to the generated `*.cbuild-mlops.yml` file.
-&nbsp;&nbsp;&nbsp; `<key>:`                              |   Optional   | Custom property for ML model generation. Properties may contain simple values, lists, or grouped settings with additional levels and are preserved in the generated `model:` node.
+&nbsp;&nbsp;&nbsp; `<key>:`                              |   Optional   | Custom information (value, list, or sub-groups) for ML model generation. Information is exported in the `model:` node of the generated `*.cbuild-mlops.yml` file.
 
 !!! Note
-    [`Variables`](#variables) may be used as values for `clayer:` and custom properties, including values in lists and grouped settings. Variables are expanded at every level. An undefined variable expands to an empty string.
+    [`Variables`](#variables) may be used as values for `clayer:` and custom information in `<key>`, including values in lists and grouped settings. Variables are expanded at every level. An undefined variable expands to an empty string.
 
 ### `hardware:`
 

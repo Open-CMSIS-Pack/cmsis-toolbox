@@ -385,7 +385,6 @@ cbuild-mlops:
     framework: ExecuTorch
     source:
       - models/rps_detector.pte
-      - ""
     settings:
       delegate: Ethos-U
       quantize: true
