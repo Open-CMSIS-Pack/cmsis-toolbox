@@ -2838,8 +2838,7 @@ The `mlops:` node can be specified in the `*.csolution.yml` file to provide para
 When `mlops:` is present, the CMSIS-Toolbox generates an additional information file `*.cbuild-mlops.yml` (in the same folder as the `*.csolution.yml` file) that contains parameters such as processor/NPU configuration, Vela options (for Ethos-U), and information required for building and running tests.
 
 !!! Note
-    - This node is intended for workflows where an MLOps system creates **only one ML model at a time**.
-    - String values under `mlops:` support `$variable$` expansion. This allows target-specific `variables:` to adjust the generated MLOps parameters. An undefined variable expands to an empty string, and the corresponding key is emitted without a value in `*.cbuild-mlops.yml`.
+    Custom properties under `model:` may contain simple values, lists, and grouped settings with additional levels. This allows one conversion workflow to process multiple models or related artifacts.
 
 ### `mlops:`
 
@@ -2848,7 +2847,7 @@ When `mlops:` is present, the CMSIS-Toolbox generates an additional information 
 &nbsp;&nbsp;&nbsp; `description:`                        |   Optional   | Descriptive text of the ML model under development.
 &nbsp;&nbsp;&nbsp; [`npu:`](#npu)                        |   Optional   | Select the NPU type and MAC configuration.
 &nbsp;&nbsp;&nbsp; [`vela:`](#vela)                      |   Optional   | Vela configuration (only applicable for Ethos-U NPUs).
-&nbsp;&nbsp;&nbsp; [`model:`](#model)                    |   Optional   | Location, name, and custom metadata for the ML model layer.
+&nbsp;&nbsp;&nbsp; [`model:`](#model)                    |   Optional   | Location and custom properties for ML model generation.
 &nbsp;&nbsp;&nbsp; [`hardware:`](#hardware)              |   Optional   | Select the hardware target-set used for tests.
 &nbsp;&nbsp;&nbsp; [`simulator:`](#simulator)            |   Optional   | Select the simulator target-set used for tests.
 
@@ -2874,9 +2873,11 @@ The `vela:` node is only relevant for Ethos-U NPUs.
 
 `model:`                                                 |              | Content
 :--------------------------------------------------------|:-------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `clayer:`                             |   Optional   | Path to the layer (or variable) that contains the ML model under development.
-&nbsp;&nbsp;&nbsp; `name:`                               |   Optional   | Optional model name (default: `Algorithm`); serves as a namespace.
-&nbsp;&nbsp;&nbsp; `<key>:`                              |   Optional   | Custom model metadata. Any additional key/value pair is preserved in the generated `model:` node after variable expansion.
+&nbsp;&nbsp;&nbsp; `clayer:`                             |   Optional   | Path to the layer that contains the ML model under development. The path is resolved and emitted relative to the generated `*.cbuild-mlops.yml` file.
+&nbsp;&nbsp;&nbsp; `<key>:`                              |   Optional   | Custom information (value, list, or sub-groups) for ML model generation. Information is exported in the `model:` node of the generated `*.cbuild-mlops.yml` file.
+
+!!! Note
+    [`Variables`](#variables) may be used as values for `clayer:` and custom information in `<key>`, including values in lists and grouped settings. Variables are expanded at every level. An undefined variable expands to an empty string.
 
 ### `hardware:`
 
@@ -2906,9 +2907,13 @@ solution:
       misc: --verbose
     model:
       clayer: $AI-Layer$
-      name: RPS
       framework: ExecuTorch
-      source: $Model-Source$
+      source:
+        - models/rps_detector.pte
+        - $Model-Source$
+      settings:
+        delegate: Ethos-U
+        quantize: true
     hardware:
       target: AppKit-E8-U85@HIL
     simulator:

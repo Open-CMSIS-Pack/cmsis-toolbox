@@ -240,6 +240,24 @@ Product Lifecycle Management (PLM) and versioning are closely connected. Version
 
 The section [Publish a CMSIS-Pack](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html) in the [Open-CMSIS-Pack specification](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec) describes the pack distribution process. There are multiple distribution options, ranging from [local installation](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_LocalInstallation) to publishing via [web services](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_WebDownload).
 
+### Validate a Pack Index
+
+Before publishing a vendor index (`*.vidx`), convert it to a package index (`*.pidx`) and test the result in a separate pack root:
+
+```shell
+vidx2pidx <index>.vidx --output index.pidx
+cpackget init --pack-root packroot index.pidx
+cpackget list --public --pack-root packroot
+```
+
+The `list` command shows the packs found in the generated package index. Install each listed pack to verify that it can be downloaded and installed successfully:
+
+```shell
+cpackget add Vendor::PackName --pack-root packroot
+```
+
+### GitHub Pack Distribution
+
 Several vendors use GitHub for pack distribution today. [Alif Semiconductor](https://www.keil.arm.com/packs/?q=Alif&pack) is a good example:
 
 - [github.com/alifsemi/alif_cmsis_packs](https://github.com/alifsemi/alif_cmsis_packs) contains the `*.pidx` index file that references all public packs (including versions) provided by Alif.
@@ -251,18 +269,12 @@ Refer to [GitHub-hosted packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack
 
 ## Project Examples
 
-Project examples help to get started with new devices, boards, and middleware software components. The CMSIS-Pack format supports, therefore, different types of project examples:
-
-- [*Template Projects*](#template-projects) are [stub projects](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) that help to get started. Some software packs may contain device-specific templates.
-- [*Examples*](#examples) are created for a specific hardware or evaluation board. These are typically complete projects that directly interface with board and device peripherals.
-- [*Reference Applications*](#reference-applications) are hardware-agnostic project examples that required [layers](#layers) to add the hardware abstraction of a target (typically a board).
+CMSIS-Pack supports *Template Projects*, *Examples*, and *Reference Applications*. Refer to [Project Example Types](ReferenceApplications.md#introduction) for details. This section explains how these project types are structured and registered within a software pack.
 
 In addition, packs may contain:
 
 - [*Layers*](#layers) are  pre-configured software components or source code that can be shared across multiple projects.
 - [*Code Templates*](#code-templates) are stub source files for middleware components that can be incorporated into user code.
-
-The following section explains how the different types of project examples are structured and registered within a CMSIS-Pack.
 
 ### Support Multiple Compilers
 

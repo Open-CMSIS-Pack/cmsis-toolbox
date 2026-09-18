@@ -19,7 +19,9 @@ An application is based on a *device* and/or *board* supported by a Device Famil
 
 ### Step 2: Use a Template Project and add DFP and BSP
 
-- Select a suitable generic [Template Project](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) or refer to the DFP documentation as some devices have specific template projects.
+- Select a suitable generic [Template Project](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates). These templates show the file structure for different types of `csolution` projects. Replace the placeholders and add the application content required for your project.
+
+- Alternatively, refer to the DFP or BSP documentation, as some software packs provide device-specific or board-specific template projects.
 
 - Copy the template project and open the `*.csolution.yml` file.  Add under [`packs:`](YML-Input-Format.md#packs) the packs identified in step (1). You may omit the version number during initial project development.
 
@@ -64,7 +66,7 @@ An application is based on a *device* and/or *board* supported by a Device Famil
 
 - Refer to [Using Components](#using-components) for more information.
 
-- Now, the project should already compile with the command `cbuild <name>.csolution.yml --update-rte --packs --context .Debug`. Note that this step downloads missing packs and copies configuration files to the [RTE directory](build-overview.md#rte-directory-structure).
+- Once the referenced application source files are present, verify the project with `cbuild <name>.csolution.yml --update-rte --packs --context .Debug`. This command is suitable for a single project and for independent projects such as the UnitTest template. For Multicore and TrustZone templates, build the related application images through their target set with `cbuild <name>.csolution.yml --update-rte --packs --active <target-type>`. These commands download missing packs and copy configuration files to the [RTE directory](build-overview.md#rte-directory-structure).
 
 ### Step 5: Review and configure RTE files
 
@@ -90,7 +92,7 @@ An application is based on a *device* and/or *board* supported by a Device Famil
   :
 ```
 
-- Again, the project should compile with the command `cbuild <name>.csolution.yml --update-rte --packs --context .Debug`. Repeat step (4) when you add new components that require configuration.
+- Build the project again using the command appropriate for the selected template, as described in step (4). Repeat step (4) when you add new components that require configuration.
 
 !!! Note
     The [Arm CMSIS Solution extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) guides you through these steps with the [`Create New Solution` workflow](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution#create-new-solution-view).

@@ -86,18 +86,7 @@ The section below explains the overall concepts considered by the **`csolution` 
 
 ### Template Projects
 
-The following `*.csolution.yml` templates may be used to create embedded applications.
-
-Template    | Description
-:-----------|:------------------------------
-[Simple](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/Simple)        | A csolution.yml template with a single `*.cproject.yml`.
-[Multicore](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/Multicore)  | A csolution.yml template with multiple `*.cproject.yml` files, each targeting one processor of a multicore device.
-[TrustZone](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/TrustZone)  | A csolution.yml template with a non-secure `*.cproject.yml` and an optional secure `*.cproject.yml` file.
-[UnitTest](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates/UnitTest)    | A csolution.yml template that shares one HAL `*.clayer.yml` with multiple `*.cproject.yml` files for unit testing.
-
-To use these templates, copy the content of the folder to your own application folder. Then adapt the names accordingly and add missing information.
-
-Refer to [CMSIS-Toolbox Templates](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) for more details.
+The [CMSIS-Toolbox Templates](https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/Templates) show the file structure for several types of `csolution` projects and may be used as a starting point for an application. Refer to [Create Applications](CreateApplications.md#start-a-project) for the workflow to select target hardware and software packs, add software components, and build the application.
 
 ### Minimal Project Setup
 
@@ -125,12 +114,12 @@ solution:
     - type: FRDM-K32L3A6
       board: FRDM-K32L3A6
 
-  build-types:                                # defines toolchain options for 'debug' and 'release'
-    - type: Debug
+  build-types:
+    - type: Debug                             # toolchain options for 'debug'
       debug: on
       optimize: debug
 
-    - type: Release
+    - type: Release                           # toolchain options for 'release'
       debug: off
       optimize: balanced
 
@@ -986,18 +975,17 @@ An example that uses STM32CubeMX is provided in [github.com/Open-CMSIS-Pack/csol
 To list the *Generator* configuration of a `*.csolution.yml` use:
 
 ```bash
-csolution CubeMX.csolution.yml list generators --verbose
+csolution CubeMX.csolution.yml list generators --active MyBoard@Debug --verbose
 CubeMX (Global Registered Generator)                 # Name of the Generator
-  base-dir: STM32CubeMX/MyBoard                      # Generator output directory for contexts listed below
-    cgen-file: STM32CubeMX/MyBoard/CubeMX.cgen.yml   # Generator import file for contexts listed below
+  base-dir: STM32CubeMX/MyBoard                      # Generator output directory for context listed below
+    cgen-file: STM32CubeMX/MyBoard/CubeMX.cgen.yml
       context: CubeMX.Debug+MyBoard
-      context: CubeMX.Release+MyBoard
 ```
 
 To run the generator (in this case CubeMX) use:
 
 ```bash
-csolution CubeMX.csolution.yml run --generator CubeMX
+csolution CubeMX.csolution.yml run --generator CubeMX --active MyBoard@Debug
 ```
 
 ### Configure Generator Output
@@ -1048,6 +1036,8 @@ The following example configures the ST-LINK debugger for the project  `MyProjec
           images:
             -  project-context: MyProject.Debug
 ```
+
+A target set can combine project contexts with different build types. This allows the project being debugged to use `Debug`, while size-sensitive supporting images use `Release`.
 
 The following example uses a CMSIS-DAP debugger with JTAG protocol and configures a multi-core application with two projects. The project `core0` uses the build-type `Debug`. The project `core1` uses the build-type `Release`.
 
@@ -1202,10 +1192,11 @@ The `*.cbuild-mlops.yml` file provides information about:
 - NPU type with MAC configuration
 - Vela INI file and parameters (only for Ethos-U NPUs)
 - Location of the `*.clayer.yml` file that contains the ML model under development
+- Custom model properties, including simple values, lists, and grouped settings with additional levels
 - Build information (using `cbuild` with hardware target) for testing on hardware
 - Build information (using `cbuild` with simulator target) for testing on FVP simulation models along with information for FVP invocation
 
-The [`*.cbuild-mlops.yml`](YML-CBuild-Format.md#cbuild-mlopsyml) file is designed for applications that use one or more ML models and optional NPUs. It is assumed that the MLOps system creates **only one ML model at a time** and therefore needs information about the ML model to target. The [`mlops:`](YML-Input-Format.md#mlops) node in the `*.csolution.yml` file specifies these parameters. When this node is used, the CMSIS-Toolbox generates the `*.cbuild-mlops.yml` file with the base name of the `*.csolution.yml` file (in the same folder).
+The [`*.cbuild-mlops.yml`](YML-CBuild-Format.md#cbuild-mlopsyml) file is designed for applications that use one or more ML models and optional NPUs. Custom properties in the [`model:`](YML-Input-Format.md#model) node can describe framework-specific inputs as simple values, lists, or grouped settings with additional levels. This allows a model integration script to process several models or related artifacts in one workflow. When [`mlops:`](YML-Input-Format.md#mlops) is used, the CMSIS-Toolbox generates the `*.cbuild-mlops.yml` file with the base name of the `*.csolution.yml` file in the same folder.
 
 ### Model Integration Workflow
 
@@ -1251,9 +1242,13 @@ solution:
       memory: Shared_Sram       # Choose memory configuration from Vela.ini file
     model:
       clayer: $AI-Layer$        # Layer that contains the ML model
-      name: RPS                 # Name for the ML model (default Algorithm)
       framework: ExecuTorch     # Custom metadata passed to the MLOps system
-      source: $Model-Source$    # Undefined variables produce an empty value
+      source:                   # Lists support workflows with multiple models
+        - models/rps_detector.pte
+        - $Model-Source$        # Undefined variables produce an empty string
+      settings:                 # Nested maps are also preserved
+        delegate: Ethos-U
+        quantize: true
     hardware:
       target: AppKit-E8-U85@HIL # Hardware target used for testing
     simulator:
@@ -1323,9 +1318,13 @@ cbuild-mlops:
     options: --accelerator-config ethos-u85-256 --system-config RTSS_HE_SRAM_MRAM --memory-mode Shared_Sram
   model:
     clayer: ai_layer/ai_layer.clayer.yml
-    name: RPS
     framework: ExecuTorch
     source:
+      - models/rps_detector.pte
+      - ""
+    settings:
+      delegate: Ethos-U
+      quantize: true
   hardware:
     active: AppKit-E8-U85@HIL
     cbuild-run: out/MyApp+AppKit-E8-U85.cbuild-run.yml

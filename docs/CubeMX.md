@@ -34,7 +34,7 @@ Below is a simple project that just adds the CubeMX-generated components.
 
 ```yml
 solution:
-  created-for: CMSIS-Toolbox@2.3.0
+  created-for: CMSIS-Toolbox@2.14.0
   description: Simple CubeMX example
   cdefault:                                   # use toolchain default settings
   compiler: AC6                               # select toolchain
@@ -43,18 +43,25 @@ solution:
   packs:
     - pack: ARM::CMSIS                        # CMSIS pack is required for most projects
     - pack: Keil::B-U585I-IOT02A_BSP
-    - pack: Keil::STM32U5xx_DFP@>=3.0.0-0
+    - pack: Keil::STM32U5xx_DFP@^3.0.0
 
   target-types:
     - type: MyBoard                           # My evaluation kit
       board: B-U585I-IOT02A                   # Board name as defined by the pack
+      target-set:
+        - set: Debug
+          images:
+            - project-context: CubeMX.Debug
+        - set: Release
+          images:
+            - project-context: CubeMX.Release
 
-  build-types:                                # defines toolchain options for 'debug' and 'release'
-    - type: Debug
+  build-types:
+    - type: Debug                             # toolchain options for 'debug'
       debug: on
       optimize: none
 
-    - type: Release
+    - type: Release                           # toolchain options for 'release'
       debug: off
       optimize: balanced
 
@@ -76,25 +83,24 @@ Such a project cannot be directly built, as initially, the `*.cgen.yml` file is 
 - Identify the required generator and the directory where the generated files are stored with:
 
 ```bash
-csolution CubeMX.csolution.yml list generators --verbose
+csolution CubeMX.csolution.yml list generators --active MyBoard@Debug --verbose
 CubeMX (Global Registered Generator)    # generator name
   base-dir: STM32CubeMX/MyBoard         # directory for generated files
-    context: CubeMX.Debug+MyBoard       # list of context that uses this directory
-    context: CubeMX.Release+MyBoard
+    context: CubeMX.Debug+MyBoard       # context that uses this directory
 ```
 
 - Use the information above to run the generator:
 
 ```bash
-csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
+csolution CubeMX.csolution.yml run --generator CubeMX --active MyBoard@Debug
 ```
 
-   This starts CubeMX and passes the information about the selected board, device, and select toolchain. For a project that selects a board, CubeMX imports the default configuration for it. In CubeMX, review and adjust configuration options as required for your application, then just click the button `GENERATE CODE`. The generated files will be stored in the directory `STM32CubeMX/MyBoard`.
+   This starts CubeMX and passes the information about the selected board, device, and selected toolchain. For a project that selects a board, CubeMX imports the default configuration for it. In CubeMX, review and adjust configuration options as required for your application, then click the button `GENERATE CODE`. The generated files will be stored in the directory `STM32CubeMX/MyBoard`.
 
 - Build the project using this command:
 
 ```bash
-cbuild CubeMX.csolution.yml --update-rte
+cbuild CubeMX.csolution.yml --active MyBoard@Debug --update-rte
 ```
 
 !!! Note
@@ -194,7 +200,7 @@ project:
 Configure the interrupt handlers by running CubeMX with:
 
 ```bash
-csolution CubeMX.csolution.yml run --generator CubeMX --context CubeMX.Debug+MyBoard
+csolution CubeMX.csolution.yml run --generator CubeMX --active MyBoard@Debug
 ```
 
 Open the dialog *Pinout & Configuration - System Core NVIC - Code generation* and disable *Generate IRQ handler* for:
@@ -205,7 +211,7 @@ Open the dialog *Pinout & Configuration - System Core NVIC - Code generation* an
 
 ![STM32CubeMX - configure interrupt handlers](./images/CubeMX_NVIC_RTOS.png "configure interrupt handlers")
 
-Then click the button `GENERATE CODE` to update the generated files in the directory `STM32CubeMX/MyBoard`
+Then click the button `GENERATE CODE` to update the generated files in the directory `STM32CubeMX/MyBoard`.
 
 ## Linker Script
 
