@@ -261,6 +261,10 @@ It is possible to change the **Trace Generation Setup** during debugging. For th
 
 CI requires a prepared `.cmsis/<solution-set>.ctrace.yml` file. This file may be under source control or maintained manually.
 
+**Trace Buffer Workflow:**
+
+Existing **Raw Trace Stream** files containing trace buffer data are deleted each time the trace buffer is captured, for example after hitting a breakpoint. This prevents gaps that could otherwise be introduced by concatenating capture runs in which the trace buffer has wrapped around.
+
 ### Configuration Files
 
 Trace setup is split between target infrastructure configuration and capture configuration.
