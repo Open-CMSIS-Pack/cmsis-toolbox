@@ -187,6 +187,16 @@ debugger:
 
 This selection lets DFP debug sequences use `TraceBufferSelected("MTB")`, and lets a `TraceFlush` sequence direct `BufferStreamOut` to the selected named trace buffer in the debugger.
 
+#### Trace Formatting
+
+Some trace stream channel types may transport formatted trace data from multiple source streams, e.g. ITM data from multiple processors in the system. For simplicity, the formatter is always enabled in this solution.
+
+Trace stream channel | Formatter usage
+:--------------------|:----------------
+SWO                  | Not supported
+TB                   | Always enabled
+ER                   | Not supported
+
 ### Directory and File Structure
 
 Trace-related files are stored relative to the directory that contains the `*.csolution.yml` file.
@@ -260,6 +270,10 @@ It is possible to change the **Trace Generation Setup** during debugging. For th
 **CI Workflow:**
 
 CI requires a prepared `.cmsis/<solution-set>.ctrace.yml` file. This file may be under source control or maintained manually.
+
+**Trace Buffer Workflow:**
+
+Existing **Raw Trace Stream** files containing trace buffer data are deleted each time the trace buffer is captured, for example after hitting a breakpoint. This prevents gaps that could otherwise be introduced by concatenating capture runs in which the trace buffer has wrapped around.
 
 ### Configuration Files
 
@@ -691,16 +705,21 @@ Usage:
   ctrace <trace-dir> [options]
 
 Options:
-      --csv                Generate only CSV files (default: generate CSV and CTF)
-      --ctf                Generate only CTF files (default: generate CSV and CTF)
+      --csv                Generate CSV files
+      --ctf                Generate CTF files
   -a  --all                Generate both CSV and CTF files
       --type sel [...]     Filter output for specific packet types (default: all packet types)
       --stream sel [...]   Filter output for specific streams (default: all streams)
+  -c, --channel arg        Specify <channel> to decode; repeat to decode multiple channels
+                           (default: process all channels for specified solution sets in trace-dir)
   -t, --target arg         Specify <solution-set> (default: process all solution sets in trace-dir)
   -V, --version            Print version
 ```
 
-`ctrace` processes files in the specified `<trace-dir>`. If this directory contains more than one `<solution-set>`, each solution set is processed separately.
+`ctrace` processes files in the specified `<trace-dir>`:
+- If this directory contains more than one `<solution-set>`, each solution set is processed separately.
+- If a solution set contains more than one `<channel>`, each channel is processed separately.
+
 CSV and CTF output files are written to the `<trace-dir>` as explained under [directory and file structure](#directory-and-file-structure).
 When no option for generating files is specified, the raw trace data files are validated.
 
@@ -983,6 +1002,8 @@ PMU resources depend on the processor and selected debug implementation.
 
 ### Related
 
+- [Arm CoreSight Architecture Specification v3.0](https://support.arm.com/documentation/ihi0029/latest/)
+    - Trace Formatter
 - [v8-M Architecture Reference Manual](https://developer.arm.com/documentation/ddi0553/latest/)
     - The Instrumentation Trace Macrocell (B14.1)
     - The Data Watchpoint and Trace unit (B14.2)
