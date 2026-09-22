@@ -39,16 +39,6 @@ Run cbuild
     ...    Run Program    cbuild    ${input_file}    @{args_ex}    ${command}
     RETURN                         ${ret_code}
 
-Build Example With cbuildgen
-    [Documentation]     Build csolution example with cbuildgen
-    [Arguments]         ${input_file}    ${expect}        ${args}=@{EMPTY}
-    ${parent_path}=     Get Parent Directory Path         ${input_file}
-    ${output_dir}=      Normalize Path    ${parent_path}${/}${Out_Dir}
-    ${args_Ex}=         Copy List    ${args}
-    Append To List      ${args_Ex}    --output    ${output_dir}    --cbuildgen
-    ${ret_code}=        Run cbuild       ${input_file}    ${EMPTY}    ${args_Ex}
-    Should Be Equal     ${ret_code}      ${expect}        msg=Unexpected status returned when building with cbuildgen
-
 Build Example With cbuild2cmake
     [Documentation]     Build the csolution example with cbuild2cmake
     [Arguments]         ${input_file}     ${expect}        ${args}=@{EMPTY}
@@ -89,21 +79,8 @@ Get Contexts From Project
     RETURN              ${contexts}
 
 Build CSolution Example
-    [Arguments]                        ${input_file}    ${cbuildgen_expect}    ${cbuild2cmake_expect}    ${args}=@{EMPTY}
+    [Arguments]                        ${input_file}    ${cbuild2cmake_expect}    ${args}=@{EMPTY}
     Build Example With cbuild2cmake    ${input_file}    ${cbuild2cmake_expect}     ${args}
-    Build Example With cbuildgen       ${input_file}    ${cbuildgen_expect}        ${args}
-
-    # If any of the expectations is failure, there's no need to compare ELF information
-    IF    '${cbuildgen_expect}' == '1' or '${cbuild2cmake_expect}' == '1'
-        RETURN    ${True}
-    END
-
-    ${parent_path}=    Get Parent Directory Path     ${input_file}
-    ${result}=         Run Keyword And Return
-    ...                    Compare Elf Information   ${input_file}
-    ...                    ${parent_path}${/}${Out_Dir}${/}${Default_Out_Dir}
-    ...                    ${parent_path}${/}${Default_Out_Dir}
-    RETURN             ${result}
 
 Checkout GitHub Repository
     [Documentation]                 Checkout github repository
@@ -119,34 +96,12 @@ Run Csolution Project
     ${is_tz_example}=    Evaluate    $file_name == "SimpleTZ.csolution.yml"
 
     @{args_ex}                  Create List    @{args}
-    @{args_cbuildgen}=    Copy List    ${args_ex}
-    # For SimpleTZ solution, explicitly build the TrustZone contexts in order
-    IF    ${is_tz_example}
-        Append To List    ${args_cbuildgen}    -c    CM33_s.Debug+AVH
-        Append To List    ${args_cbuildgen}    -c    CM33_ns.Debug+AVH
-        Append To List    ${args_cbuildgen}    -c    CM33_s.Release+AVH
-        Append To List    ${args_cbuildgen}    -c    CM33_ns.Release+AVH
-    END
-
-    ${res_cbuildgen}=    Run Keyword And Ignore Error
-    ...    Build Example With cbuildgen
-    ...    ${input_file}
-    ...    ${expect}
-    ...    ${args_cbuildgen}
 
     ${res_cbuild2cmake}=    Run Keyword And Ignore Error
     ...    Build Example with cbuild2cmake
     ...    ${input_file}
     ...    ${expect}
     ...    ${args_ex}
-
-    # Check the result of the first run
-    ${success}=    Set Variable    ${res_cbuildgen[0]}
-    ${message}=    Set Variable    ${res_cbuildgen[1]}
-    Run Keyword If    '${success}' == 'PASS'
-    ...    Log    cbuildgen build successfully
-    ...    ELSE
-    ...    Log    cbuildgen build failed with message: ${message}
 
     # Check the result of the second run
     ${success}=    Set Variable    ${res_cbuild2cmake[0]}
@@ -156,19 +111,11 @@ Run Csolution Project
     ...    ELSE
     ...    Log    cbuild2cmake failed with message: ${message}
 
-    ${build_success}=    Evaluate    '${res_cbuildgen[0]}' == '${res_cbuild2cmake[0]}' == 'PASS'
+    ${build_success}=    Evaluate    '${res_cbuild2cmake[0]}' == 'PASS'
     IF    '${build_success}' == 'False'
         Return From Keyword    False
     END
 
-    ${parent_path}=    Get Parent Directory Path    ${input_file}
-    ${elf_compare_result}=         Run Keyword And Return
-    ...                    Compare Elf Information   ${input_file}
-    ...                    ${parent_path}${/}${Out_Dir}${/}${Default_Out_Dir}
-    ...                    ${parent_path}${/}${Default_Out_Dir}
-    IF    '${elf_compare_result}' == 'False'
-        Return From Keyword    False
-    END
     Return From Keyword    True
 
 Convert And Filter Contexts

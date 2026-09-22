@@ -29,46 +29,45 @@ ${Hello}                    Hello
 
 *** Test Cases ***
 # <Name of the Test>
-#    <Path to the input *.csolution.yml file>       <Expected cbuildgen build status>    <Expected cbuild2cmake build status>
+#    <Path to the input *.csolution.yml file>       <Expected cbuild2cmake build status>
 
 Validate build-asm Example
-    ${TEST_DATA_DIR}${/}${build-asm}${/}solution.csolution.yml                 ${Fail}    ${Pass}
+    ${TEST_DATA_DIR}${/}${build-asm}${/}solution.csolution.yml                 ${Pass}
 
 Validate build-c Example
-    ${TEST_DATA_DIR}${/}${build-c}${/}solution.csolution.yml                   ${Pass}    ${Pass}
+    ${TEST_DATA_DIR}${/}${build-c}${/}solution.csolution.yml                   ${Pass}
 
 Validate build-cpp Example
-    ${TEST_DATA_DIR}${/}${build-cpp}${/}solution.csolution.yml                 ${Pass}    ${Pass}
+    ${TEST_DATA_DIR}${/}${build-cpp}${/}solution.csolution.yml                 ${Pass}
 
 Validate build-set Example
-    ${TEST_DATA_DIR}${/}${build-set}${/}solution.csolution.yml                 ${Pass}    ${Pass}
+    ${TEST_DATA_DIR}${/}${build-set}${/}solution.csolution.yml                 ${Pass}
 
 Validate executes Example
-    ${TEST_DATA_DIR}${/}${executes}${/}solution.csolution.yml                  ${Pass}    ${Pass}
+    ${TEST_DATA_DIR}${/}${executes}${/}solution.csolution.yml                  ${Pass}
 
 Validate include-define Example
-    ${TEST_DATA_DIR}${/}${include-define}${/}solution.csolution.yml            ${Fail}    ${Pass}
+    ${TEST_DATA_DIR}${/}${include-define}${/}solution.csolution.yml            ${Pass}
 
 Validate language-scope Example
-    ${TEST_DATA_DIR}${/}${language-scope}${/}solution.csolution.yml            ${Fail}    ${Pass}
+    ${TEST_DATA_DIR}${/}${language-scope}${/}solution.csolution.yml            ${Pass}
 
 # Validate library-rtos Example
-#     ${TEST_DATA_DIR}${/}${library-rtos}${/}solution.csolution.yml              ${Pass}    ${Pass}
+#     ${TEST_DATA_DIR}${/}${library-rtos}${/}solution.csolution.yml              ${Pass}
 
 Validate linker-pre-processing Example
-    ${TEST_DATA_DIR}${/}${linker-pre-processing}${/}solution.csolution.yml     ${Pass}    ${Pass}
+    ${TEST_DATA_DIR}${/}${linker-pre-processing}${/}solution.csolution.yml     ${Pass}
 
 Validate pre-include Example
-    ${TEST_DATA_DIR}${/}${pre-include}${/}solution.csolution.yml               ${Pass}    ${Pass}
+    ${TEST_DATA_DIR}${/}${pre-include}${/}solution.csolution.yml               ${Pass}
 
 Validate whitespace Example
-    ${TEST_DATA_DIR}${/}${whitespace}${/}solution.csolution.yml                ${Pass}    ${Pass}
+    ${TEST_DATA_DIR}${/}${whitespace}${/}solution.csolution.yml                ${Pass}
 
 Validate trustzone Example
-     ${TEST_DATA_DIR}${/}${trustzone}${/}solution.csolution.yml                ${Pass}    ${Pass}
+     ${TEST_DATA_DIR}${/}${trustzone}${/}solution.csolution.yml                ${Pass}
 
 *** Keywords ***
 Build Local CSolution Example
-    [Arguments]       ${input_file}      ${cbuildgen_expect}    ${cbuild2cmake_expect}    ${args}=@{EMPTY}
-    ${result}=        Build CSolution Example    ${input_file}      ${cbuildgen_expect}    ${cbuild2cmake_expect}    ${args}
-    Should Be True    ${result}
+    [Arguments]                ${input_file}    ${cbuild2cmake_expect}    ${args}=@{EMPTY}
+    Build CSolution Example    ${input_file}    ${cbuild2cmake_expect}    ${args}

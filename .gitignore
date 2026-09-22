@@ -8,3 +8,7 @@
 **/stdout.txt
 **.DS_Store
 **/**.bak
+
+# AI files and directories
+.cmsis-dev/**
+.codex/**
