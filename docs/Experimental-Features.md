@@ -1002,7 +1002,7 @@ PMU resources depend on the processor and selected debug implementation.
 
 ### Related
 
-- [Arm CoreSight Architecture Specification v3.0](https://support.arm.com/documentation/ihi0029/latest/)
+- [Arm CoreSight Architecture Specification v3.0](https://developer.arm.com/documentation/ihi0029/latest/)
     - Trace Formatter
 - [v8-M Architecture Reference Manual](https://developer.arm.com/documentation/ddi0553/latest/)
     - The Instrumentation Trace Macrocell (B14.1)
