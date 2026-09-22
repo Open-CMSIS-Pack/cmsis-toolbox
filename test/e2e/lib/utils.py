@@ -33,7 +33,7 @@ def get_parent_directory_path(file_path:str):
     return path
 
 def write_test_environment(test_env_file:str):
-    toolList = ["cbuild", "cpackget", "csolution", "cbuild2cmake", "cbuildgen"]
+    toolList = ["cbuild", "cpackget", "csolution", "cbuild2cmake"]
 
     # Create markdown content
     markdown_content = "|Name|Version|\n"
