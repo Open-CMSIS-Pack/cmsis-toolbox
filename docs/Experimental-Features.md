@@ -708,8 +708,8 @@ Options:
       --csv                Generate CSV files
       --ctf                Generate CTF files
   -a  --all                Generate both CSV and CTF files
-      --type sel [...]     Filter output for specific packet types (default: all packet types)
-      --stream sel [...]   Filter output for specific streams (default: all streams)
+      --type sel [...]     Filter output for specific packet types; repeat to select multiple types (default: all packet types)
+      --stream sel [...]   Filter output for specific streams; repeat to select multiple streams (default: all streams)
   -c, --channel arg        Specify <channel> to decode; repeat to decode multiple channels
                            (default: process all channels for specified solution sets in trace-dir)
   -t, --target arg         Specify <solution-set> (default: process all solution sets in trace-dir)
