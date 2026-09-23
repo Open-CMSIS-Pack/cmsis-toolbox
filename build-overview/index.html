@@ -106,6 +106,8 @@
     </li>
         </ul>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#use-a-prebuilt-secure-image">Use a Prebuilt Secure Image</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#generate-library">Generate Library</a>
     </li>
         </ul>
@@ -292,6 +294,7 @@
 <li><a href="#mlops-integration">MLOps Integration</a> describes how to generate an ML model layer and integrate it into an application.</li>
 </ul>
 <h2 id="overview-of-operation">Overview of Operation</h2>
+<p>The generated build information is the interface between the common project information and development tools. It allows build systems, smart editor features, static code analysis and test tools, programming tools, debuggers, trace tools, and CI/DevOps workflows to use the same resolved application and target configuration.</p>
 <p>The diagram below outlines the operation of the <code>csolution</code> command <code>convert</code> that processes the <em>csolution project</em> with one or more <a href="../YML-Input-Format/#context"><code>context</code></a> configurations for an application.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -766,6 +769,42 @@ cbuild iot-product.csolution.yml -a Production-HW@Debug     # target-type Produc
       files:
         - file: $cmse-lib(Project_S)$    # Secure part of an application
 </code></pre>
+<h3 id="use-a-prebuilt-secure-image">Use a Prebuilt Secure Image</h3>
+<p>A non-secure project may use a secure image that is not part of the active target set. This is useful when the secure
+application is built and released separately. The non-secure application typically needs two matching artifacts:</p>
+<ul>
+<li>The secure image, for example a HEX file that is loaded together with the non-secure application.</li>
+<li>The CMSE import library that describes the secure callable interface and is linked with the non-secure project.</li>
+</ul>
+<p>List the non-secure project before the prebuilt secure image in the target set so that debuggers and simulation models
+load the executable before overlaying the HEX file:</p>
+<pre><code class="language-yml">solution:
+  target-types:
+    - type: AVH-NS-only
+      target-set:
+        - set: Debug
+          images:
+            - project-context: Project_NS.Debug
+            - image: out/Project_S/AVH/Debug/Project_S.hex
+              load: image
+</code></pre>
+<p>Reference the corresponding CMSE import library as a regular file in the non-secure project:</p>
+<pre><code class="language-yml">project:                                 # Non-secure project
+  groups:
+    - group: CMSE Library
+      files:
+        - file: ../out/Project_S/AVH/$BuildType$/Project_S_CMSE_Lib.o
+          for-context: +AVH-NS-only
+</code></pre>
+<p>Unlike the <code>$cmse-lib(Project_S)$</code> access sequence, these file references do not establish a project dependency or
+build the secure project. Create the secure artifacts before building the non-secure context. Both builds must use
+compatible build types, toolchains, memory layouts, and secure callable interfaces.</p>
+<pre><code class="language-txt">&gt; cbuild My.csolution.yml --context Project_S.Debug+AVH --toolchain AC6
+&gt; cbuild My.csolution.yml --context Project_NS.Debug+AVH-NS-only --toolchain AC6
+</code></pre>
+<p>The <a href="https://github.com/Open-CMSIS-Pack/csolution-examples/tree/main/SimpleTrustZone#use-an-existing-secure-image">SimpleTrustZone example</a>
+demonstrates this workflow and provides target sets for running the complete application and the non-secure project
+with an existing secure image.</p>
 <h3 id="generate-library">Generate Library</h3>
 <p>A library is a collection of pre-build source code that is stored in a single archive file. A library is typically used by many applications and is compiled for a series of devices that share the same processor. It uses fixed compiler options and does not expose source code. It keeps projects smaller and reduces build time by avoiding repeated compilation of the same sources.</p>
 <p>A library may use APIs from other software components. In this case, you typically want to use the component header files, but exclude the component source files from the generated library archive. The <code>build-scope:</code> attribute of a <a href="../YML-Input-Format/#components"><code>component:</code></a> to controls whether component source files are compiled as part of the current build (default: <code>include</code> for image builds, <code>exclude</code> for library builds).</p>
@@ -1410,6 +1449,7 @@ cbuild MySolution.csolution.yml --active DualCoreDevice --rebuild
           - image: build/core0.elf
             type: elf
 </code></pre>
+<p>For a complete application that integrates a native CMake project with CMSIS-Toolbox, refer to <a href="https://github.com/Arm-Examples/CMSIS-CMake">Arm-Examples/CMSIS-CMake</a>.</p>
 <h2 id="west-build-system-integration">West Build System Integration</h2>
 <p>The West build system is a project management system used primarily in the <a href="https://www.zephyrproject.org/">Zephyr</a> ecosystem. The integration in the CMSIS-Toolbox acts as a "build orchestration wrapper" around CMake.
 The CMSIS-Toolbox connects the <code>west build</code> command with the information of the CMSIS-Pack system as shown in the diagram below. For the <a href="#compiler-selection">selected compiler</a> the related <a href="../build-operation/#west-integration">environment variables for the west build system</a> are set. When combined with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">VS Code CMSIS Solution</a> extension, features such as project outline in the CMSIS View or "go-to-definition" with <code>clangd</code> are available.</p>
@@ -1466,6 +1506,7 @@ The CMSIS-Toolbox connects the <code>west build</code> command with the informat
         board: $west-board$_hp
         device: :M55_HP
 </code></pre>
+<p>For a multi-board Zephyr example that includes debugging and CI workflows, refer to <a href="https://github.com/Arm-Examples/CMSIS-Zephyr">Arm-Examples/CMSIS-Zephyr</a>.</p>
 <h2 id="mlops-integration">MLOps Integration</h2>
 <p>An MLOps (Machine Learning Operations) system automates the process of generating and maintaining machine learning (ML) models. Often described as "DevOps for ML", it bridges the gap between data scientists who build ML models and embedded developers that integrate these models into real-world applications.</p>
 <p>The CMSIS-Toolbox generates the file <a href="../YML-CBuild-Format/#cbuild-mlopsyml"><code>*.cbuild-mlops.yml</code></a> as the interface between a <em>csolution project</em> and an MLOps system. It combines DFP information about the processor and NPU with project settings so that model conversion does not duplicate target-specific configuration.</p>

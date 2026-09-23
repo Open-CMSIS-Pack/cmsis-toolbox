@@ -134,6 +134,10 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#licenses">licenses:</a>
     </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#nodes-for-external-build-systems">Nodes for External Build Systems</a>
+        <ul>
     <li class="toctree-l4"><a class="reference internal" href="#west">west:</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#cmake">cmake:</a>
@@ -385,6 +389,7 @@
 <li><a href="#nodes-for-project-management"><strong>Nodes for Project Management</strong></a></li>
 <li><a href="#nodes-for-file-management"><strong>Nodes for File Management</strong></a></li>
 <li><a href="#nodes-for-license-information"><strong>Nodes for License Information</strong></a></li>
+<li><a href="#nodes-for-external-build-systems"><strong>Nodes for External Build Systems</strong></a></li>
 </ul>
 <h3 id="cbuild-idxyml"><code>*.cbuild-idx.yml</code></h3>
 <p>The <code>&lt;solution-name&gt;.cbuild-idx.yml</code> file is generated for the <em>csolution project</em> and refers to all <em>contexts</em> that are generated. It is structured as outlined below.</p>
@@ -1467,6 +1472,8 @@
         - component: ARM::CMSIS-Compiler:STDIN:Custom@1.1.0
         :
 </code></pre>
+<h3 id="nodes-for-external-build-systems">Nodes for External Build Systems</h3>
+<p>The following nodes describe contexts built by external build systems.</p>
 <h4 id="west"><code>west:</code></h4>
 <p>For each west build context a node <code>west:</code> is created in *.cbuild.yml</p>
 <table>
