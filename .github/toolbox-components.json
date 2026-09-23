@@ -1,7 +1,7 @@
 {
   "schema": "1.7.62",
-  "buildmgr": "2.14.0",
-  "projmgr": "2.14.0",
+  "buildmgr": "2.15.0",
+  "projmgr": "2.15.0",
   "cbridge": "0.10.2",
   "cbuild": "2.15.0",
   "cbuild2cmake": "0.12.0",
