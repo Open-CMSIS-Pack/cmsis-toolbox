@@ -452,17 +452,26 @@ Supported values for `period:` `0` (off), `64`, `128`, `256`, ..., `16384`. Defa
 
 #### `synchronization:`
 
-The `synchronization:` node specifies the frequency of the DWT synchronization packet.
+The `synchronization:` node specifies behavior and frequency of synchronization packet generation.
 
 `synchronization:`                    |             | Content
 :-------------------------------------|:------------|:------------------------------------
 `DWT:`                                |  Optional   | Frequency `off`, `16M`, `64M`, `256M` processor cycles. Default: `16M`.
+`sync-on-run:`                        |  Optional   | Explicitly request synchronization packets at start of a step or run. Supported values: `true` (default) and `false`.
+
+`sync-on-run:` is preserved in `*.ctrace-run.yml` under `ctrace-setup:` so that pyOCD can apply the requested synchronization behavior. It only applies to trace sources with enabled synchronization and that do not always insert synchronization packets at start of a step or run. A debugger must request the packets as follows:
+
+Architecture | DWT/ITM Request
+:---------------------|:--------
+Armv7-M | Debugger toggles bits 24, 26, and 28 of DWT_CYCCNT twice between setting up trace capture and start of processor step/run. These are the bits selectable by DWT_CTRL.SYNCTAP. The second toggle restores the original cycle counter value. Do not toggle other bits to avoid side effects.
+Armv8-M | N/A, processor always automatically inserts at start of step/run
 
 **Example:**
 
 ```yml
 synchronization:
   DWT: 256M
+  sync-on-run: false  # Skip manual DWT synchronization at start of run
 ```
 
 #### `instructions:`
@@ -506,7 +515,7 @@ The `*.ctrace-run.yml` file starts with the node `ctrace-run:`. It is generated 
 &nbsp;&nbsp;&nbsp; `ctrace-setup:`                       |  Optional   | Copy of [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file.
 &nbsp;&nbsp;&nbsp; `ctrace-refs:`                        |**Required** | List of [references](#references) in the `*.ctrace.yml` file.
 
-The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file and preserves the original user input for consumers of the `*.ctrace-run.yml` file. This includes settings that do not resolve to a `ctrace-ref` but are required for higher-level output formats such as CTF. For example the `timestamps:clock` node.
+The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file and preserves the original user input for consumers of the `*.ctrace-run.yml` file. Consumers may read settings that do not resolve to a `ctrace-ref` or register write. For example, the `ctrace` decoder uses `timestamps:clock` as a trace-formatting hint, while pyOCD reads `synchronization:sync-on-run` to control built-in trace-capture behavior.
 
 `ctrace-refs:`                                           |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
@@ -554,6 +563,9 @@ The use of `source:` depends on the combination of `type:` and the setting refer
 ```yml
 ctrace-run:
   generated-by: pyTS v0.0
+  ctrace-setup:
+    synchronization:
+      sync-on-run: false  # Read by pyOCD; not a register write
   ctrace-refs:
   - ctrace-ref: core0/itm
     pname: core0
