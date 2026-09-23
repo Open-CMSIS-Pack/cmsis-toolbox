@@ -9,7 +9,9 @@
 [![Publish cmsis-toolbox](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/toolbox.yml?logo=arm&logoColor=0091bd&label=Publish%20cmsis-toolbox)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/toolbox.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Open-CMSIS-Pack/cmsis-toolbox/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Open-CMSIS-Pack/cmsis-toolbox)
 
-This contains the executable tools of the CMSIS-Toolbox that provides a set of command-line tools to work with software packs in Open-CMSIS-Pack format.
+CMSIS-Toolbox provides common project information for embedded application development. A [*csolution project*](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/) combines the application structure and build configuration with device, board, and reusable software information from CMSIS Packs.
+
+The same common project information supports [command-line, VS Code, and CI/DevOps workflows](https://open-cmsis-pack.github.io/cmsis-toolbox/overview/#command-line-and-ide-usage) for CMSIS projects, [Zephyr with West](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#west-build-system-integration), and [native CMake](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#native-cmake-build-integration). It connects [smart editor features, static code analysis and test tools](https://open-cmsis-pack.github.io/cmsis-toolbox/build-tools/#static-code-analysis), [programming, run, and debug configuration](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#run-and-debug-configuration), [trace](https://open-cmsis-pack.github.io/cmsis-toolbox/Experimental-Features/#trace), and [MLOps](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#mlops-integration) to the application development workflow.
 
 ## Users Guide
 
@@ -46,7 +48,7 @@ The following tools support the creation of Software Packs in [CMSIS-Pack format
 
 Tool           | Description
 :--------------|:-------------
-[**packchk**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/packchk/README.md) | **Pack Verification:** installs and manages software packs in the local development environment.
+[**packchk**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/packchk/README.md) | **Pack Verification:** validates the PDSC file against the pack schema and checks referenced files, required metadata, and dependencies.
 [**svdconv**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/svdconv/SVDConv/README.md) | **SVD Check / Convert:** validates and/or convert System View Description (SVD) files.
 [**vidx2pidx**](https://github.com/Open-CMSIS-Pack/vidx2pidx/blob/main/README.md) | **Pack Index File Generator:** generates a CMSIS-Pack index file from a vendor index.
 
