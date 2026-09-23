@@ -1,0 +1,81 @@
+name: Update Toolbox Components
+
+on:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  update-components:
+    if: github.repository == 'Open-CMSIS-Pack/cmsis-toolbox'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@e14015d583714f6e62063499dc959a02595150a1 # v2.21.1
+        with:
+          egress-policy: audit
+
+      - name: Checkout cmsis-toolbox repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          token: ${{ github.token }}
+
+      - name: Update component pins
+        id: update
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          python scripts/update_toolbox_components.py
+          status=$?
+          set -e
+
+          if [ "$status" -eq 0 ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif [ "$status" -eq 1 ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            exit "$status"
+          fi
+
+      - name: Create or update pull request
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: automation/toolbox-component-pins
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add .github/toolbox-components.json
+          git commit -m "[toolbox] Update component versions"
+          git push --force origin "$BRANCH"
+
+          if ! gh pr list --head "$BRANCH" --state open --json number --jq 'length > 0' | grep -qx true; then
+            gh pr create --base main --head "$BRANCH" --title "[toolbox] Update versions" --body "Automated update of the toolbox component release pins."
+          fi
+
+      - name: Create or update pull request
+        if: steps.update.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          token: ${{ secrets.GRASCI_WORKFLOW_UPDATE }}
+          commit-message: "Update toolbox components"
+          branch: update-toolbox-components-${{ github.run_id }}
+          delete-branch: true
+          title: "🤖 Update toolbox components"
+          body: |
+            Automated update of the toolbox component release pins.
