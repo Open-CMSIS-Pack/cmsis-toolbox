@@ -6,6 +6,16 @@
 
 The CMSIS-Toolbox is a set of command-line tools for building embedded applications on Arm Cortex-M and Ethos-U based microcontrollers. It supports [multiple compiler toolchains](installation.md#compiler-toolchains), uses [YAML project files and software packs](build-overview.md#minimal-project-setup) for device support and reusable software components, and integrates with CMake/Ninja for scalable builds from simple applications to complex multi-processor systems.
 
+## Common Project Information for the Development Workflow
+
+A [*csolution project*](build-overview.md) provides common project information for an embedded application. It combines the application structure and [build configurations](YML-Input-Format.md#build-types) with device, board, and reusable software information from [CMSIS Packs](YML-Input-Format.md#packs).
+
+The same common project information supports the [command line, VS Code, and automated CI/DevOps workflows](#command-line-and-ide-usage). It can orchestrate [CMSIS projects](build-overview.md#minimal-project-setup), [Zephyr applications built with West](build-overview.md#west-build-system-integration), and [native CMake projects](build-overview.md#native-cmake-build-integration).
+
+CMSIS-Toolbox resolves this information into [machine-readable build information](build-overview.md#overview-of-operation). It connects [smart editor features](build-tools.md#ide-usage), [static code analysis](build-tools.md#static-code-analysis), and test tools to the application development workflow. This avoids duplicating project and target configuration in each tool.
+
+Because CMSIS Packs describe the target hardware, the common project information can also configure [programming, run, and debug tools](build-overview.md#run-and-debug-configuration). The same concept extends to [trace](Experimental-Features.md#trace) and [MLOps](build-overview.md#mlops-integration), connecting these activities to command-line, VS Code, and CI/DevOps workflows.
+
 ## Command Line and IDE Usage
 
 The CMSIS-Toolbox is designed for stand-alone usage and integration into [IDEs](build-tools.md#ide-usage) or [DevOps](build-tools.md#devops-usage) systems for Continuous Integration (CI) workflows.
@@ -58,6 +68,12 @@ Further information:
 ## Benefits
 
 The overall benefits of the CMSIS-Toolbox are:
+
+- Common project information is used consistently from the command line, VS Code, and automated CI/DevOps workflows.
+
+- Machine-readable build information connects smart editor features, static code analysis, and test tools to the application development workflow.
+
+- Target information from CMSIS Packs is reused for programming, run and debug configuration, and trace workflows.
 
 - [*Software packs*](https://www.keil.arm.com/packs/) simplify tool setup with `device:` or `board:` selection and provide access to reusable software components.
 

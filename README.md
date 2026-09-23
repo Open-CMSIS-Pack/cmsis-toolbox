@@ -9,7 +9,9 @@
 [![Publish cmsis-toolbox](https://img.shields.io/github/actions/workflow/status/Open-CMSIS-Pack/cmsis-toolbox/toolbox.yml?logo=arm&logoColor=0091bd&label=Publish%20cmsis-toolbox)](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/tree/main/.github/workflows/toolbox.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Open-CMSIS-Pack/cmsis-toolbox/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Open-CMSIS-Pack/cmsis-toolbox)
 
-This contains the executable tools of the CMSIS-Toolbox that provides a set of command-line tools to work with software packs in Open-CMSIS-Pack format.
+CMSIS-Toolbox provides common project information for embedded application development. A [*csolution project*](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/) combines the application structure and build configuration with device, board, and reusable software information from CMSIS Packs.
+
+The same common project information supports [command-line, VS Code, and CI/DevOps workflows](https://open-cmsis-pack.github.io/cmsis-toolbox/overview/#command-line-and-ide-usage) for CMSIS projects, [Zephyr with West](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#west-build-system-integration), and [native CMake](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#native-cmake-build-integration). It connects [smart editor features, static code analysis and test tools](https://open-cmsis-pack.github.io/cmsis-toolbox/build-tools/#static-code-analysis), [programming, run, and debug configuration](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#run-and-debug-configuration), [trace](https://open-cmsis-pack.github.io/cmsis-toolbox/Experimental-Features/#trace), and [MLOps](https://open-cmsis-pack.github.io/cmsis-toolbox/build-overview/#mlops-integration) to the application development workflow.
 
 ## Users Guide
 

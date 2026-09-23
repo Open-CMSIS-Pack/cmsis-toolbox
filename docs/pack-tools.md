@@ -117,9 +117,9 @@ The following tools are part of the CMSIS-Toolbox. These tools can be used to de
 
 | Tool           | Description  |
 |:---------------|:-------------|
-| **packchk**    | **Pack Validation:** installs and manages software packs in the local development environment. |
-| **svdconv**    | **SVD Check / Convert:** validate and/or convert System View Description (SVD) files. |
-| **vidx2pidx**  | **Package Index Generator:** check Package index file (PIDX) for indexing in public pack services. |
+| [**packchk**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/packchk/README.md) | **Pack Validation:** installs and manages software packs in the local development environment. |
+| [**svdconv**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/svdconv/SVDConv/README.md) | **SVD Check / Convert:** validate and/or convert System View Description (SVD) files. |
+| [**vidx2pidx**](https://github.com/Open-CMSIS-Pack/vidx2pidx/blob/main/README.md) | **Package Index Generator:** check Package index file (PIDX) for indexing in public pack services. |
 
 ### Usage
 
