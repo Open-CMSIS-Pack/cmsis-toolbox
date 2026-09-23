@@ -8,4 +8,3 @@ repos:
       language: system
       files: ^(libs\/|tools\/)
       types_or: [python, shell]
-
