@@ -48,7 +48,7 @@ The following tools support the creation of Software Packs in [CMSIS-Pack format
 
 Tool           | Description
 :--------------|:-------------
-[**packchk**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/packchk/README.md) | **Pack Verification:** installs and manages software packs in the local development environment.
+[**packchk**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/packchk/README.md) | **Pack Verification:** validates the PDSC file against the pack schema and checks referenced files, required metadata, and dependencies.
 [**svdconv**](https://github.com/Open-CMSIS-Pack/devtools/blob/main/tools/svdconv/SVDConv/README.md) | **SVD Check / Convert:** validates and/or convert System View Description (SVD) files.
 [**vidx2pidx**](https://github.com/Open-CMSIS-Pack/vidx2pidx/blob/main/README.md) | **Pack Index File Generator:** generates a CMSIS-Pack index file from a vendor index.
 
