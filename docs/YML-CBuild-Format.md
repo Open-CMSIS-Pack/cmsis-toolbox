@@ -114,6 +114,7 @@ The following sections describe the format of the *build information files*. Man
 - [**Nodes for Project Management**](#nodes-for-project-management)
 - [**Nodes for File Management**](#nodes-for-file-management)
 - [**Nodes for License Information**](#nodes-for-license-information)
+- [**Nodes for External Build Systems**](#nodes-for-external-build-systems)
 
 ### `*.cbuild-idx.yml`
 
@@ -703,6 +704,10 @@ Each different license that is used in a project context has a separate section.
         - component: ARM::CMSIS-Compiler:STDIN:Custom@1.1.0
         :
 ```
+
+### Nodes for External Build Systems
+
+The following nodes describe contexts built by external build systems.
 
 #### `west:`
 
