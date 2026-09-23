@@ -456,13 +456,13 @@ The `synchronization:` node specifies the frequency of the DWT synchronization p
 
 `synchronization:`                    |             | Content
 :-------------------------------------|:------------|:------------------------------------
-`DWT:`                                |  Optional   | Frequency `off`, `16M`, `64M`, `256M` processor cycles. Default: `256M`.
+`DWT:`                                |  Optional   | Frequency `off`, `16M`, `64M`, `256M` processor cycles. Default: `16M`.
 
 **Example:**
 
 ```yml
 synchronization:
-  DWT: 16M
+  DWT: 256M
 ```
 
 #### `instructions:`
