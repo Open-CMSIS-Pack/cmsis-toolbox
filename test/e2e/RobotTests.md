@@ -6,7 +6,7 @@ This guide will walk you through the installation process and running of Robot F
 
 Before running Robot Framework tests, ensure you have the following prerequisites installed on your system:
 
-- Python (minimum recommended version **3.11**)
+- Python (minimum recommended version **3.14**)
 - pip (python package manager)
 - [vcpkg](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/blob/main/docs/installation.md#vcpkg---setup-using-cli)
 
