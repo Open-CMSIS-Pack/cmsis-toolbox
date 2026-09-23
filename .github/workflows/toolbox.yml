@@ -101,11 +101,21 @@ jobs:
         run: |
           mkdir -p toolbox
 
+      - name: Read component versions
+        id: versions
+        run: |
+          manifest=.github/toolbox-components.json
+          jq -e '
+            keys == ["buildmgr", "cbridge", "cbuild", "cbuild2cmake", "cpackget", "packchk", "projmgr", "schema", "svdconv", "vidx2pidx"] and
+            all(.[]; type == "string" and test("^[0-9]+\\.[0-9]+\\.[0-9]+$"))
+          ' "$manifest" >/dev/null
+          jq -r 'to_entries[] | "\(.key)=\(.value)"' "$manifest" >> "$GITHUB_OUTPUT"
+
       - name: Download buildmgr release asset
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/buildmgr/2.15.0
+          version: tags/tools/buildmgr/${{ steps.versions.outputs.buildmgr }}
           file: cbuild_install.sh
           target: toolbox/cbuild_install.sh
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -114,7 +124,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/projmgr/2.15.0
+          version: tags/tools/projmgr/${{ steps.versions.outputs.projmgr }}
           file: projmgr.zip
           target: toolbox/projmgr.zip
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -123,7 +133,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/generator-bridge"
-          version: tags/v0.10.2
+          version: tags/v${{ steps.versions.outputs.cbridge }}
           regex: true
           file: "cbridge_.*\\.(zip|gz)"
           target: "toolbox/"
@@ -133,7 +143,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/cbuild"
-          version: tags/v2.15.0
+          version: tags/v${{ steps.versions.outputs.cbuild }}
           regex: true
           file: "cbuild_.*\\.(zip|gz)"
           target: "toolbox/"
@@ -143,7 +153,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/cbuild2cmake"
-          version: tags/v0.12.0
+          version: tags/v${{ steps.versions.outputs.cbuild2cmake }}
           regex: true
           file: "cbuild2cmake_.*\\.(zip|gz)"
           target: "toolbox/"
@@ -153,7 +163,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/cpackget"
-          version: tags/v2.2.2
+          version: tags/v${{ steps.versions.outputs.cpackget }}
           regex: true
           file: "cpackget_.*\\.(zip|gz)"
           target: "toolbox/"
@@ -163,7 +173,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/packchk/1.4.5
+          version: tags/tools/packchk/${{ steps.versions.outputs.packchk }}
           regex: true
           file: "packchk-.*\\.(zip|tbz2)"
           target: "toolbox/"
@@ -173,7 +183,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/devtools"
-          version: tags/tools/svdconv/3.3.51
+          version: tags/tools/svdconv/${{ steps.versions.outputs.svdconv }}
           regex: true
           file: "svdconv-.*\\.(zip|tbz2)"
           target: "toolbox/"
@@ -183,7 +193,7 @@ jobs:
         uses: dsaltares/fetch-gh-release-asset@aa2ab1243d6e0d5b405b973c89fa4d06a2d0fff7 # 1.1.2
         with:
           repo: "Open-CMSIS-Pack/vidx2pidx"
-          version: tags/v0.0.6
+          version: tags/v${{ steps.versions.outputs.vidx2pidx }}
           regex: true
           file: "vidx2pidx_.*\\.(zip|gz)"
           target: "toolbox/"
@@ -281,8 +291,8 @@ jobs:
 
       - name: Copy Files
         run: |
-          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.62/schema/PACK.xsd --output distribution/etc/PACK.xsd
-          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v1.7.62/schema/PackIndex.xsd --output distribution/etc/PackIndex.xsd
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v${{ steps.versions.outputs.schema }}/schema/PACK.xsd --output distribution/etc/PACK.xsd
+          curl https://raw.githubusercontent.com/Open-CMSIS-Pack/Open-CMSIS-Pack-Spec/v${{ steps.versions.outputs.schema }}/schema/PackIndex.xsd --output distribution/etc/PackIndex.xsd
           cp ./buildmgr/bin/cbuildgen${{ matrix.temp_extension }}-${{ matrix.arch }}                        ./distribution/bin/cbuildgen${{ matrix.binary_extension }}
           cp -r ./buildmgr/etc/*                                                                            ./distribution/etc
           rm ./distribution/etc/setup
