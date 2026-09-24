@@ -286,7 +286,7 @@ Configuration File             | Description
 `.cmsis/<solution-set>.ctrace.yml` | User trace generation setup. This file defines which data, events, ITM channels, PC samples, or instruction trace streams are enabled.
 `.trace/<solution-set>.ctrace-run.yml` | Generated trace run configuration. This file contains resolved symbols and ordered register accesses for pyOCD or other debug tools.
 
-The trace run configuration (in `.trace/<solution-set>.ctrace-run.yml`) is written to target trace resources such as `DWT`, `ITM`, `ETM`, `MTB`, or `PMU` registers. The generated register accesses are loaded by pyOCD when the debug session starts. When pyOCD detects an updated `*.ctrace-run.yml` file, it updates the target trace registers and deletes previous raw trace data files.
+The trace run configuration (in `.trace/<solution-set>.ctrace-run.yml`) is written to target trace resources such as `DWT`, `ITM`, `ETM`, `MTB`, or `PMU` registers. The generated register accesses are loaded by pyOCD when the debug session starts. When pyOCD detects an updated `*.ctrace-run.yml` file, it writes the disabled feature values before applying the active register setup and deletes previous raw trace data files.
 
 Based on these settings pyOCD captures raw trace data files in the [directory `.trace`](#directory-and-file-structure). These raw trace data files are converted by the `ctrace` utility.
 
@@ -513,9 +513,19 @@ The `*.ctrace-run.yml` file starts with the node `ctrace-run:`. It is generated 
 :--------------------------------------------------------|:------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `generated-by:`                       |  Optional   | Tool and version that generated the file.
 &nbsp;&nbsp;&nbsp; `ctrace-setup:`                       |  Optional   | Copy of [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file.
+&nbsp;&nbsp;&nbsp; `ctrace-disable:`                     |**Required** | Per-processor register values that disable trace features before applying `ctrace-refs:`.
 &nbsp;&nbsp;&nbsp; `ctrace-refs:`                        |**Required** | List of [references](#references) in the `*.ctrace.yml` file.
 
 The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file and preserves the original user input for consumers of the `*.ctrace-run.yml` file. Consumers may read settings that do not resolve to a `ctrace-ref` or register write. For example, the `ctrace` decoder uses `timestamps:clock` as a trace-formatting hint, while pyOCD reads `synchronization:sync-on-run` to control built-in trace-capture behavior.
+
+The `ctrace-disable:` node contains register values that disable trace features before applying `ctrace-refs:`. Its `regs:` entries use the [register access format](#register-accesses). Multi-processor entries require `pname:`, while single-processor entries omit it.
+
+`ctrace-disable:`                                       |             | Content
+:--------------------------------------------------------|:------------|:------------------------------------
+`- pname:`                                              |  Optional   | Processor name.
+&nbsp;&nbsp;&nbsp; `regs:`                               |**Required** | Register writes that disable trace features for this processor.
+
+The `ctrace-ref:` node references the trace generation configuration in the file `*.ctrace.yml` and contains register values that represent the setup for trace sources. The `regs:` entries use the [register access format](#register-accesses). A single-core system has no `pname:` value; a multi-processor always includes a `pname:` value in the `ctrace-ref:` node.
 
 `ctrace-refs:`                                           |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
@@ -552,13 +562,28 @@ The use of `source:` depends on the combination of `type:` and the setting refer
 `dwt`   | `instructions:start:`, `instructions:stop:`, or `tracehalt:` | Number or array of DWT comparators allocated for the condition.
 `itm`   | `itm:` | Number or array of enabled ITM channels.
 
+#### Register Accesses
+
+The `ctrace-run.yml` file contains the disabled register values and active register setup required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.
+
+Trace Component | Base Address | Description
+:---------------|:------------:|:------------------------------------
+`ITM`           | `0xE0000000` | Instrumentation Trace Macrocell.
+`DWT`           | `0xE0001000` | Data Watchpoint and Trace unit.
+`PMU`           | `0xE0003000` | Performance Monitoring Unit.
+`ETM`           | `0xE0041000` | Embedded Trace Macrocell.
+
+`regs:` entries are used under both `ctrace-disable:` and `ctrace-refs:` and have the following format:
+
 `regs:`                                                  |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
 `- name:`                                                |**Required** | Symbolic name of the register.
 &nbsp;&nbsp;&nbsp; `value:`                              |**Required** | Value to write in this register.
 &nbsp;&nbsp;&nbsp; `mask:`                               | Optional    | Bit mask for value write (default: `0xFFFFFFFF`).
 
-**Example:**
+When applying `ctrace-disable:` writes to DWT comparators, the debugger preserves active watchpoints.
+
+#### Example
 
 ```yml
 ctrace-run:
@@ -566,6 +591,14 @@ ctrace-run:
   ctrace-setup:
     synchronization:
       sync-on-run: false  # Read by pyOCD; not a register write
+  ctrace-disable:
+  - pname: core0
+    regs:
+      - name: ITM_TCR
+        value: 0x00000000
+        mask: 0x00000006  # Disable timestamp and synchronization generation
+      - name: ITM_TER0
+        value: 0x00000000  # No mask: disable all 32 ITM channels
   ctrace-refs:
   - ctrace-ref: core0/itm
     pname: core0
@@ -627,20 +660,6 @@ ctrace-run:
     The processor `itm` reference configures the ITM ATB stream ID. It may be generated even when no ITM channels are enabled.
 
 
-#### Register Accesses
-
-The `ctrace-run.yml` file contains the register values that are required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.
-
-Trace Component | Base Address | Description
-:---------------|:------------:|:------------------------------------
-`ITM`           | `0xE0000000` | Instrumentation Trace Macrocell.
-`DWT`           | `0xE0001000` | Data Watchpoint and Trace unit.
-`PMU`           | `0xE0003000` | Performance Monitoring Unit.
-`ETM`           | `0xE0041000` | Embedded Trace Macrocell.
-
-The `ctrace-ref:` node references the trace generation configuration in the file `*.ctrace.yml` and contains register values that represent the setup for trace sources.
-A single-core system has no `pname:` value; a multi-processor always includes a `pname:` value in the `ctrace-ref:` node.
-
 ### Initial Implementation
 
 The initial implementation focuses on pyOCD with SWO UART and interactive operation in CMSIS-Debugger.
@@ -695,7 +714,10 @@ The `pyTS` utility generates the file `.trace/<solution-set>.ctrace-run.yml`. It
 - Reads the file `<name>.cbuild-run.yml` to provide the solution set, processor names, and ELF output files.
 - Converts symbolic names in the file `.cmsis/<solution-set>.ctrace.yml` to physical addresses by using the corresponding ELF output files.
 - Uses processor information and implementation details to map the trace generation setup into CoreSight trace register values. See [Processor-Specific Trace Features](#processor-specific-trace-features)
+- Generates `ctrace-disable:` with one group per processor that needs disable writes and one write per register, covering every trace feature pyTS can configure on the target, even if not enabled.
 - Rejects incompatible configuration settings with user-oriented messages (`info:`, `warning:`, or `error:`) in the `ctrace-ref:` node of the file `*.ctrace-run.yml`
+
+For a given target, `ctrace-disable:` remains unchanged when feature settings change. pyTS includes disable fields for every trace-eligible DWT comparator. If no writes are needed, it emits `ctrace-disable:` without children, which the debugger treats as no disable writes.
 
 The final trace generation setup is written to the file `.trace/<solution-set>.ctrace-run.yml`.
 
