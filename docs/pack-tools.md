@@ -102,13 +102,13 @@ Several [tools and scripts](https://github.com/Open-CMSIS-Pack#ready-to-use-tool
 
 - Use [C startup files](https://arm-software.github.io/CMSIS_6/latest/Core/cmsis_core_files.html) that allows the use of a DFP with any toolchain.
 - For elements, use a brief description text of less than 128 characters to explain the purpose. When possible, link to documentation with detailed information.
-    - Example: A component `Device:HAL:ENET` should not have description `ENET HAL Driver`, use `Ethernet HAL driver` instead.
+  - Example: A component `Device:HAL:ENET` should not have description `ENET HAL Driver`, use `Ethernet HAL driver` instead.
 - Consider adding [project templates](https://github.com/Open-CMSIS-Pack/STM32U5xx_DFP/tree/main/Templates) to help get started with more complex projects.
     This is useful when devices are configured using generators or provide multiple linker scripts (e.g., RAM/ROM execution).
 - To distribute [toolchain agnostic examples](build-overview.md#toolchain-agnostic-project) as part of packs:
-    - Consider to use [`select-compiler`](YML-Input-Format.md#select-compiler) to make projects toolchain independent.
-    - To avoid that examples need updates with every pack release, specify the [minimum pack version required](https://github.com/Open-CMSIS-Pack/csolution-examples/blob/main/DualCore/HelloWorld.csolution.yml#L9).
-    - Use [CI workflows](https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP/tree/main/.github/workflows) to validate that projects compile correctly.
+  - Consider to use [`select-compiler`](YML-Input-Format.md#select-compiler) to make projects toolchain independent.
+  - To avoid that examples need updates with every pack release, specify the [minimum pack version required](https://github.com/Open-CMSIS-Pack/csolution-examples/blob/main/DualCore/HelloWorld.csolution.yml#L9).
+  - Use [CI workflows](https://github.com/Open-CMSIS-Pack/STM32H743I-EVAL_BSP/tree/main/.github/workflows) to validate that projects compile correctly.
 - Add an [overview.md file](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/element_package_description.html) that describes the software pack's overall usage. These files are displayed on [www.keil.arm.com/packs](https://www.keil.arm.com/packs) and indexed by Web search engines.
 
 ## Pack Creation Tools
@@ -261,8 +261,8 @@ cpackget add Vendor::PackName --pack-root packroot
 Several vendors use GitHub for pack distribution today. [Alif Semiconductor](https://www.keil.arm.com/packs/?q=Alif&pack) is a good example:
 
 - [github.com/alifsemi/alif_cmsis_packs](https://github.com/alifsemi/alif_cmsis_packs) contains the `*.pidx` index file that references all public packs (including versions) provided by Alif.
-    - This index file is submitted **once by email** to the [pack index service](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_KeilComPack) for the relevant tools (mailto:cmsis@arm.com for Arm Tools, mailto:cmsis@iar.com for IAR Tools).
-    - Update this `*.pidx` file to publish new packs or new versions. Arm scans vendor `*.pidx` index files once per day and updates the web content.
+  - This index file is submitted **once by email** to the [pack index service](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_KeilComPack) for the relevant tools (mailto:cmsis@arm.com for Arm Tools, mailto:cmsis@iar.com for IAR Tools).
+  - Update this `*.pidx` file to publish new packs or new versions. Arm scans vendor `*.pidx` index files once per day and updates the web content.
 - The packs themselves are located in separate GitHub repositories. The `*.pdsc` file of a pack contains the `url` and `repo` elements that tools use to update the pack or consume it as a [repository during development](build-tools.md#install-a-repository).
 
 Refer to [GitHub-hosted packs](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/createPackPublish.html#cp_GitHubHosting) in the  [Open-CMSIS-Pack specification](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec) for details on the `*.pidx` and `*.pdsc` file content.
