@@ -717,7 +717,7 @@ The `pyTS` utility generates the file `.trace/<solution-set>.ctrace-run.yml`. It
 - Generates `ctrace-disable:` with one group per processor that needs disable writes and one write per register, covering every trace feature pyTS can configure on the target, even if not enabled.
 - Rejects incompatible configuration settings with user-oriented messages (`info:`, `warning:`, or `error:`) in the `ctrace-ref:` node of the file `*.ctrace-run.yml`
 
-For a given target, `ctrace-disable:` remains unchanged when feature settings change. pyTS includes disable fields for every trace-eligible DWT comparator. If no writes are needed, it emits `ctrace-disable:` without children, which the debugger treats as no disable writes.
+For a given target, `ctrace-disable:` remains unchanged when feature settings change. pyTS includes disable fields for every trace-eligible DWT comparator. If no writes are needed, it emits `ctrace-disable:` without children, which the debugger treats as no disable writes. The disable-values for supported components are listed in [Trace Component Registers](#trace-component-registers).
 
 The final trace generation setup is written to the file `.trace/<solution-set>.ctrace-run.yml`.
 
@@ -876,6 +876,33 @@ File           | Description
 :--------------|:------------------------
 `metadata`     | Metadata information for Trace Compass.
 `stream_<n>`   | Trace data stream.
+
+## Trace Component Registers
+
+### ITM
+
+The following ITM register values are used for `ctrace-disable:`:
+
+Name | Offset | `value:` | `mask:`
+:----|:-------|:--------|:----
+`ITM_TER` | `0xE00` | `0x00000000` | `None`
+`ITM_TPR` | `0xE40` | `0x00000000` | `None`
+`ITM_TCR` | `0xE80` | `0x00000000` | `None`
+
+### DWT
+
+The following DWT register values are used for `ctrace-disable:`:
+
+Name | Offset | `value:` | `mask:`
+:----|:-------|:--------|:----
+`DWT_CTRL` (Armv7-M) | `0x000` | `0x00000000` | `None`
+`DWT_CTRL` (Armv8-M) | `0x000` | `0x00000000` | `0x007F1FFF`
+`DWT_COMP<n>` | `0x020 + <n>*0x010` | `0x00000000` | `None`
+`DWT_MASK<n>` (Armv7-M only) | `0x024 + <n>*0x010` | `0x00000000` | `None`
+`DWT_FUNCTION<n>` | `0x028 + <n>*0x010` | `0x00000000` | `None`
+`DWT_VMASK<n>` (Armv8-M only) | `0x02C + <n>*0x010` | `0x00000000` | `None`
+
+The Armv8-M `DWT_CTRL` disable write needs a mask to preserve `CYCDISS` on processors that implement the Security Extension.
 
 ## Processor-Specific Trace Features
 
