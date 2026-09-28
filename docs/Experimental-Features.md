@@ -286,7 +286,7 @@ Configuration File             | Description
 `.cmsis/<solution-set>.ctrace.yml` | User trace generation setup. This file defines which data, events, ITM channels, PC samples, or instruction trace streams are enabled.
 `.trace/<solution-set>.ctrace-run.yml` | Generated trace run configuration. This file contains resolved symbols and ordered register accesses for pyOCD or other debug tools.
 
-The trace run configuration (in `.trace/<solution-set>.ctrace-run.yml`) is written to target trace resources such as `DWT`, `ITM`, `ETM`, `MTB`, or `PMU` registers. The generated register accesses are loaded by pyOCD when the debug session starts. When pyOCD detects an updated `*.ctrace-run.yml` file, it writes the disabled feature values before applying the active register setup and deletes previous raw trace data files.
+The trace run configuration (in `.trace/<solution-set>.ctrace-run.yml`) is written to target trace resources such as `DWT`, `ITM`, `ETM`, `MTB`, or `PMU` registers. pyOCD programs these registers after executing the [TraceCapture debug sequence](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#pdsc_SequenceNameEnum_pg) and enabling capture in the attached debug unit, but before running the CPU. When pyOCD detects an updated `*.ctrace-run.yml` file, it writes the disabled feature values before applying the active register setup and deletes previous raw trace data files.
 
 Based on these settings pyOCD captures raw trace data files in the [directory `.trace`](#directory-and-file-structure). These raw trace data files are converted by the `ctrace` utility.
 
@@ -706,6 +706,9 @@ Stream Synchronization | -  | -        | yes             | yes      | yes
     - The available Event Counters depend on the Cortex-M processor.
     - The DWT comparators available for `DWT Data Trace` and `Start, Stop, Halt` are shared, so the total number of available comparators is not the sum of the values in the two rows.
     - M52, M55, M85 use the first 4 DWT comparators for data trace.
+
+!!! Note
+    Trace configuration through `*.ctrace.yml` and the Trace Generation dialog is not designed to coexist with other user-provided programming of target trace registers.
 
 ## `pyTS` Utility
 
