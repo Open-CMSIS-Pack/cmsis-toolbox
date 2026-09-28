@@ -895,14 +895,13 @@ The following DWT register values are used for `ctrace-disable:`:
 
 Name | Offset | `value:` | `mask:`
 :----|:-------|:--------|:----
-`DWT_CTRL` (Armv7-M) | `0x000` | `0x00000000` | `None`
-`DWT_CTRL` (Armv8-M) | `0x000` | `0x00000000` | `0x007F1FFF`
+`DWT_CTRL` | `0x000` | `0x00000000` | `0x007F1FFE`
 `DWT_COMP<n>` | `0x020 + <n>*0x010` | `0x00000000` | `None`
 `DWT_MASK<n>` (Armv7-M only) | `0x024 + <n>*0x010` | `0x00000000` | `None`
 `DWT_FUNCTION<n>` | `0x028 + <n>*0x010` | `0x00000000` | `None`
 `DWT_VMASK<n>` (Armv8-M only) | `0x02C + <n>*0x010` | `0x00000000` | `None`
 
-The Armv8-M `DWT_CTRL` disable write needs a mask to preserve `CYCDISS` on processors that implement the Security Extension.
+The `DWT_CTRL` disable mask preserves `CYCCNTENA` because application software may use the DWT cycle counter. It also preserves `CYCDISS` on Armv8-M processors with the Security Extension. This bit controls whether the counter increments in Secure state.
 
 ## Processor-Specific Trace Features
 
