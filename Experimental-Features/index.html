@@ -114,6 +114,8 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#selecting-trace-buffers">Selecting Trace Buffers</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#trace-formatting">Trace Formatting</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#directory-and-file-structure">Directory and File Structure</a>
@@ -160,6 +162,8 @@
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#register-accesses">Register Accesses</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#example">Example</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#initial-implementation">Initial Implementation</a>
@@ -187,6 +191,14 @@
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#ctf-format">CTF Format</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#trace-component-registers">Trace Component Registers</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#itm_1">ITM</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#dwt">DWT</a>
     </li>
         </ul>
     </li>
@@ -441,6 +453,30 @@
     - trace-buffer: MTB
 </code></pre>
 <p>This selection lets DFP debug sequences use <code>TraceBufferSelected("MTB")</code>, and lets a <code>TraceFlush</code> sequence direct <code>BufferStreamOut</code> to the selected named trace buffer in the debugger.</p>
+<h4 id="trace-formatting">Trace Formatting</h4>
+<p>Some trace stream channel types may transport formatted trace data from multiple source streams, e.g. ITM data from multiple processors in the system. For simplicity, the formatter is always enabled in this solution.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Trace stream channel</th>
+<th style="text-align: left;">Formatter usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">SWO</td>
+<td style="text-align: left;">Not supported</td>
+</tr>
+<tr>
+<td style="text-align: left;">TB</td>
+<td style="text-align: left;">Always enabled</td>
+</tr>
+<tr>
+<td style="text-align: left;">ER</td>
+<td style="text-align: left;">Not supported</td>
+</tr>
+</tbody>
+</table>
 <h3 id="directory-and-file-structure">Directory and File Structure</h3>
 <p>Trace-related files are stored relative to the directory that contains the <code>*.csolution.yml</code> file.</p>
 <table>
@@ -591,6 +627,8 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </ul>
 <p><strong>CI Workflow:</strong></p>
 <p>CI requires a prepared <code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code> file. This file may be under source control or maintained manually.</p>
+<p><strong>Trace Buffer Workflow:</strong></p>
+<p>Existing <strong>Raw Trace Stream</strong> files containing trace buffer data are deleted each time the trace buffer is captured, for example after hitting a breakpoint. This prevents gaps that could otherwise be introduced by concatenating capture runs in which the trace buffer has wrapped around.</p>
 <h3 id="configuration-files">Configuration Files</h3>
 <p>Trace setup is split between target infrastructure configuration and capture configuration.</p>
 <table>
@@ -619,7 +657,7 @@ ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list nod
 </tr>
 </tbody>
 </table>
-<p>The trace run configuration (in <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>) is written to target trace resources such as <code>DWT</code>, <code>ITM</code>, <code>ETM</code>, <code>MTB</code>, or <code>PMU</code> registers. The generated register accesses are loaded by pyOCD when the debug session starts. When pyOCD detects an updated <code>*.ctrace-run.yml</code> file, it updates the target trace registers and deletes previous raw trace data files.</p>
+<p>The trace run configuration (in <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>) is written to target trace resources such as <code>DWT</code>, <code>ITM</code>, <code>ETM</code>, <code>MTB</code>, or <code>PMU</code> registers. pyOCD programs these registers after executing the <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#pdsc_SequenceNameEnum_pg">TraceCapture debug sequence</a> and enabling capture in the attached debug unit, but before running the CPU. When pyOCD detects an updated <code>*.ctrace-run.yml</code> file, it writes the disabled feature values before applying the active register setup and deletes previous raw trace data files.</p>
 <p>Based on these settings pyOCD captures raw trace data files in the <a href="#directory-and-file-structure">directory <code>.trace</code></a>. These raw trace data files are converted by the <code>ctrace</code> utility.</p>
 <p>In a later step, a preprocessing tool may generate <code>.trace/README.md</code> with setup instructions and code snippets that can be inserted in the application code.</p>
 <h3 id="file-structure-of-ctraceyml">File Structure of <code>*.ctrace.yml</code></h3>
@@ -962,7 +1000,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 </table>
 <p>Supported values for <code>period:</code> <code>0</code> (off), <code>64</code>, <code>128</code>, <code>256</code>, ..., <code>16384</code>. Default: <code>0</code>.</p>
 <h4 id="synchronization"><code>synchronization:</code></h4>
-<p>The <code>synchronization:</code> node specifies the frequency of the DWT synchronization packet.</p>
+<p>The <code>synchronization:</code> node specifies behavior and frequency of synchronization packet generation.</p>
 <table>
 <thead>
 <tr>
@@ -975,13 +1013,38 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <tr>
 <td style="text-align: left;"><code>DWT:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Frequency <code>off</code>, <code>16M</code>, <code>64M</code>, <code>256M</code> processor cycles. Default: <code>256M</code>.</td>
+<td style="text-align: left;">Frequency <code>off</code>, <code>16M</code>, <code>64M</code>, <code>256M</code> processor cycles. Default: <code>16M</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sync-on-run:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Explicitly request synchronization packets at start of a step or run. Supported values: <code>true</code> (default) and <code>false</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>sync-on-run:</code> is preserved in <code>*.ctrace-run.yml</code> under <code>ctrace-setup:</code> so that pyOCD can apply the requested synchronization behavior. It only applies to trace sources with enabled synchronization and that do not always insert synchronization packets at start of a step or run. A debugger must request the packets as follows:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Architecture</th>
+<th style="text-align: left;">DWT/ITM Request</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Armv7-M</td>
+<td style="text-align: left;">Debugger toggles bits 24, 26, and 28 of DWT_CYCCNT twice between setting up trace capture and start of processor step/run. These are the bits selectable by DWT_CTRL.SYNCTAP. The second toggle restores the original cycle counter value. Do not toggle other bits to avoid side effects.</td>
+</tr>
+<tr>
+<td style="text-align: left;">Armv8-M</td>
+<td style="text-align: left;">N/A, processor always automatically inserts at start of step/run</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">synchronization:
-  DWT: 16M
+  DWT: 256M
+  sync-on-run: false  # Skip manual DWT synchronization at start of run
 </code></pre>
 <h4 id="instructions"><code>instructions:</code></h4>
 <p>The <code>instructions:</code> node is reserved for ETM and MTB instruction trace. It is not required for the initial implementation.</p>
@@ -1085,13 +1148,41 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <td style="text-align: left;">Copy of <a href="#file-structure-of-ctraceyml"><code>setup</code></a> node in the <code>*.ctrace.yml</code> file.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ctrace-disable:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Per-processor register values that disable trace features before applying <code>ctrace-refs:</code>.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ctrace-refs:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">List of <a href="#references">references</a> in the <code>*.ctrace.yml</code> file.</td>
 </tr>
 </tbody>
 </table>
-<p>The <code>ctrace-setup</code> node uses the same format as the <a href="#file-structure-of-ctraceyml"><code>setup</code></a> node in the <code>*.ctrace.yml</code> file and preserves the original user input for consumers of the <code>*.ctrace-run.yml</code> file. This includes settings that do not resolve to a <code>ctrace-ref</code> but are required for higher-level output formats such as CTF. For example the <code>timestamps:clock</code> node.</p>
+<p>The <code>ctrace-setup</code> node uses the same format as the <a href="#file-structure-of-ctraceyml"><code>setup</code></a> node in the <code>*.ctrace.yml</code> file and preserves the original user input for consumers of the <code>*.ctrace-run.yml</code> file. Consumers may read settings that do not resolve to a <code>ctrace-ref</code> or register write. For example, the <code>ctrace</code> decoder uses <code>timestamps:clock</code> as a trace-formatting hint, while pyOCD reads <code>synchronization:sync-on-run</code> to control built-in trace-capture behavior.</p>
+<p>The <code>ctrace-disable:</code> node contains register values that disable trace features before applying <code>ctrace-refs:</code>. Its <code>regs:</code> entries use the <a href="#register-accesses">register access format</a>. Multi-processor entries require <code>pname:</code>, while single-processor entries omit it.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>ctrace-disable:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- pname:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Processor name.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>regs:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Register writes that disable trace features for this processor.</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>ctrace-ref:</code> node references the trace generation configuration in the file <code>*.ctrace.yml</code> and contains register values that represent the setup for trace sources. The <code>regs:</code> entries use the <a href="#register-accesses">register access format</a>. A single-core system has no <code>pname:</code> value; a multi-processor always includes a <code>pname:</code> value in the <code>ctrace-ref:</code> node.</p>
 <table>
 <thead>
 <tr>
@@ -1205,6 +1296,40 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 </tr>
 </tbody>
 </table>
+<h4 id="register-accesses">Register Accesses</h4>
+<p>The <code>ctrace-run.yml</code> file contains the disabled register values and active register setup required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Trace Component</th>
+<th style="text-align: center;">Base Address</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>ITM</code></td>
+<td style="text-align: center;"><code>0xE0000000</code></td>
+<td style="text-align: left;">Instrumentation Trace Macrocell.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DWT</code></td>
+<td style="text-align: center;"><code>0xE0001000</code></td>
+<td style="text-align: left;">Data Watchpoint and Trace unit.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>PMU</code></td>
+<td style="text-align: center;"><code>0xE0003000</code></td>
+<td style="text-align: left;">Performance Monitoring Unit.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETM</code></td>
+<td style="text-align: center;"><code>0xE0041000</code></td>
+<td style="text-align: left;">Embedded Trace Macrocell.</td>
+</tr>
+</tbody>
+</table>
+<p><code>regs:</code> entries are used under both <code>ctrace-disable:</code> and <code>ctrace-refs:</code> and have the following format:</p>
 <table>
 <thead>
 <tr>
@@ -1231,9 +1356,21 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 </tr>
 </tbody>
 </table>
-<p><strong>Example:</strong></p>
+<p>When applying <code>ctrace-disable:</code> writes to DWT comparators, the debugger preserves active watchpoints.</p>
+<h4 id="example">Example</h4>
 <pre><code class="language-yml">ctrace-run:
   generated-by: pyTS v0.0
+  ctrace-setup:
+    synchronization:
+      sync-on-run: false  # Read by pyOCD; not a register write
+  ctrace-disable:
+  - pname: core0
+    regs:
+      - name: ITM_TCR
+        value: 0x00000000
+        mask: 0x00000006  # Disable timestamp and synchronization generation
+      - name: ITM_TER0
+        value: 0x00000000  # No mask: disable all 32 ITM channels
   ctrace-refs:
   - ctrace-ref: core0/itm
     pname: core0
@@ -1294,41 +1431,6 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <p class="admonition-title">Note</p>
 <p>The processor <code>itm</code> reference configures the ITM ATB stream ID. It may be generated even when no ITM channels are enabled.</p>
 </div>
-<h4 id="register-accesses">Register Accesses</h4>
-<p>The <code>ctrace-run.yml</code> file contains the register values that are required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Trace Component</th>
-<th style="text-align: center;">Base Address</th>
-<th style="text-align: left;">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;"><code>ITM</code></td>
-<td style="text-align: center;"><code>0xE0000000</code></td>
-<td style="text-align: left;">Instrumentation Trace Macrocell.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>DWT</code></td>
-<td style="text-align: center;"><code>0xE0001000</code></td>
-<td style="text-align: left;">Data Watchpoint and Trace unit.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>PMU</code></td>
-<td style="text-align: center;"><code>0xE0003000</code></td>
-<td style="text-align: left;">Performance Monitoring Unit.</td>
-</tr>
-<tr>
-<td style="text-align: left;"><code>ETM</code></td>
-<td style="text-align: center;"><code>0xE0041000</code></td>
-<td style="text-align: left;">Embedded Trace Macrocell.</td>
-</tr>
-</tbody>
-</table>
-<p>The <code>ctrace-ref:</code> node references the trace generation configuration in the file <code>*.ctrace.yml</code> and contains register values that represent the setup for trace sources.
-A single-core system has no <code>pname:</code> value; a multi-processor always includes a <code>pname:</code> value in the <code>ctrace-ref:</code> node.</p>
 <h3 id="initial-implementation">Initial Implementation</h3>
 <p>The initial implementation focuses on pyOCD with SWO UART and interactive operation in CMSIS-Debugger.</p>
 <p>Subsequent releases may extend this initial solution to:</p>
@@ -1461,14 +1563,20 @@ A single-core system has no <code>pname:</code> value; a multi-processor always 
 <li>M52, M55, M85 use the first 4 DWT comparators for data trace.</li>
 </ul>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Trace configuration through <code>*.ctrace.yml</code> and the Trace Generation dialog is not designed to coexist with other user-provided programming of target trace registers.</p>
+</div>
 <h2 id="pyts-utility"><code>pyTS</code> Utility</h2>
 <p>The <code>pyTS</code> utility generates the file <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>. It performs the following steps:</p>
 <ul>
 <li>Reads the file <code>&lt;name&gt;.cbuild-run.yml</code> to provide the solution set, processor names, and ELF output files.</li>
 <li>Converts symbolic names in the file <code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code> to physical addresses by using the corresponding ELF output files.</li>
 <li>Uses processor information and implementation details to map the trace generation setup into CoreSight trace register values. See <a href="#processor-specific-trace-features">Processor-Specific Trace Features</a></li>
+<li>Generates <code>ctrace-disable:</code> with one group per processor that needs disable writes and one write per register, covering every trace feature pyTS can configure on the target, even if not enabled.</li>
 <li>Rejects incompatible configuration settings with user-oriented messages (<code>info:</code>, <code>warning:</code>, or <code>error:</code>) in the <code>ctrace-ref:</code> node of the file <code>*.ctrace-run.yml</code></li>
 </ul>
+<p>For a given target, <code>ctrace-disable:</code> remains unchanged when feature settings change. pyTS includes disable fields for every trace-eligible DWT comparator. If no writes are needed, it emits <code>ctrace-disable:</code> without children, which the debugger treats as no disable writes. The disable-values for supported components are listed in <a href="#trace-component-registers">Trace Component Registers</a>.</p>
 <p>The final trace generation setup is written to the file <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>.</p>
 <p>This utility will be part of pyOCD.</p>
 <pre><code class="language-txt">Usage:
@@ -1481,16 +1589,20 @@ A single-core system has no <code>pname:</code> value; a multi-processor always 
   ctrace &lt;trace-dir&gt; [options]
 
 Options:
-      --csv                Generate only CSV files (default: generate CSV and CTF)
-      --ctf                Generate only CTF files (default: generate CSV and CTF)
+      --csv                Generate CSV files
+      --ctf                Generate CTF files
   -a  --all                Generate both CSV and CTF files
-      --type sel [...]     Filter output for specific packet types (default: all packet types)
-      --stream sel [...]   Filter output for specific streams (default: all streams)
+      --type sel [...]     Filter output for specific packet types; repeat to select multiple types (default: all packet types)
+      --stream sel [...]   Filter output for specific streams; repeat to select multiple streams (default: all streams)
+  -c, --channel arg        Specify &lt;channel&gt; to decode; repeat to decode multiple channels
+                           (default: process all channels for specified solution sets in trace-dir)
   -t, --target arg         Specify &lt;solution-set&gt; (default: process all solution sets in trace-dir)
   -V, --version            Print version
 </code></pre>
-<p><code>ctrace</code> processes files in the specified <code>&lt;trace-dir&gt;</code>. If this directory contains more than one <code>&lt;solution-set&gt;</code>, each solution set is processed separately.
-CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as explained under <a href="#directory-and-file-structure">directory and file structure</a>.
+<p><code>ctrace</code> processes files in the specified <code>&lt;trace-dir&gt;</code>:
+- If this directory contains more than one <code>&lt;solution-set&gt;</code>, each solution set is processed separately.
+- If a solution set contains more than one <code>&lt;channel&gt;</code>, each channel is processed separately.</p>
+<p>CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as explained under <a href="#directory-and-file-structure">directory and file structure</a>.
 When no option for generating files is specified, the raw trace data files are validated.</p>
 <h3 id="-type-option"><code>--type</code> option</h3>
 <p>The <code>--type</code> option is applied to the decoded packet type for both CSV and CTF files. Only the specified packet types are contained in the generated files.</p>
@@ -1837,6 +1949,84 @@ When no option for generating files is specified, the raw trace data files are v
 </tr>
 </tbody>
 </table>
+<h2 id="trace-component-registers">Trace Component Registers</h2>
+<h3 id="itm_1">ITM</h3>
+<p>The following ITM register values are used for <code>ctrace-disable:</code>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Offset</th>
+<th style="text-align: left;"><code>value:</code></th>
+<th style="text-align: left;"><code>mask:</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>ITM_TER</code></td>
+<td style="text-align: left;"><code>0xE00</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ITM_TPR</code></td>
+<td style="text-align: left;"><code>0xE40</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ITM_TCR</code></td>
+<td style="text-align: left;"><code>0xE80</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="dwt">DWT</h3>
+<p>The following DWT register values are used for <code>ctrace-disable:</code>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Offset</th>
+<th style="text-align: left;"><code>value:</code></th>
+<th style="text-align: left;"><code>mask:</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>DWT_CTRL</code></td>
+<td style="text-align: left;"><code>0x000</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>0x007F1FFE</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DWT_COMP&lt;n&gt;</code></td>
+<td style="text-align: left;"><code>0x020 + &lt;n&gt;*0x010</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DWT_MASK&lt;n&gt;</code> (Armv7-M only)</td>
+<td style="text-align: left;"><code>0x024 + &lt;n&gt;*0x010</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DWT_FUNCTION&lt;n&gt;</code></td>
+<td style="text-align: left;"><code>0x028 + &lt;n&gt;*0x010</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>DWT_VMASK&lt;n&gt;</code> (Armv8-M only)</td>
+<td style="text-align: left;"><code>0x02C + &lt;n&gt;*0x010</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>DWT_CTRL</code> disable mask preserves <code>CYCCNTENA</code> because application software may use the DWT cycle counter. It also preserves <code>CYCDISS</code> on Armv8-M processors with the Security Extension. This bit controls whether the counter increments in Secure state.</p>
 <h2 id="processor-specific-trace-features">Processor-Specific Trace Features</h2>
 <p>TODO: Discard most of the following chapters. Condensed in table further above.</p>
 <p>The following information lists the Cortex-M processors and the DWT, ITM, ETM, MTB, and PMU implementation options.</p>
@@ -2182,6 +2372,10 @@ When no option for generating files is specified, the raw trace data files are v
 </ol>
 <h3 id="related">Related</h3>
 <ul>
+<li><a href="https://developer.arm.com/documentation/ihi0029/latest/">Arm CoreSight Architecture Specification v3.0</a><ul>
+<li>Trace Formatter</li>
+</ul>
+</li>
 <li><a href="https://developer.arm.com/documentation/ddi0553/latest/">v8-M Architecture Reference Manual</a><ul>
 <li>The Instrumentation Trace Macrocell (B14.1)</li>
 <li>The Data Watchpoint and Trace unit (B14.2)</li>
