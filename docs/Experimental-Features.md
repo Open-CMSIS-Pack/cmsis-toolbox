@@ -240,9 +240,9 @@ References identify a node in the `ctrace.yml` that generated information in `ct
 **Examples:**
 
 ```yml
-ctrace-ref: <pname>/data#2        # refers to pname section, `data:` node, list node #2
-ctrace-ref: data#2                # `data:` node, list node #2
-ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
+ref: <pname>/data#2        # refers to pname section, `data:` node, list node #2
+ref: data#2                # `data:` node, list node #2
+ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
 ```
 
 ### Tools and Extensions
@@ -516,7 +516,7 @@ The `*.ctrace-run.yml` file starts with the node `ctrace-run:`. It is generated 
 &nbsp;&nbsp;&nbsp; `ctrace-disable:`                     |**Required** | Per-processor register values that disable trace features before applying `ctrace-refs:`.
 &nbsp;&nbsp;&nbsp; `ctrace-refs:`                        |**Required** | List of [references](#references) in the `*.ctrace.yml` file.
 
-The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file and preserves the original user input for consumers of the `*.ctrace-run.yml` file. Consumers may read settings that do not resolve to a `ctrace-ref` or register write. For example, the `ctrace` decoder uses `timestamps:clock` as a trace-formatting hint, while pyOCD reads `synchronization:sync-on-run` to control built-in trace-capture behavior.
+The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file and preserves the original user input for consumers of the `*.ctrace-run.yml` file. Consumers may read settings that do not resolve to a `ref` or register write. For example, the `ctrace` decoder uses `timestamps:clock` as a trace-formatting hint, while pyOCD reads `synchronization:sync-on-run` to control built-in trace-capture behavior.
 
 The `ctrace-disable:` node contains register values that disable trace features before applying `ctrace-refs:`. Its `regs:` entries use the [register access format](#register-accesses). Multi-processor entries require `pname:`, while single-processor entries omit it.
 
@@ -525,11 +525,11 @@ The `ctrace-disable:` node contains register values that disable trace features 
 `- pname:`                                              |  Optional   | Processor name.
 &nbsp;&nbsp;&nbsp; `regs:`                               |**Required** | Register writes that disable trace features for this processor.
 
-The `ctrace-ref:` node references the trace generation configuration in the file `*.ctrace.yml` and contains register values that represent the setup for trace sources. The `regs:` entries use the [register access format](#register-accesses). A single-core system has no `pname:` value; a multi-processor always includes a `pname:` value in the `ctrace-ref:` node.
+The `ref:` node references the trace generation configuration in the file `*.ctrace.yml` and contains register values that represent the setup for trace sources. The `regs:` entries use the [register access format](#register-accesses). A single-core system has no `pname:` value; a multi-processor always includes a `pname:` value in the `ref:` node.
 
 `ctrace-refs:`                                           |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
-`- ctrace-ref:`                                          |**Required** | [Reference](#references) to a node in the `*.ctrace.yml` file that generated the register setup.
+`- ref:`                                          |**Required** | [Reference](#references) to a node in the `*.ctrace.yml` file that generated the register setup.
 &nbsp;&nbsp;&nbsp; `type:`                               |**Required** | Trace source type.
 &nbsp;&nbsp;&nbsp; `pname:`                              |  Optional   | Processor name the reference resolves to for multi-core systems.
 &nbsp;&nbsp;&nbsp; `info:`                               |  Optional   | Additional information (for example alignment extension).
@@ -548,15 +548,15 @@ The trace source types are: `dwt`, `event`, `exception`, `itm`, `pmu`, `overflow
 
 Each of the `info:`, `warning:`, and `error:` nodes accepts either a string or a list of strings, allowing multiple messages to be represented separately.
 
-Multiple `ctrace-ref` entries may reference the same configuration node when it generates setups for multiple streams. The combination of `ctrace-ref` and `stream` identifies each generated setup.
+Multiple `ref` entries may reference the same configuration node when it generates setups for multiple streams. The combination of `ref` and `stream` identifies each generated setup.
 
 The `data-type` in combination with `size` provides a hint for the display format. Other information required for generating CTF data can be extracted from the referenced setting node in the `ctrace-setup:` section.
 
 `size` can be extracted from symbol information or provided in the `ctrace` file. If both are present, user input takes precedence.
 
-The use of `source:` depends on the combination of `type:` and the setting referenced by `ctrace-ref:`.
+The use of `source:` depends on the combination of `type:` and the setting referenced by `ref:`.
 
-`type:` | `ctrace-ref:` setting | Usage of `source:`
+`type:` | `ref:` setting | Usage of `source:`
 :-------|:----------------------|:-------------------
 `dwt`   | `data:` | Number or array of DWT comparators allocated for the data-trace entry.
 `dwt`   | `instructions:start:`, `instructions:stop:`, or `tracehalt:` | Number or array of DWT comparators allocated for the condition.
@@ -600,7 +600,7 @@ ctrace-run:
       - name: ITM_TER0
         value: 0x00000000  # No mask: disable all 32 ITM channels
   ctrace-refs:
-  - ctrace-ref: core0/itm
+  - ref: core0/itm
     pname: core0
     type: itm            # packet types
     stream: 1            # stream id
@@ -615,12 +615,12 @@ ctrace-run:
         value: 0x00010000
         mask: 0x007f0000
 
-  - ctrace-ref: data#0
+  - ref: data#0
     type: dwt
     stream: 1            # stream id
     error: cannot find symbol
 
-  - ctrace-ref: data#1   # symbol location
+  - ref: data#1   # symbol location
     type: dwt
     address: <symbol address>
     size: <symbol size>
@@ -635,7 +635,7 @@ ctrace-run:
       - name: DWT_COMP1
         value: 2
 
-  - ctrace-ref: core0/timestamps
+  - ref: core0/timestamps
     type: itm
     pname: core0
     stream: 1
@@ -644,7 +644,7 @@ ctrace-run:
         value: 0x00000002
         mask: 0x00000002
 
-  # - ctrace-ref: core0/timestamps
+  # - ref: core0/timestamps
   #   type: etm            # etm not yet supported, for demonstration purposes only
   #   pname: core0
   #   stream: 2
@@ -718,7 +718,7 @@ The `pyTS` utility generates the file `.trace/<solution-set>.ctrace-run.yml`. It
 - Converts symbolic names in the file `.cmsis/<solution-set>.ctrace.yml` to physical addresses by using the corresponding ELF output files.
 - Uses processor information and implementation details to map the trace generation setup into CoreSight trace register values. See [Processor-Specific Trace Features](#processor-specific-trace-features)
 - Generates `ctrace-disable:` with one group per processor that needs disable writes and one write per register, covering every trace feature pyTS can configure on the target, even if not enabled.
-- Rejects incompatible configuration settings with user-oriented messages (`info:`, `warning:`, or `error:`) in the `ctrace-ref:` node of the file `*.ctrace-run.yml`
+- Rejects incompatible configuration settings with user-oriented messages (`info:`, `warning:`, or `error:`) in the `ref:` node of the file `*.ctrace-run.yml`
 
 For a given target, `ctrace-disable:` remains unchanged when feature settings change. pyTS includes disable fields for every trace-eligible DWT comparator. If no writes are needed, it emits `ctrace-disable:` without children, which the debugger treats as no disable writes. The disable-values for supported components are listed in [Trace Component Registers](#trace-component-registers).
 
