@@ -564,9 +564,9 @@
 <h4 id="references">References</h4>
 <p>References identify a node in the <code>ctrace.yml</code> that generated information in <code>ctrace-run.yml</code>. These nodes are used for diagnostics and for linking trace analysis results back to the trace setup.</p>
 <p><strong>Examples:</strong></p>
-<pre><code class="language-yml">ctrace-ref: &lt;pname&gt;/data#2        # refers to pname section, `data:` node, list node #2
-ctrace-ref: data#2                # `data:` node, list node #2
-ctrace-ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
+<pre><code class="language-yml">ref: &lt;pname&gt;/data#2        # refers to pname section, `data:` node, list node #2
+ref: data#2                # `data:` node, list node #2
+ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
 </code></pre>
 <h3 id="tools-and-extensions">Tools and Extensions</h3>
 <p>The trace workflow is split across the command-line tools and VS Code extensions as shown below.</p>
@@ -1159,7 +1159,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 </tr>
 </tbody>
 </table>
-<p>The <code>ctrace-setup</code> node uses the same format as the <a href="#file-structure-of-ctraceyml"><code>setup</code></a> node in the <code>*.ctrace.yml</code> file and preserves the original user input for consumers of the <code>*.ctrace-run.yml</code> file. Consumers may read settings that do not resolve to a <code>ctrace-ref</code> or register write. For example, the <code>ctrace</code> decoder uses <code>timestamps:clock</code> as a trace-formatting hint, while pyOCD reads <code>synchronization:sync-on-run</code> to control built-in trace-capture behavior.</p>
+<p>The <code>ctrace-setup</code> node uses the same format as the <a href="#file-structure-of-ctraceyml"><code>setup</code></a> node in the <code>*.ctrace.yml</code> file and preserves the original user input for consumers of the <code>*.ctrace-run.yml</code> file. Consumers may read settings that do not resolve to a <code>ref</code> or register write. For example, the <code>ctrace</code> decoder uses <code>timestamps:clock</code> as a trace-formatting hint, while pyOCD reads <code>synchronization:sync-on-run</code> to control built-in trace-capture behavior.</p>
 <p>The <code>ctrace-disable:</code> node contains register values that disable trace features before applying <code>ctrace-refs:</code>. Its <code>regs:</code> entries use the <a href="#register-accesses">register access format</a>. Multi-processor entries require <code>pname:</code>, while single-processor entries omit it.</p>
 <table>
 <thead>
@@ -1182,7 +1182,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 </tr>
 </tbody>
 </table>
-<p>The <code>ctrace-ref:</code> node references the trace generation configuration in the file <code>*.ctrace.yml</code> and contains register values that represent the setup for trace sources. The <code>regs:</code> entries use the <a href="#register-accesses">register access format</a>. A single-core system has no <code>pname:</code> value; a multi-processor always includes a <code>pname:</code> value in the <code>ctrace-ref:</code> node.</p>
+<p>The <code>ref:</code> node references the trace generation configuration in the file <code>*.ctrace.yml</code> and contains register values that represent the setup for trace sources. The <code>regs:</code> entries use the <a href="#register-accesses">register access format</a>. A single-core system has no <code>pname:</code> value; a multi-processor always includes a <code>pname:</code> value in the <code>ref:</code> node.</p>
 <table>
 <thead>
 <tr>
@@ -1193,7 +1193,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;"><code>- ctrace-ref:</code></td>
+<td style="text-align: left;"><code>- ref:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;"><a href="#references">Reference</a> to a node in the <code>*.ctrace.yml</code> file that generated the register setup.</td>
 </tr>
@@ -1266,15 +1266,15 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 </table>
 <p>The trace source types are: <code>dwt</code>, <code>event</code>, <code>exception</code>, <code>itm</code>, <code>pmu</code>, <code>overflow</code>, <code>pcsample</code>, <code>global_ts</code>.</p>
 <p>Each of the <code>info:</code>, <code>warning:</code>, and <code>error:</code> nodes accepts either a string or a list of strings, allowing multiple messages to be represented separately.</p>
-<p>Multiple <code>ctrace-ref</code> entries may reference the same configuration node when it generates setups for multiple streams. The combination of <code>ctrace-ref</code> and <code>stream</code> identifies each generated setup.</p>
+<p>Multiple <code>ref</code> entries may reference the same configuration node when it generates setups for multiple streams. The combination of <code>ref</code> and <code>stream</code> identifies each generated setup.</p>
 <p>The <code>data-type</code> in combination with <code>size</code> provides a hint for the display format. Other information required for generating CTF data can be extracted from the referenced setting node in the <code>ctrace-setup:</code> section.</p>
 <p><code>size</code> can be extracted from symbol information or provided in the <code>ctrace</code> file. If both are present, user input takes precedence.</p>
-<p>The use of <code>source:</code> depends on the combination of <code>type:</code> and the setting referenced by <code>ctrace-ref:</code>.</p>
+<p>The use of <code>source:</code> depends on the combination of <code>type:</code> and the setting referenced by <code>ref:</code>.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"><code>type:</code></th>
-<th style="text-align: left;"><code>ctrace-ref:</code> setting</th>
+<th style="text-align: left;"><code>ref:</code> setting</th>
 <th style="text-align: left;">Usage of <code>source:</code></th>
 </tr>
 </thead>
@@ -1372,7 +1372,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
       - name: ITM_TER0
         value: 0x00000000  # No mask: disable all 32 ITM channels
   ctrace-refs:
-  - ctrace-ref: core0/itm
+  - ref: core0/itm
     pname: core0
     type: itm            # packet types
     stream: 1            # stream id
@@ -1387,12 +1387,12 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
         value: 0x00010000
         mask: 0x007f0000
 
-  - ctrace-ref: data#0
+  - ref: data#0
     type: dwt
     stream: 1            # stream id
     error: cannot find symbol
 
-  - ctrace-ref: data#1   # symbol location
+  - ref: data#1   # symbol location
     type: dwt
     address: &lt;symbol address&gt;
     size: &lt;symbol size&gt;
@@ -1407,7 +1407,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
       - name: DWT_COMP1
         value: 2
 
-  - ctrace-ref: core0/timestamps
+  - ref: core0/timestamps
     type: itm
     pname: core0
     stream: 1
@@ -1416,7 +1416,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
         value: 0x00000002
         mask: 0x00000002
 
-  # - ctrace-ref: core0/timestamps
+  # - ref: core0/timestamps
   #   type: etm            # etm not yet supported, for demonstration purposes only
   #   pname: core0
   #   stream: 2
@@ -1574,7 +1574,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <li>Converts symbolic names in the file <code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code> to physical addresses by using the corresponding ELF output files.</li>
 <li>Uses processor information and implementation details to map the trace generation setup into CoreSight trace register values. See <a href="#processor-specific-trace-features">Processor-Specific Trace Features</a></li>
 <li>Generates <code>ctrace-disable:</code> with one group per processor that needs disable writes and one write per register, covering every trace feature pyTS can configure on the target, even if not enabled.</li>
-<li>Rejects incompatible configuration settings with user-oriented messages (<code>info:</code>, <code>warning:</code>, or <code>error:</code>) in the <code>ctrace-ref:</code> node of the file <code>*.ctrace-run.yml</code></li>
+<li>Rejects incompatible configuration settings with user-oriented messages (<code>info:</code>, <code>warning:</code>, or <code>error:</code>) in the <code>ref:</code> node of the file <code>*.ctrace-run.yml</code></li>
 </ul>
 <p>For a given target, <code>ctrace-disable:</code> remains unchanged when feature settings change. pyTS includes disable fields for every trace-eligible DWT comparator. If no writes are needed, it emits <code>ctrace-disable:</code> without children, which the debugger treats as no disable writes. The disable-values for supported components are listed in <a href="#trace-component-registers">Trace Component Registers</a>.</p>
 <p>The final trace generation setup is written to the file <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>.</p>
