@@ -695,7 +695,7 @@ Exceptions             | -  | -        | yes             | yes      | yes
 Event Counters         | -  | -        | yes             | yes      | yes
 PMU Event              | -  | -        | no              | yes      | yes
 Instrumentation Trace  | -  | -        | yes             | yes      | yes
-DWT Data Trace         | -  | -        | 4 comparators   | 8 comparators | 8 comparators
+DWT Data Trace         | -  | -        | 4 comparators   | 8 comparators | 4 comparators
 Instruction Trace      | -  | with TB  | with TB         | with TB  | with TB
 Start, Stop, Halt      | -  | 2 comparators | 4 comparators | 8 comparators | 8 comparators
 PC Sampling            | -  | -        | yes             | yes      | yes
