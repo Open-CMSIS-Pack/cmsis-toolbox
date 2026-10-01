@@ -182,6 +182,8 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#-type-option">--type option</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-verbose-option">--verbose option</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#csv-format">CSV Format</a>
         <ul>
     <li class="toctree-l4"><a class="reference internal" href="#variable-data-sizes">Variable Data Sizes</a>
@@ -1599,6 +1601,7 @@ Options:
   -c, --channel arg        Specify &lt;channel&gt; to decode; repeat to decode multiple channels
                            (default: process all channels for specified solution sets in trace-dir)
   -t, --target arg         Specify &lt;solution-set&gt; (default: process all solution sets in trace-dir)
+  -v, --verbose            Print detailed diagnostics (default: off)
   -V, --version            Print version
 </code></pre>
 <p><code>ctrace</code> processes files in the specified <code>&lt;trace-dir&gt;</code>:
@@ -1613,6 +1616,8 @@ When no option for generating files is specified, the raw trace data files are v
 <p>Output only the packet types <code>dwt</code> and <code>event</code> to the generated CSV and CTF files.</p>
 <pre><code class="language-bash">ctrace .trace --all --type dwt event
 </code></pre>
+<h3 id="-verbose-option"><code>--verbose</code> option</h3>
+<p>The <code>--verbose</code> option (short form <code>-v</code>) enables detailed CLI diagnostics on <code>stderr</code>. By default, diagnostics use compact text with the cause and relevant counts.</p>
 <h3 id="csv-format">CSV Format</h3>
 <p>The CSV output file uses these columns:</p>
 <table>
