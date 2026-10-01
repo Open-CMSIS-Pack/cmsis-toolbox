@@ -695,7 +695,7 @@ Exceptions             | -  | -        | yes             | yes      | yes
 Event Counters         | -  | -        | yes             | yes      | yes
 PMU Event              | -  | -        | no              | yes      | yes
 Instrumentation Trace  | -  | -        | yes             | yes      | yes
-DWT Data Trace         | -  | -        | 4 comparators   | 8 comparators | 8 comparators
+DWT Data Trace         | -  | -        | 4 comparators   | 8 comparators | 4 comparators
 Instruction Trace      | -  | with TB  | with TB         | with TB  | with TB
 Start, Stop, Halt      | -  | 2 comparators | 4 comparators | 8 comparators | 8 comparators
 PC Sampling            | -  | -        | yes             | yes      | yes
@@ -908,9 +908,9 @@ The following ITM register values are used for `ctrace-disable:`:
 
 Name | Offset | `value:` | `mask:`
 :----|:-------|:--------|:----
-`ITM_TER` | `0xE00` | `0x00000000` | `None`
-`ITM_TPR` | `0xE40` | `0x00000000` | `None`
-`ITM_TCR` | `0xE80` | `0x00000000` | `None`
+`ITM_TER0` | `0xE00` | `0x00000000` | `None`
+`ITM_TPR`  | `0xE40` | `0x00000000` | `None`
+`ITM_TCR`  | `0xE80` | `0x00000000` | `None`
 
 ### DWT
 
