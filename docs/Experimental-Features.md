@@ -877,14 +877,14 @@ A CSV consumer can request that the **Trace Generation Setup** dialog opens the 
 
 Parameter      |             | Description
 :--------------|:------------|:------------------------------------
-`type`         |**Required** | The CSV entry `type`. It identifies trace settings associated with this entry.
-`stream`       |  Optional   | The CSV `stream` value. It identifies the trace stream which contains the setting. An empty value indicates unformatted trace; filtering settings by `stream` can then be skipped.
-`source`       |  Optional   | The CSV `source` value, when present. It identifies a source within the stream, such as an ITM channel or DWT comparator, and hence a setting child. This parameter is ignored for type `exception` where the setting does not provide the needed level of granularity.
-`solution-set` |  Optional   | The `<solution-set>` part of the CSV filename `.trace/<solution-set>.<channel>.csv`. It helps filter requests so they apply to the active solution-set when the `.trace` directory contains multiple solution-sets.
+`type`         |**Required** | The CSV record `type`. Identifies the trace setting in the dialog, e.g. Exceptions or DWT Data Trace.
+`stream`       |  Optional   | The CSV record `stream` value. Identifies the trace stream the setting belongs to. Implicitly indicates the trace source and processor that generated the trace. An empty value indicates unformatted trace.
+`specifier`    |  Optional   | The CSV record `specifier` value, when present. Specifies a value to narrow down the origin of a value within a trace source, e.g. the `exception` number, an `itm` channel, or a `dwt` comparator. Where applicable, this may help to identify a child of a setting node.
+`solution-set` |  Optional   | The `<solution-set>` part of the CSV filename `.trace/<solution-set>.<channel>.csv`. Helps filtering requests if multiple solution-sets store trace data in the `.trace` directory.
 
-Requests are used to look up `ctrace-ref` entries from `.trace/<solution-set>.ctrace-run.yml`. More than one may match.
+Requests are used to look up `ref:` nodes in `.trace/<solution-set>.ctrace-run.yml`. More than one may match.
 
-Types `overflow` and `error` report decoder states rather than a configured trace source and therefore do not resolve to a `ctrace-ref`.
+Types `overflow` and `error` report stream and decoder states and are not associated to a setings entry. Hence they do not resolve to a `ref:` node.
 
 ### CTF Format
 
