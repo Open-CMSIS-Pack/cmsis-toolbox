@@ -750,6 +750,7 @@ Options:
   -c, --channel arg        Specify <channel> to decode; repeat to decode multiple channels
                            (default: process all channels for specified solution sets in trace-dir)
   -t, --target arg         Specify <solution-set> (default: process all solution sets in trace-dir)
+  -v, --verbose            Print detailed diagnostics (default: off)
   -V, --version            Print version
 ```
 
@@ -773,6 +774,10 @@ Output only the packet types `dwt` and `event` to the generated CSV and CTF file
 ```bash
 ctrace .trace --all --type dwt event
 ```
+
+### `--verbose` option
+
+The `--verbose` option (short form `-v`) enables detailed CLI diagnostics on `stderr`. By default, diagnostics use compact text with the cause and relevant counts.
 
 ### CSV Format
 
