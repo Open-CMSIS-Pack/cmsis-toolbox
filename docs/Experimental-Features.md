@@ -908,9 +908,9 @@ The following ITM register values are used for `ctrace-disable:`:
 
 Name | Offset | `value:` | `mask:`
 :----|:-------|:--------|:----
-`ITM_TER` | `0xE00` | `0x00000000` | `None`
-`ITM_TPR` | `0xE40` | `0x00000000` | `None`
-`ITM_TCR` | `0xE80` | `0x00000000` | `None`
+`ITM_TER0` | `0xE00` | `0x00000000` | `None`
+`ITM_TPR`  | `0xE40` | `0x00000000` | `None`
+`ITM_TCR`  | `0xE80` | `0x00000000` | `None`
 
 ### DWT
 
