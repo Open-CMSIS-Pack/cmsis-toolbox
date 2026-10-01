@@ -529,9 +529,11 @@ The `ref:` node references the trace generation configuration in the file `*.ctr
 
 `ctrace-refs:`                                           |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
-`- ref:`                                          |**Required** | [Reference](#references) to a node in the `*.ctrace.yml` file that generated the register setup.
+`- ref:`                                                 |**Required** | [Reference](#references) to a node in the `*.ctrace.yml` file that generated the register setup.
 &nbsp;&nbsp;&nbsp; `type:`                               |**Required** | Trace source type.
 &nbsp;&nbsp;&nbsp; `pname:`                              |  Optional   | Processor name the reference resolves to for multi-core systems.
+&nbsp;&nbsp;&nbsp; `stream:`                             |  Optional   | Stream ID (CoreSight ATB ID).
+&nbsp;&nbsp;&nbsp; `index:`                              |  Optional   | Index or list of indices of ITM channels or DWT comparators used by setting.
 &nbsp;&nbsp;&nbsp; `info:`                               |  Optional   | Additional information (for example alignment extension).
 &nbsp;&nbsp;&nbsp; `warning:`                            |  Optional   | Warning message.
 &nbsp;&nbsp;&nbsp; `error:`                              |  Optional   | Error message when setup cannot be completed.
@@ -540,8 +542,6 @@ The `ref:` node references the trace generation configuration in the file `*.ctr
 &nbsp;&nbsp;&nbsp; `size:`                               |  Optional   | Size, in bytes, of the capture data. May be extracted from symbol information.
 &nbsp;&nbsp;&nbsp; `symbol-file:`                        |  Optional   | Absolute path to the symbol file used in this reference.
 &nbsp;&nbsp;&nbsp; `data-type:`                          |  Optional   | Type of displayed data: `unsigned`, `signed`, or `float`. Default: `unsigned`.
-&nbsp;&nbsp;&nbsp; `stream:`                             |  Optional   | Stream ID (CoreSight ATB ID).
-&nbsp;&nbsp;&nbsp; `source:`                             |  Optional   | Source ID.
 &nbsp;&nbsp;&nbsp; `regs:`                               |  Optional   | Register setup.
 
 The trace source types are: `dwt`, `event`, `exception`, `itm`, `pmu`, `overflow`, `pcsample`, `global_ts`.
@@ -554,9 +554,9 @@ The `data-type` in combination with `size` provides a hint for the display forma
 
 `size` can be extracted from symbol information or provided in the `ctrace` file. If both are present, user input takes precedence.
 
-The use of `source:` depends on the combination of `type:` and the setting referenced by `ref:`.
+The use of `index:` depends on the combination of `type:` and the setting referenced by `ref:`.
 
-`type:` | `ref:` setting | Usage of `source:`
+`type:` | `ref:` setting | Usage of `index:`
 :-------|:----------------------|:-------------------
 `dwt`   | `data:` | Number or array of DWT comparators allocated for the data-trace entry.
 `dwt`   | `instructions:start:`, `instructions:stop:`, or `tracehalt:` | Number or array of DWT comparators allocated for the condition.
@@ -604,7 +604,7 @@ ctrace-run:
     pname: core0
     type: itm            # packet types
     stream: 1            # stream id
-    source: 0            # ITM channel #0
+    index: 0             # ITM channel #0
     regs:
       - name: ITM_TER0
         value: 0x00000001
@@ -627,7 +627,7 @@ ctrace-run:
     symbol-file: <symbol file used>
     data-type: unsigned
     stream: 1            # stream id
-    source: [0, 1]       # allocated DWT comparators #0 and #1
+    index: [0, 1]        # allocated DWT comparators #0 and #1
     regs:
       - name: DWT_COMP0
         value: 1
@@ -783,7 +783,7 @@ Column         | Description
 `cycles`       | Timestamp in CPU clock cycles, if available.
 `stream`       | Stream ID (CoreSight ATB ID) of the trace packet. Empty if no formatting.
 `type`         | Packet type: `itm`, `dwt`, `event`, `pmu`, `exception`, `pcsample`, `global_ts`, `overflow`, `error`.
-`source`       | Source ID: ITM channel, DWT comparator, exception number, or hardware discriminator.
+`index`        | Index of the ITM channel, DWT comparator, or exception depending on `type` value.
 `value`        | Value in hexadecimal form. For packet type `exception` state transition: `0x1` enter, `0x2` exit, `0x3` return.
 `pc`           | Program counter for packet types `dwt` and `pcsample`.
 `address`      | Data address for packet type `dwt`.
@@ -795,11 +795,11 @@ The following table contains details about the packet type. Information is empty
 
 `type`      | Description
 :-----------|:------------------------------------
-`itm`       | `source` = ITM channel.
-`dwt`       | `source` = DWT comparator, `value` = data value, `address` = data address, `pc` = program counter.
+`itm`       | `index` = ITM channel.
+`dwt`       | `index` = DWT comparator, `value` = data value, `address` = data address, `pc` = program counter.
 `event`     | Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.
 `pmu`       | Reserved for PMU counter rows. Detailed semantics will be specified in a future version.
-`exception` | `source` = exception number. `value` = exception state transition.
+`exception` | `index` = exception number. `value` = exception state transition.
 `pcsample`  | `pc` = program counter.
 `global_ts` | Global timestamp for synchronization between streams.
 `overflow`  | Marks an overflow, reason can be an overflow packet or an internal decoder overflow.
@@ -843,7 +843,7 @@ Value | State    | Meaning
 **Example:**
 
 ```csv
-cycles,stream,type,source,value,pc,address,note
+cycles,stream,type,index,value,pc,address,note
 2518192,,itm,0,0x53,,,
 2518404,,itm,0,0x54,,,
 2518616,,itm,0,0x4d,,,
@@ -857,7 +857,7 @@ cycles,stream,type,source,value,pc,address,note
 950389420,,exception,0,0x3,,,
 ```
 
-cycles    | stream | type      | source | value      | pc         | address | note
+cycles    | stream | type      | index  | value      | pc         | address | note
 :---------|:-------|:----------|:-------|:-----------|:-----------|:--------|:-----
 2518192   |        | itm       | 0      | 0x53       |            |         |
 2518404   |        | itm       | 0      | 0x54       |            |         |
@@ -871,16 +871,16 @@ cycles    | stream | type      | source | value      | pc         | address | no
 950364820 |        | exception | 11     | 0x1        |            |         |
 950389420 |        | exception | 0      | 0x3        |            |         |
 
-#### Settings Dialog Loopback
+#### Loopback Requests
 
-A CSV consumer can request that the **Trace Generation Setup** dialog opens the setting which produced a CSV record. The loopback request uses these parameters:
+A CSV consumer can request that the **Trace Generation** dialog opens the setting which produced a CSV record. The loopback request uses these parameters:
 
 Parameter      |             | Description
 :--------------|:------------|:------------------------------------
-`type`         |**Required** | The CSV record `type`. Identifies the trace setting in the dialog, e.g. Exceptions or DWT Data Trace.
-`stream`       |  Optional   | The CSV record `stream` value. Identifies the trace stream the setting belongs to. Implicitly indicates the trace source and processor that generated the trace. An empty value indicates unformatted trace.
-`specifier`    |  Optional   | The CSV record `specifier` value, when present. Specifies a value to narrow down the origin of a value within a trace source, e.g. the `exception` number, an `itm` channel, or a `dwt` comparator. Where applicable, this may help to identify a child of a setting node.
-`solution-set` |  Optional   | The `<solution-set>` part of the CSV filename `.trace/<solution-set>.<channel>.csv`. Helps filtering requests if multiple solution-sets store trace data in the `.trace` directory.
+`type`         |**Required** | CSV record `type`. Identifies the trace setting in the dialog, e.g. Exceptions or DWT Data Trace.
+`stream`       |  Optional   | CSV record `stream` value. Identifies the trace stream the setting belongs to. Implicitly indicates the trace source and processor that generated the trace. An empty value indicates unformatted trace.
+`index`        |  Optional   | Depending on CSV record type, `index` may specify a value to narrow down the origin of a record, e.g. the `exception` number, an `itm` channel, or a `dwt` comparator. Where applicable, this may help to identify a child of a setting node.
+`solution-set` |  Optional   | `<solution-set>` part of the CSV filename `.trace/<solution-set>.<channel>.csv`. Helps filtering requests if multiple solution-sets store trace data in the `.trace` directory.
 
 Requests are used to look up `ref:` nodes in `.trace/<solution-set>.ctrace-run.yml`. More than one may match.
 
