@@ -777,30 +777,7 @@ ctrace .trace --all --type dwt event
 
 ### `--verbose` option
 
-The `--verbose` option (short form `-v`) enables detailed CLI diagnostics on `stderr`. By default, diagnostics use compact text with the cause and relevant counts. CLI trace diagnostics and CSV notes share compact wording. The forms `--verbose=true` and `--verbose=false` explicitly enable or disable verbose mode. The uppercase `-V` remains the short form of `--version`.
-
-Verbose output adds native decoder details, configuration/statistics information, and input context such as the absolute RAW-file path, input size, effective format/framing, selected configuration, and ctrace version. Trace setup annotations from `*.ctrace-run.yml` and byte-skip information remain visible without verbose mode.
-
-For trace diagnostics with a RAW location, verbose output provides:
-
-- `raw_offset`: a zero-based byte offset in the input RAW file, written in decimal. An optional `raw_end` marks the exclusive end of an affected range.
-- `position_kind`: `exact` for an unformatted packet or byte boundary, `formatter_hint` for a formatted source-position group, or `input_progress` for decoder progress rather than a failing packet start.
-- Synchronization (SYNC) offsets when known; unavailable positions remain explicitly unknown.
-- `read_offset` and `read_length`, when a bounded input range is available: an inspection window of at most 128 bytes, bounded by the input size and aligned to a 16-byte frame start for formatted input.
-- Packet details when available, including a preview of at most 16 bytes, truncation status, and whether the bytes come from the file or from deformatted payload.
-- For aggregated overflows, occurrence counts, first/last positions, and up to three sample positions.
-
-For formatted input, decoder positions are hints and packet previews contain deformatted payload; they do not identify a contiguous packet byte range in the RAW file. Inspection windows are not guaranteed to be independently decodable trace captures.
-
-Verbosity does not change diagnostic severity, exit status, filters, overflow aggregation, or handling of recovered partial output. CSV notes remain compact in both modes, and generated CSV/CTF data and formats are unaffected.
-
-**Example:**
-
-Generate CSV and CTF files with detailed CLI diagnostics:
-
-```bash
-ctrace .trace --all --verbose
-```
+The `--verbose` option (short form `-v`) enables detailed CLI diagnostics on `stderr`. By default, diagnostics use compact text with the cause and relevant counts.
 
 ### CSV Format
 
