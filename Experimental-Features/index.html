@@ -188,6 +188,8 @@
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#pc-sampling-markers">PC Sampling Markers</a>
     </li>
+    <li class="toctree-l4"><a class="reference internal" href="#loopback-requests">Loopback Requests</a>
+    </li>
         </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#ctf-format">CTF Format</a>
@@ -1208,6 +1210,16 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <td style="text-align: left;">Processor name the reference resolves to for multi-core systems.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stream:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Stream ID (CoreSight ATB ID).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>index:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Index or list of indices of ITM channels or DWT comparators used by setting.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Additional information (for example alignment extension).</td>
@@ -1248,16 +1260,6 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <td style="text-align: left;">Type of displayed data: <code>unsigned</code>, <code>signed</code>, or <code>float</code>. Default: <code>unsigned</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stream:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Stream ID (CoreSight ATB ID).</td>
-</tr>
-<tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>source:</code></td>
-<td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Source ID.</td>
-</tr>
-<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>regs:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Register setup.</td>
@@ -1269,13 +1271,13 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <p>Multiple <code>ref</code> entries may reference the same configuration node when it generates setups for multiple streams. The combination of <code>ref</code> and <code>stream</code> identifies each generated setup.</p>
 <p>The <code>data-type</code> in combination with <code>size</code> provides a hint for the display format. Other information required for generating CTF data can be extracted from the referenced setting node in the <code>ctrace-setup:</code> section.</p>
 <p><code>size</code> can be extracted from symbol information or provided in the <code>ctrace</code> file. If both are present, user input takes precedence.</p>
-<p>The use of <code>source:</code> depends on the combination of <code>type:</code> and the setting referenced by <code>ref:</code>.</p>
+<p>The use of <code>index:</code> depends on the combination of <code>type:</code> and the setting referenced by <code>ref:</code>.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"><code>type:</code></th>
 <th style="text-align: left;"><code>ref:</code> setting</th>
-<th style="text-align: left;">Usage of <code>source:</code></th>
+<th style="text-align: left;">Usage of <code>index:</code></th>
 </tr>
 </thead>
 <tbody>
@@ -1376,7 +1378,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
     pname: core0
     type: itm            # packet types
     stream: 1            # stream id
-    source: 0            # ITM channel #0
+    index: 0             # ITM channel #0
     regs:
       - name: ITM_TER0
         value: 0x00000001
@@ -1399,7 +1401,7 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
     symbol-file: &lt;symbol file used&gt;
     data-type: unsigned
     stream: 1            # stream id
-    source: [0, 1]       # allocated DWT comparators #0 and #1
+    index: [0, 1]        # allocated DWT comparators #0 and #1
     regs:
       - name: DWT_COMP0
         value: 1
@@ -1634,8 +1636,8 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">Packet type: <code>itm</code>, <code>dwt</code>, <code>event</code>, <code>pmu</code>, <code>exception</code>, <code>pcsample</code>, <code>global_ts</code>, <code>overflow</code>, <code>error</code>.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>source</code></td>
-<td style="text-align: left;">Source ID: ITM channel, DWT comparator, exception number, or hardware discriminator.</td>
+<td style="text-align: left;"><code>index</code></td>
+<td style="text-align: left;">Index of the ITM channel, DWT comparator, or exception depending on <code>type</code> value.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>value</code></td>
@@ -1667,11 +1669,11 @@ When no option for generating files is specified, the raw trace data files are v
 <tbody>
 <tr>
 <td style="text-align: left;"><code>itm</code></td>
-<td style="text-align: left;"><code>source</code> = ITM channel.</td>
+<td style="text-align: left;"><code>index</code> = ITM channel.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>dwt</code></td>
-<td style="text-align: left;"><code>source</code> = DWT comparator, <code>value</code> = data value, <code>address</code> = data address, <code>pc</code> = program counter.</td>
+<td style="text-align: left;"><code>index</code> = DWT comparator, <code>value</code> = data value, <code>address</code> = data address, <code>pc</code> = program counter.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>event</code></td>
@@ -1683,7 +1685,7 @@ When no option for generating files is specified, the raw trace data files are v
 </tr>
 <tr>
 <td style="text-align: left;"><code>exception</code></td>
-<td style="text-align: left;"><code>source</code> = exception number. <code>value</code> = exception state transition.</td>
+<td style="text-align: left;"><code>index</code> = exception number. <code>value</code> = exception state transition.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>pcsample</code></td>
@@ -1790,7 +1792,7 @@ When no option for generating files is specified, the raw trace data files are v
 </tbody>
 </table>
 <p><strong>Example:</strong></p>
-<pre><code class="language-csv">cycles,stream,type,source,value,pc,address,note
+<pre><code class="language-csv">cycles,stream,type,index,value,pc,address,note
 2518192,,itm,0,0x53,,,
 2518404,,itm,0,0x54,,,
 2518616,,itm,0,0x4d,,,
@@ -1809,7 +1811,7 @@ When no option for generating files is specified, the raw trace data files are v
 <th style="text-align: left;">cycles</th>
 <th style="text-align: left;">stream</th>
 <th style="text-align: left;">type</th>
-<th style="text-align: left;">source</th>
+<th style="text-align: left;">index</th>
 <th style="text-align: left;">value</th>
 <th style="text-align: left;">pc</th>
 <th style="text-align: left;">address</th>
@@ -1929,6 +1931,41 @@ When no option for generating files is specified, the raw trace data files are v
 </tr>
 </tbody>
 </table>
+<h4 id="loopback-requests">Loopback Requests</h4>
+<p>A CSV consumer can request that the <strong>Trace Generation</strong> dialog opens the setting which produced a CSV record. The loopback request uses these parameters:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Parameter</th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>type</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">CSV record <code>type</code>. Identifies the trace setting in the dialog, e.g. Exceptions or DWT Data Trace.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>stream</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">CSV record <code>stream</code> value. Identifies the trace stream the setting belongs to. Implicitly indicates the trace source and processor that generated the trace. An empty value indicates unformatted trace.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>index</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Depending on CSV record type, <code>index</code> may specify a value to narrow down the origin of a record, e.g. the <code>exception</code> number, an <code>itm</code> channel, or a <code>dwt</code> comparator. Where applicable, this may help to identify a child of a setting node.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>solution-set</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;"><code>&lt;solution-set&gt;</code> part of the CSV filename <code>.trace/&lt;solution-set&gt;.&lt;channel&gt;.csv</code>. Helps filtering requests if multiple solution-sets store trace data in the <code>.trace</code> directory.</td>
+</tr>
+</tbody>
+</table>
+<p>Requests are used to look up <code>ref:</code> nodes in <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>. More than one may match.</p>
+<p>Types <code>overflow</code> and <code>error</code> report stream and decoder states and are not associated to a setings entry. Hence they do not resolve to a <code>ref:</code> node.</p>
 <h3 id="ctf-format">CTF Format</h3>
 <p>The generated <a href="https://diamon.org/ctf/v1.8.3/">Common Trace Format (CTF) v1.8.3</a> is compatible with <a href="https://eclipse.dev/tracecompass/">Trace Compass</a> and is used by <a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension">Trace Viewer for VS Code</a>. It uses the following files that are generated by <code>ctrace</code> in the directory <code>.trace/&lt;solution-set&gt;.ctf/</code>.</p>
 <table>
