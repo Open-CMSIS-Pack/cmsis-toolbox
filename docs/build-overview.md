@@ -1398,7 +1398,7 @@ Using the information in the `*.cbuild-mlops.yml` file, the MLOps system can cre
 
 ### Framework Integration Examples
 
-The [`CMSIS-ExecuTorch` preview workflow](https://github.com/Arm-Examples/CMSIS-Executorch/tree/preview) uses an isolated `model/model.py`. A new model can replace this file without changing the build environment. Its `create_ai_layer.py` script exports and delegates the model, selects the required ExecuTorch CMSIS components, and writes the ExecuTorch program as C source into the AI layer.
+The [`CMSIS-ExecuTorch` workflow](https://github.com/Arm-Examples/CMSIS-Executorch) uses an isolated `model/model.py`. A new model can replace this file without changing the build environment. Its `create_ai_layer.py` script exports and delegates the model, selects the required ExecuTorch CMSIS components, and writes the ExecuTorch program as C source into the AI layer.
 
 The [`CMSIS-LiteRT` preview workflow](https://github.com/MatthiasHertelArm/cmsis-litert/tree/preview) applies the same interface to LiteRT. Its `create_ai_layer.py` consumes the Vela parameters, converts the model data to C source, and selects either the Ethos-U or CMSIS-NN kernel components for the generated layer.
 
