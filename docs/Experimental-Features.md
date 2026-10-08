@@ -476,7 +476,7 @@ synchronization:
 
 #### `instructions:`
 
-The `instructions:` node is reserved for ETM and MTB instruction trace. It is not required for the initial implementation.
+The `instructions:` node enables ETM or MTB instruction trace. It is not required for the initial implementation.
 
 `instructions:`                       |             | Content
 :-------------------------------------|:------------|:------------------------------------
