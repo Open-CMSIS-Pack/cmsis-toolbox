@@ -309,7 +309,7 @@ The `*.ctrace.yml` file starts with the node `ctrace:` and contains the trace ca
 `- pname:`                                                |  Optional   | Section applies to a processor name (required for multi-processor systems).
 &nbsp;&nbsp;&nbsp; `disable:`                             |  Optional   | When set, this list node is ignored; useful for testing.
 &nbsp;&nbsp;&nbsp; [`timestamps:`](#timestamps)           |  Optional   | Enables timestamps in the emitted trace streams.
-&nbsp;&nbsp;&nbsp; [`timesync:`](#timesync)               |  Optional   | ITM global timestamp configuration for correlating trace streams.
+&nbsp;&nbsp;&nbsp; [`timesync:`](#timesync)               |  Optional   | Configures time synchronization between trace streams.
 &nbsp;&nbsp;&nbsp; [`data:`](#data)                       |  Optional   | DWT data trace configuration.
 &nbsp;&nbsp;&nbsp; [`exceptions:`](#exceptions)           |  Optional   | DWT exception trace configuration.
 &nbsp;&nbsp;&nbsp; [`events:`](#events)                   |  Optional   | DWT or PMU event trace configuration.
