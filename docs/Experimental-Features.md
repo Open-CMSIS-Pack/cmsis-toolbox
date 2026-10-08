@@ -466,12 +466,9 @@ The `synchronization:` node specifies behavior and frequency of synchronization 
 `DWT:`                                |  Optional   | Frequency `off`, `16M`, `64M`, `256M` processor cycles. Default: `16M`.
 `sync-on-run:`                        |  Optional   | Explicitly request synchronization packets at start of a step or run. Supported values: `true` (default) and `false`.
 
-`sync-on-run:` is preserved in `*.ctrace-run.yml` under `ctrace-setup:` so that pyOCD can apply the requested synchronization behavior. It only applies to trace sources with enabled synchronization and that do not always insert synchronization packets at start of a step or run. A debugger must request the packets as follows:
+`sync-on-run:` is preserved in `*.ctrace-run.yml` under `ctrace-setup:` so that pyOCD can apply the requested synchronization behavior. It only applies to trace sources with enabled synchronization and that do not always insert synchronization packets at start of a step or run.
 
-Architecture | DWT/ITM Request
-:---------------------|:--------
-Armv7-M | Debugger toggles bits 24, 26, and 28 of DWT_CYCCNT twice between setting up trace capture and start of processor step/run. These are the bits selectable by DWT_CTRL.SYNCTAP. The second toggle restores the original cycle counter value. Do not toggle other bits to avoid side effects.
-Armv8-M | N/A, processor always automatically inserts at start of step/run
+The debugger requests DWT/ITM synchronization packets by toggling bits 24, 26, and 28 of `DWT_CYCCNT` twice after setting up trace capture and before a processor step or run. These are the bits selectable by `DWT_CTRL.SYNCTAP`. The second toggle restores the original cycle counter value. Do not toggle other bits to avoid side effects.
 
 **Example:**
 
