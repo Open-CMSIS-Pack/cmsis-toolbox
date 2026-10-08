@@ -309,7 +309,7 @@ The `*.ctrace.yml` file starts with the node `ctrace:` and contains the trace ca
 `- pname:`                                                |  Optional   | Section applies to a processor name (required for multi-processor systems).
 &nbsp;&nbsp;&nbsp; `disable:`                             |  Optional   | When set, this list node is ignored; useful for testing.
 &nbsp;&nbsp;&nbsp; [`timestamps:`](#timestamps)           |  Optional   | Enables timestamps in the emitted trace streams.
-&nbsp;&nbsp;&nbsp; [`timesync:`](#timesync)               |  Optional   | Enables time synchronization between trace streams.
+&nbsp;&nbsp;&nbsp; [`timesync:`](#timesync)               |  Optional   | Configures time synchronization between trace streams.
 &nbsp;&nbsp;&nbsp; [`data:`](#data)                       |  Optional   | DWT data trace configuration.
 &nbsp;&nbsp;&nbsp; [`exceptions:`](#exceptions)           |  Optional   | DWT exception trace configuration.
 &nbsp;&nbsp;&nbsp; [`events:`](#events)                   |  Optional   | DWT or PMU event trace configuration.
@@ -330,6 +330,7 @@ ctrace:
       timestamps:
         clock: 24000000
       timesync:
+        ITM: 8192
 
       data:
         - location: mysimple
@@ -369,7 +370,13 @@ The timestamp `clock` typically is the processor clock.
 
 #### `timesync:`
 
-When `timesync:` is present, time synchronization between streams is enabled, for example between ITM and ETM by global timestamps.
+The `timesync:` node configures ITM global timestamp generation for correlating ITM streams from multiple processors.
+
+`timesync:`                         |             | Content
+:-----------------------------------|:------------|:------------------------------------
+`ITM:`                              |  Optional   | Global timestamp mode: `off` (default), `packet`, `128`, or `8192`.
+
+With `packet`, the ITM generates a timestamp after each trace packet if its output FIFO is empty. With `128` or `8192`, the ITM requests a global timestamp approximately every 128 or 8192 global timestamp clock cycles.
 
 #### `data:`
 
@@ -459,12 +466,9 @@ The `synchronization:` node specifies behavior and frequency of synchronization 
 `DWT:`                                |  Optional   | Frequency `off`, `16M`, `64M`, `256M` processor cycles. Default: `16M`.
 `sync-on-run:`                        |  Optional   | Explicitly request synchronization packets at start of a step or run. Supported values: `true` (default) and `false`.
 
-`sync-on-run:` is preserved in `*.ctrace-run.yml` under `ctrace-setup:` so that pyOCD can apply the requested synchronization behavior. It only applies to trace sources with enabled synchronization and that do not always insert synchronization packets at start of a step or run. A debugger must request the packets as follows:
+`sync-on-run:` is preserved in `*.ctrace-run.yml` under `ctrace-setup:` so that pyOCD can apply the requested synchronization behavior. It only applies to trace sources with enabled synchronization and that do not always insert synchronization packets at start of a step or run.
 
-Architecture | DWT/ITM Request
-:---------------------|:--------
-Armv7-M | Debugger toggles bits 24, 26, and 28 of DWT_CYCCNT twice between setting up trace capture and start of processor step/run. These are the bits selectable by DWT_CTRL.SYNCTAP. The second toggle restores the original cycle counter value. Do not toggle other bits to avoid side effects.
-Armv8-M | N/A, processor always automatically inserts at start of step/run
+The debugger requests DWT/ITM synchronization packets by toggling bits 24, 26, and 28 of `DWT_CYCCNT` twice after setting up trace capture and before a processor step or run. These are the bits selectable by `DWT_CTRL.SYNCTAP`. The second toggle restores the original cycle counter value. Do not toggle other bits to avoid side effects.
 
 **Example:**
 
@@ -476,7 +480,7 @@ synchronization:
 
 #### `instructions:`
 
-The `instructions:` node is reserved for ETM and MTB instruction trace. It is not required for the initial implementation.
+The `instructions:` node enables ETM or MTB instruction trace. It is not required for the initial implementation.
 
 `instructions:`                       |             | Content
 :-------------------------------------|:------------|:------------------------------------
