@@ -309,7 +309,7 @@ The `*.ctrace.yml` file starts with the node `ctrace:` and contains the trace ca
 `- pname:`                                                |  Optional   | Section applies to a processor name (required for multi-processor systems).
 &nbsp;&nbsp;&nbsp; `disable:`                             |  Optional   | When set, this list node is ignored; useful for testing.
 &nbsp;&nbsp;&nbsp; [`timestamps:`](#timestamps)           |  Optional   | Enables timestamps in the emitted trace streams.
-&nbsp;&nbsp;&nbsp; [`timesync:`](#timesync)               |  Optional   | Enables time synchronization between trace streams.
+&nbsp;&nbsp;&nbsp; [`timesync:`](#timesync)               |  Optional   | ITM global timestamp configuration for correlating trace streams.
 &nbsp;&nbsp;&nbsp; [`data:`](#data)                       |  Optional   | DWT data trace configuration.
 &nbsp;&nbsp;&nbsp; [`exceptions:`](#exceptions)           |  Optional   | DWT exception trace configuration.
 &nbsp;&nbsp;&nbsp; [`events:`](#events)                   |  Optional   | DWT or PMU event trace configuration.
@@ -330,6 +330,7 @@ ctrace:
       timestamps:
         clock: 24000000
       timesync:
+        ITM: 8192
 
       data:
         - location: mysimple
@@ -369,7 +370,13 @@ The timestamp `clock` typically is the processor clock.
 
 #### `timesync:`
 
-When `timesync:` is present, time synchronization between streams is enabled, for example between ITM and ETM by global timestamps.
+The `timesync:` node configures ITM global timestamp generation for correlating ITM streams from multiple processors.
+
+`timesync:`                         |             | Content
+:-----------------------------------|:------------|:------------------------------------
+`ITM:`                              |  Optional   | Global timestamp mode: `off` (default), `packet`, `128`, or `8192`.
+
+With `packet`, the ITM generates a timestamp after each trace packet if its output FIFO is empty. With `128` or `8192`, the ITM requests a global timestamp approximately every 128 or 8192 global timestamp clock cycles.
 
 #### `data:`
 
