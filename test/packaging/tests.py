@@ -15,7 +15,10 @@ def test_check_archive(base_path):
     dirDict = dict()
     dirDict["bin"] = {
         'cbridge', 'cbuild', 'cbuild2cmake', 'cbuildgen', 'cpackget', 'csolution', 
-        'launch-Infineon_Dev_Config', 'launch-Infineon_Dev_Config_motixlitix', 'launch-Infineon_MCU_Config_Wizard', 'launch-MCUXpressoConfigTools',
+        'launch-Infineon_Dev_Config', 'launch-Infineon_Dev_Config_motixlitix',
+        'launch-Infineon_MCU_Config_Wizard', 'launch-MCUXpressoConfigTools',
+        # Needs to include Renesas RASC launch script post new release of cbridge
+        # 'launch-Renesas_RASC',
         'packchk', 'svdconv',  'vidx2pidx'}
     dirDict["doc"] = {'index.html'}
     dirDict["etc"] = {
