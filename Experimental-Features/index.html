@@ -718,7 +718,7 @@ ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#timesync"><code>timesync:</code></a></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Enables time synchronization between trace streams.</td>
+<td style="text-align: left;">Configures time synchronization between trace streams.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#data"><code>data:</code></a></td>
@@ -771,6 +771,7 @@ ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
       timestamps:
         clock: 24000000
       timesync:
+        ITM: 8192
 
       data:
         - location: mysimple
@@ -821,7 +822,24 @@ ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
 </table>
 <p>The timestamp <code>clock</code> typically is the processor clock.</p>
 <h4 id="timesync"><code>timesync:</code></h4>
-<p>When <code>timesync:</code> is present, time synchronization between streams is enabled, for example between ITM and ETM by global timestamps.</p>
+<p>The <code>timesync:</code> node configures ITM global timestamp generation for correlating ITM streams from multiple processors.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>timesync:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>ITM:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Global timestamp mode: <code>off</code> (default), <code>packet</code>, <code>128</code>, or <code>8192</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>With <code>packet</code>, the ITM generates a timestamp after each trace packet if its output FIFO is empty. With <code>128</code> or <code>8192</code>, the ITM requests a global timestamp approximately every 128 or 8192 global timestamp clock cycles.</p>
 <h4 id="data"><code>data:</code></h4>
 <p>The <code>data:</code> node configures DWT data trace. DWT comparator resources are limited and shared with data access breakpoints, trigger conditions, and trace start/stop logic.</p>
 <table>
@@ -1026,32 +1044,15 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 </tr>
 </tbody>
 </table>
-<p><code>sync-on-run:</code> is preserved in <code>*.ctrace-run.yml</code> under <code>ctrace-setup:</code> so that pyOCD can apply the requested synchronization behavior. It only applies to trace sources with enabled synchronization and that do not always insert synchronization packets at start of a step or run. A debugger must request the packets as follows:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Architecture</th>
-<th style="text-align: left;">DWT/ITM Request</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">Armv7-M</td>
-<td style="text-align: left;">Debugger toggles bits 24, 26, and 28 of DWT_CYCCNT twice between setting up trace capture and start of processor step/run. These are the bits selectable by DWT_CTRL.SYNCTAP. The second toggle restores the original cycle counter value. Do not toggle other bits to avoid side effects.</td>
-</tr>
-<tr>
-<td style="text-align: left;">Armv8-M</td>
-<td style="text-align: left;">N/A, processor always automatically inserts at start of step/run</td>
-</tr>
-</tbody>
-</table>
+<p><code>sync-on-run:</code> is preserved in <code>*.ctrace-run.yml</code> under <code>ctrace-setup:</code> so that pyOCD can apply the requested synchronization behavior. It only applies to trace sources with enabled synchronization and that do not always insert synchronization packets at start of a step or run.</p>
+<p>The debugger requests DWT/ITM synchronization packets by toggling bits 24, 26, and 28 of <code>DWT_CYCCNT</code> twice after setting up trace capture and before a processor step or run. These are the bits selectable by <code>DWT_CTRL.SYNCTAP</code>. The second toggle restores the original cycle counter value. Do not toggle other bits to avoid side effects.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">synchronization:
   DWT: 256M
   sync-on-run: false  # Skip manual DWT synchronization at start of run
 </code></pre>
 <h4 id="instructions"><code>instructions:</code></h4>
-<p>The <code>instructions:</code> node is reserved for ETM and MTB instruction trace. It is not required for the initial implementation.</p>
+<p>The <code>instructions:</code> node enables ETM or MTB instruction trace. It is not required for the initial implementation.</p>
 <table>
 <thead>
 <tr>
