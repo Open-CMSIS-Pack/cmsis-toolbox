@@ -822,7 +822,7 @@ ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
 </table>
 <p>The timestamp <code>clock</code> typically is the processor clock.</p>
 <h4 id="timesync"><code>timesync:</code></h4>
-<p>The <code>timesync:</code> node configures ITM global timestamp generation for correlating ITM streams from multiple processors.</p>
+<p>The <code>timesync:</code> node controls insertion of global timestamps into ITM trace streams for correlation across processors. This requires a timestamp generator on the device, configured with the trace communication settings in <code>*.csolution.yml</code> and optionally <code>*.dbgconf</code>.</p>
 <table>
 <thead>
 <tr>
