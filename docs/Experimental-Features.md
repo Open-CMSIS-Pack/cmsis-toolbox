@@ -370,7 +370,7 @@ The timestamp `clock` typically is the processor clock.
 
 #### `timesync:`
 
-The `timesync:` node configures ITM global timestamp generation for correlating ITM streams from multiple processors.
+The `timesync:` node controls insertion of global timestamps into ITM trace streams for correlation across processors. This requires a timestamp generator on the device, configured with the trace communication settings in `*.csolution.yml` and optionally `*.dbgconf`.
 
 `timesync:`                         |             | Content
 :-----------------------------------|:------------|:------------------------------------
