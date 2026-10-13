@@ -370,7 +370,7 @@ The timestamp `clock` typically is the processor clock.
 
 #### `timesync:`
 
-The `timesync:` node configures ITM global timestamp generation for correlating ITM streams from multiple processors.
+The `timesync:` node controls insertion of global timestamps into ITM trace streams for correlation across processors. This requires a timestamp generator on the device, configured with the trace communication settings in `*.csolution.yml` and optionally `*.dbgconf`.
 
 `timesync:`                         |             | Content
 :-----------------------------------|:------------|:------------------------------------
@@ -544,7 +544,7 @@ The `ref:` node references the trace generation configuration in the file `*.ctr
 &nbsp;&nbsp;&nbsp; `label:`                              |  Optional   | User-defined short label for Trace Compass
 &nbsp;&nbsp;&nbsp; `address:`                            |  Optional   | Resolved address for the setting. May be resolved from a symbol.
 &nbsp;&nbsp;&nbsp; `size:`                               |  Optional   | Size, in bytes, of the capture data. May be extracted from symbol information.
-&nbsp;&nbsp;&nbsp; `symbol-file:`                        |  Optional   | Absolute path to the symbol file used in this reference.
+&nbsp;&nbsp;&nbsp; `symbol-file:`                        |  Optional   | Path to the symbol file used in this reference, relative to `*.ctrace-run.yml`.
 &nbsp;&nbsp;&nbsp; `data-type:`                          |  Optional   | Type of displayed data: `unsigned`, `signed`, or `float`. Default: `unsigned`.
 &nbsp;&nbsp;&nbsp; `regs:`                               |  Optional   | Register setup.
 
