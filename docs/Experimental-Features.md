@@ -1001,7 +1001,7 @@ Function | What it is | Usually called from
 :--------|:-----------|:-------------------
 `Configure` | Sets up trace, for example after reset or debug-connection recovery. | `TraceStart`
 `Capture` | Runs immediately before capture starts; it may configure trace trigger delays or a trace-sink formatter. | `TraceCapture`
-`Flush` | Flushes the trace bus after capture stops. It may also run before capture to start from a freshly flushed trace system. | `TraceFlush`; optionally `TraceCapture`
+`Flush` | Flushes the trace bus after capture stops. It may also run before capture to start from a freshly flushed trace system. | `TraceFlush`; TPIU/ETF capture sequences
 `ReadBuffer` | Reads a trace buffer and forwards its data to the debugger. | `TraceFlush`, after `Flush`
 
 Some components support different operating modes and therefore provide sequence variants in addition to the base life-cycle function. Variant names use an underscore between the function and variant, for example `Configure_HWFIFO` and `Capture_CircularBuffer`.
@@ -1055,7 +1055,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var LAR_KEY   = 0xC5ACCE55;
       __var savedAP = __ap;
 
-      Message(0, "Begin CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_TPIU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
 
       __ap = TPIU___INSTANCE_INDEX___AP;                                // Set AP
     </block>
@@ -1079,7 +1079,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+      Message(0, "End CS_TPIU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1090,7 +1090,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var savedAP = __ap;
       __var ffcrValue = 0x00000000;
 
-      Message(0, "Begin CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_TPIU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
 
       // Configure TPIU if needed and enable formatter
       __ap = TPIU___INSTANCE_INDEX___AP;                            // Set AP
@@ -1098,7 +1098,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       ffcrValue |= 0x00000002;                                      // Enable formatter
       Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);  // TPIU FFCR
       __ap = savedAP;
-      Message(0, "End CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+      Message(0, "End CS_TPIU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1109,7 +1109,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var ffcrValue   = 0x00000000;
       __var ffsrValue   = 0x00000000;
 
-      Message(0, "Begin CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_TPIU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
 
       __ap = TPIU___INSTANCE_INDEX___AP;  // Set AP
     </block>
@@ -1146,7 +1146,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+      Message(0, "End CS_TPIU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1170,7 +1170,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var prescaler =    0;
       __var swoMode   =    2;                                      // Fixed SWO-UART for now
 
-      Message(0, "Begin CS_SWO___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", SWO___INSTANCE_INDEX___ADDRESS, SWO___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_SWO___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", SWO___INSTANCE_INDEX___ADDRESS, SWO___INSTANCE_INDEX___AP);
     </block>
     <control if="__traceclockout != 0">
       <control if="__traceclockin &lt; __traceclockout">
@@ -1189,7 +1189,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       Write32(SWO___INSTANCE_INDEX___ADDRESS + 0x010, prescaler);  // Prescaler
       Write32(SWO___INSTANCE_INDEX___ADDRESS + 0x0F0, swoMode);    // Enable SWO-UART
       __ap = savedAP;
-      Message(0, "End CS_SWO___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", SWO___INSTANCE_INDEX___ADDRESS, SWO___INSTANCE_INDEX___AP);
+      Message(0, "End CS_SWO___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", SWO___INSTANCE_INDEX___ADDRESS, SWO___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1214,7 +1214,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var ffcrValue = 0x00000000;
       __var etbStatus = 0x00000000;
 
-      Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETB___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
       __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
 
       // Configure ETB
@@ -1237,7 +1237,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </block>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETB___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1247,7 +1247,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var ffcrValue = 0x00000000;
       __var savedAP = __ap;
 
-      Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETB___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
       __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
       ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -1259,7 +1259,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);  // Enable ETB
       __ap = savedAP;
 
-      Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETB___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1270,7 +1270,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var ffcrValue   = 0x00000000;
       __var etbStatus   = 0x00000000;
 
-      Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETB___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
       __ap = ETB___INSTANCE_INDEX___AP;  // Set AP
     </block>
@@ -1311,7 +1311,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETB___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1327,7 +1327,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var bytesToRead   = 0x00000000;
       __var bytesStreamed = 0x00000000;
 
-      Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETB___INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
       __ap = ETB___INSTANCE_INDEX___AP; // Set AP
 
@@ -1378,7 +1378,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETB___INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1402,7 +1402,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var ffcrValue = 0x00000000;
       __var etfStatus = 0x00000000;
 
-      Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Configure_HWFIFO @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETF___INSTANCE_INDEX___Configure_HWFIFO @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
       __ap = ETF___INSTANCE_INDEX___AP;                             // Set AP
 
       // Configure ETF to HW FIFO for Sync Trace
@@ -1425,7 +1425,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </block>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Configure_HWFIFO @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETF___INSTANCE_INDEX___Configure_HWFIFO @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1437,7 +1437,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var etfStatus = 0x00000000;
       __var traceBufferSyncCnt = 0xA;
 
-      Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETF___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
       __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
 
       // Configure ETF to HW FIFO for Sync Trace
@@ -1462,7 +1462,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </block>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETF___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1473,7 +1473,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var savedAP = __ap;
       __var traceBufferSyncCnt = 0xA;
 
-      Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETF___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
       __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
       ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -1485,7 +1485,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);          // Enable ETF
       __ap = savedAP;
 
-      Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETF___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1496,7 +1496,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var ffcrValue   = 0x00000000;
       __var etfStatus   = 0x00000000;
 
-      Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETF___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
       __ap = ETF___INSTANCE_INDEX___AP;  // Set AP
     </block>
@@ -1537,7 +1537,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETF___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1552,7 +1552,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var bytesToRead   = 0x00000000;
       __var bytesStreamed = 0x00000000;
 
-      Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_ETF___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
       __ap = ETF___INSTANCE_INDEX___AP; // Set AP
 
@@ -1600,7 +1600,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+      Message(0, "End CS_ETF___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1629,7 +1629,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var funnelMask = 0x00000000;
       __var value      = 0x00000000;
 
-      Message(0, "Begin ConfigureFunnel @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_FUNNEL___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
     </block>
     <control if="syncTrace != 0 || bufferTrace != 0">
       <block>
@@ -1647,7 +1647,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       Write32(FUNNEL___INSTANCE_INDEX___ADDRESS + 0x000, value);  // Configure CoreSight Trace Funnel to enable selected trace sources
 
       __ap = savedAP;
-      Message(0, "End CS_FUNNEL___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
+      Message(0, "End CS_FUNNEL___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1672,7 +1672,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var savedAP    = __ap;
       __var value      = 0x00000000;
 
-      Message(0, "Begin CS_REPLICATOR___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_REPLICATOR___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
 
       __ap = REPLICATOR___INSTANCE_INDEX___AP; // Set AP
 
@@ -1680,7 +1680,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       Write32(REPLICATOR___INSTANCE_INDEX___ADDRESS + 0x004, REPLICATOR___INSTANCE_INDEX___ID_FILTER1);
 
       __ap = savedAP;
-      Message(0, "End CS_REPLICATOR___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
+      Message(0, "End CS_REPLICATOR___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -2283,7 +2283,7 @@ cbuild-run:
             __var LAR_KEY   = 0xC5ACCE55;
             __var savedAP = __ap;
             
-            Message(0, "Begin CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_TPIU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
             
             __ap = TPIU___INSTANCE_INDEX___AP;                                // Set AP
         - if: 'swoTrace != 0'
@@ -2304,7 +2304,7 @@ cbuild-run:
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);                  // TPIU FFCR
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+            Message(0, "End CS_TPIU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
 
     - name: CS_TPIU___INSTANCE_INDEX___Capture
       blocks:
@@ -2314,7 +2314,7 @@ cbuild-run:
             __var savedAP = __ap;
             __var ffcrValue = 0x00000000;
             
-            Message(0, "Begin CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_TPIU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
             
             // Configure TPIU if needed and enable formatter
             __ap = TPIU___INSTANCE_INDEX___AP;                            // Set AP
@@ -2322,7 +2322,7 @@ cbuild-run:
             ffcrValue |= 0x00000002;                                      // Enable formatter
             Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);  // TPIU FFCR
             __ap = savedAP;
-            Message(0, "End CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+            Message(0, "End CS_TPIU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
 
     - name: CS_TPIU___INSTANCE_INDEX___Flush
       blocks:
@@ -2332,7 +2332,7 @@ cbuild-run:
             __var ffcrValue   = 0x00000000;
             __var ffsrValue   = 0x00000000;
             
-            Message(0, "Begin CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_TPIU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
             
             __ap = TPIU___INSTANCE_INDEX___AP;  // Set AP
         - execute: |
@@ -2367,7 +2367,7 @@ cbuild-run:
                     ffsrValue = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x300);
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_TPIU___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
+            Message(0, "End CS_TPIU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
 ~~~
 
 #### Serial Wire Output (SWO) `*.cbuild-run.yml`
@@ -2391,7 +2391,7 @@ cbuild-run:
             __var prescaler =    0;
             __var swoMode   =    2;                                      // Fixed SWO-UART for now
             
-            Message(0, "Begin CS_SWO___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", SWO___INSTANCE_INDEX___ADDRESS, SWO___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_SWO___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", SWO___INSTANCE_INDEX___ADDRESS, SWO___INSTANCE_INDEX___AP);
         - if: '__traceclockout != 0'
           blocks:
             - if: '__traceclockin < __traceclockout'
@@ -2407,7 +2407,7 @@ cbuild-run:
             Write32(SWO___INSTANCE_INDEX___ADDRESS + 0x010, prescaler);  // Prescaler
             Write32(SWO___INSTANCE_INDEX___ADDRESS + 0x0F0, swoMode);    // Enable SWO-UART
             __ap = savedAP;
-            Message(0, "End CS_SWO___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", SWO___INSTANCE_INDEX___ADDRESS, SWO___INSTANCE_INDEX___AP);
+            Message(0, "End CS_SWO___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", SWO___INSTANCE_INDEX___ADDRESS, SWO___INSTANCE_INDEX___AP);
 ~~~
 
 #### Embedded Trace Buffer (ETB) `*.cbuild-run.yml`
@@ -2432,7 +2432,7 @@ cbuild-run:
             __var ffcrValue = 0x00000000;
             __var etbStatus = 0x00000000;
             
-            Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_ETB___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
             __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
             
             // Configure ETB
@@ -2454,7 +2454,7 @@ cbuild-run:
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);  // Enable ETB
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETB___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
     - name: CS_ETB___INSTANCE_INDEX___Capture
       blocks:
@@ -2463,7 +2463,7 @@ cbuild-run:
             __var ffcrValue = 0x00000000;
             __var savedAP = __ap;
             
-            Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_ETB___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
             
             __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
             ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -2475,7 +2475,7 @@ cbuild-run:
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);  // Enable ETB
             __ap = savedAP;
             
-            Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETB___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
     - name: CS_ETB___INSTANCE_INDEX___Flush
       blocks:
@@ -2485,7 +2485,7 @@ cbuild-run:
             __var ffcrValue   = 0x00000000;
             __var etbStatus   = 0x00000000;
             
-            Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_ETB___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
             
             __ap = ETB___INSTANCE_INDEX___AP;  // Set AP
         - execute: |
@@ -2524,7 +2524,7 @@ cbuild-run:
                 etbStatus = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x00C);
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETB___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
     - name: CS_ETB___INSTANCE_INDEX___Read_Buffer
       blocks:
@@ -2539,7 +2539,7 @@ cbuild-run:
             __var bytesToRead   = 0x00000000;
             __var bytesStreamed = 0x00000000;
 
-            Message(0, "Begin CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_ETB___INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
             __ap = ETB___INSTANCE_INDEX___AP; // Set AP
 
@@ -2583,7 +2583,7 @@ cbuild-run:
                     Message(1, "ETB trace buffer is empty");
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETB___INSTANCE_INDEX_____INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETB___INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 ~~~
 
 #### Embedded Trace FIFO (ETF) `*.cbuild-run.yml`
@@ -2607,7 +2607,7 @@ cbuild-run:
             __var ffcrValue = 0x00000000;
             __var etfStatus = 0x00000000;
             
-            Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Configure_HWFIFO @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_ETF___INSTANCE_INDEX___Configure_HWFIFO @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
             __ap = ETF___INSTANCE_INDEX___AP;                             // Set AP
             
             // Configure ETF to HW FIFO for Sync Trace
@@ -2629,7 +2629,7 @@ cbuild-run:
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);  // Enable ETF
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Configure_HWFIFO @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETF___INSTANCE_INDEX___Configure_HWFIFO @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
     - name: CS_ETF___INSTANCE_INDEX___Configure_CircularBuffer
       blocks:
@@ -2640,7 +2640,7 @@ cbuild-run:
             __var etfStatus = 0x00000000;
             __var traceBufferSyncCnt = 0xA;
             
-            Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_ETF___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
             __ap = ETF___INSTANCE_INDEX___AP;                             // Set AP
             
             // Configure ETF to HW FIFO for Sync Trace
@@ -2664,7 +2664,7 @@ cbuild-run:
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);          // Enable ETF
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETF___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
     - name: CS_ETF___INSTANCE_INDEX___Capture_CircularBuffer
       blocks:
@@ -2674,7 +2674,7 @@ cbuild-run:
             __var savedAP = __ap;
             __var traceBufferSyncCnt = 0xA;
             
-            Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_ETF___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
             
             __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
             ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -2686,7 +2686,7 @@ cbuild-run:
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);          // Enable ETF
             __ap = savedAP;
             
-            Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETF___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
     - name: CS_ETF___INSTANCE_INDEX___Flush
       blocks:
@@ -2696,7 +2696,7 @@ cbuild-run:
             __var ffcrValue   = 0x00000000;
             __var etfStatus   = 0x00000000;
             
-            Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_ETF___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
             
             __ap = ETF___INSTANCE_INDEX___AP;  // Set AP
         - execute: |
@@ -2735,7 +2735,7 @@ cbuild-run:
                 etfStatus = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x00C);
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETF___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
     - name: CS_ETF___INSTANCE_INDEX___Read_CircularBuffer
       blocks:
@@ -2749,7 +2749,7 @@ cbuild-run:
             __var bytesToRead   = 0x00000000;
             __var bytesStreamed = 0x00000000;
             
-            Message(0, "Begin CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_ETF___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
             
             __ap = ETF___INSTANCE_INDEX___AP; // Set AP
             
@@ -2791,7 +2791,7 @@ cbuild-run:
                     Message(1, "ETF trace buffer is empty");
         - execute: |
             __ap = savedAP;
-            Message(0, "End CS_ETF___INSTANCE_INDEX_____INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
+            Message(0, "End CS_ETF___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 ~~~
 
 #### Trace Funnel `*.cbuild-run.yml`
@@ -2820,7 +2820,7 @@ cbuild-run:
             __var funnelMask = 0x00000000;
             __var value      = 0x00000000;
             
-            Message(0, "Begin CS_FUNNEL___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_FUNNEL___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
         - if: 'syncTrace != 0 || bufferTrace != 0'
           blocks:
             - execute: |
@@ -2835,7 +2835,7 @@ cbuild-run:
             Write32(FUNNEL___INSTANCE_INDEX___ADDRESS + 0x000, value);  // Configure CoreSight Trace Funnel to enable selected trace sources
             
             __ap = savedAP;
-            Message(0, "End CS_FUNNEL___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
+            Message(0, "End CS_FUNNEL___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
 ~~~
 
 #### Trace Replicator `*.cbuild-run.yml`
@@ -2860,7 +2860,7 @@ cbuild-run:
             __var savedAP    = __ap;
             __var value      = 0x00000000;
             
-            Message(0, "Begin CS_REPLICATOR___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_REPLICATOR___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
             
             __ap = REPLICATOR___INSTANCE_INDEX___AP; // Set AP
             
@@ -2868,7 +2868,7 @@ cbuild-run:
             Write32(REPLICATOR___INSTANCE_INDEX___ADDRESS + 0x004, REPLICATOR___INSTANCE_INDEX___ID_FILTER1);
             
             __ap = savedAP;
-            Message(0, "End CS_REPLICATOR___INSTANCE_INDEX_____INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
+            Message(0, "End CS_REPLICATOR___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
 ~~~
 
 #### Embedded Trace Router (ETR) `*.cbuild-run.yml`
