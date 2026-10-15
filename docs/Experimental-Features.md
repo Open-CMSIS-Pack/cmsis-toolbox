@@ -1023,6 +1023,7 @@ Trace Funnel | `0` | `0xE0043000` | `Configure` | [Trace Funnel](#trace-funnel) 
 Trace Replicator | `0` | `0x00000000` | `Configure` | [Trace Replicator](#trace-replicator) | [Trace Replicator](#trace-replicator-cbuild-runyml)
 Embedded Trace Router (ETR) | `0` | `0x00000000` | `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush`, `Read_CircularBuffer` | [ETR](#embedded-trace-router-etr) | [ETR](#embedded-trace-router-etr-cbuild-runyml)
 CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `Capture`, `Flush` | [CATU](#coresight-address-translation-unit-catu) | [CATU](#coresight-address-translation-unit-catu-cbuild-runyml)
+Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | [GTS](#global-timestamp-generator-gts) | [GTS](#global-timestamp-generator-gts-cbuild-runyml)
 
 ### PDSC (XML) Implementations
 
@@ -1393,6 +1394,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     // ETF
     __var ETF___INSTANCE_INDEX___ADDRESS       = 0xE0042000;
     __var ETF___INSTANCE_INDEX___AP            = 0x00000000;
+    __var ETF___INSTANCE_INDEX___PSCR_CircularBuffer = 0x7; // Short sync period to reduce discarded trace data; hardware default is 0xA
   </debugvars>
 
   <sequence name="CS_ETF___INSTANCE_INDEX___Configure_HWFIFO">
@@ -1435,7 +1437,6 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       __var savedAP = __ap;
       __var ffcrValue = 0x00000000;
       __var etfStatus = 0x00000000;
-      __var traceBufferSyncCnt = 0xA;
 
       Message(0, "Begin CS_ETF___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
       __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
@@ -1454,7 +1455,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x028, 0x00000000);          // Set Circular Buffer mode
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);          // Watermark: Set threshold vacancy to 0 to use full buffer
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, 0x00000003);          // FFCR: Enable Formatter and Trigger Insertion
-      Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, traceBufferSyncCnt);  // Set PSCR
+      Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, 0x00000000);          // Init RRP
 
@@ -1471,7 +1472,6 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       // Helper variables
       __var ffcrValue = 0x00000000;
       __var savedAP = __ap;
-      __var traceBufferSyncCnt = 0xA;
 
       Message(0, "Begin CS_ETF___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
@@ -1479,7 +1479,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
       ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
       ffcrValue |= 0x00000002;                                              // FFCR: Enable Formatter
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
-      Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, traceBufferSyncCnt);  // Set PSCR
+      Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, 0x00000000);          // Init RRP
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);          // Enable ETF
@@ -1567,6 +1567,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
         <block>
           // STS.Full distinguishes a wrapped/full buffer from an empty buffer
           // when the read and write pointers are equal.
+          Message(0, "ETF Circular Buffer wrapped around");
           bytesToRead = bufferSize;
           // RWP identifies the oldest retained trace after the buffer wraps.
           Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, writePointer); // Rebase RRP for chronological output
@@ -1588,7 +1589,7 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
         <block>
           // Read repeatedly from the TMC RRD register. The TMC advances RRP.
           BufferRead(0, 0, ETF___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
-          bytesStreamed = BufferStreamOut(0, 0, bytesToRead, ".trace/TraceBufferOutput.TB.raw", 0, 0);
+          bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
           Message(0, "Streamed %d of %d ETF trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
@@ -2009,6 +2010,50 @@ CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `C
     </block>
   </sequence>
 
+</cmsis-pack-trace-snippet>
+~~~
+
+#### Global Timestamp Generator (GTS)
+
+~~~xml
+<!-- CMSIS-Pack GTS template. Replace __INSTANCE_INDEX__ with the stable numeric instance suffix. -->
+<cmsis-pack-trace-snippet component="GTS">
+  <debugvars>
+    // Global Timestamp Generator
+    __var GTS___INSTANCE_INDEX___ADDRESS   = 0x00000000; // Set the implemented generator base address
+    __var GTS___INSTANCE_INDEX___AP        = 0x00000000;
+    __var GTS___INSTANCE_INDEX___FREQUENCY = 0x00000000; // Nonzero writes the informational frequency to CNTFID0
+    __var GTS___INSTANCE_INDEX___HDBG      = 0x00000000; // Pause on HDBG; signal routing is device-specific
+  </debugvars>
+
+  <sequence name="GTS___INSTANCE_INDEX___Configure">
+    <block>
+      // Helper variables
+      __var savedAP     = __ap;
+      __var cntcrValue  = 1;                              // CNTCR.EN=1
+
+      Message(0, "Begin GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
+
+      __ap   = GTS___INSTANCE_INDEX___AP;
+      Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x000, 0x0);                // Disable timestamp generator
+    </block>
+    <control if="GTS___INSTANCE_INDEX___FREQUENCY != 0">
+      <block>
+        Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x020, GTS___INSTANCE_INDEX___FREQUENCY);  // CNTFID0: Informational counter frequency
+      </block>
+    </control>
+    <control if="GTS___INSTANCE_INDEX___HDBG != 0">
+      <block>
+        cntcrValue |= 0x2;                                // CNTCR.HDBG=1
+      </block>
+    </control>
+    <block>
+      Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x000, cntcrValue);         // Write control bits and enable generator
+
+      __ap = savedAP;
+      Message(0, "End GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
+    </block>
+  </sequence>
 </cmsis-pack-trace-snippet>
 ~~~
 
@@ -2596,6 +2641,7 @@ cbuild-run:
       // ETF
       __var ETF___INSTANCE_INDEX___ADDRESS       = 0xE0042000;
       __var ETF___INSTANCE_INDEX___AP            = 0x00000000;
+      __var ETF___INSTANCE_INDEX___PSCR_CircularBuffer = 0x7; // Short sync period to reduce discarded trace data; hardware default is 0xA
 
   debug-sequences:
 
@@ -2638,7 +2684,6 @@ cbuild-run:
             __var savedAP = __ap;
             __var ffcrValue = 0x00000000;
             __var etfStatus = 0x00000000;
-            __var traceBufferSyncCnt = 0xA;
             
             Message(0, "Begin CS_ETF___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
             __ap = ETF___INSTANCE_INDEX___AP;                             // Set AP
@@ -2657,7 +2702,7 @@ cbuild-run:
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x028, 0x00000000);          // Set Circular Buffer mode
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);          // Watermark: Set threshold vacancy to 0 to use full buffer
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, 0x00000003);          // FFCR: Enable Formatter and Trigger Insertion
-            Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, traceBufferSyncCnt);  // Set PSCR
+            Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, 0x00000000);          // Init RRP
             
@@ -2672,7 +2717,6 @@ cbuild-run:
             // Helper variables
             __var ffcrValue = 0x00000000;
             __var savedAP = __ap;
-            __var traceBufferSyncCnt = 0xA;
             
             Message(0, "Begin CS_ETF___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
             
@@ -2680,7 +2724,7 @@ cbuild-run:
             ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue |= 0x00000002;                                              // FFCR: Enable Formatter
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
-            Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, traceBufferSyncCnt);  // Set PSCR
+            Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, 0x00000000);          // Init RRP
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);          // Enable ETF
@@ -2765,6 +2809,7 @@ cbuild-run:
                 - execute: |
                     // STS.Full distinguishes a wrapped/full buffer from an empty buffer
                     // when the read and write pointers are equal.
+                    Message(0, "ETF Circular Buffer wrapped around");
                     bytesToRead = bufferSize;
                     // RWP identifies the oldest retained trace after the buffer wraps.
                     Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, writePointer); // Rebase RRP for chronological output
@@ -2783,7 +2828,7 @@ cbuild-run:
                 - execute: |
                     // Read repeatedly from the TMC RRD register. The TMC advances RRP.
                     BufferRead(0, 0, ETF___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
-                    bytesStreamed = BufferStreamOut(0, 0, bytesToRead, ".trace/TraceBufferOutput.TB.raw", 0, 0);
+                    bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
                     Message(0, "Streamed %d of %d ETF trace bytes", bytesStreamed, bytesToRead);
             - if: 'bytesToRead == 0'
               blocks:
@@ -3187,6 +3232,47 @@ cbuild-run:
             Message(0, "End CS_CATU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
 
 
+~~~
+
+#### Global Timestamp Generator (GTS) `*.cbuild-run.yml`
+
+~~~yml
+cbuild-run:
+
+  debug-vars:
+    vars: |
+      // Global Timestamp Generator
+      __var GTS___INSTANCE_INDEX___ADDRESS   = 0x00000000; // Set the implemented generator base address
+      __var GTS___INSTANCE_INDEX___AP        = 0x00000000;
+      __var GTS___INSTANCE_INDEX___FREQUENCY = 0x00000000; // Nonzero writes the informational frequency to CNTFID0
+      __var GTS___INSTANCE_INDEX___HDBG      = 0x00000000; // Pause on HDBG; signal routing is device-specific
+
+  debug-sequences:
+
+    - name: GTS___INSTANCE_INDEX___Configure
+      blocks:
+        - execute: |
+            // Helper variables
+            __var savedAP     = __ap;
+            __var cntcrValue  = 1;                              // CNTCR.EN=1
+
+            Message(0, "Begin GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
+
+            __ap   = GTS___INSTANCE_INDEX___AP;
+            Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x000, 0x0);                // Disable timestamp generator
+        - if: 'GTS___INSTANCE_INDEX___FREQUENCY != 0'
+          blocks:
+            - execute: |
+                Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x020, GTS___INSTANCE_INDEX___FREQUENCY);  // CNTFID0: Informational counter frequency
+        - if: 'GTS___INSTANCE_INDEX___HDBG != 0'
+          blocks:
+            - execute: |
+                cntcrValue |= 0x2;                                // CNTCR.HDBG=1
+        - execute: |
+            Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x000, cntcrValue);         // Write control bits and enable generator
+
+            __ap = savedAP;
+            Message(0, "End GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
 ~~~
 
 #### Full Trace Scaffold `*.cbuild-run.yml`
