@@ -19,8 +19,14 @@ accept = [
 # Maximum number of allowed redirects.
 max_redirects = 2
 
-# Maximum number of allowed retries before a link is declared dead.
-max_retries = 4
+# For each URL, retry up to 10 times after the initial check fails
+max_retries = 10
+
+# Wait 5 seconds between retries of the same URL
+retry_wait_time = 5
+
+# Check up to 8 URLs at the same time
+max_concurrency = 8
 
 # Only test links with the given schemes
 # Omit to check links with any other scheme.
