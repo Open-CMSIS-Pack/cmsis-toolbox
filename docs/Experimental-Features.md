@@ -1629,10 +1629,11 @@ Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | [GTS](#glo
       __var savedAP    = __ap;
       __var funnelMask = 0x00000000;
       __var value      = 0x00000000;
+      __var applyFunnelMask = 1;     // Always apply by default, adjust if for example funnel inputs need to be turned off for SWO trace
 
       Message(0, "Begin CS_FUNNEL___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
     </block>
-    <control if="syncTrace != 0 || bufferTrace != 0">
+    <control if="applyFunnelMask">
       <block>
         funnelMask = FUNNEL___INSTANCE_INDEX___INPUT_MASK;
       </block>
@@ -2859,23 +2860,24 @@ cbuild-run:
             __var swoTrace    = __traceout & 0x1;
             __var syncTrace   = __traceout & 0x2;
             __var bufferTrace = __traceout & 0x4;
-            
+
             // Helper variables
             __var savedAP    = __ap;
             __var funnelMask = 0x00000000;
             __var value      = 0x00000000;
+            __var applyFunnelMask = 1;     // Always apply by default, adjust if for example funnel inputs need to be turned off for SWO trace
             
             Message(0, "Begin CS_FUNNEL___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
-        - if: 'syncTrace != 0 || bufferTrace != 0'
+        - if: 'applyFunnelMask'
           blocks:
             - execute: |
                 funnelMask = FUNNEL___INSTANCE_INDEX___INPUT_MASK;
         - execute: |
-            __ap = FUNNEL___INSTANCE_INDEX___AP;            // Set AP
+            __ap = FUNNEL___INSTANCE_INDEX___AP;                        // Set AP
             
             value = Read32(FUNNEL___INSTANCE_INDEX___ADDRESS + 0x000);
-            value &= ~0xFF;                                 // Clear existing funnel input enables, keep hold time
-            value |= funnelMask;                            // Keep hold time as is for now, could be made configurable if needed
+            value &= ~0xFF;                                             // Clear existing funnel input enables, keep hold time
+            value |= funnelMask;                                        // Keep hold time as is for now, could be made configurable if needed
         - execute: |
             Write32(FUNNEL___INSTANCE_INDEX___ADDRESS + 0x000, value);  // Configure CoreSight Trace Funnel to enable selected trace sources
             
