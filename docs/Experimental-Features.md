@@ -1072,7 +1072,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
         </control>
         <control if="prescaler == 0">
           <block>
-            Message(2, "Error: TPIU trace clocks cannot produce a valid divisor (input %llu Hz, output %llu Hz)", __traceclockin, __traceclockout);
+            Message(2, "Error: TPIU trace clocks cannot produce a valid divisor (input %u Hz, output %u Hz)", __traceclockin, __traceclockout);
           </block>
         </control>
       </control>
@@ -1392,7 +1392,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
           // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
           // on TraceBufferSelected().
           bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-          Message(0, "Streamed %llu of %llu ETB trace bytes", bytesStreamed, bytesToRead);
+          Message(0, "Streamed %u of %u ETB trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
       <control if="bytesToRead == 0">
@@ -1621,7 +1621,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
           // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
           // on TraceBufferSelected().
           bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-          Message(0, "Streamed %llu of %llu ETF trace bytes", bytesStreamed, bytesToRead);
+          Message(0, "Streamed %u of %u ETF trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
       <control if="bytesToRead == 0">
@@ -1915,7 +1915,7 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
           // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
           // on TraceBufferSelected().
           bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-          Message(0, "Streamed %llu of %llu ETR trace bytes", bytesStreamed, bytesToRead);
+          Message(0, "Streamed %u of %u ETR trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
       <control if="bytesToRead == 0">
@@ -2378,7 +2378,7 @@ cbuild-run:
                 - if: 'prescaler == 0'
                   blocks:
                     - execute: |
-                        Message(2, "Error: TPIU trace clocks cannot produce a valid divisor (input %llu Hz, output %llu Hz)", __traceclockin, __traceclockout);
+                        Message(2, "Error: TPIU trace clocks cannot produce a valid divisor (input %u Hz, output %u Hz)", __traceclockin, __traceclockout);
         - execute: |
             __ap = TPIU___INSTANCE_INDEX___AP;                                // Set AP
         - if: 'swoTrace != 0'
@@ -2675,7 +2675,7 @@ cbuild-run:
                     // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
                     // on TraceBufferSelected().
                     bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-                    Message(0, "Streamed %llu of %llu ETB trace bytes", bytesStreamed, bytesToRead);
+                    Message(0, "Streamed %u of %u ETB trace bytes", bytesStreamed, bytesToRead);
             - if: 'bytesToRead == 0'
               blocks:
                 - execute: |
@@ -2890,7 +2890,7 @@ cbuild-run:
                     // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
                     // on TraceBufferSelected().
                     bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-                    Message(0, "Streamed %llu of %llu ETF trace bytes", bytesStreamed, bytesToRead);
+                    Message(0, "Streamed %u of %u ETF trace bytes", bytesStreamed, bytesToRead);
             - if: 'bytesToRead == 0'
               blocks:
                 - execute: |
@@ -3172,7 +3172,7 @@ cbuild-run:
                     // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
                     // on TraceBufferSelected().
                     bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-                    Message(0, "Streamed %llu of %llu ETR trace bytes", bytesStreamed, bytesToRead);
+                    Message(0, "Streamed %u of %u ETR trace bytes", bytesStreamed, bytesToRead);
             - if: 'bytesToRead == 0'
               blocks:
                 - execute: |
