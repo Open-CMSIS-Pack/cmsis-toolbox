@@ -1063,14 +1063,14 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     <control if="swoTrace != 0">
       <block>
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0xFB0, LAR_KEY);      // TPIU Lock Access Register: Unlock TPIU
-        Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, prescaler);    // TPIU Asynchronous Clock Prescaler Register: No prescaling
+        Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, prescaler);    // Program asynchronous clock prescaler.
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000002);   // TPIU Selected Pin Protocol Register: Select SWO
       </block>
     </control>
     <control if="syncTrace != 0">
       <block>
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0xFB0, LAR_KEY);      // TPIU Lock Access Register: Unlock TPIU
-        Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, 2*prescaler);  // TPIU Asynchronous Clock Prescaler Register: No prescaling
+        Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, 2*prescaler);  // Program asynchronous clock prescaler.
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x004, 1 &lt;&lt; (tracePortWidth - 1));  // TPIU Current Synchronous Port Width
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000000);   // TPIU Selected Pin Protocol Register: Select Sync Trace Port
         ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -1444,7 +1444,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       Message(0, "Begin CS_ETF___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
       __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
 
-      // Configure ETF to HW FIFO for Sync Trace
+      // Configure ETF for circular-buffer trace capture.
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000000);          // Disable ETF before configuring
       etfStatus = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x00C);
     </block>
@@ -1504,7 +1504,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __ap = ETF___INSTANCE_INDEX___AP;  // Set AP
     </block>
     <block>
-      // Flush ETF first so the HW FIFO drains towards the TPIU.
+      // Flush the ETF formatter and stop capture.
       ffcrValue = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
       ffcrValue &amp;= ~(0x00001040);    // Clear StopOnFlush and FlushOnManual
       ffcrValue |= 0x00001000;           // Stop after the manual flush completes
@@ -1729,7 +1729,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       Message(0, "Begin CS_ETR___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
       __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
 
-      // Configure ETR to HW FIFO for Sync Trace
+      // Configure ETR for circular-buffer trace capture.
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000000);                                // Disable ETR before configuring
       etrStatus = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x00C);
     </block>
@@ -1804,7 +1804,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __ap = ETR___INSTANCE_INDEX___AP;  // Set AP
     </block>
     <block>
-      // Flush ETR first so the HW FIFO drains towards the TPIU.
+      // Flush the ETR formatter and stop capture.
       ffcrValue = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
       ffcrValue &amp;= ~(0x00001040);    // Clear StopOnFlush and FlushOnManual
       ffcrValue |= 0x00001000;           // Stop after the manual flush completes
@@ -1955,7 +1955,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
 
       // Enable CATU after configuration
       Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
-        status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+      status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
     </block>
     <control while="(status &amp; 0x0100) != 0" info="Wait for READY cleared" timeout="100">
       <block>
@@ -1979,7 +1979,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __ap = CATU___INSTANCE_INDEX___AP; // Set AP
 
       // Keep initial values and re-enable CATU before next capture.
-      // Clears any remaning error bits.
+      // Clears any remaining error bits.
       Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
 
       status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
@@ -2345,13 +2345,13 @@ cbuild-run:
           blocks:
             - execute: |
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0xFB0, LAR_KEY);     // TPIU Lock Access Register: Unlock TPIU
-                Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, prescaler);   // TPIU Asynchronous Clock Prescaler Register: No prescaling
+                Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, prescaler);   // Program asynchronous clock prescaler.
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000002);  // TPIU Selected Pin Protocol Register: Select SWO
         - if: 'syncTrace != 0'
           blocks:
             - execute: |
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0xFB0, LAR_KEY);                    // TPIU Lock Access Register: Unlock TPIU
-                Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, 2*prescaler);                // TPIU Asynchronous Clock Prescaler Register: No prescaling
+                Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, 2*prescaler);                // Program asynchronous clock prescaler.
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x004, 1 << (tracePortWidth - 1));  // TPIU Current Synchronous Port Width
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000000);                 // TPIU Selected Pin Protocol Register: Select Sync Trace Port
                 ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -2701,7 +2701,7 @@ cbuild-run:
             Message(0, "Begin CS_ETF___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
             __ap = ETF___INSTANCE_INDEX___AP;                             // Set AP
             
-            // Configure ETF to HW FIFO for Sync Trace
+            // Configure ETF for circular-buffer trace capture.
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000000);  // Disable ETF before configuring
             etfStatus = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x00C);
         - while: '(etfStatus & 0x4) == 0'
@@ -2757,7 +2757,7 @@ cbuild-run:
             
             __ap = ETF___INSTANCE_INDEX___AP;  // Set AP
         - execute: |
-            // Flush ETF first so the HW FIFO drains towards the TPIU.
+            // Flush the ETF formatter and stop capture.
             ffcrValue = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue &= ~(0x00001040);  // Clear StopOnFlush and FlushOnManual
             ffcrValue |= 0x00001000;     // Stop after the manual flush completes
@@ -2971,7 +2971,7 @@ cbuild-run:
             Message(0, "Begin CS_ETR___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
             __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
 
-            // Configure ETR to HW FIFO for Sync Trace
+            // Configure ETR for circular-buffer trace capture.
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000000);                                // Disable ETR before configuring
             etrStatus = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x00C);
         - while: '(etrStatus & 0x4) == 0'
@@ -3044,7 +3044,7 @@ cbuild-run:
 
             __ap = ETR___INSTANCE_INDEX___AP;  // Set AP
         - execute: |
-            // Flush ETR first so the HW FIFO drains towards the TPIU.
+            // Flush the ETR formatter and stop capture.
             ffcrValue = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue &= ~(0x00001040);  // Clear StopOnFlush and FlushOnManual
             ffcrValue |= 0x00001000;     // Stop after the manual flush completes
@@ -3189,7 +3189,7 @@ cbuild-run:
 
             // Enable CATU after configuration
             Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
-              status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+            status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
         - while: '(status & 0x0100) != 0'
           info: 'Wait for READY cleared'
           timeout: 100
@@ -3213,7 +3213,7 @@ cbuild-run:
             __ap = CATU___INSTANCE_INDEX___AP; // Set AP
 
             // Keep initial values and re-enable CATU before next capture.
-            // Clears any remaning error bits.
+            // Clears any remaining error bits.
             Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
 
             status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
