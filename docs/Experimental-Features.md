@@ -1118,7 +1118,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       // Configure "local" TPIU for Sync Trace
       ffsrValue = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x300);
     </block>
-    <control if="ffsrValue &amp; 0x2 == 0" info="Formatter not stopped, do it now">
+    <control if="(ffsrValue &amp; 0x2) == 0" info="Formatter not stopped, do it now">
       <block>
         // Flush the TPIU formatter so pending packets leave the trace port.
         ffcrValue = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -1182,7 +1182,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       <block>
         // Calculate SWO prescaler value based on provided trace clock frequencies.
         prescaler = (__traceclockin / __traceclockout) - 1;
-        Message(0, "Calculated SWO prescaler value: %d", prescaler);
+        Message(0, "Calculated SWO prescaler value: %u", prescaler);
       </block>
     </control>
     <block>
@@ -1371,7 +1371,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
           // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
           // on TraceBufferSelected().
           bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-          Message(0, "Streamed %d of %d ETB trace bytes", bytesStreamed, bytesToRead);
+          Message(0, "Streamed %llu of %llu ETB trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
       <control if="bytesToRead == 0">
@@ -1596,7 +1596,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
           // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
           // on TraceBufferSelected().
           bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-          Message(0, "Streamed %d of %d ETF trace bytes", bytesStreamed, bytesToRead);
+          Message(0, "Streamed %llu of %llu ETF trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
       <control if="bytesToRead == 0">
@@ -1887,7 +1887,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
           // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
           // on TraceBufferSelected().
           bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-          Message(0, "Streamed %d of %d ETR trace bytes", bytesStreamed, bytesToRead);
+          Message(0, "Streamed %llu of %llu ETR trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
       <control if="bytesToRead == 0">
@@ -2393,7 +2393,7 @@ cbuild-run:
         - execute: |
             // Configure "local" TPIU for Sync Trace
             ffsrValue = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x300);
-        - if: 'ffsrValue & 0x2 == 0'
+        - if: '(ffsrValue & 0x2) == 0'
           info: 'Formatter not stopped, do it now'
           blocks:
             - execute: |
@@ -2456,7 +2456,7 @@ cbuild-run:
             - execute: |
                 // Calculate SWO prescaler value based on provided trace clock frequencies.
                 prescaler = (__traceclockin / __traceclockout) - 1;
-                Message(0, "Calculated SWO prescaler value: %d", prescaler);
+                Message(0, "Calculated SWO prescaler value: %u", prescaler);
         - execute: |
             __ap = SWO___INSTANCE_INDEX___AP;
             Write32(SWO___INSTANCE_INDEX___ADDRESS + 0x010, prescaler);  // Prescaler
@@ -2634,7 +2634,7 @@ cbuild-run:
                     // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
                     // on TraceBufferSelected().
                     bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-                    Message(0, "Streamed %d of %d ETB trace bytes", bytesStreamed, bytesToRead);
+                    Message(0, "Streamed %llu of %llu ETB trace bytes", bytesStreamed, bytesToRead);
             - if: 'bytesToRead == 0'
               blocks:
                 - execute: |
@@ -2845,7 +2845,7 @@ cbuild-run:
                     // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
                     // on TraceBufferSelected().
                     bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-                    Message(0, "Streamed %d of %d ETF trace bytes", bytesStreamed, bytesToRead);
+                    Message(0, "Streamed %llu of %llu ETF trace bytes", bytesStreamed, bytesToRead);
             - if: 'bytesToRead == 0'
               blocks:
                 - execute: |
@@ -3124,7 +3124,7 @@ cbuild-run:
                     // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
                     // on TraceBufferSelected().
                     bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-                    Message(0, "Streamed %d of %d ETR trace bytes", bytesStreamed, bytesToRead);
+                    Message(0, "Streamed %llu of %llu ETR trace bytes", bytesStreamed, bytesToRead);
             - if: 'bytesToRead == 0'
               blocks:
                 - execute: |
