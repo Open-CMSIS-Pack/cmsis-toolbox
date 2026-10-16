@@ -1023,7 +1023,7 @@ Trace Funnel | `0` | `0xE0043000` | `Configure` | [Trace Funnel](#trace-funnel) 
 Trace Replicator | `0` | `0x00000000` | `Configure` | [Trace Replicator](#trace-replicator) | [Trace Replicator](#trace-replicator-cbuild-runyml)
 Embedded Trace Router (ETR) | `0` | `0x00000000` | `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush`, `Read_CircularBuffer` | [ETR](#embedded-trace-router-etr) | [ETR](#embedded-trace-router-etr-cbuild-runyml)
 CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `Capture`, `Flush` | [CATU](#coresight-address-translation-unit-catu) | [CATU](#coresight-address-translation-unit-catu-cbuild-runyml)
-Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | [GTS](#global-timestamp-generator-gts) | [GTS](#global-timestamp-generator-gts-cbuild-runyml)
+CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | [GTS](#coresight-global-timestamp-generator-gts) | [GTS](#coresight-global-timestamp-generator-gts-cbuild-runyml)
 
 ### PDSC (XML) Implementations
 
@@ -2023,7 +2023,7 @@ Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | [GTS](#glo
 </cmsis-pack-trace-snippet>
 ~~~
 
-#### Global Timestamp Generator (GTS)
+#### CoreSight Global Timestamp Generator (GTS)
 
 ~~~xml
 <!-- CMSIS-Pack GTS template. Replace __INSTANCE_INDEX__ with the stable numeric instance suffix. -->
@@ -2036,13 +2036,13 @@ Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | [GTS](#glo
     __var GTS___INSTANCE_INDEX___HDBG      = 0x00000000; // Pause on HDBG; signal routing is device-specific
   </debugvars>
 
-  <sequence name="GTS___INSTANCE_INDEX___Configure">
+  <sequence name="CS_GTS___INSTANCE_INDEX___Configure">
     <block>
       // Helper variables
       __var savedAP     = __ap;
       __var cntcrValue  = 1;                              // CNTCR.EN=1
 
-      Message(0, "Begin GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
+      Message(0, "Begin CS_GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
 
       __ap   = GTS___INSTANCE_INDEX___AP;
       Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x000, 0x0);                // Disable timestamp generator
@@ -2061,7 +2061,7 @@ Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | [GTS](#glo
       Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x000, cntcrValue);         // Write control bits and enable generator
 
       __ap = savedAP;
-      Message(0, "End GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
+      Message(0, "End CS_GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -3254,7 +3254,7 @@ cbuild-run:
 
 ~~~
 
-#### Global Timestamp Generator (GTS) `*.cbuild-run.yml`
+#### CoreSight Global Timestamp Generator (GTS) `*.cbuild-run.yml`
 
 ~~~yml
 cbuild-run:
@@ -3269,14 +3269,14 @@ cbuild-run:
 
   debug-sequences:
 
-    - name: GTS___INSTANCE_INDEX___Configure
+    - name: CS_GTS___INSTANCE_INDEX___Configure
       blocks:
         - execute: |
             // Helper variables
             __var savedAP     = __ap;
             __var cntcrValue  = 1;                              // CNTCR.EN=1
 
-            Message(0, "Begin GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
+            Message(0, "Begin CS_GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
 
             __ap   = GTS___INSTANCE_INDEX___AP;
             Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x000, 0x0);                // Disable timestamp generator
@@ -3292,7 +3292,7 @@ cbuild-run:
             Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x000, cntcrValue);         // Write control bits and enable generator
 
             __ap = savedAP;
-            Message(0, "End GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
+            Message(0, "End CS_GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
 ~~~
 
 #### Full Trace Scaffold `*.cbuild-run.yml`
