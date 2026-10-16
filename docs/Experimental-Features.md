@@ -1039,7 +1039,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     // TPIU
     __var TPIU___INSTANCE_INDEX___ADDRESS     = 0xE0040000;  // Default TPIU Location for single-core systems
     __var TPIU___INSTANCE_INDEX___AP          = 0x00000000;
-    __var TPIU___INSTANCE_INDEX___PRESCALER   = 0x00000000;  // Zero derives the prescaler from the trace clocks
+    __var TPIU___INSTANCE_INDEX___PRESCALER   = 0x00000000;  // Clock divider (ACPR + 1); zero derives it from the trace clocks
   </debugvars>
 
   <sequence name="CS_TPIU___INSTANCE_INDEX___Configure">
@@ -1048,8 +1048,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var syncTrace   = __traceout &amp; 0x2;
       __var bufferTrace = __traceout &amp; 0x4;
       __var tracePortWidth = (__traceout &gt;&gt; 16) &amp; 0x3F;       // Parallel trace port size
-      __var clockRatio  = __traceclockout / __traceclockin &gt;= 1 ? (__traceclockout / __traceclockin) : 1;
-      __var prescaler   = TPIU___INSTANCE_INDEX___PRESCALER &gt; 0 ? TPIU___INSTANCE_INDEX___PRESCALER : clockRatio - 1;
+      __var prescaler   = TPIU___INSTANCE_INDEX___PRESCALER;
 
       // Helper variables
       __var ffcrValue = 0x00000000;
@@ -1057,20 +1056,42 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var savedAP = __ap;
 
       Message(0, "Begin CS_TPIU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
-
+    </block>
+    <control if="prescaler == 0">
+      <block>
+        prescaler = 1;                                               // A missing output clock selects no prescaling.
+      </block>
+      <control if="__traceclockout != 0 &amp;&amp; (swoTrace != 0 || syncTrace != 0)">
+        <block>
+          prescaler = __traceclockin / __traceclockout;
+        </block>
+        <control if="syncTrace != 0">
+          <block>
+            // Parallel TRACECLK runs at half the symbol rate.
+            prescaler = prescaler / 2;
+          </block>
+        </control>
+        <control if="prescaler == 0">
+          <block>
+            Message(2, "Error: TPIU trace clocks cannot produce a valid divisor (input %llu Hz, output %llu Hz)", __traceclockin, __traceclockout);
+          </block>
+        </control>
+      </control>
+    </control>
+    <block>
       __ap = TPIU___INSTANCE_INDEX___AP;                                // Set AP
     </block>
     <control if="swoTrace != 0">
       <block>
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0xFB0, LAR_KEY);      // TPIU Lock Access Register: Unlock TPIU
-        Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, prescaler);    // Program asynchronous clock prescaler.
+        Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, prescaler - 1); // Program asynchronous clock prescaler.
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000002);   // TPIU Selected Pin Protocol Register: Select SWO
       </block>
     </control>
     <control if="syncTrace != 0">
       <block>
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0xFB0, LAR_KEY);      // TPIU Lock Access Register: Unlock TPIU
-        Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, 2*prescaler);  // Program asynchronous clock prescaler.
+        Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, prescaler - 1); // Program asynchronous clock prescaler.
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x004, 1 &lt;&lt; (tracePortWidth - 1));  // TPIU Current Synchronous Port Width
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000000);   // TPIU Selected Pin Protocol Register: Select Sync Trace Port
         ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -2314,7 +2335,7 @@ cbuild-run:
       // TPIU
       __var TPIU___INSTANCE_INDEX___ADDRESS     = 0xE0040000;  // Default TPIU Location for single-core systems
       __var TPIU___INSTANCE_INDEX___AP          = 0x00000000;
-      __var TPIU___INSTANCE_INDEX___PRESCALER   = 0x00000000;  // Zero derives the prescaler from the trace clocks
+      __var TPIU___INSTANCE_INDEX___PRESCALER   = 0x00000000;  // Clock divider (ACPR + 1); zero derives it from the trace clocks
 
   debug-sequences:
 
@@ -2325,8 +2346,7 @@ cbuild-run:
             __var syncTrace   = __traceout & 0x2;
             __var bufferTrace = __traceout & 0x4;
             __var tracePortWidth = (__traceout >> 16) & 0x3F;  // Parallel trace port size
-            __var clockRatio  = __traceclockout / __traceclockin >= 1 ? (__traceclockout / __traceclockin) : 1;
-            __var prescaler   = TPIU___INSTANCE_INDEX___PRESCALER > 0 ? TPIU___INSTANCE_INDEX___PRESCALER : clockRatio - 1;
+            __var prescaler   = TPIU___INSTANCE_INDEX___PRESCALER;
             
             // Helper variables
             __var ffcrValue = 0x00000000;
@@ -2334,19 +2354,36 @@ cbuild-run:
             __var savedAP = __ap;
             
             Message(0, "Begin CS_TPIU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
-            
+        - if: 'prescaler == 0'
+          blocks:
+            - execute: |
+                prescaler = 1;  // A missing output clock selects no prescaling.
+            - if: '__traceclockout != 0 && (swoTrace != 0 || syncTrace != 0)'
+              blocks:
+                - execute: |
+                    prescaler = __traceclockin / __traceclockout;
+                - if: 'syncTrace != 0'
+                  blocks:
+                    - execute: |
+                        // Parallel TRACECLK runs at half the symbol rate.
+                        prescaler = prescaler / 2;
+                - if: 'prescaler == 0'
+                  blocks:
+                    - execute: |
+                        Message(2, "Error: TPIU trace clocks cannot produce a valid divisor (input %llu Hz, output %llu Hz)", __traceclockin, __traceclockout);
+        - execute: |
             __ap = TPIU___INSTANCE_INDEX___AP;                                // Set AP
         - if: 'swoTrace != 0'
           blocks:
             - execute: |
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0xFB0, LAR_KEY);     // TPIU Lock Access Register: Unlock TPIU
-                Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, prescaler);   // Program asynchronous clock prescaler.
+                Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, prescaler - 1); // Program asynchronous clock prescaler.
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000002);  // TPIU Selected Pin Protocol Register: Select SWO
         - if: 'syncTrace != 0'
           blocks:
             - execute: |
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0xFB0, LAR_KEY);                    // TPIU Lock Access Register: Unlock TPIU
-                Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, 2*prescaler);                // Program asynchronous clock prescaler.
+                Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x010, prescaler - 1);              // Program asynchronous clock prescaler.
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x004, 1 << (tracePortWidth - 1));  // TPIU Current Synchronous Port Width
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000000);                 // TPIU Selected Pin Protocol Register: Select Sync Trace Port
                 ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
