@@ -1367,7 +1367,10 @@ Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | [GTS](#glo
         <block>
           // RRD reads 32-bit trace-RAM words and advances the ETB RRP register.
           BufferRead(0, 0, ETB___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
-          bytesStreamed = BufferStreamOut(0, 0, bytesToRead, ".trace/TraceBufferOutput.TB.raw", 0, 0);
+          // Stream to single unnamed trace buffer in system by default, insert name if multiple
+          // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
+          // on TraceBufferSelected().
+          bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
           Message(0, "Streamed %d of %d ETB trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
@@ -1589,6 +1592,9 @@ Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | [GTS](#glo
         <block>
           // Read repeatedly from the TMC RRD register. The TMC advances RRP.
           BufferRead(0, 0, ETF___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
+          // Stream to single unnamed trace buffer in system by default, insert name if multiple
+          // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
+          // on TraceBufferSelected().
           bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
           Message(0, "Streamed %d of %d ETF trace bytes", bytesStreamed, bytesToRead);
         </block>
@@ -1877,7 +1883,10 @@ Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | [GTS](#glo
         <block>
           // Read through RRD, which advances RRP through the ETR trace memory.
           BufferRead(0, 0, ETR___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
-          bytesStreamed = BufferStreamOut(0, 0, bytesToRead, ".trace/TraceBufferOutput.TB.raw", 0, 0);
+          // Stream to single unnamed trace buffer in system by default, insert name if multiple
+          // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
+          // on TraceBufferSelected().
+          bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
           Message(0, "Streamed %d of %d ETR trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
@@ -2621,7 +2630,10 @@ cbuild-run:
                 - execute: |
                     // RRD reads 32-bit trace-RAM words and advances the ETB RRP register.
                     BufferRead(0, 0, ETB___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
-                    bytesStreamed = BufferStreamOut(0, 0, bytesToRead, ".trace/TraceBufferOutput.TB.raw", 0, 0);
+                    // Stream to single unnamed trace buffer in system by default, insert name if multiple
+                    // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
+                    // on TraceBufferSelected().
+                    bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
                     Message(0, "Streamed %d of %d ETB trace bytes", bytesStreamed, bytesToRead);
             - if: 'bytesToRead == 0'
               blocks:
@@ -2829,6 +2841,9 @@ cbuild-run:
                 - execute: |
                     // Read repeatedly from the TMC RRD register. The TMC advances RRP.
                     BufferRead(0, 0, ETF___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
+                    // Stream to single unnamed trace buffer in system by default, insert name if multiple
+                    // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
+                    // on TraceBufferSelected().
                     bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
                     Message(0, "Streamed %d of %d ETF trace bytes", bytesStreamed, bytesToRead);
             - if: 'bytesToRead == 0'
@@ -3105,7 +3120,10 @@ cbuild-run:
                 - execute: |
                     // Read through RRD, which advances RRP through the ETR trace memory.
                     BufferRead(0, 0, ETR___INSTANCE_INDEX___ADDRESS + 0x010, bytesToRead, 32);
-                    bytesStreamed = BufferStreamOut(0, 0, bytesToRead, ".trace/TraceBufferOutput.TB.raw", 0, 0);
+                    // Stream to single unnamed trace buffer in system by default, insert name if multiple
+                    // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
+                    // on TraceBufferSelected().
+                    bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
                     Message(0, "Streamed %d of %d ETR trace bytes", bytesStreamed, bytesToRead);
             - if: 'bytesToRead == 0'
               blocks:
