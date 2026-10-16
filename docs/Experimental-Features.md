@@ -1720,6 +1720,8 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
 
 #### Embedded Trace Router (ETR)
 
+Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU template.
+
 ~~~xml
 <!-- CMSIS-Pack ETR template. Replace __INSTANCE_INDEX__ with the stable numeric instance suffix. -->
 <cmsis-pack-trace-snippet component="ETR">
@@ -1932,8 +1934,10 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
 
 #### CoreSight Address Translation Unit (CATU)
 
+`__INSTANCE_INDEX__` identifies this CATU; `__ETR_INSTANCE_INDEX__` identifies its connected ETR.
+
 ~~~xml
-<!-- CMSIS-Pack CATU template. Replace __INSTANCE_INDEX__ with the stable numeric instance suffix. -->
+<!-- CMSIS-Pack CATU template. Replace __INSTANCE_INDEX__ with the CATU instance suffix and __ETR_INSTANCE_INDEX__ with the connected ETR instance suffix. -->
 <cmsis-pack-trace-snippet component="CATU">
   <debugvars>
     // CATU
@@ -1943,9 +1947,9 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     __var CATU___INSTANCE_INDEX___MODE                = 0x00000000;            // [0]: 1- Translate, 0 - Pass-through
     __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR    = 0x00000000;            // Lookup table in RAM for translation
     __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR_HI = 0x00000000;
-    __var CATU___INSTANCE_INDEX___INPUT_ADDR          = ETR___INSTANCE_INDEX___BUFFER_ADDRESS;    // Virtual base address
-    __var CATU___INSTANCE_INDEX___INPUT_ADDR_HI       = ETR___INSTANCE_INDEX___BUFFER_ADDRESS_HI;
-    __var CATU___INSTANCE_INDEX___AXI_CTRL = (((ETR___INSTANCE_INDEX___AXI_CTL &gt;&gt; 16) &amp; 0xF) &lt;&lt; 4) | (ETR___INSTANCE_INDEX___AXI_CTL &amp; 0x3); // [7:4]: ARCACHE, [1:0]: ARPROT (Secure|Privileged)
+    __var CATU___INSTANCE_INDEX___INPUT_ADDR          = ETR___ETR_INSTANCE_INDEX___BUFFER_ADDRESS;    // Virtual base address
+    __var CATU___INSTANCE_INDEX___INPUT_ADDR_HI       = ETR___ETR_INSTANCE_INDEX___BUFFER_ADDRESS_HI;
+    __var CATU___INSTANCE_INDEX___AXI_CTRL = (((ETR___ETR_INSTANCE_INDEX___AXI_CTL &gt;&gt; 16) &amp; 0xF) &lt;&lt; 4) | (ETR___ETR_INSTANCE_INDEX___AXI_CTL &amp; 0x3); // [7:4]: ARCACHE, [1:0]: ARPROT (Secure|Privileged)
     __var CATU___INSTANCE_INDEX___IRQEN               = 0x00000000;            // [0]: Enable/Disable
   </debugvars>
 
@@ -2975,6 +2979,8 @@ cbuild-run:
 
 #### Embedded Trace Router (ETR) `*.cbuild-run.yml`
 
+Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU template.
+
 ~~~yml
 cbuild-run:
 
@@ -3179,6 +3185,8 @@ cbuild-run:
 
 #### CoreSight Address Translation Unit (CATU) `*.cbuild-run.yml`
 
+`__INSTANCE_INDEX__` identifies this CATU; `__ETR_INSTANCE_INDEX__` identifies its connected ETR.
+
 ~~~yml
 cbuild-run:
 
@@ -3191,9 +3199,9 @@ cbuild-run:
       __var CATU___INSTANCE_INDEX___MODE                = 0x00000000;  // [0]: 1- Translate, 0 - Pass-through
       __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR    = 0x00000000;  // Lookup table in RAM for translation
       __var CATU___INSTANCE_INDEX___SCATTERLIST_ADDR_HI = 0x00000000;
-      __var CATU___INSTANCE_INDEX___INPUT_ADDR          = ETR___INSTANCE_INDEX___BUFFER_ADDRESS;    // Virtual base address
-      __var CATU___INSTANCE_INDEX___INPUT_ADDR_HI       = ETR___INSTANCE_INDEX___BUFFER_ADDRESS_HI;
-      __var CATU___INSTANCE_INDEX___AXI_CTRL = (((ETR___INSTANCE_INDEX___AXI_CTL >> 16) & 0xF) << 4) | (ETR___INSTANCE_INDEX___AXI_CTL & 0x3); // [7:4]: ARCACHE, [1:0]: ARPROT (Secure|Privileged)
+      __var CATU___INSTANCE_INDEX___INPUT_ADDR          = ETR___ETR_INSTANCE_INDEX___BUFFER_ADDRESS;    // Virtual base address
+      __var CATU___INSTANCE_INDEX___INPUT_ADDR_HI       = ETR___ETR_INSTANCE_INDEX___BUFFER_ADDRESS_HI;
+      __var CATU___INSTANCE_INDEX___AXI_CTRL = (((ETR___ETR_INSTANCE_INDEX___AXI_CTL >> 16) & 0xF) << 4) | (ETR___ETR_INSTANCE_INDEX___AXI_CTL & 0x3); // [7:4]: ARCACHE, [1:0]: ARPROT (Secure|Privileged)
       __var CATU___INSTANCE_INDEX___IRQEN               = 0x00000000;  // [0]: Enable/Disable
 
   debug-sequences:
