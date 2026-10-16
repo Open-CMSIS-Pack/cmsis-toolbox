@@ -2220,7 +2220,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
         __var syncTrace = __traceout &amp; 0x2;
         __var bufferTrace = __traceout &amp; 0x4;
       </block>
-      <!-- No trace operation is required for this mode. -->
       <!-- CMSIS-PACK-TRACE: INSERT-CORESIGHT-SNIPPET-CALLS-HERE -->
     </sequence>
     <sequence name="DoTraceCapture_Sync">
@@ -2245,7 +2244,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
         __var syncTrace = __traceout &amp; 0x2;
         __var bufferTrace = __traceout &amp; 0x4;
       </block>
-      <!-- No trace operation is required for this mode. -->
       <!-- CMSIS-PACK-TRACE: INSERT-CORESIGHT-SNIPPET-CALLS-HERE -->
     </sequence>
     <sequence name="DoTraceFlush_Sync">
@@ -2280,7 +2278,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
         __var syncTrace = __traceout &amp; 0x2;
         __var bufferTrace = __traceout &amp; 0x4;
       </block>
-      <!-- No trace operation is required for this mode. -->
       <!-- CMSIS-PACK-TRACE: INSERT-CORESIGHT-SNIPPET-CALLS-HERE -->
     </sequence>
     <sequence name="DoTraceStop_Sync">
@@ -2289,7 +2286,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
         __var syncTrace = __traceout &amp; 0x2;
         __var bufferTrace = __traceout &amp; 0x4;
       </block>
-      <!-- No trace operation is required for this mode. -->
       <!-- CMSIS-PACK-TRACE: INSERT-CORESIGHT-SNIPPET-CALLS-HERE -->
     </sequence>
     <sequence name="DoTraceStop_Buffer">
@@ -2298,7 +2294,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
         __var syncTrace = __traceout &amp; 0x2;
         __var bufferTrace = __traceout &amp; 0x4;
       </block>
-      <!-- No trace operation is required for this mode. -->
       <!-- CMSIS-PACK-TRACE: INSERT-CORESIGHT-SNIPPET-CALLS-HERE -->
     </sequence>
   </sequences>
