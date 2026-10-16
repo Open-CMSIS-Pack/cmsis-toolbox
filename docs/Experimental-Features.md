@@ -1046,7 +1046,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     <block>
       __var swoTrace    = __traceout &amp; 0x1;
       __var syncTrace   = __traceout &amp; 0x2;
-      __var bufferTrace = __traceout &amp; 0x4;
       __var tracePortWidth = (__traceout &gt;&gt; 16) &amp; 0x3F;       // Parallel trace port size
       __var prescaler   = TPIU___INSTANCE_INDEX___PRESCALER;
 
@@ -1095,7 +1094,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x004, 1 &lt;&lt; (tracePortWidth - 1));  // TPIU Current Synchronous Port Width
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000000);   // TPIU Selected Pin Protocol Register: Select Sync Trace Port
         ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
-        ffcrValue |= 0x00000002;                                        // Enable formatter
+        ffcrValue |= 0x00000002;                                        // Enable continuous formatting
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);    // TPIU FFCR
       </block>
     </control>
@@ -1108,7 +1107,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
   <sequence name="CS_TPIU___INSTANCE_INDEX___Capture">
     <block>
       // Helper variables
-      __var LAR_KEY   = 0xC5ACCE55;
       __var savedAP = __ap;
       __var ffcrValue = 0x00000000;
 
@@ -1117,7 +1115,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       // Configure TPIU if needed and enable formatter
       __ap = TPIU___INSTANCE_INDEX___AP;                            // Set AP
       ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
-      ffcrValue |= 0x00000002;                                      // Enable formatter
+      ffcrValue |= 0x00000002;                                      // Enable continuous formatting
       Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);  // TPIU FFCR
       __ap = savedAP;
       Message(0, "End CS_TPIU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
@@ -1250,7 +1248,9 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     </control>
     <block>
       // Configure
-      Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, 0x00000003);  // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
+      ffcrValue |= 0x00000003;                                     // FFCR: Enable Formatter and Trigger Insertion
+      Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x01C, ETB___INSTANCE_INDEX___TRIGGER_COUNT); // TRG: Number of words to capture after trigger
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);  // Init RwP
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x014, 0x00000000);  // Init RRP
@@ -1273,7 +1273,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
 
       __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
       ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
-      ffcrValue |= 0x00000002;                                      // FFCR: Enable Formatter
+      ffcrValue |= 0x00000003;                                      // FFCR: Enable Formatter and Trigger Insertion
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x01C, ETB___INSTANCE_INDEX___TRIGGER_COUNT); // TRG: Number of words to capture after trigger
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);  // Init RwP
@@ -1444,7 +1444,9 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       // Configure
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x028, 0x00000002);  // Set HW FIFO Mode
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);  // Watermark: Set threshold vacancy to 0 to use full buffer
-      Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, 0x00000003);  // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
+      ffcrValue |= 0x00000003;                                     // FFCR: Enable Formatter and Trigger Insertion
+      Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, 0x00000000);  // Clear PSCR, use other components for periodic sync requests
 
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);  // Enable ETF
@@ -1478,7 +1480,9 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       // Configure
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x028, 0x00000000);          // Set Circular Buffer mode
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);          // Watermark: Set threshold vacancy to 0 to use full buffer
-      Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, 0x00000003);          // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
+      ffcrValue |= 0x00000003;                                             // FFCR: Enable Formatter and Trigger Insertion
+      Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, 0x00000000);          // Init RRP
@@ -1501,7 +1505,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
 
       __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
       ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
-      ffcrValue |= 0x00000002;                                              // FFCR: Enable Formatter
+      ffcrValue |= 0x00000003;                                              // FFCR: Enable Formatter and Trigger Insertion
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
@@ -1699,7 +1703,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     <block>
       // Helper variables
       __var savedAP    = __ap;
-      __var value      = 0x00000000;
 
       Message(0, "Begin CS_REPLICATOR___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
 
@@ -1763,7 +1766,9 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       // Configure
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x028, 0x00000000);                                // Set Circular Buffer mode
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);                                // Watermark: Set threshold vacancy to 0 to use full buffer
-      Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, 0x00000003);                                // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
+      ffcrValue |= 0x00000003;                                                                   // FFCR: Enable Formatter and Trigger Insertion
+      Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x01C, ETR___INSTANCE_INDEX___TRIGGER_COUNT);      // TRG: Number of words to capture after trigger
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x308, ETR___INSTANCE_INDEX___SYNCCNT);            // Set PSCR
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x018, ETR___INSTANCE_INDEX___BUFFER_ADDRESS);     // Init RwP
@@ -1793,7 +1798,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
 
       __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
       ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
-      ffcrValue |= 0x00000002;                                                                    // FFCR: Enable Formatter
+      ffcrValue |= 0x00000003;                                                                    // FFCR: Enable Formatter and Trigger Insertion
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x01C, ETR___INSTANCE_INDEX___TRIGGER_COUNT);      // TRG: Number of words to capture after trigger
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x308, ETR___INSTANCE_INDEX___SYNCCNT);            // Set PSCR
@@ -2344,7 +2349,6 @@ cbuild-run:
         - execute: |
             __var swoTrace    = __traceout & 0x1;
             __var syncTrace   = __traceout & 0x2;
-            __var bufferTrace = __traceout & 0x4;
             __var tracePortWidth = (__traceout >> 16) & 0x3F;  // Parallel trace port size
             __var prescaler   = TPIU___INSTANCE_INDEX___PRESCALER;
             
@@ -2387,7 +2391,7 @@ cbuild-run:
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x004, 1 << (tracePortWidth - 1));  // TPIU Current Synchronous Port Width
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000000);                 // TPIU Selected Pin Protocol Register: Select Sync Trace Port
                 ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
-                ffcrValue |= 0x00000002;                                                      // Enable formatter
+                ffcrValue |= 0x00000002;                                                      // Enable continuous formatting
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);                  // TPIU FFCR
         - execute: |
             __ap = savedAP;
@@ -2397,7 +2401,6 @@ cbuild-run:
       blocks:
         - execute: |
             // Helper variables
-            __var LAR_KEY   = 0xC5ACCE55;
             __var savedAP = __ap;
             __var ffcrValue = 0x00000000;
             
@@ -2406,7 +2409,7 @@ cbuild-run:
             // Configure TPIU if needed and enable formatter
             __ap = TPIU___INSTANCE_INDEX___AP;                            // Set AP
             ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
-            ffcrValue |= 0x00000002;                                      // Enable formatter
+            ffcrValue |= 0x00000002;                                      // Enable continuous formatting
             Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);  // TPIU FFCR
             __ap = savedAP;
             Message(0, "End CS_TPIU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
@@ -2533,7 +2536,9 @@ cbuild-run:
                 etbStatus = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x00C);
         - execute: |
             // Configure
-            Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, 0x00000003);  // FFCR: Enable Formatter and Trigger Insertion
+            ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
+            ffcrValue |= 0x00000003;  // FFCR: Enable Formatter and Trigger Insertion
+            Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x01C, ETB___INSTANCE_INDEX___TRIGGER_COUNT); // TRG: Number of words to capture after trigger
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);  // Init RwP
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x014, 0x00000000);  // Init RRP
@@ -2554,7 +2559,7 @@ cbuild-run:
             
             __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
             ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
-            ffcrValue |= 0x00000002;                                      // FFCR: Enable Formatter
+            ffcrValue |= 0x00000003;                                      // FFCR: Enable Formatter and Trigger Insertion
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x01C, ETB___INSTANCE_INDEX___TRIGGER_COUNT); // TRG: Number of words to capture after trigger
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);  // Init RwP
@@ -2714,7 +2719,9 @@ cbuild-run:
             // Configure
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x028, 0x00000002);  // Set HW FIFO Mode
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);  // Watermark: Set threshold vacancy to 0 to use full buffer
-            Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, 0x00000003);  // FFCR: Enable Formatter and Trigger Insertion
+            ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
+            ffcrValue |= 0x00000003;  // FFCR: Enable Formatter and Trigger Insertion
+            Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, 0x00000000);  // Clear PSCR, use other components for periodic sync requests
             
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);  // Enable ETF
@@ -2746,7 +2753,9 @@ cbuild-run:
             // Configure
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x028, 0x00000000);          // Set Circular Buffer mode
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);          // Watermark: Set threshold vacancy to 0 to use full buffer
-            Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, 0x00000003);          // FFCR: Enable Formatter and Trigger Insertion
+            ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
+            ffcrValue |= 0x00000003;  // FFCR: Enable Formatter and Trigger Insertion
+            Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, 0x00000000);          // Init RRP
@@ -2767,7 +2776,7 @@ cbuild-run:
             
             __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
             ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
-            ffcrValue |= 0x00000002;                                              // FFCR: Enable Formatter
+            ffcrValue |= 0x00000003;                                              // FFCR: Enable Formatter and Trigger Insertion
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
@@ -2952,7 +2961,6 @@ cbuild-run:
         - execute: |
             // Helper variables
             __var savedAP    = __ap;
-            __var value      = 0x00000000;
             
             Message(0, "Begin CS_REPLICATOR___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
             
@@ -3016,7 +3024,9 @@ cbuild-run:
             // Configure
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x028, 0x00000000);                                // Set Circular Buffer mode
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);                                // Watermark: Set threshold vacancy to 0 to use full buffer
-            Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, 0x00000003);                                // FFCR: Enable Formatter and Trigger Insertion
+            ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
+            ffcrValue |= 0x00000003;  // FFCR: Enable Formatter and Trigger Insertion
+            Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x01C, ETR___INSTANCE_INDEX___TRIGGER_COUNT);      // TRG: Number of words to capture after trigger
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x308, ETR___INSTANCE_INDEX___SYNCCNT);            // Set PSCR
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x018, ETR___INSTANCE_INDEX___BUFFER_ADDRESS);     // Init RwP
@@ -3045,7 +3055,7 @@ cbuild-run:
 
             __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
             ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
-            ffcrValue |= 0x00000002;                                                                    // FFCR: Enable Formatter
+            ffcrValue |= 0x00000003;                                                                    // FFCR: Enable Formatter and Trigger Insertion
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x01C, ETR___INSTANCE_INDEX___TRIGGER_COUNT);      // TRG: Number of words to capture after trigger
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x308, ETR___INSTANCE_INDEX___SYNCCNT);            // Set PSCR
