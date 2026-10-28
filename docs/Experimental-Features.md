@@ -1094,8 +1094,10 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x004, 1 &lt;&lt; (tracePortWidth - 1));  // TPIU Current Synchronous Port Width
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000000);   // TPIU Selected Pin Protocol Register: Select Sync Trace Port
         ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
-        ffcrValue |= 0x00000002;                                        // Enable continuous formatting
-        Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);    // TPIU FFCR
+        ffcrValue |= 0x00000002;                                         // Enable continuous formatting
+        ffcrValue |= 0x00000400;                                         // FFCR: Insert trigger marker on flush completion (TrigFl)
+        ffcrValue |= 0x00001020;                                         // Flush and Stop Formatter on Trigger (FOnTrig + StopFl), Note: Not supported on smaller TPIUs!
+        Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);     // TPIU FFCR
       </block>
     </control>
     <block>
@@ -1116,6 +1118,8 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __ap = TPIU___INSTANCE_INDEX___AP;                            // Set AP
       ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
       ffcrValue |= 0x00000002;                                      // Enable continuous formatting
+      ffcrValue |= 0x00000400;                                      // FFCR: Insert trigger marker on flush completion (TrigFl)
+      ffcrValue |= 0x00001020;                                      // Flush and Stop Formatter on Trigger (FOnTrig + StopFl), Note: Not supported on smaller TPIUs!
       Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);  // TPIU FFCR
       __ap = savedAP;
       Message(0, "End CS_TPIU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
@@ -1141,7 +1145,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       <block>
         // Flush the TPIU formatter so pending packets leave the trace port.
         ffcrValue = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
-        ffcrValue &amp;= ~(0x00001040);   // Clear StopOnFlush and FlushOnManual
+        ffcrValue &amp;= ~(0x00001460);   // Clear FOnTrig, StopFl, FOnMan and TrigFl; do not insert a trigger packet on manual flush
         ffcrValue |= 0x00001000;          // Stop after the manual flush completes
         Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
         ffcrValue |= 0x00000040;          // Trigger manual flush
@@ -1249,7 +1253,9 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     <block>
       // Configure
       ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
-      ffcrValue |= 0x00000003;                                     // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue |= 0x00000003;                                      // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue |= 0x00000400;                                      // FFCR: Insert trigger marker on flush completion (TrigFl)
+      ffcrValue |= 0x00001020;                                      // Flush and Stop Formatter on Trigger (FOnTrig + StopFl), Note: Not supported on smaller TPIUs!
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x01C, ETB___INSTANCE_INDEX___TRIGGER_COUNT); // TRG: Number of words to capture after trigger
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);  // Init RwP
@@ -1274,6 +1280,8 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
       ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
       ffcrValue |= 0x00000003;                                      // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue |= 0x00000400;                                      // FFCR: Insert trigger marker on flush completion (TrigFl)
+      ffcrValue |= 0x00001020;                                      // Flush and Stop Formatter on Trigger (FOnTrig + StopFl), Note: Not supported on smaller TPIUs!
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x01C, ETB___INSTANCE_INDEX___TRIGGER_COUNT); // TRG: Number of words to capture after trigger
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);  // Init RwP
@@ -1299,7 +1307,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     <block>
       // Flush ETB first
       ffcrValue = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
-      ffcrValue &amp;= ~(0x00001040);    // Clear StopOnFlush and FlushOnManual
+      ffcrValue &amp;= ~(0x00001460);    // Clear FOnTrig, StopFl, FOnMan and TrigFl; do not insert a trigger packet on manual flush
       ffcrValue |= 0x00001000;           // Stop after the manual flush completes
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       ffcrValue |= 0x00000040;           // Trigger manual flush
@@ -1445,7 +1453,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x028, 0x00000002);  // Set HW FIFO Mode
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);  // Watermark: Set threshold vacancy to 0 to use full buffer
       ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
-      ffcrValue |= 0x00000003;                                     // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue |= 0x00000003;                                      // FFCR: Enable Formatter and Trigger Insertion
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, 0x00000000);  // Clear PSCR, use other components for periodic sync requests
 
@@ -1482,6 +1490,8 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);          // Watermark: Set threshold vacancy to 0 to use full buffer
       ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
       ffcrValue |= 0x00000003;                                             // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue |= 0x00000400;                                             // FFCR: Insert trigger marker on flush completion (TrigFl)
+      ffcrValue |= 0x00001020;                                             // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
@@ -1506,6 +1516,8 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
       ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
       ffcrValue |= 0x00000003;                                              // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue |= 0x00000400;                                              // FFCR: Insert trigger marker on flush completion (TrigFl)
+      ffcrValue |= 0x00001020;                                              // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
@@ -1531,7 +1543,7 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     <block>
       // Flush the ETF formatter and stop capture.
       ffcrValue = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
-      ffcrValue &amp;= ~(0x00001040);    // Clear StopOnFlush and FlushOnManual
+      ffcrValue &amp;= ~(0x00001460);    // Clear FOnTrig, StopFl, FOnMan and TrigFl; do not insert a trigger packet on manual flush
       ffcrValue |= 0x00001000;           // Stop after the manual flush completes
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       ffcrValue |= 0x00000040;           // Trigger manual flush
@@ -1770,6 +1782,8 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);                                // Watermark: Set threshold vacancy to 0 to use full buffer
       ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
       ffcrValue |= 0x00000003;                                                                   // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue |= 0x00000400;                                                                   // FFCR: Insert trigger marker on flush completion (TrigFl)
+      ffcrValue |= 0x00001020;                                                                   // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x01C, ETR___INSTANCE_INDEX___TRIGGER_COUNT);      // TRG: Number of words to capture after trigger
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x308, ETR___INSTANCE_INDEX___SYNCCNT);            // Set PSCR
@@ -1801,6 +1815,8 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
       __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
       ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
       ffcrValue |= 0x00000003;                                                                    // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue |= 0x00000400;                                                                    // FFCR: Insert trigger marker on flush completion (TrigFl)
+      ffcrValue |= 0x00001020;                                                                    // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x01C, ETR___INSTANCE_INDEX___TRIGGER_COUNT);      // TRG: Number of words to capture after trigger
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x308, ETR___INSTANCE_INDEX___SYNCCNT);            // Set PSCR
@@ -1834,7 +1850,7 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
     <block>
       // Flush the ETR formatter and stop capture.
       ffcrValue = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
-      ffcrValue &amp;= ~(0x00001040);    // Clear StopOnFlush and FlushOnManual
+      ffcrValue &amp;= ~(0x00001460);    // Clear FOnTrig, StopFl, FOnMan and TrigFl; do not insert a trigger packet on manual flush
       ffcrValue |= 0x00001000;           // Stop after the manual flush completes
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       ffcrValue |= 0x00000040;           // Trigger manual flush
@@ -2396,6 +2412,8 @@ cbuild-run:
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x0F0, 0x00000000);                 // TPIU Selected Pin Protocol Register: Select Sync Trace Port
                 ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
                 ffcrValue |= 0x00000002;                                                      // Enable continuous formatting
+                ffcrValue |= 0x00000400;                                                      // FFCR: Insert trigger marker on flush completion (TrigFl)
+                ffcrValue |= 0x00001020;                                                      // Flush and Stop Formatter on Trigger (FOnTrig + StopFl), Note: Not supported on smaller TPIUs!
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);                  // TPIU FFCR
         - execute: |
             __ap = savedAP;
@@ -2414,6 +2432,8 @@ cbuild-run:
             __ap = TPIU___INSTANCE_INDEX___AP;                            // Set AP
             ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue |= 0x00000002;                                      // Enable continuous formatting
+            ffcrValue |= 0x00000400;                                      // FFCR: Insert trigger marker on flush completion (TrigFl)
+            ffcrValue |= 0x00001020;                                      // Flush and Stop Formatter on Trigger (FOnTrig + StopFl), Note: Not supported on smaller TPIUs!
             Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);  // TPIU FFCR
             __ap = savedAP;
             Message(0, "End CS_TPIU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
@@ -2438,7 +2458,7 @@ cbuild-run:
             - execute: |
                 // Flush the TPIU formatter so pending packets leave the trace port.
                 ffcrValue = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
-                ffcrValue &= ~(0x00001040);  // Clear StopOnFlush and FlushOnManual
+                ffcrValue &= ~(0x00001460);  // Clear FOnTrig, StopFl, FOnMan and TrigFl; do not insert a trigger packet on manual flush
                 ffcrValue |= 0x00001000;     // Stop after the manual flush completes
                 Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
                 ffcrValue |= 0x00000040;     // Trigger manual flush
@@ -2542,6 +2562,8 @@ cbuild-run:
             // Configure
             ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue |= 0x00000003;  // FFCR: Enable Formatter and Trigger Insertion
+            ffcrValue |= 0x00000400;  // FFCR: Insert trigger marker on flush completion (TrigFl)
+            ffcrValue |= 0x00001020;  // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x01C, ETB___INSTANCE_INDEX___TRIGGER_COUNT); // TRG: Number of words to capture after trigger
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);  // Init RwP
@@ -2564,6 +2586,8 @@ cbuild-run:
             __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
             ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue |= 0x00000003;                                      // FFCR: Enable Formatter and Trigger Insertion
+            ffcrValue |= 0x00000400;                                      // FFCR: Insert trigger marker on flush completion (TrigFl)
+            ffcrValue |= 0x00001020;                                      // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x01C, ETB___INSTANCE_INDEX___TRIGGER_COUNT); // TRG: Number of words to capture after trigger
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);  // Init RwP
@@ -2587,7 +2611,7 @@ cbuild-run:
         - execute: |
             // Flush ETB first
             ffcrValue = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
-            ffcrValue &= ~(0x00001040);  // Clear StopOnFlush and FlushOnManual
+            ffcrValue &= ~(0x00001460);  // Clear FOnTrig, StopFl, FOnMan and TrigFl; do not insert a trigger packet on manual flush
             ffcrValue |= 0x00001000;     // Stop after the manual flush completes
             Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             ffcrValue |= 0x00000040;     // Trigger manual flush
@@ -2759,6 +2783,8 @@ cbuild-run:
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);          // Watermark: Set threshold vacancy to 0 to use full buffer
             ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue |= 0x00000003;  // FFCR: Enable Formatter and Trigger Insertion
+            ffcrValue |= 0x00000400;  // FFCR: Insert trigger marker on flush completion (TrigFl)
+            ffcrValue |= 0x00001020;  // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
@@ -2781,6 +2807,8 @@ cbuild-run:
             __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
             ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue |= 0x00000003;                                              // FFCR: Enable Formatter and Trigger Insertion
+            ffcrValue |= 0x00000400;                                              // FFCR: Insert trigger marker on flush completion (TrigFl)
+            ffcrValue |= 0x00001020;                                              // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x308, ETF___INSTANCE_INDEX___PSCR_CircularBuffer);  // Set PSCR
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x018, 0x00000000);          // Init RwP
@@ -2804,7 +2832,7 @@ cbuild-run:
         - execute: |
             // Flush the ETF formatter and stop capture.
             ffcrValue = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
-            ffcrValue &= ~(0x00001040);  // Clear StopOnFlush and FlushOnManual
+            ffcrValue &= ~(0x00001460);  // Clear FOnTrig, StopFl, FOnMan and TrigFl; do not insert a trigger packet on manual flush
             ffcrValue |= 0x00001000;     // Stop after the manual flush completes
             Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             ffcrValue |= 0x00000040;     // Trigger manual flush
@@ -3032,6 +3060,8 @@ cbuild-run:
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);                                // Watermark: Set threshold vacancy to 0 to use full buffer
             ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue |= 0x00000003;  // FFCR: Enable Formatter and Trigger Insertion
+            ffcrValue |= 0x00000400;  // FFCR: Insert trigger marker on flush completion (TrigFl)
+            ffcrValue |= 0x00001020;  // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x01C, ETR___INSTANCE_INDEX___TRIGGER_COUNT);      // TRG: Number of words to capture after trigger
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x308, ETR___INSTANCE_INDEX___SYNCCNT);            // Set PSCR
@@ -3062,6 +3092,8 @@ cbuild-run:
             __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
             ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
             ffcrValue |= 0x00000003;                                                                    // FFCR: Enable Formatter and Trigger Insertion
+            ffcrValue |= 0x00000400;                                                                    // FFCR: Insert trigger marker on flush completion (TrigFl)
+            ffcrValue |= 0x00001020;                                                                    // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x01C, ETR___INSTANCE_INDEX___TRIGGER_COUNT);      // TRG: Number of words to capture after trigger
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x308, ETR___INSTANCE_INDEX___SYNCCNT);            // Set PSCR
@@ -3094,7 +3126,7 @@ cbuild-run:
         - execute: |
             // Flush the ETR formatter and stop capture.
             ffcrValue = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
-            ffcrValue &= ~(0x00001040);  // Clear StopOnFlush and FlushOnManual
+            ffcrValue &= ~(0x00001460);  // Clear FOnTrig, StopFl, FOnMan and TrigFl; do not insert a trigger packet on manual flush
             ffcrValue |= 0x00001000;     // Stop after the manual flush completes
             Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
             ffcrValue |= 0x00000040;     // Trigger manual flush
