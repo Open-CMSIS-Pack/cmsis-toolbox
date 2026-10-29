@@ -1000,7 +1000,8 @@ ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
 Each bit in <code>privileged:</code> represents a block of eight channels, i.e. value <code>0x2</code> configures that access to ITM channles 8-15 must be privileged.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>ITM channel 0 is often used for <code>printf</code> output. This output should be routed to an output window or debug console instead of the trace analysis components.</p>
+<p>ITM channel 0 is often used for <code>printf</code> output. However, the trace analysis components treat channel 0 like any other ITM channel.
+It is up to the individual debug tool to route the <code>printf</code> data to an output window or a debug console.</p>
 </div>
 <h4 id="pcsampling"><code>pcsampling:</code></h4>
 <p>The <code>pcsampling:</code> node enables DWT PC sampling.</p>
@@ -1452,7 +1453,6 @@ Each bit in <code>privileged:</code> represents a block of eight channels, i.e. 
 <h3 id="out-of-scope">Out-of-Scope</h3>
 <ul>
 <li>SEGGER RTT, SystemView, and STDIO UART output are not part of trace capture and use separate output paths.</li>
-<li>ITM channel 0 <code>printf</code> output should not be routed to trace analysis components. It should be shown in an output window or debug console.</li>
 </ul>
 <h2 id="configure-trace-generation">Configure Trace Generation</h2>
 <p>The file <a href="#file-structure-of-ctraceyml"><code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code></a> is the user-facing configuration file for the trace generation. The CMSIS-Debugger implements a graphical user interface that is shown below. Each processor has a separate configuration section.</p>
