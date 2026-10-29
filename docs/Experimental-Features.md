@@ -445,7 +445,8 @@ Each bit in `enable:` represents one ITM channel.
 Each bit in `privileged:` represents a block of eight channels, i.e. value `0x2` configures that access to ITM channles 8-15 must be privileged.
 
 !!! Note
-    ITM channel 0 is often used for `printf` output. This output should be routed to an output window or debug console instead of the trace analysis components.
+    ITM channel 0 is often used for `printf` output. However, the trace analysis components treat channel 0 like any other ITM channel.
+    It is up to the individual debug tool to route the `printf` data to an output window or a debug console.
 
 #### `pcsampling:`
 
@@ -682,7 +683,6 @@ Subsequent releases may extend this initial solution to:
 ### Out-of-Scope
 
 - SEGGER RTT, SystemView, and STDIO UART output are not part of trace capture and use separate output paths.
-- ITM channel 0 `printf` output should not be routed to trace analysis components. It should be shown in an output window or debug console.
 
 ## Configure Trace Generation
 
