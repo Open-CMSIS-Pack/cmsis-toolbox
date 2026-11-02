@@ -1,6 +1,6 @@
 [
     {
-        "runs_on":"macos-14",
+        "runs_on":"macos-15",
         "target":"darwin",
         "arch": "arm64",
         "binary_extension": "",
