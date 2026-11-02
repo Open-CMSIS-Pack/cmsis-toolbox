@@ -992,7 +992,191 @@ ITM local timestamps, ETM timestamp packets, and ETM cycle-count timing are dist
 - [Cortex-M55 PMU](https://developer.arm.com/documentation/101051/0101/Performance-Monitoring-Unit-Extension)
 - [Cortex-M85 PMU](https://developer.arm.com/documentation/101924/0101/Performance-Monitoring-Unit-Extension)
 
-## Appendix - Trace Sequence Snippets
+## Appendix A: Adding Trace Support to a DFP
+
+A Device Family Pack (DFP) describes the device's trace capabilities and supplies the debug sequences needed to configure its trace paths. The pack developer establishes the device-specific requirements, integrates the reusable component sequences, and decides which settings applications may change.
+
+### Use CMSIS Skills for Trace Support
+
+[CMSIS skills](https://github.com/Open-CMSIS-Pack/cmsis-skills) provide instructions for an AI agent to research device requirements, assemble trace sequences, and check proposed Pack changes. With the skills described in [CMSIS Skills PR #23](https://github.com/Open-CMSIS-Pack/cmsis-skills/pull/23) installed, an agent can select and coordinate them from a developer prompt. You do not need to invoke each skill individually. For example:
+
+> Add trace support to `<vendor>.<pack>.pdsc` for `<device scope>`, using `<device documentation>`. Support `<expected trace outputs and sink instances>` (for example, SWO via TPIU and trace-buffer capture via ETB, ETF, or ETR).
+
+The diagram shows how skills establish device requirements, complete missing debug definitions, and assemble the [trace sequence snippets in Appendix B](#appendix-b-trace-sequence-snippets). It follows the workflow from the developer prompt to Pack integration and hardware validation, with developer reviews along the way.
+
+```mermaid
+flowchart LR
+  request["Developer prompt"] --> trace["trace-knowledge"]
+  trace --> prepare["prepare-pdsc-<br/>sequence-change"]
+  prepare --> generate["generate-trace-<br/>sequences"]
+  generate --> apply["apply-confirmed-<br/>pdsc-proposal"]
+  apply --> validate["validate-pdsc-<br/>sequence-xml"]
+  validate --> integrate["Pack integration<br/>and hardware validation"]
+  classDef activity stroke-dasharray:2 3;
+  class request,integrate activity;
+```
+
+Supporting skills cover debug access (`debug-access-knowledge`), PDSC debug definitions (`generate-debug-description`), and runtime choices (`manage-debug-variables`). `resolve-official-device-documentation` recovers vendor sources; `pyocd-detect-debug-topology`, after `check-pyocd-availability`, supplies supplementary target observations; and `board-debug-knowledge` documents requested board configurations.
+
+Documentation research and sequence assembly can quickly fill the chat context. If needed, run skills separately and compact between approvals. Preserve the PDSC, device scope, knowledge and proposal records in the project-root `.agent-artifacts/` directory, open questions, and confirmed decisions. Fresh chats can reuse supplied knowledge files; keep candidate creation and edits in one conversation. Reconfirm proposals if their exact content or approval cannot be recovered.
+
+This workflow has not yet been trialled with the document indexing currently being developed in the CMSIS Solution extension for the CMSIS Developer Agent.
+
+The following sections explain the information to supply and the integration decisions to make before publishing the Pack.
+
+### Gather Device Information
+
+Select the existing PDSC file, the family, subfamily, device, or variants to support, and the affected [processors](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_processor). Use `trace-knowledge` to establish the following information for each supported trace path before assembling sequences.
+
+Information | What to look up
+:-----------|:----------------
+Device scope and trace paths | Supported processors and variants; complete source-to-sink routes for SWO, parallel trace, and trace-buffer modes. Include each source, funnel, replicator, FIFO, and sink or output component that participates in a route.
+Component access | Component instances, versions where relevant, base addresses, and debug-port/access-port paths. Establish power, reset, unlock, authentication, and security prerequisites where they affect component access.
+Trace clocks | Clock sources and frequencies, gates, muxes, and dividers. Determine the actual clock driving each output component, its relationship to processor clocks, and supported output rates. Establish which clocks must run for discovery and operation, and which settings must be restored after reset or low-power transitions.
+Trace pins | Available pin groups, alternate-function encodings, and supported port widths. Check relevant pad settings, including drive strength, slew rate, pulls, and voltage domains, together with pin conflicts and package restrictions.
+Route selection | Source-selection controls, funnel input mappings, routing muxes, and required operating modes. For example, an ETF may serve as a FIFO on one path and as a circular-buffer sink on another.
+Sink and memory requirements | Device-specific capture, flush, and readout constraints. For trace written to system memory, establish usable memory, buffer size and alignment, initialization, ownership, access permissions, and applicable AXI, cache, or address-translation settings.
+Global timestamps | Where supported, the generator's location and access path, clock source and frequency, distribution to trace sources, and relevant reset or debug-halt behavior.
+
+Start with the device reference manual's debug and trace, clock, reset, power, security, pin-multiplexing, and memory chapters. Use datasheets for package and electrical restrictions. Existing Pack content, SDF/SVD descriptions, and authoritative vendor SDK headers or initialization code can supply additional evidence, particularly for pin encodings omitted from a manual. Check that each source applies to the selected device and revision.
+
+Record the ordered component route and the operating requirements separately for each mode. A detected component does not establish its connection to a particular source or its applicability to every mode.
+
+The skill presents the available, unavailable, and unresolved trace paths for your review. If information could not be established, it identifies the affected path, the missing or conflicting prerequisite, and any documentation you need to supply. Review and correct that summary before confirming it for sequence assembly. Confirmation does not bypass missing prerequisites; assembly waits until the required device information is resolved.
+
+Topology discovery on a target can supplement documentation, but does not establish missing clock, pin, routing, or sink behavior. Components may also be inaccessible until device-specific power or unlock steps have completed.
+
+If the debugger's access path is unclear, `debug-access-knowledge` establishes the processor associations and debug-port/access-port mappings needed by the trace implementation. It presents unresolved access requirements for your review before sequence assembly continues.
+
+Board schematics, connector descriptions, and jumper tables help define optional configurations. Keep those choices separate from device-level capability: the pins exposed on one board do not define the trace support of the whole DFP.
+
+### Prepare the PDSC Description
+
+Before assembling trace sequences, establish the PDSC debug access definitions and trace capability declarations. The debug-port and access-port definitions determine how the sequences select each component's access path. Review inherited definitions and add missing entries where required.
+
+PDSC content | Integration check
+:------------|:------------------
+[`<debugconfig>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugconfig) and [`<debug>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debug) | Preserve or complete connection defaults and processor-to-access-port mappings required by the verified topology. **Note:** For ADIv6-based systems, always include `dormant="true"` in `<debugconfig>` to enable dormant-state protocol switching.
+[`<debugport>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugport), [`<accessportV1>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_accessportV1), and [`<accessportV2>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_accessportV2) | Add explicit topology definitions where required. Keep sequence access selection consistent: descriptions with access-port elements use `__apid` instead of `__ap`. **Note:** `__apid` is the preferred approach for new descriptions. It supports access-port selection in both ADIv5- and ADIv6-based systems, providing a more scalable model.
+[`<trace>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace) | Declare the supported outputs and buffers at the applicable device-tree level. This element applies to all processor connections.
+[`<serialwire/>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace_serialwire) | Declare serial wire trace output when supported.
+[`<traceport>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace_traceport) | Declare supported parallel trace-port widths. The `width` attribute is a capability bit mask, not the selected width. **Note:** Parallel trace-port capture is currently not supported by pyOCD.
+[`<tracebuffer>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_trace_tracebuffer) | Declare supported buffers. Use unique names when multiple buffers exist. **Note:** The `start` and `size` attributes are currently not used by the experimental trace implementation.
+[`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) | Identify the existing global declarations and the additions needed by the selected snippets; merge their verified initial values during sequence assembly. Add the configuration-file association if providing a user-editable `.dbgconf`.
+[`<sequences traceSetup="full">`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequences) | Select full setup only after the sequences configure every required sink and data-path component. Changing the attribute alone does not complete a legacy implementation. See [trace setup modes](#tracesetup-attribute-full-vs-legacy-setup).
+
+For illustration, a device supporting SWO, parallel port widths of 1, 2, and 4 bits, and one named buffer could declare:
+
+```xml
+<trace>
+  <serialwire/>
+  <traceport width="0x0000000B"/>
+  <tracebuffer name="ETB_0"/>
+</trace>
+```
+
+Use the buffer name consistently in configuration, [`TraceBufferSelected`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#DebugFunctions), and the trace-buffer destination of [`BufferStreamOut`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#DebugFunctions). See [Selecting Trace Buffers](Experimental-Features.md#selecting-trace-buffers). Buffer declarations do not reserve application memory or configure the hardware.
+
+Place shared definitions at the highest device-tree level where they are valid, with device or variant differences below it. Review the effective inherited configuration for each supported device. In particular, a lower-level `debugvars` definition replaces the inherited set, so retain all declarations needed by the applicable sequences. Use the [`Pname` attribute of `<sequence>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence) where processor-specific implementations are required.
+
+### `traceSetup` Attribute: Full vs Legacy Setup
+
+The [`traceSetup` attribute](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequences) determines who configures the trace sinks and data paths:
+
+- `legacy`: The debugger uses built-in knowledge of CoreSight components to configure and shut down the trace sinks and data paths. The DFP's `TraceStart` and `TraceStop` sequences provide device-specific setup and teardown, such as clock and pin configuration. `TraceStart` runs before the debugger's component setup; `TraceStop` runs after its component shutdown. Omitting `traceSetup` currently selects this mode.
+- `full`: The DFP's debug sequences implement all required trace sink and data-path setup and shutdown. The debugger executes these sequences and is not expected to configure the components using built-in knowledge. The sequences also implement the capture, flush, and buffer-readout behavior required by the supported use cases. This approach scales to more devices and use cases, allowing device-specific and use-case-specific configurations through Pack sequences without changes to the debugger itself.
+
+Legacy setup is supported only for very simple single-core configurations. Multi-core systems and more recent Trace Memory Controller components, including ETF, ETR, and newer ETB implementations from CoreSight SoC-600 onward, require `traceSetup="full"` with their support implemented in sequences. Debuggers are no longer expected to provide built-in support for these configurations and their use cases. Use full setup for new DFP trace support; the skill and scaffold described below assemble this sequence-based implementation.
+
+### Assemble and Review the Trace Sequences
+
+With the device knowledge and PDSC debug access definitions established, use `generate-trace-sequences` with the selected PDSC scope. Review the proposed component instances, routes, access paths, variable values, and device-specific extension regions against that evidence. Treat template addresses and defaults as starting points that require verification.
+
+Before writing PDSC candidate files, the skill presents the complete XML proposal and its intended placement for your confirmation. Required functional deviations from the component templates are explained and approved separately. Changes to `.dbgconf` also require explicit confirmation of the proposed file changes. The validated candidates leave the original files unchanged; review and integrate them into the Pack yourself.
+
+For manual assembly, start from the [Full Trace Scaffold](Experimental-Features.md#full-trace-scaffold), select the snippets needed by each route, and resolve instance placeholders consistently. Merge their global variable declarations into [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) and their `<sequence>` elements into [`<sequences traceSetup="full">`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequences) at the device-tree level chosen for the trace implementation. The snippet and scaffold wrapper elements are template containers; do not copy them into the PDSC. Calls to component helpers use the specification's [`Sequence` function](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#DebugFunctions).
+
+The [predefined trace sequences](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#default_sequences) have these responsibilities in a full implementation:
+
+Sequence | Responsibility
+:--------|:---------------
+`TraceStart` | Perform device-specific setup and configure the selected trace sinks and data paths, including after reset.
+`TraceCapture` | Prepare the selected route for the next capture. The scaffold flushes the active route once before preparing its components.
+`TraceFlush` | Drain pending trace data, then read and forward a selected on-chip buffer where applicable.
+`TraceStop` | Shut down the selected trace sinks and data paths, then perform device-specific teardown.
+
+Keep clock, pin, access-enable, and device-specific routing work in the appropriate extension regions. Some newer TPIU implementations have registers in the trace clock domain rather than the debug clock domain. Accessing these registers during component detection while the trace clock is disabled can stall the access and lock up the bus. Enable the required trace clocks in [`DebugDeviceUnlock`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#default_sequences) before discovery, and restore the required clock setup in `TraceStart`, since reset may have changed it. Preserve verified legacy device-specific setup when migrating to full sequences.
+
+Follow the scaffold's lifecycle ordering: component capture helpers do not flush the whole route again, and stop helpers do not repeat a flush already performed by `TraceFlush`. Account for shared components in multi-processor systems so that starting or stopping one processor's capture does not unintentionally disrupt another active path. Configuration of generated ITM, DWT, or instruction-trace data remains part of the separate [trace-generation configuration](Experimental-Features.md#configure-trace-generation).
+
+### Classify the Variables
+
+The snippets use variables both to simplify retargeting and to express configuration choices. A global declaration does not by itself make a value part of the user interface.
+
+Category | Examples | Pack developer's decision
+:--------|:---------|:--------------------------
+Assembly placeholders | `__INSTANCE_INDEX__`, connected ETR instance index | Resolve during assembly; these are not runtime settings.
+Fixed device facts | Component addresses and AP selection | Verify and retain internally. Keeping these as variables simplifies template maintenance without requiring `.dbgconf` entries.
+Integration policy | Funnel masks, synchronization intervals, AXI/cache attributes | Establish values for supported paths. Expose a choice only if documented use cases require it and its effects are understood.
+User configuration | Pin group, memory-backed buffer address and size, optional prescaler override | Expose the supported subset with clear defaults, constraints, and dependencies.
+
+The same parameter can belong to different categories in different devices. A buffer location may be fixed for one implementation and application-dependent for another. Avoid exposing raw register fields when a small set of documented choices is sufficient.
+
+Use the debugger-provided [`__traceout`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceout) for selected output modes and parallel-port width. Use [`__traceclockin`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceclockin) and [`__traceclockout`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/debug_description.html#__traceclockout) for the configured trace clocks rather than adding duplicate user variables. The declared input clock must match the device's actual clock setup. For pyOCD, the mapping from [`trace:` settings and trace clocks](pyOCD-Debugger.md#trace-clocks) to these variables is documented separately.
+
+### Choose the User Configuration Interface
+
+Once the supported paths and internal values are settled, decide which settings to expose through a `.dbgconf` file. For each exposed setting, document its purpose, allowed values, units, default, applicable modes, and dependencies. A supported default need not be optimal for every application. For memory-backed trace, explain who initializes and reserves the memory, its alignment and size restrictions, and how to prevent overlap with application code or data.
+
+Declare globals with unsigned literal initializers in `debugvars`; the specification does not allow expressions in these initializers. Compute derived values in sequence-local variables where needed. Globals are read-only during sequence execution. A [configuration file](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#debugvars_configfile) assigns values to existing globals and does not declare new ones. Include [Configuration Wizard annotations](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/configWizard.html) for the selected user options.
+
+The following example illustrates a device with two verified trace pin groups. Its device-specific setup must implement both choices; the names do not describe any particular device or board.
+
+```xml
+<debugvars configfile="Debug/ExampleDevice.dbgconf" version="1.0.0">
+  __var TracePinSelection = 0;
+</debugvars>
+```
+
+The Pack's `Debug/ExampleDevice.dbgconf` could contain:
+
+```c
+// Version: 1.0.0
+// <<< Use Configuration Wizard in Context Menu >>>
+
+// <h>Trace Pin Setup
+// <o> Trace Pin Group
+//   <0=> Default pin group
+//   <1=> Alternative pin group
+// <i> Select the group connected to the trace connector on your board.
+// <i> Default: 0. Applies to trace output through device pins.
+TracePinSelection = 0;
+// </h>
+
+// <<< end of configuration section >>>
+```
+
+The `configfile` path is relative to the Pack root; the file is copied into the project for user configuration. Supply `version` when using `configfile`, and increment it when global variable names or defaults change, as required by the `debugvars` specification. Explain any required migration of existing project settings when releasing that update.
+
+In CMSIS-Toolbox projects, the [`debugger:` configuration](YML-Input-Format.md#debugger) in a [`target-set:`](YML-Input-Format.md#target-set) selects trace communication through adapter-specific options such as pyOCD's [`trace:`](pyOCD-Debugger.md#trace). A project can select its configuration file with `dbgconf:`. Configuration of the trace data to generate remains in [`*.ctrace.yml`](Experimental-Features.md#file-structure-of-ctraceyml).
+
+The generated [`*.cbuild-run.yml`](YML-CBuild-Format.md#run-and-debug-management) carries the effective runtime description: [`debug-topology.trace-sinks`](YML-CBuild-Format.md#debug-topology) identifies trace outputs and buffer names, [`debug-vars.vars`](YML-CBuild-Format.md#debug-vars) supplies global defaults, [`debug-sequences`](YML-CBuild-Format.md#debug-sequences) carries executable sequences, and [`debug-sequences-conf.trace-setup`](YML-CBuild-Format.md#debug-sequences-conf) selects full or legacy setup. Review that output when checking Pack integration; project regeneration can overwrite direct edits to it.
+
+For pyOCD, project overrides are represented by [`device-settings:`](pyOCD-Debugger.md#device-settings). CMSIS-Toolbox converts a referenced `.dbgconf` into those settings. If `device-settings:` is supplied explicitly, the also-specified `.dbgconf` is ignored; unassigned settings retain their DFP defaults. This is the documented pyOCD integration behavior; check the corresponding adapter documentation for other debuggers.
+
+### Review and Validate the Pack
+
+Before publishing, check the following:
+
+- Declared capabilities, buffer names, processor mappings, and inherited definitions match the supported device variants and verified routes.
+- Every retained helper call resolves, template placeholders are replaced, and full setup covers the selected sinks and data paths.
+- Defaults are supported, configuration options describe valid choices, and trace-buffer memory cannot conflict with the intended application allocation.
+- XML/PDSC syntax, sequence structure, configuration-file references, and generated runtime settings pass the applicable structural checks.
+- Device tests cover each supported path, reset and reconnection, repeated capture and flush/readout, and relevant low-power or multi-processor use cases. Exercise the exposed pin and buffer settings on suitable hardware and check for missing or duplicated trace data.
+
+XML/schema checks and inspection of generated files establish structural consistency. Successful capture on the intended device, board, and debug adapter establishes operational trace support. Record which paths and configurations have been tested and which still require validation.
+
+## Appendix B: Trace Sequence Snippets
 
 
 The following snippets describe reusable CoreSight trace components. Each relevant component provides the three life-cycle sequences `Configure`, `Capture`, and `Flush`, plus `ReadBuffer` where a component stores trace data locally. The snippets also provide `debugvars` that simplify retargeting to a specific SoC and user configuration. The variables cover values such as component addresses, access ports, and component-specific options.
