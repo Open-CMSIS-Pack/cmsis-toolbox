@@ -1745,7 +1745,7 @@ Scaffold helper | Required CATU/ETR call order
 `DoTraceRead_Buffer` | `CS_ETR_<e>_Read_CircularBuffer`, with CATU still enabled
 `DoTraceStop_Buffer` | `CS_CATU_<c>_Stop`, after ETR flush and any requested readback
 
-Enable CATU before ETR Configure or Capture. Before reconfiguring CATU, complete ETR Flush so ETR is disabled and ready. Flush ETR before CATU to finish its final trace writes; stop CATU only after ETR flush and any requested readback. ETR Flush already disables ETR, so no separate ETR Stop helper is needed.
+Configure CATU only while ETR is disabled and ready; complete ETR Flush before reconfiguration. CATU must remain enabled for ETR `RRD` readback, including pass-through mode. ETR Flush already disables ETR, so no separate ETR Stop helper is needed.
 
 ~~~xml
 <!-- CMSIS-Pack ETR template. Replace __INSTANCE_INDEX__ with the stable numeric instance suffix. -->
