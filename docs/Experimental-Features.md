@@ -1781,9 +1781,9 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x028, 0x00000000);                                // Set Circular Buffer mode
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x034, 0x00000000);                                // Watermark: Set threshold vacancy to 0 to use full buffer
       ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
-      ffcrValue |= 0x00000003;                                                                   // FFCR: Enable Formatter and Trigger Insertion
-      ffcrValue |= 0x00000400;                                                                   // FFCR: Insert trigger marker on flush completion (TrigFl)
-      ffcrValue |= 0x00001020;                                                                   // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
+      ffcrValue |= 0x00000003;                                                                    // FFCR: Enable Formatter and Trigger Insertion
+      ffcrValue |= 0x00000400;                                                                    // FFCR: Insert trigger marker on flush completion (TrigFl)
+      ffcrValue |= 0x00001020;                                                                    // Flush and Stop Formatter on Trigger (FOnTrig + StopFl)
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x01C, ETR___INSTANCE_INDEX___TRIGGER_COUNT);      // TRG: Number of words to capture after trigger
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x308, ETR___INSTANCE_INDEX___SYNCCNT);            // Set PSCR
@@ -1796,6 +1796,7 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0xED0, ETR___INSTANCE_INDEX___AXI_CTL1);           // Init AXICTL1
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x03C, ETR___INSTANCE_INDEX___BUFFER_ADDRESS_HI);  // Init RWPHI
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x038, ETR___INSTANCE_INDEX___BUFFER_ADDRESS_HI);  // Init RRPHI
+      Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x00C, 0x00000020);                                // STS: Clear sticky MemErr (write 1) and Full (write 0)
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);                                // Enable ETR
     </block>
     <block>
@@ -1829,6 +1830,7 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0xED0, ETR___INSTANCE_INDEX___AXI_CTL1);           // Init AXICTL1
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x03C, ETR___INSTANCE_INDEX___BUFFER_ADDRESS_HI);  // Init RWPHI
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x038, ETR___INSTANCE_INDEX___BUFFER_ADDRESS_HI);  // Init RRPHI
+      Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x00C, 0x00000020);                                // STS: Clear sticky MemErr (write 1) and Full (write 0)
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);                                // Enable ETR
       __ap = savedAP;
 
@@ -1880,6 +1882,11 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
     <control while="(etrStatus &amp; 0x4) == 0" info="Wait for TMCReady" timeout="100">
       <block>
         etrStatus = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x00C);
+      </block>
+    </control>
+    <control if="(etrStatus &amp; 0x20) != 0">
+      <block>
+        Message(1, "Warning: ETR memory error detected (STS.MemErr = 1)");
       </block>
     </control>
     <block>
