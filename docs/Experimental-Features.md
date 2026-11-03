@@ -995,14 +995,15 @@ ITM local timestamps, ETM timestamp packets, and ETM cycle-count timing are dist
 ## Appendix - Trace Sequence Snippets
 
 
-The following snippets describe reusable CoreSight trace components. Each relevant component provides the three life-cycle sequences `Configure`, `Capture`, and `Flush`, plus `ReadBuffer` where a component stores trace data locally. The snippets also provide `debugvars` that simplify retargeting to a specific SoC and user configuration. The variables cover values such as component addresses, access ports, and component-specific options.
+The following snippets describe reusable CoreSight trace components. Each relevant component provides the three life-cycle sequences `Configure`, `Capture`, and `Flush`, plus `ReadBuffer` where a component stores trace data locally and optional `Stop` for component shutdown. The snippets also provide `debugvars` that simplify retargeting to a specific SoC and user configuration. The variables cover values such as component addresses, access ports, and component-specific options.
 
 Function | What it is | Usually called from
 :--------|:-----------|:-------------------
 `Configure` | Sets up trace, for example after reset or debug-connection recovery. | `TraceStart`
 `Capture` | Runs immediately before capture starts; it may configure trace trigger delays or a trace-sink formatter. | `TraceCapture`
-`Flush` | Flushes the trace bus after capture stops. It may also run before capture to start from a freshly flushed trace system. | `TraceFlush`; TPIU/ETF capture sequences
+`Flush` | Flushes the trace bus after capture stops. It may also run before capture to start from a freshly flushed trace system. | `TraceFlush` and `TraceCapture`, through `DoTraceFlush`
 `ReadBuffer` | Reads a trace buffer and forwards its data to the debugger. | `TraceFlush`, after `Flush`
+`Stop` | Shuts down a component after flushing and any requested buffer readback. | `TraceStop`
 
 Some components support different operating modes and therefore provide sequence variants in addition to the base life-cycle function. Variant names use an underscore between the function and variant, for example `Configure_HWFIFO` and `Capture_CircularBuffer`.
 
@@ -1022,7 +1023,7 @@ Embedded Trace FIFO (ETF) | `0` | `0xE0042000` | `Configure_HWFIFO`, `Configure_
 Trace Funnel | `0` | `0xE0043000` | `Configure` | [Trace Funnel](#trace-funnel)
 Trace Replicator | `0` | `0x00000000` | `Configure` | [Trace Replicator](#trace-replicator)
 Embedded Trace Router (ETR) | `0` | `0x00000000` | `Configure_CircularBuffer`, `Capture_CircularBuffer`, `Flush`, `Read_CircularBuffer` | [ETR](#embedded-trace-router-etr)
-CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `Capture`, `Flush` | [CATU](#coresight-address-translation-unit-catu)
+CoreSight Address Translation Unit (CATU) | `0` | `0x00000000` | `Configure`, `Capture`, `Flush`, `Stop` | [CATU](#coresight-address-translation-unit-catu)
 CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | [GTS](#coresight-global-timestamp-generator-gts)
 
 ### PDSC (XML) Implementations
@@ -1734,6 +1735,18 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
 
 Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU template.
 
+For an ETR buffer accessed through CATU, use the following call order. `<c>` and `<e>` identify the CATU and its connected ETR.
+
+Scaffold helper | Required CATU/ETR call order
+:---------------|:----------------------------
+`DoTraceStart_Buffer` | `CS_CATU_<c>_Configure`, then `CS_ETR_<e>_Configure_CircularBuffer`
+`DoTraceCapture_Buffer` | `CS_CATU_<c>_Capture`, then `CS_ETR_<e>_Capture_CircularBuffer`
+`DoTraceFlush_Buffer` | `CS_ETR_<e>_Flush`, then `CS_CATU_<c>_Flush`
+`DoTraceRead_Buffer` | `CS_ETR_<e>_Read_CircularBuffer`, with CATU still enabled
+`DoTraceStop_Buffer` | `CS_CATU_<c>_Stop`, after ETR flush and any requested readback
+
+Enable CATU before ETR Configure or Capture. Before reconfiguring CATU, complete ETR Flush so ETR is disabled and ready. Flush ETR before CATU to finish its final trace writes; stop CATU only after ETR flush and any requested readback. ETR Flush already disables ETR, so no separate ETR Stop helper is needed.
+
 ~~~xml
 <!-- CMSIS-Pack ETR template. Replace __INSTANCE_INDEX__ with the stable numeric instance suffix. -->
 <cmsis-pack-trace-snippet component="ETR">
@@ -1959,6 +1972,8 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
 
 `__INSTANCE_INDEX__` identifies this CATU; `__ETR_INSTANCE_INDEX__` identifies its connected ETR.
 
+CATU must be enabled to read the ETR buffer through the register interface (`RRD`), even in pass-through mode. `Flush` therefore re-enables CATU after draining; `Stop` leaves it disabled. Follow the [CATU/ETR call order](#embedded-trace-router-etr).
+
 ~~~xml
 <!-- CMSIS-Pack CATU template. Replace __INSTANCE_INDEX__ with the CATU instance suffix and __ETR_INSTANCE_INDEX__ with the connected ETR instance suffix. -->
 <cmsis-pack-trace-snippet component="CATU">
@@ -2032,7 +2047,7 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
       __ap = CATU___INSTANCE_INDEX___AP; // Set AP
 
       // Keep initial values and re-enable CATU before next capture.
-      // Clears any remaining error bits.
+      // In Translate mode, error bits clear only on a disabled-to-enabled transition.
       Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
 
       status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
@@ -2048,7 +2063,7 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
     </block>
   </sequence>
 
-  <sequence name="CS_CATU___INSTANCE_INDEX___Flush" info="Flush any outstanding memory transactions">
+  <sequence name="CS_CATU___INSTANCE_INDEX___Flush" info="Drain outstanding memory transactions and re-enable CATU">
     <block>
       // Helper variables
       __var savedAP = __ap;
@@ -2057,7 +2072,8 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
       Message(0, "Begin CS_CATU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
       __ap = CATU___INSTANCE_INDEX___AP; // Set AP
 
-      // Disable CATU before configuration
+      // ETR must have completed its flush before CATU is disabled.
+      // Disable CATU to drain outstanding memory transactions.
       Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000000);
 
       status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
@@ -2068,8 +2084,42 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
       </block>
     </control>
     <block>
+      // Keep the memory path available for ETR.RRD readback and the next capture.
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000001);
+      status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+    </block>
+    <control while="(status &amp; 0x0100) != 0" info="Wait for READY cleared" timeout="100">
+      <block>
+        status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+      </block>
+    </control>
+    <block>
       __ap = savedAP;
       Message(0, "End CS_CATU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+    </block>
+  </sequence>
+
+  <sequence name="CS_CATU___INSTANCE_INDEX___Stop" info="Drain outstanding memory transactions and leave CATU disabled">
+    <block>
+      // Helper variables
+      __var savedAP = __ap;
+      __var status = 0x00000000;
+
+      Message(0, "Begin CS_CATU___INSTANCE_INDEX___Stop @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
+      __ap = CATU___INSTANCE_INDEX___AP; // Set AP
+
+      // ETR must have completed its flush and any requested readback before CATU is disabled.
+      Write32(CATU___INSTANCE_INDEX___ADDRESS + 0x000, 0x00000000);
+      status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+    </block>
+    <control while="(status &amp; 0x0100) == 0" info="Wait for READY" timeout="100">
+      <block>
+        status = Read32(CATU___INSTANCE_INDEX___ADDRESS + 0x100);
+      </block>
+    </control>
+    <block>
+      __ap = savedAP;
+      Message(0, "End CS_CATU___INSTANCE_INDEX___Stop @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -2121,6 +2171,10 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
 ~~~
 
 #### Full Trace Scaffold
+
+`TraceCapture` calls `DoTraceFlush` once before preparing the next capture. `TraceFlush` calls `DoTraceFlush` before `DoTraceRead_Buffer`. Call `TraceStop` for component shutdown after flushing and any requested readback.
+
+For ETR buffers accessed through CATU, follow the [CATU/ETR call order](#embedded-trace-router-etr).
 
 ~~~xml
 <cmsis-pack-trace-scaffold use-case="full-trace">
@@ -2266,6 +2320,7 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
         __var bufferTrace = __traceout &amp; 0x4;
       </block>
       <!-- CMSIS-PACK-TRACE: INSERT-CORESIGHT-SNIPPET-CALLS-HERE -->
+      <!-- For CATU/ETR: CATU Configure, then ETR Configure_CircularBuffer; ETR must initially be disabled and ready. -->
     </sequence>
     <sequence name="DoTraceCapture_SWO">
       <block>
@@ -2290,6 +2345,7 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
         __var bufferTrace = __traceout &amp; 0x4;
       </block>
       <!-- CMSIS-PACK-TRACE: INSERT-CORESIGHT-SNIPPET-CALLS-HERE -->
+      <!-- For CATU/ETR: CATU Capture, then ETR Capture_CircularBuffer; DoTraceFlush has already completed. -->
     </sequence>
     <sequence name="DoTraceFlush_SWO">
       <block>
@@ -2316,6 +2372,7 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
       </block>
       <!-- CMSIS-PACK-TRACE: INSERT-CORESIGHT-SNIPPET-CALLS-HERE -->
       <!-- Actual component flush calls only. Do not read a trace buffer here. -->
+      <!-- For CATU/ETR: ETR Flush, then CATU Flush; CATU Flush must leave CATU enabled. -->
     </sequence>
     <sequence name="DoTraceRead_Buffer">
       <block>
@@ -2324,6 +2381,7 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
         __var bufferTrace = __traceout &amp; 0x4;
       </block>
       <!-- CMSIS-PACK-TRACE: INSERT-CORESIGHT-SNIPPET-CALLS-HERE -->
+      <!-- For CATU/ETR: ETR Read_CircularBuffer; keep CATU enabled throughout ETR.RRD readback. -->
     </sequence>
     <sequence name="DoTraceStop_SWO">
       <block>
@@ -2348,6 +2406,7 @@ Use this ETR’s instance index for `__ETR_INSTANCE_INDEX__` in a connected CATU
         __var bufferTrace = __traceout &amp; 0x4;
       </block>
       <!-- CMSIS-PACK-TRACE: INSERT-CORESIGHT-SNIPPET-CALLS-HERE -->
+      <!-- For CATU/ETR: CATU Stop, after ETR flush and any requested readback have completed. -->
     </sequence>
   </sequences>
 </cmsis-pack-trace-scaffold>
