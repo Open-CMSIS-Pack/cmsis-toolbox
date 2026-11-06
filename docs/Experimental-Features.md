@@ -1054,8 +1054,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var ffcrValue = 0x00000000;
       __var LAR_KEY   = 0xC5ACCE55;
       __var savedAP = __ap;
-
-      Message(0, "Begin CS_TPIU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
     </block>
     <control if="prescaler == 0">
       <block>
@@ -1103,7 +1101,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_TPIU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1113,8 +1110,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var savedAP = __ap;
       __var ffcrValue = 0x00000000;
 
-      Message(0, "Begin CS_TPIU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
-
       // Configure TPIU if needed and enable formatter
       __ap = TPIU___INSTANCE_INDEX___AP;                            // Set AP
       ffcrValue  = Read32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -1123,7 +1118,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       ffcrValue |= 0x00001020;                                      // Flush and Stop Formatter on Trigger (FOnTrig + StopFl), Note: Not supported on smaller TPIUs!
       Write32(TPIU___INSTANCE_INDEX___ADDRESS + 0x304, ffcrValue);  // TPIU FFCR
       __ap = savedAP;
-      Message(0, "End CS_TPIU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1133,8 +1127,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var savedAP     = __ap;
       __var ffcrValue   = 0x00000000;
       __var ffsrValue   = 0x00000000;
-
-      Message(0, "Begin CS_TPIU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
 
       __ap = TPIU___INSTANCE_INDEX___AP;  // Set AP
     </block>
@@ -1171,7 +1163,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_TPIU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", TPIU___INSTANCE_INDEX___ADDRESS, TPIU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1194,8 +1185,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var savedAP   = __ap;
       __var prescaler =    0;
       __var swoMode   =    2;                                      // Fixed SWO-UART for now
-
-      Message(0, "Begin CS_SWO___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", SWO___INSTANCE_INDEX___ADDRESS, SWO___INSTANCE_INDEX___AP);
     </block>
     <control if="__traceclockout != 0">
       <control if="__traceclockin &lt; __traceclockout">
@@ -1214,7 +1203,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       Write32(SWO___INSTANCE_INDEX___ADDRESS + 0x010, prescaler);  // Prescaler
       Write32(SWO___INSTANCE_INDEX___ADDRESS + 0x0F0, swoMode);    // Enable SWO-UART
       __ap = savedAP;
-      Message(0, "End CS_SWO___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", SWO___INSTANCE_INDEX___ADDRESS, SWO___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1238,8 +1226,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var savedAP = __ap;
       __var ffcrValue = 0x00000000;
       __var etbStatus = 0x00000000;
-
-      Message(0, "Begin CS_ETB___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
       __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
 
       // Configure ETB
@@ -1266,7 +1252,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     </block>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETB___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1275,8 +1260,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       // Helper variables
       __var ffcrValue = 0x00000000;
       __var savedAP = __ap;
-
-      Message(0, "Begin CS_ETB___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
       __ap = ETB___INSTANCE_INDEX___AP;                             // Set AP
       ffcrValue  = Read32(ETB___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -1289,8 +1272,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x014, 0x00000000);  // Init RRP
       Write32(ETB___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);  // Enable ETB
       __ap = savedAP;
-
-      Message(0, "End CS_ETB___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1300,8 +1281,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var savedAP     = __ap;
       __var ffcrValue   = 0x00000000;
       __var etbStatus   = 0x00000000;
-
-      Message(0, "Begin CS_ETB___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
       __ap = ETB___INSTANCE_INDEX___AP;  // Set AP
     </block>
@@ -1342,7 +1321,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETB___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1357,8 +1335,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var wordsToRead   = 0x00000000;
       __var bytesToRead   = 0x00000000;
       __var bytesStreamed = 0x00000000;
-
-      Message(0, "Begin CS_ETB___INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
 
       __ap = ETB___INSTANCE_INDEX___AP; // Set AP
 
@@ -1401,7 +1377,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
           // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
           // on TraceBufferSelected().
           bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-          Message(0, "Streamed %u of %u ETB trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
       <control if="bytesToRead == 0">
@@ -1412,7 +1387,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETB___INSTANCE_INDEX___Read_Buffer @0x%08X, AP 0x%08X", ETB___INSTANCE_INDEX___ADDRESS, ETB___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1436,8 +1410,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var savedAP = __ap;
       __var ffcrValue = 0x00000000;
       __var etfStatus = 0x00000000;
-
-      Message(0, "Begin CS_ETF___INSTANCE_INDEX___Configure_HWFIFO @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
       __ap = ETF___INSTANCE_INDEX___AP;                             // Set AP
 
       // Configure ETF to HW FIFO for Sync Trace
@@ -1462,7 +1434,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     </block>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETF___INSTANCE_INDEX___Configure_HWFIFO @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1472,8 +1443,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var savedAP = __ap;
       __var ffcrValue = 0x00000000;
       __var etfStatus = 0x00000000;
-
-      Message(0, "Begin CS_ETF___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
       __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
 
       // Configure ETF for circular-buffer trace capture.
@@ -1502,7 +1471,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     </block>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETF___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1511,8 +1479,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       // Helper variables
       __var ffcrValue = 0x00000000;
       __var savedAP = __ap;
-
-      Message(0, "Begin CS_ETF___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
       __ap = ETF___INSTANCE_INDEX___AP;                                     // Set AP
       ffcrValue  = Read32(ETF___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -1525,8 +1491,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, 0x00000000);          // Init RRP
       Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);          // Enable ETF
       __ap = savedAP;
-
-      Message(0, "End CS_ETF___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1536,8 +1500,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var savedAP     = __ap;
       __var ffcrValue   = 0x00000000;
       __var etfStatus   = 0x00000000;
-
-      Message(0, "Begin CS_ETF___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
 
       __ap = ETF___INSTANCE_INDEX___AP;  // Set AP
     </block>
@@ -1578,7 +1540,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETF___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1593,8 +1554,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var bytesToRead   = 0x00000000;
       __var bytesStreamed = 0x00000000;
 
-      Message(0, "Begin CS_ETF___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
-
       __ap = ETF___INSTANCE_INDEX___AP; // Set AP
 
       // TMC RSZ is expressed in 32-bit words. RRP and RWP are byte offsets.
@@ -1608,7 +1567,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
         <block>
           // STS.Full distinguishes a wrapped/full buffer from an empty buffer
           // when the read and write pointers are equal.
-          Message(0, "ETF Circular Buffer wrapped around");
           bytesToRead = bufferSize;
           // RWP identifies the oldest retained trace after the buffer wraps.
           Write32(ETF___INSTANCE_INDEX___ADDRESS + 0x014, writePointer); // Rebase RRP for chronological output
@@ -1634,7 +1592,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
           // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
           // on TraceBufferSelected().
           bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-          Message(0, "Streamed %u of %u ETF trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
       <control if="bytesToRead == 0">
@@ -1645,7 +1602,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETF___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETF___INSTANCE_INDEX___ADDRESS, ETF___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1674,8 +1630,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       __var funnelMask = 0x00000000;
       __var value      = 0x00000000;
       __var applyFunnelMask = 1;     // Always apply by default, adjust if for example funnel inputs need to be turned off for SWO trace
-
-      Message(0, "Begin CS_FUNNEL___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
     </block>
     <control if="applyFunnelMask">
       <block>
@@ -1693,7 +1647,6 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       Write32(FUNNEL___INSTANCE_INDEX___ADDRESS + 0x000, value);  // Configure CoreSight Trace Funnel to enable selected trace sources
 
       __ap = savedAP;
-      Message(0, "End CS_FUNNEL___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", FUNNEL___INSTANCE_INDEX___ADDRESS, FUNNEL___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1717,15 +1670,12 @@ CoreSight Global Timestamp Generator (GTS) | `0` | `0x00000000` | `Configure` | 
       // Helper variables
       __var savedAP    = __ap;
 
-      Message(0, "Begin CS_REPLICATOR___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
-
       __ap = REPLICATOR___INSTANCE_INDEX___AP; // Set AP
 
       Write32(REPLICATOR___INSTANCE_INDEX___ADDRESS + 0x000, REPLICATOR___INSTANCE_INDEX___ID_FILTER0);
       Write32(REPLICATOR___INSTANCE_INDEX___ADDRESS + 0x004, REPLICATOR___INSTANCE_INDEX___ID_FILTER1);
 
       __ap = savedAP;
-      Message(0, "End CS_REPLICATOR___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", REPLICATOR___INSTANCE_INDEX___ADDRESS, REPLICATOR___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1776,8 +1726,6 @@ Configure CATU only while ETR is disabled and ready; complete ETR Flush before r
       __var savedAP = __ap;
       __var ffcrValue = 0x00000000;
       __var etrStatus = 0x00000000;
-
-      Message(0, "Begin CS_ETR___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
       __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
 
       // Configure ETR for circular-buffer trace capture.
@@ -1814,7 +1762,6 @@ Configure CATU only while ETR is disabled and ready; complete ETR Flush before r
     </block>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETR___INSTANCE_INDEX___Configure_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1823,8 +1770,6 @@ Configure CATU only while ETR is disabled and ready; complete ETR Flush before r
       // Helper variables
       __var ffcrValue = 0x00000000;
       __var savedAP = __ap;
-
-      Message(0, "Begin CS_ETR___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
 
       __ap = ETR___INSTANCE_INDEX___AP;                                                           // Set AP
       ffcrValue  = Read32(ETR___INSTANCE_INDEX___ADDRESS + 0x304);
@@ -1846,8 +1791,6 @@ Configure CATU only while ETR is disabled and ready; complete ETR Flush before r
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x00C, 0x00000020);                                // STS: Clear sticky MemErr (write 1) and Full (write 0)
       Write32(ETR___INSTANCE_INDEX___ADDRESS + 0x020, 0x00000001);                                // Enable ETR
       __ap = savedAP;
-
-      Message(0, "End CS_ETR___INSTANCE_INDEX___Capture_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1857,8 +1800,6 @@ Configure CATU only while ETR is disabled and ready; complete ETR Flush before r
       __var savedAP     = __ap;
       __var ffcrValue   = 0x00000000;
       __var etrStatus   = 0x00000000;
-
-      Message(0, "Begin CS_ETR___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
 
       __ap = ETR___INSTANCE_INDEX___AP;  // Set AP
     </block>
@@ -1904,7 +1845,6 @@ Configure CATU only while ETR is disabled and ready; complete ETR Flush before r
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETR___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -1918,8 +1858,6 @@ Configure CATU only while ETR is disabled and ready; complete ETR Flush before r
       __var writePointer  = 0x0000000000000000;
       __var bytesToRead   = 0x00000000;
       __var bytesStreamed = 0x00000000;
-
-      Message(0, "Begin CS_ETR___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
       __ap = ETR___INSTANCE_INDEX___AP; // Set AP
 
       // ETR RSZ is expressed in 32-bit words. RRP and RWP identify the valid capture range.
@@ -1951,7 +1889,6 @@ Configure CATU only while ETR is disabled and ready; complete ETR Flush before r
           // named buffers specified in PDSC. Decide which xxx_Read_Buffer sequence to call based
           // on TraceBufferSelected().
           bytesStreamed = BufferStreamOut(0, 0, bytesToRead, "", 1, 0);
-          Message(0, "Streamed %u of %u ETR trace bytes", bytesStreamed, bytesToRead);
         </block>
       </control>
       <control if="bytesToRead == 0">
@@ -1962,7 +1899,6 @@ Configure CATU only while ETR is disabled and ready; complete ETR Flush before r
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_ETR___INSTANCE_INDEX___Read_CircularBuffer @0x%08X, AP 0x%08X", ETR___INSTANCE_INDEX___ADDRESS, ETR___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
@@ -1997,8 +1933,6 @@ CATU must be enabled to read the ETR buffer through the register interface (`RRD
       __var savedAP = __ap;
       __var status = 0x00000000;
 
-      Message(0, "Begin CS_CATU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
-
       __ap = CATU___INSTANCE_INDEX___AP;                                                              // Set AP
 
       // Disable CATU before configuration
@@ -2032,7 +1966,6 @@ CATU must be enabled to read the ETR buffer through the register interface (`RRD
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_CATU___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -2041,8 +1974,6 @@ CATU must be enabled to read the ETR buffer through the register interface (`RRD
       // Helper variables
       __var savedAP = __ap;
       __var status = 0x00000000;
-
-      Message(0, "Begin CS_CATU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
 
       __ap = CATU___INSTANCE_INDEX___AP; // Set AP
 
@@ -2059,7 +1990,6 @@ CATU must be enabled to read the ETR buffer through the register interface (`RRD
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_CATU___INSTANCE_INDEX___Capture @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -2068,8 +1998,6 @@ CATU must be enabled to read the ETR buffer through the register interface (`RRD
       // Helper variables
       __var savedAP = __ap;
       __var status = 0x00000000;
-
-      Message(0, "Begin CS_CATU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
       __ap = CATU___INSTANCE_INDEX___AP; // Set AP
 
       // ETR must have completed its flush before CATU is disabled.
@@ -2095,7 +2023,6 @@ CATU must be enabled to read the ETR buffer through the register interface (`RRD
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_CATU___INSTANCE_INDEX___Flush @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -2104,8 +2031,6 @@ CATU must be enabled to read the ETR buffer through the register interface (`RRD
       // Helper variables
       __var savedAP = __ap;
       __var status = 0x00000000;
-
-      Message(0, "Begin CS_CATU___INSTANCE_INDEX___Stop @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
       __ap = CATU___INSTANCE_INDEX___AP; // Set AP
 
       // ETR must have completed its flush and any requested readback before CATU is disabled.
@@ -2119,7 +2044,6 @@ CATU must be enabled to read the ETR buffer through the register interface (`RRD
     </control>
     <block>
       __ap = savedAP;
-      Message(0, "End CS_CATU___INSTANCE_INDEX___Stop @0x%08X, AP 0x%08X", CATU___INSTANCE_INDEX___ADDRESS, CATU___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 
@@ -2145,8 +2069,6 @@ CATU must be enabled to read the ETR buffer through the register interface (`RRD
       __var savedAP     = __ap;
       __var cntcrValue  = 1;                              // CNTCR.EN=1
 
-      Message(0, "Begin CS_GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
-
       __ap   = GTS___INSTANCE_INDEX___AP;
       Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x000, 0x0);                // Disable timestamp generator
     </block>
@@ -2164,7 +2086,6 @@ CATU must be enabled to read the ETR buffer through the register interface (`RRD
       Write32(GTS___INSTANCE_INDEX___ADDRESS + 0x000, cntcrValue);         // Write control bits and enable generator
 
       __ap = savedAP;
-      Message(0, "End CS_GTS___INSTANCE_INDEX___Configure @0x%08X, AP 0x%08X", GTS___INSTANCE_INDEX___ADDRESS, GTS___INSTANCE_INDEX___AP);
     </block>
   </sequence>
 </cmsis-pack-trace-snippet>
