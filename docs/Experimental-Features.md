@@ -1118,6 +1118,51 @@ Name | Offset | `value:` | `mask:`
 
 The `DWT_CTRL` disable mask preserves `CYCCNTENA` because application software may use the DWT cycle counter. It also preserves `CYCDISS` on Armv8-M processors with the Security Extension. This bit controls whether the counter increments in Secure state.
 
+### ETMv3
+
+The following ETMv3 register values are used for `ctrace-disable:` on Cortex-M processors:
+
+Name | Offset | `value:` | `mask:`
+:----|:-------|:--------|:----
+`ETMCR` | `0x000` | `0x00000411` | `None`
+`ETMTRIGGER` | `0x008` | `0x0000406F` | `None`
+`ETMSR` | `0x010` | `0x00000000` | `0x0000000C`
+`ETMTEEVR` | `0x020` | `0x0000406F` | `None`
+`ETMTECR1` | `0x024` | `0x00000000` | `None`
+`ETMTESSEICR` | `0x1F0` | `0x00000000` | `None`
+`ETMTSEVR` (Cortex-M4/M23 only) | `0x1F8` | `0x0000406F` | `None`
+
+`ETMTRIGGER`, `ETMTEEVR`, and `ETMTSEVR` select the always-false event.
+
+For configuration, clear `ETMCR[0]` (Power down), set `ETMCR[10]` (Programming) in a separate write, and wait for `ETMSR[1] = 1`. Apply the configuration, then clear Programming and wait for `ETMSR[1] = 0`.
+
+For power down, set `ETMCR[10]` (Programming) and wait for `ETMSR[1] = 1`. Apply the `ETMCR` disable settings with `ETMCR[0] = 0`, program all other disable registers, then set `ETMCR[0]` (Power down).
+
+### ETMv4
+
+The following ETMv4 register values are used for `ctrace-disable:` on Cortex-M processors. For Cortex-M7, this table covers the instruction-only ETM configuration. These are disabled settings; most programmable fields have an UNKNOWN value after trace unit reset.
+
+Name | Offset | `value:` | `mask:`
+:----|:-------|:--------|:----
+`TRCPRGCTLR` | `0x004` | `0x00000000` | `None`
+`TRCCONFIGR` | `0x010` | `0x00000001` | `None`
+`TRCEVENTCTL0R` | `0x020` | `0x00000000` | `None`
+`TRCEVENTCTL1R` | `0x024` | `0x00000000` | `None`
+`TRCSTALLCTLR` | `0x02C` | `0x00000000` | `None`
+`TRCTSCTLR` | `0x030` | `0x00000000` | `None`
+`TRCCCCTLR` | `0x038` | `0x00000004` | `None`
+`TRCTRACEIDR` | `0x040` | `0x00000000` | `None`
+`TRCVICTLR` | `0x080` | `0x00000000` | `None`
+`TRCVIPCSSCTLR` | `0x08C` | `0x00000000` | `None`
+`TRCRSCTLR<n>` (`<n>` = 2 or 3) | `0x200 + <n>*0x004` | `0x00000000` | `None`
+`TRCPDCR` | `0x310` | `0x00000000` | `None`
+
+`TRCCCCTLR.THRESHOLD` uses the minimum cycle-count threshold of `4`, documented in `TRCIDR3.CCITMIN` for Cortex-M7, M33, M52, M55, and M85.
+
+For configuration, set `TRCPDCR.PU` to request power and wait for `TRCPDSR.POWER = 1`. Clear `TRCPRGCTLR.EN` and wait for `TRCSTATR.IDLE = 1`. Apply the configuration, then set `TRCPRGCTLR.EN` and wait for `TRCSTATR.IDLE = 0`.
+
+For power down, clear `TRCPRGCTLR.EN` and wait for `TRCSTATR.IDLE = 1`. Program all other disable registers except `TRCPDCR`, then clear `TRCPDCR.PU` to release the power-up request and permit power down.
+
 ## Processor-Specific Trace Features
 
 TODO: Discard most of the following chapters. Condensed in table further above.
