@@ -846,21 +846,21 @@ The file [`.cmsis/<solution-set>.ctrace.yml`](#file-structure-of-ctraceyml) is t
 
 The available options in the user interface depend on the Cortex-M processor and on the selected [trace stream channel](#trace-stream-channels) that is used to obtain trace. Depending on the processor implemention, option setting may get rejected at the level of pyTS or pyOCD.
 
-Option                 | M0 | M0+ | M23 | M3, M4 | M7, M33 | M52, M55 | M85
-:----------------------|:--:|:---:|:---:|:------:|:-------:|:--------:|:------:
-Timestamps             | -  | -   | -   | yes    | yes     | yes      | yes
-Exceptions             | -  | -   | -   | yes    | yes     | yes      | yes
-Event Counters         | -  | -   | -   | yes    | yes     | yes      | yes
-PMU Event              | -  | -   | -   | no     | no      | yes      | yes
-Instrumentation Trace  | -  | -   | -   | yes    | yes     | yes      | yes
-Instruction Trace      | -  | with TB | with TB | with TB | with TB | with TB | with TB
-DWT Comparators (total) | 2 | 2 | 4 | 4 | 4 | 8 | 8
-&nbsp;&nbsp;– DWT Data Trace | - | - | - | 4 | 4 | 4 | 4
-&nbsp;&nbsp;– Start, Stop | - | 2 | 4 | 4 | 4 | 8 | 8
-&nbsp;&nbsp;– Trace Halt | - | - | 2 | 2 | 4 | 8 | 8
-PC Sampling            | -  | -   | -   | yes    | yes     | yes      | yes
-Time Synchronization   | -  | -   | -   | yes    | yes     | yes      | yes
-Stream Synchronization | -  | -   | -   | yes    | yes     | yes      | yes
+Option                 | M0 | M0+ | M23 | M3, M4 | M7, M33 | M52, M55, M85
+:----------------------|:--:|:---:|:---:|:------:|:-------:|:-------------:
+Timestamps             | -  | -   | -   | yes    | yes     | yes
+Exceptions             | -  | -   | -   | yes    | yes     | yes
+Event Counters         | -  | -   | -   | yes    | yes     | yes
+PMU Event              | -  | -   | -   | no     | no      | yes
+Instrumentation Trace  | -  | -   | -   | yes    | yes     | yes
+Instruction Trace      | -  | with TB | with TB | with TB | with TB | with TB
+DWT Comparators (total) | 2 | 2 | 4 | 4 | 4 | 8
+&nbsp;&nbsp;– DWT Data Trace | - | - | - | 4 | 4 | 4
+&nbsp;&nbsp;– Start, Stop | - | 2 | 4 | 4 | 4 | 8
+&nbsp;&nbsp;– Trace Halt | - | - | 2 | 2 | 4 | 8
+PC Sampling            | -  | -   | -   | yes    | yes     | yes
+Time Synchronization   | -  | -   | -   | yes    | yes     | yes
+Stream Synchronization | -  | -   | -   | yes    | yes     | yes
 
 !!! Note
     - The available Event Counters depend on the Cortex-M processor.
