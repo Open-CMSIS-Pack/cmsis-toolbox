@@ -495,23 +495,23 @@ The `instructions:` node enables ETM instruction trace with the following fixed 
 
 | Feature | ETMv3 | ETMv4 |
 |---|---|---|
-| Conditional non-branch instructions | Always on | `TRCCONFIGR[10:8] = 0` (none; no OpenCSD support) |
-| Branch broadcasting | `ETMCR[8] = 0` (off) | `TRCCONFIGR[3] = 0` (off) |
-| Return-stack compression | Not available | `TRCCONFIGR[12] = 1` (on) |
-| Always trace reset | Not available | `TRCVICTLR[10] = 1` (on) |
-| Always trace system errors | Not available | `TRCVICTLR[11] = 1` (on) |
-| Trace Thread mode | Always on | `TRCVICTLR[16] = 0` (on) |
-| Trace Handler mode | Always on | `TRCVICTLR[19] = 0` (on) |
+| Conditional non-branch instructions | Always on | `ETMv4_TRCCONFIGR[10:8] = 0` (none; no OpenCSD support) |
+| Branch broadcasting | `ETMv3_ETMCR[8] = 0` (off) | `ETMv4_TRCCONFIGR[3] = 0` (off) |
+| Return-stack compression | Not available | `ETMv4_TRCCONFIGR[12] = 1` (on) |
+| Always trace reset | Not available | `ETMv4_TRCVICTLR[10] = 1` (on) |
+| Always trace system errors | Not available | `ETMv4_TRCVICTLR[11] = 1` (on) |
+| Trace Thread mode | Always on | `ETMv4_TRCVICTLR[16] = 0` (on) |
+| Trace Handler mode | Always on | `ETMv4_TRCVICTLR[19] = 0` (on) |
 | Periodic stream synchronization | Always on | Always on |
 
-For currently supported ETMs, the read-only registers `ETMSYNCFR` and `TRCSYNCPR` have fixed values that give a synchronization period of 1024 emitted trace bytes.
+For currently supported ETMs, the read-only registers `ETMv3_ETMSYNCFR` and `ETMv4_TRCSYNCPR` have fixed values that give a synchronization period of 1024 emitted trace bytes.
 
 The following configurations are excluded from the base configuration and are configurable through the linked settings.
 
 | Feature | ETMv3 | ETMv4 | Setting |
 |---|---|---|---|
-| Cycle Count | Not available | `TRCCONFIGR[4]`, `TRCCCCTLR[11:0]` | [`timestamps:`](#timestamps) |
-| Global timestamps | `ETMCR[28]` (Cortex-M3(r2p1)/M4/M23) | `TRCCONFIGR[11]` | [`timesync:`](#timesync) |
+| Cycle Count | Not available | `ETMv4_TRCCONFIGR[4]`, `ETMv4_TRCCCCTLR[11:0]` | [`timestamps:`](#timestamps) |
+| Global timestamps | `ETMv3_ETMCR[28]` (Cortex-M3(r2p1)/M4/M23) | `ETMv4_TRCCONFIGR[11]` | [`timesync:`](#timesync) |
 
 `instructions:`                       |             | Content
 :-------------------------------------|:------------|:------------------------------------
@@ -598,6 +598,7 @@ The `*.ctrace-run.yml` file starts with the node `ctrace-run:`. It is generated 
 &nbsp;&nbsp;&nbsp; `generated-by:`                       |  Optional   | Tool and version that generated the file.
 &nbsp;&nbsp;&nbsp; `ctrace-setup:`                       |  Optional   | Copy of [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file.
 &nbsp;&nbsp;&nbsp; `ctrace-disable:`                     |**Required** | Per-processor register values that disable trace features before applying `ctrace-refs:`.
+&nbsp;&nbsp;&nbsp; `ctrace-decoder:`                     |  Optional   | Per-processor core types and read-only identification and capability register values for trace decoders.
 &nbsp;&nbsp;&nbsp; `ctrace-refs:`                        |**Required** | List of [references](#references) in the `*.ctrace.yml` file.
 
 The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file and preserves the original user input for consumers of the `*.ctrace-run.yml` file. Consumers may read settings that do not resolve to a `ref` or register write. For example, the `ctrace` decoder uses `timestamps:clock` as a trace-formatting hint, while pyOCD reads `synchronization:sync-on-run` to control built-in trace-capture behavior.
@@ -608,6 +609,19 @@ The `ctrace-disable:` node contains register values that disable trace features 
 :--------------------------------------------------------|:------------|:------------------------------------
 `- pname:`                                              |  Optional   | Processor name.
 &nbsp;&nbsp;&nbsp; `regs:`                               |**Required** | Register writes that disable trace features for this processor.
+
+The `ctrace-decoder:` node contains processor core types and read-only identification and capability register values supplied by pyTS. Multi-processor entries require `pname:`, while single-processor entries omit it. Its `regs:` entries use the identification register format under [Register Accesses](#register-accesses).
+
+`ctrace-decoder:`                                       |             | Content
+:--------------------------------------------------------|:------------|:------------------------------------
+`- pname:`                                              |  Optional   | Processor name.
+&nbsp;&nbsp;&nbsp; `core:`                               |**Required** | Processor core type, copied from `system-resources:processors:core:` in [`*.cbuild-run.yml`](YML-CBuild-Format.md#processors).
+&nbsp;&nbsp;&nbsp; `regs:`                               |**Required** | Read-only identification and capability register values for this processor.
+
+These values provide the implementation information required, for example, to configure the [OpenCSD ETM decoder](https://github.com/Linaro/OpenCSD/blob/master/decoder/docs/prog_guide/prog_guide_main.md#configuring-decoders) used in the `ctrace` utility. Examples include:
+
+- ETMv3: `ETMv3_ETMIDR`, `ETMv3_ETMCCER`.
+- ETMv4: `ETMv4_TRCIDR0`–`ETMv4_TRCIDR2` and `ETMv4_TRCIDR8`–`ETMv4_TRCIDR13`.
 
 The `ref:` node references the trace generation configuration in the file `*.ctrace.yml` and contains register values that represent the setup for trace sources. The `regs:` entries use the [register access format](#register-accesses). A single-core system has no `pname:` value; a multi-processor always includes a `pname:` value in the `ref:` node.
 
@@ -658,16 +672,19 @@ The use of `index:` depends on the combination of `type:`, `packet:`, and the se
 
 #### Register Accesses
 
-The `ctrace-run.yml` file contains the disabled register values and active register setup required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.
+The `ctrace-run.yml` file contains the disabled register values and active register setup required for trace generation, along with read-only identification register values for trace decoders. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.
 
 Trace Component | Base Address | Description
 :---------------|:------------:|:------------------------------------
 `ITM`           | `0xE0000000` | Instrumentation Trace Macrocell.
 `DWT`           | `0xE0001000` | Data Watchpoint and Trace unit.
 `PMU`           | `0xE0003000` | Performance Monitoring Unit.
-`ETM`           | `0xE0041000` | Embedded Trace Macrocell.
+`ETMv3`         | `0xE0041000` | Embedded Trace Macrocell, architecture version 3.
+`ETMv4`         | `0xE0041000` | Embedded Trace Macrocell, architecture version 4.
 
-`regs:` entries are used under both `ctrace-disable:` and `ctrace-refs:` and have the following format:
+Register names use the component prefix followed by an underscore, for example `ITM_TCR`, `ETMv3_ETMCR`, or `ETMv4_TRCCONFIGR`.
+
+`regs:` entries under `ctrace-disable:` and `ctrace-refs:` describe register writes and have the following format:
 
 `regs:`                                                  |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
@@ -676,6 +693,13 @@ Trace Component | Base Address | Description
 &nbsp;&nbsp;&nbsp; `mask:`                               | Optional    | Bit mask for value write (default: `0xFFFFFFFF`).
 
 When applying `ctrace-disable:` writes to DWT comparators, the debugger preserves active watchpoints.
+
+`regs:` entries under `ctrace-decoder:` contain read-only identification and capability values. They are for example used to configure a trace decoder.
+
+`regs:`                                                  |             | Content
+:--------------------------------------------------------|:------------|:------------------------------------
+`- name:`                                                |**Required** | Symbolic name of the register.
+&nbsp;&nbsp;&nbsp; `value:`                              |**Required** | Read-only register value supplied by pyTS.
 
 #### Examples
 
@@ -695,6 +719,12 @@ ctrace-run:
         mask: 0x00000006  # Disable timestamp and synchronization generation
       - name: ITM_TER0
         value: 0x00000000  # No mask: disable all 32 ITM channels
+  ctrace-decoder:
+  - pname: core0
+    core: CM4
+    regs:
+      - name: ETMv3_ETMIDR  # ETMv3
+        value: 0x4114F250
   ctrace-refs:
   - ref: core0/itm
     pname: core0
@@ -769,14 +799,14 @@ ctrace-refs:
     stream: 1              # ETM stream ID 1
     index: 1               # I-sync reason: tracing enabled
     regs:
-      - name: ETMTEEVR
+      - name: ETMv3_ETMTEEVR
         value: 0x0000006F  # TraceEnable enabling event: always TRUE
-      - name: ETMTECR1
+      - name: ETMv3_ETMTECR1
         value: 0x02000000  # Enable Start/Stop control
-      - name: ETMSR
+      - name: ETMv3_ETMSR
         value: 0x00000000  # Initial Start/Stop state: stopped
         mask: 0x00000004
-      - name: ETMTESSEICR
+      - name: ETMv3_ETMTESSEICR
         value: 0x00000001  # Start on DWT comparator input 0
         mask: 0x00000001
 
@@ -795,7 +825,7 @@ ctrace-refs:
     type: etmv3
     stream: 1
     regs:
-      - name: ETMTESSEICR
+      - name: ETMv3_ETMTESSEICR
         value: 0x00020000  # Stop on DWT comparator input 1
         mask: 0x00020000
 ```
@@ -822,24 +852,24 @@ ctrace-refs:
     stream: 1              # ETM stream ID 1
     index: 0               # ETMv4 Event 0
     regs:
-      - name: TRCRSCTLR2
+      - name: ETMv4_TRCRSCTLR2
         value: 0x00010004  # Resource Selector 2 selects DWT comparator input 2
-      - name: TRCEVENTCTL0R
+      - name: ETMv4_TRCEVENTCTL0R
         value: 0x00000002  # Event 0 selects Resource Selector 2
         mask: 0x000000FF
-      - name: TRCEVENTCTL1R
+      - name: ETMv4_TRCEVENTCTL1R
         value: 0x00000001  # INSTEN[0]: generate an ETM Event packet
         mask: 0x00000001
 
   - ref: tracehalt#0
     type: trigger
     regs:
-      - name: TRCRSCTLR2
+      - name: ETMv4_TRCRSCTLR2
         value: 0x00010004  # GROUP=1, SELECT[2]=1: DWT comparator 2, Not Inverted
-      - name: TRCEVENTCTL0R
+      - name: ETMv4_TRCEVENTCTL0R
         value: 0x00000002  # Event 0 selects resource selector 2
         mask: 0x000000FF
-      - name: TRCEVENTCTL1R
+      - name: ETMv4_TRCEVENTCTL1R
         value: 0x00000800  # ATB: send a trigger to the trace sink
         mask: 0x00000800
 ```
@@ -908,6 +938,7 @@ The `pyTS` utility generates the file `.trace/<solution-set>.ctrace-run.yml`. It
 - Converts symbolic names in the file `.cmsis/<solution-set>.ctrace.yml` to physical addresses by using the corresponding ELF output files.
 - Uses processor information and implementation details to map the trace generation setup into CoreSight trace register values. See [Processor-Specific Trace Features](#processor-specific-trace-features)
 - Generates `ctrace-disable:` with one group per processor that needs disable writes and one write per register, covering every trace feature pyTS can configure on the target, even if not enabled.
+- Generates `ctrace-decoder:` when processor and ID register information is needed to configure the `ctrace` utility.
 - Rejects incompatible configuration settings with user-oriented messages (`info:`, `warning:`, or `error:`) in the `ref:` node of the file `*.ctrace-run.yml`
 
 For a given target, `ctrace-disable:` remains unchanged when feature settings change. pyTS includes disable fields for every trace-eligible DWT comparator. If no writes are needed, it emits `ctrace-disable:` without children, which the debugger treats as no disable writes. The disable-values for supported components are listed in [Trace Component Registers](#trace-component-registers).
@@ -926,6 +957,8 @@ Usage:
 The `ctrace` utility reads the raw trace data files in the [directory `.trace`](#directory-and-file-structure). It can check the raw data trace files for consistency or convert the files into CSV and CTF format.
 
 `ctrace` is based on the open source trace decoder [github.com/linaro/opencsd](https://github.com/linaro/opencsd) and adds a CSV and CTF converter. This utility will be part of CMSIS-Toolbox.
+
+`ctrace` requires the per-processor `core:` and `regs:` values in `ctrace-decoder:` from `*.ctrace-run.yml` to configure its OpenCSD ETMv3 and ETMv4 instruction trace decoders. It derives the CPU architecture version and profile from `core:`.
 
 ```txt
 Usage:
@@ -1157,19 +1190,19 @@ The following ETMv3 register values are used for `ctrace-disable:` on Cortex-M p
 
 Name | Offset | `value:` | `mask:`
 :----|:-------|:--------|:----
-`ETMCR` | `0x000` | `0x00000411` | `None`
-`ETMTRIGGER` | `0x008` | `0x0000406F` | `None`
-`ETMSR` | `0x010` | `0x00000000` | `0x0000000C`
-`ETMTEEVR` | `0x020` | `0x0000406F` | `None`
-`ETMTECR1` | `0x024` | `0x00000000` | `None`
-`ETMTESSEICR` | `0x1F0` | `0x00000000` | `None`
-`ETMTSEVR` (Cortex-M4/M23 only) | `0x1F8` | `0x0000406F` | `None`
+`ETMv3_ETMCR` | `0x000` | `0x00000411` | `None`
+`ETMv3_ETMTRIGGER` | `0x008` | `0x0000406F` | `None`
+`ETMv3_ETMSR` | `0x010` | `0x00000000` | `0x0000000C`
+`ETMv3_ETMTEEVR` | `0x020` | `0x0000406F` | `None`
+`ETMv3_ETMTECR1` | `0x024` | `0x00000000` | `None`
+`ETMv3_ETMTESSEICR` | `0x1F0` | `0x00000000` | `None`
+`ETMv3_ETMTSEVR` (Cortex-M4/M23 only) | `0x1F8` | `0x0000406F` | `None`
 
-`ETMTRIGGER`, `ETMTEEVR`, and `ETMTSEVR` select the always-false event.
+`ETMv3_ETMTRIGGER`, `ETMv3_ETMTEEVR`, and `ETMv3_ETMTSEVR` select the always-false event.
 
-For configuration, clear `ETMCR[0]` (Power down), set `ETMCR[10]` (Programming) in a separate write, and wait for `ETMSR[1] = 1`. Apply the configuration, then clear Programming and wait for `ETMSR[1] = 0`.
+For configuration, clear `ETMv3_ETMCR[0]` (Power down), set `ETMv3_ETMCR[10]` (Programming) in a separate write, and wait for `ETMv3_ETMSR[1] = 1`. Apply the configuration, then clear Programming and wait for `ETMv3_ETMSR[1] = 0`.
 
-For power down, set `ETMCR[10]` (Programming) and wait for `ETMSR[1] = 1`. Apply the `ETMCR` disable settings with `ETMCR[0] = 0`, program all other disable registers, then set `ETMCR[0]` (Power down).
+For power down, set `ETMv3_ETMCR[10]` (Programming) and wait for `ETMv3_ETMSR[1] = 1`. Apply the `ETMv3_ETMCR` disable settings with `ETMv3_ETMCR[0] = 0`, program all other disable registers, then set `ETMv3_ETMCR[0]` (Power down).
 
 ### ETMv4
 
@@ -1177,24 +1210,24 @@ The following ETMv4 register values are used for `ctrace-disable:` on Cortex-M p
 
 Name | Offset | `value:` | `mask:`
 :----|:-------|:--------|:----
-`TRCPRGCTLR` | `0x004` | `0x00000000` | `None`
-`TRCCONFIGR` | `0x010` | `0x00000001` | `None`
-`TRCEVENTCTL0R` | `0x020` | `0x00000000` | `None`
-`TRCEVENTCTL1R` | `0x024` | `0x00000000` | `None`
-`TRCSTALLCTLR` | `0x02C` | `0x00000000` | `None`
-`TRCTSCTLR` | `0x030` | `0x00000000` | `None`
-`TRCCCCTLR` | `0x038` | `0x00000004` | `None`
-`TRCTRACEIDR` | `0x040` | `0x00000000` | `None`
-`TRCVICTLR` | `0x080` | `0x00000000` | `None`
-`TRCVIPCSSCTLR` | `0x08C` | `0x00000000` | `None`
-`TRCRSCTLR<n>` (`<n>` = 2 or 3) | `0x200 + <n>*0x004` | `0x00000000` | `None`
-`TRCPDCR` | `0x310` | `0x00000000` | `None`
+`ETMv4_TRCPRGCTLR` | `0x004` | `0x00000000` | `None`
+`ETMv4_TRCCONFIGR` | `0x010` | `0x00000001` | `None`
+`ETMv4_TRCEVENTCTL0R` | `0x020` | `0x00000000` | `None`
+`ETMv4_TRCEVENTCTL1R` | `0x024` | `0x00000000` | `None`
+`ETMv4_TRCSTALLCTLR` | `0x02C` | `0x00000000` | `None`
+`ETMv4_TRCTSCTLR` | `0x030` | `0x00000000` | `None`
+`ETMv4_TRCCCCTLR` | `0x038` | `0x00000004` | `None`
+`ETMv4_TRCTRACEIDR` | `0x040` | `0x00000000` | `None`
+`ETMv4_TRCVICTLR` | `0x080` | `0x00000000` | `None`
+`ETMv4_TRCVIPCSSCTLR` | `0x08C` | `0x00000000` | `None`
+`ETMv4_TRCRSCTLR<n>` (`<n>` = 2 or 3) | `0x200 + <n>*0x004` | `0x00000000` | `None`
+`ETMv4_TRCPDCR` | `0x310` | `0x00000000` | `None`
 
-`TRCCCCTLR.THRESHOLD` uses the minimum cycle-count threshold of `4`, documented in `TRCIDR3.CCITMIN` for Cortex-M7, M33, M52, M55, and M85.
+`ETMv4_TRCCCCTLR.THRESHOLD` uses the minimum cycle-count threshold of `4`, documented in `ETMv4_TRCIDR3.CCITMIN` for Cortex-M7, M33, M52, M55, and M85.
 
-For configuration, set `TRCPDCR.PU` to request power and wait for `TRCPDSR.POWER = 1`. Clear `TRCPRGCTLR.EN` and wait for `TRCSTATR.IDLE = 1`. Apply the configuration, then set `TRCPRGCTLR.EN` and wait for `TRCSTATR.IDLE = 0`.
+For configuration, set `ETMv4_TRCPDCR.PU` to request power and wait for `ETMv4_TRCPDSR.POWER = 1`. Clear `ETMv4_TRCPRGCTLR.EN` and wait for `ETMv4_TRCSTATR.IDLE = 1`. Apply the configuration, then set `ETMv4_TRCPRGCTLR.EN` and wait for `ETMv4_TRCSTATR.IDLE = 0`.
 
-For power down, clear `TRCPRGCTLR.EN` and wait for `TRCSTATR.IDLE = 1`. Program all other disable registers except `TRCPDCR`, then clear `TRCPDCR.PU` to release the power-up request and permit power down.
+For power down, clear `ETMv4_TRCPRGCTLR.EN` and wait for `ETMv4_TRCSTATR.IDLE = 1`. Program all other disable registers except `ETMv4_TRCPDCR`, then clear `ETMv4_TRCPDCR.PU` to release the power-up request and permit power down.
 
 ## Processor-Specific Trace Features
 
@@ -1211,14 +1244,14 @@ Processor | ITM/DWT Comps *reduced* | ITM/DWT Comps *mid* | ITM/DWT Comps *full*
 Cortex-M0 | `0-2` comps; no trace   | -                   | -                    | -   | -   | -
 Cortex-M0+ | `0-2` comps; no trace | - | - | - | - | Optional; start/stop using `TSTART`/`TSTOP` integration inputs or software; integration inputs can be driven by `0-2` MTB_DWT comparators; watermark autostop
 Cortex-M1 | `1` comp; no trace | - | - | `2` comps; no trace | - | - 
-Cortex-M3 | `1` comp | - | `4` comps | - | Optional ETMv3.4/v3.5 *instruction trace*<br>Up to `4` DWT comparator inputs; `1` reduced-function counter in newer revisions; `2` external inputs; start/stop logic; read-only `ETMSYNCFR` fixed at `1024` | -
-Cortex-M4 | `1` comp | - | `4` comps | - | Optional ETMv3.5 *instruction trace*<br>Up to `4` DWT comparator inputs; `1` reduced-function counter; `2` external inputs; start/stop logic; read-only `ETMSYNCFR` fixed at `1024` | -
-Cortex-M7 | `2` comps | - | `4` comps | - | Optional ETMv4 *instruction trace* or *instruction and data trace*;<br>*instruction-only* resources: `4` DWT inputs, `1` reduced-function counter, `2` resource-selector pairs, `1` single-shot control, read-only `TRCSYNCPR`;<br>*instruction+data* resources: `4` DWT inputs, `2` counters, `8` resource-selector pairs, `4` address-comparator pairs, `2` data-value comparators, `1` four-state sequencer, read/write `TRCSYNCPR` | -
-Cortex-M23 | `2` comps; no trace | - | - | `4` comps; no trace | - | Optional ETMv3.5 *instruction trace*; mutually exclusive with MTB<br>`4` DWT comparator inputs; `1` reduced-function counter; `2` external inputs; start/stop logic; read-only `ETMSYNCFR` fixed at `1024` Optional; mutually exclusive with ETM; start/stop using `2` or `4` DWT inputs, `TSTART`/`TSTOP` inputs, or software; watermark autostop
-Cortex-M33 | `2` comps | - | `4` comps | - | Optional ETMv4 *instruction trace*<br>`2` or `4` DWT inputs; `1` reduced-function counter; `2` resource-selector pairs; `1` single-shot control; read-only `TRCSYNCPR` | Optional; start/stop using `2` or `4` DWT inputs, CTI inputs, or software; watermark autostop
-Cortex-M52 | `2` comps | `4` comps | `8` comps | Debug-set-dependent | Optional ETMv4.5 *instruction trace*<br>`2`, `4`, or `8` DWT inputs; `1` reduced-function counter; resource selectors; `1` single-shot control; read-only `TRCSYNCPR` | -
-Cortex-M55 | `2` comps | `4` comps | `8` comps | Debug-set-dependent | Optional ETMv4.5 *instruction trace*<br>`2`, `4`, or `8` DWT inputs; `1` reduced-function counter; `2` resource-selector pairs; `1` single-shot control; `4` external-input selectors; `2` external outputs; read-only `TRCSYNCPR` | -
-Cortex-M85 | `4` comps | - | `8` comps | Debug-set-dependent | Optional ETMv4.5 *instruction trace*<br>`4` or `8` DWT inputs; `1` reduced-function counter; `2` resource-selector pairs; `1` single-shot control; `4` external-input selectors; `2` external outputs; read-only `TRCSYNCPR` | -
+Cortex-M3 | `1` comp | - | `4` comps | - | Optional ETMv3.4/v3.5 *instruction trace*<br>Up to `4` DWT comparator inputs; `1` reduced-function counter in newer revisions; `2` external inputs; start/stop logic; read-only `ETMv3_ETMSYNCFR` fixed at `1024` | -
+Cortex-M4 | `1` comp | - | `4` comps | - | Optional ETMv3.5 *instruction trace*<br>Up to `4` DWT comparator inputs; `1` reduced-function counter; `2` external inputs; start/stop logic; read-only `ETMv3_ETMSYNCFR` fixed at `1024` | -
+Cortex-M7 | `2` comps | - | `4` comps | - | Optional ETMv4 *instruction trace* or *instruction and data trace*;<br>*instruction-only* resources: `4` DWT inputs, `1` reduced-function counter, `2` resource-selector pairs, `1` single-shot control, read-only `ETMv4_TRCSYNCPR`;<br>*instruction+data* resources: `4` DWT inputs, `2` counters, `8` resource-selector pairs, `4` address-comparator pairs, `2` data-value comparators, `1` four-state sequencer, read/write `ETMv4_TRCSYNCPR` | -
+Cortex-M23 | `2` comps; no trace | - | - | `4` comps; no trace | - | Optional ETMv3.5 *instruction trace*; mutually exclusive with MTB<br>`4` DWT comparator inputs; `1` reduced-function counter; `2` external inputs; start/stop logic; read-only `ETMv3_ETMSYNCFR` fixed at `1024` Optional; mutually exclusive with ETM; start/stop using `2` or `4` DWT inputs, `TSTART`/`TSTOP` inputs, or software; watermark autostop
+Cortex-M33 | `2` comps | - | `4` comps | - | Optional ETMv4 *instruction trace*<br>`2` or `4` DWT inputs; `1` reduced-function counter; `2` resource-selector pairs; `1` single-shot control; read-only `ETMv4_TRCSYNCPR` | Optional; start/stop using `2` or `4` DWT inputs, CTI inputs, or software; watermark autostop
+Cortex-M52 | `2` comps | `4` comps | `8` comps | Debug-set-dependent | Optional ETMv4.5 *instruction trace*<br>`2`, `4`, or `8` DWT inputs; `1` reduced-function counter; resource selectors; `1` single-shot control; read-only `ETMv4_TRCSYNCPR` | -
+Cortex-M55 | `2` comps | `4` comps | `8` comps | Debug-set-dependent | Optional ETMv4.5 *instruction trace*<br>`2`, `4`, or `8` DWT inputs; `1` reduced-function counter; `2` resource-selector pairs; `1` single-shot control; `4` external-input selectors; `2` external outputs; read-only `ETMv4_TRCSYNCPR` | -
+Cortex-M85 | `4` comps | - | `8` comps | Debug-set-dependent | Optional ETMv4.5 *instruction trace*<br>`4` or `8` DWT inputs; `1` reduced-function counter; `2` resource-selector pairs; `1` single-shot control; `4` external-input selectors; `2` external outputs; read-only `ETMv4_TRCSYNCPR` | -
 
 ## DWT Feature Variants
 
@@ -1246,10 +1279,10 @@ Here, data-value matching means comparing an observed load or store value. It do
 
 The ETM synchronization range `0`, `256`, ... , `1M` is not generally configurable on the listed Cortex-M processors.
 
-- Cortex-M3, Cortex-M4, and Cortex-M23 ETMv3 implementations use a read-only `ETMSYNCFR` fixed at `1024` trace bytes.
-- Cortex-M33, Cortex-M52, Cortex-M55, and Cortex-M85 use a read-only `TRCSYNCPR` fixed at `1024` trace bytes.
-- Cortex-M7 instruction-only ETM uses a read-only `TRCSYNCPR` fixed at `1024` trace bytes.
-- Cortex-M7 instruction-and-data ETM has a programmable `TRCSYNCPR`. The requested period must use an implemented power-of-two encoding.
+- Cortex-M3, Cortex-M4, and Cortex-M23 ETMv3 implementations use a read-only `ETMv3_ETMSYNCFR` fixed at `1024` trace bytes.
+- Cortex-M33, Cortex-M52, Cortex-M55, and Cortex-M85 use a read-only `ETMv4_TRCSYNCPR` fixed at `1024` trace bytes.
+- Cortex-M7 instruction-only ETM uses a read-only `ETMv4_TRCSYNCPR` fixed at `1024` trace bytes.
+- Cortex-M7 instruction-and-data ETM has a programmable `ETMv4_TRCSYNCPR`. The requested period must use an implemented power-of-two encoding.
 
 Among the listed Arm ETM implementations, an `ETM\<period>` override is therefore configurable only for the Cortex-M7 instruction-and-data ETM. For other implementations, the tool should accept a fixed or default setting and diagnose attempts to override it.
 
