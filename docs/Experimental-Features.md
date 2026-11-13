@@ -565,6 +565,8 @@ The ETM `ref` node uses:
 `etmv3` | `TRIGGER` |
 `etmv4` | `I_EVENT` | `0`
 
+The ETM `tracehalt:` `ref` node requires an active ETM decoder for the referenced stream to process the `TRIGGER` (ETMv3) or `I_EVENT` (ETMv4) packets emitted into that stream. The decoder is required even when `instructions:` is disabled.
+
 See an example [here](#trace-halt-example).
 
 !!! Note
@@ -598,7 +600,8 @@ The `*.ctrace-run.yml` file starts with the node `ctrace-run:`. It is generated 
 &nbsp;&nbsp;&nbsp; `generated-by:`                       |  Optional   | Tool and version that generated the file.
 &nbsp;&nbsp;&nbsp; `ctrace-setup:`                       |  Optional   | Copy of [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file.
 &nbsp;&nbsp;&nbsp; `ctrace-disable:`                     |**Required** | Per-processor register values that disable trace features before applying `ctrace-refs:`.
-&nbsp;&nbsp;&nbsp; `ctrace-decoder:`                     |  Optional   | Per-processor core types and read-only identification and capability register values for trace decoders.
+&nbsp;&nbsp;&nbsp; `ctrace-caps:`                        |  Optional   | Per-processor core types and read-only identification and capability register values for trace decoders.
+&nbsp;&nbsp;&nbsp; `ctrace-images:`                      |  Optional   | Image files for instruction reconstruction.
 &nbsp;&nbsp;&nbsp; `ctrace-refs:`                        |**Required** | List of [references](#references) in the `*.ctrace.yml` file.
 
 The `ctrace-setup` node uses the same format as the [`setup`](#file-structure-of-ctraceyml) node in the `*.ctrace.yml` file and preserves the original user input for consumers of the `*.ctrace-run.yml` file. Consumers may read settings that do not resolve to a `ref` or register write. For example, the `ctrace` decoder uses `timestamps:clock` as a trace-formatting hint, while pyOCD reads `synchronization:sync-on-run` to control built-in trace-capture behavior.
@@ -610,9 +613,9 @@ The `ctrace-disable:` node contains register values that disable trace features 
 `- pname:`                                              |  Optional   | Processor name.
 &nbsp;&nbsp;&nbsp; `regs:`                               |**Required** | Register writes that disable trace features for this processor.
 
-The `ctrace-decoder:` node contains processor core types and read-only identification and capability register values supplied by pyTS. Multi-processor entries require `pname:`, while single-processor entries omit it. Its `regs:` entries use the identification register format under [Register Accesses](#register-accesses).
+The `ctrace-caps:` node contains processor core types and read-only identification and capability register values supplied by pyTS. Multi-processor entries require `pname:`, while single-processor entries omit it. Its `regs:` entries use the identification register format under [Register Accesses](#register-accesses).
 
-`ctrace-decoder:`                                       |             | Content
+`ctrace-caps:`                                          |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
 `- pname:`                                              |  Optional   | Processor name.
 &nbsp;&nbsp;&nbsp; `core:`                               |**Required** | Processor core type, copied from `system-resources:processors:core:` in [`*.cbuild-run.yml`](YML-CBuild-Format.md#processors).
@@ -622,6 +625,16 @@ These values provide the implementation information required, for example, to co
 
 - ETMv3: `ETMv3_ETMIDR`, `ETMv3_ETMCCER`.
 - ETMv4: `ETMv4_TRCIDR0`–`ETMv4_TRCIDR2` and `ETMv4_TRCIDR8`–`ETMv4_TRCIDR13`.
+
+The `ctrace-images:` node lists image files available to the `ctrace` utility to reconstruct instruction traces. File paths are relative to `*.ctrace-run.yml`. Multi-processor entries require `pname:`, while single-processor entries omit it.
+
+`ctrace-images:`                                        |             | Content
+:--------------------------------------------------------|:------------|:------------------------------------
+`- file:`                                               |**Required** | Specifies the file name.
+&nbsp;&nbsp;&nbsp; `type:`                               |**Required** | Specifies the file type (see below).
+&nbsp;&nbsp;&nbsp; `pname:`                              |  Optional   | Image belongs to processor in a multi-core system.
+
+The `type:` value is `elf` for ELF files (`.elf` or `.axf`) or `hex` for Intel HEX files. Addresses in HEX files must be the code addresses at execution time, which can differ from the addresses in the load regions.
 
 The `ref:` node references the trace generation configuration in the file `*.ctrace.yml` and contains register values that represent the setup for trace sources. The `regs:` entries use the [register access format](#register-accesses). A single-core system has no `pname:` value; a multi-processor always includes a `pname:` value in the `ref:` node.
 
@@ -645,7 +658,7 @@ The `ref:` node references the trace generation configuration in the file `*.ctr
 
 The trace packet types are: `dwt`, `event`, `exception`, `itm`, `pmu`, `overflow`, `pcsample`, `global_ts`, `etmv3`, `etmv4`, `trigger`. The decoder-only `error` type has no setting reference.
 
-The `etmv3` and `etmv4` types for an `instructions` `ref` node select the ETM protocol for decoding the referenced stream. ETM types may use [`packet:`](#packet) to identify individual packet types within the ETM protocols.
+The `etmv3` and `etmv4` types on `instructions:` and `tracehalt:` `ref` nodes select the ETM protocol for decoding the referenced stream. ETM types may use [`packet:`](#packet) to identify individual packet types within the ETM protocols.
 
 !!! Note
     The ETM types and their packet descriptions are experimental and may change in future versions.
@@ -694,7 +707,7 @@ Register names use the component prefix followed by an underscore, for example `
 
 When applying `ctrace-disable:` writes to DWT comparators, the debugger preserves active watchpoints.
 
-`regs:` entries under `ctrace-decoder:` contain read-only identification and capability values. They are for example used to configure a trace decoder.
+`regs:` entries under `ctrace-caps:` contain read-only identification and capability values. They are for example used to configure a trace decoder.
 
 `regs:`                                                  |             | Content
 :--------------------------------------------------------|:------------|:------------------------------------
@@ -719,12 +732,16 @@ ctrace-run:
         mask: 0x00000006  # Disable timestamp and synchronization generation
       - name: ITM_TER0
         value: 0x00000000  # No mask: disable all 32 ITM channels
-  ctrace-decoder:
+  ctrace-caps:
   - pname: core0
     core: CM4
     regs:
       - name: ETMv3_ETMIDR  # ETMv3
         value: 0x4114F250
+  ctrace-images:
+  - file: ../out/Blinky/Target/Debug/Blinky.axf
+    type: elf
+    pname: core0
   ctrace-refs:
   - ref: core0/itm
     pname: core0
@@ -938,7 +955,8 @@ The `pyTS` utility generates the file `.trace/<solution-set>.ctrace-run.yml`. It
 - Converts symbolic names in the file `.cmsis/<solution-set>.ctrace.yml` to physical addresses by using the corresponding ELF output files.
 - Uses processor information and implementation details to map the trace generation setup into CoreSight trace register values. See [Processor-Specific Trace Features](#processor-specific-trace-features)
 - Generates `ctrace-disable:` with one group per processor that needs disable writes and one write per register, covering every trace feature pyTS can configure on the target, even if not enabled.
-- Generates `ctrace-decoder:` when processor and ID register information is needed to configure the `ctrace` utility.
+- Generates `ctrace-caps:` when processor and ID register information is needed to configure the `ctrace` utility.
+- Generates `ctrace-images:` from the `output:` entries in `*.cbuild-run.yml`, with paths made relative to `*.ctrace-run.yml`.
 - Rejects incompatible configuration settings with user-oriented messages (`info:`, `warning:`, or `error:`) in the `ref:` node of the file `*.ctrace-run.yml`
 
 For a given target, `ctrace-disable:` remains unchanged when feature settings change. pyTS includes disable fields for every trace-eligible DWT comparator. If no writes are needed, it emits `ctrace-disable:` without children, which the debugger treats as no disable writes. The disable-values for supported components are listed in [Trace Component Registers](#trace-component-registers).
@@ -958,8 +976,6 @@ The `ctrace` utility reads the raw trace data files in the [directory `.trace`](
 
 `ctrace` is based on the open source trace decoder [github.com/linaro/opencsd](https://github.com/linaro/opencsd) and adds a CSV and CTF converter. This utility will be part of CMSIS-Toolbox.
 
-`ctrace` requires the per-processor `core:` and `regs:` values in `ctrace-decoder:` from `*.ctrace-run.yml` to configure its OpenCSD ETMv3 and ETMv4 instruction trace decoders. It derives the CPU architecture version and profile from `core:`.
-
 ```txt
 Usage:
   ctrace <trace-dir> [options]
@@ -970,6 +986,7 @@ Options:
   -a  --all                Generate both CSV and CTF files
       --type sel [...]     Filter output for specific packet types; repeat to select multiple types (default: all packet types)
       --stream sel [...]   Filter output for specific streams; repeat to select multiple streams (default: all streams)
+      --instructions mode  Select ETM instruction trace output: pc, ranges, or packets (default: pc)
   -c, --channel arg        Specify <channel> to decode; repeat to decode multiple channels
                            (default: process all channels for specified solution sets in trace-dir)
   -t, --target arg         Specify <solution-set> (default: process all solution sets in trace-dir)
@@ -984,6 +1001,8 @@ Options:
 CSV and CTF output files are written to the `<trace-dir>` as explained under [directory and file structure](#directory-and-file-structure).
 When no option for generating files is specified, the raw trace data files are validated.
 
+`ctrace` requires the per-processor `core:` and `regs:` values in `ctrace-caps:` from `*.ctrace-run.yml` to configure its OpenCSD ETMv3 and ETMv4 decoders. It derives the CPU architecture version and profile from `core:`. It obtains the RW register values from the `regs:` entries of ETM references under `ctrace-refs:`, including those for `instructions:` and `tracehalt:`.
+
 ### `--type` option
 
 The `--type` option is applied to the decoded packet type for both CSV and CTF files. Only the specified packet types are contained in the generated files.
@@ -996,6 +1015,28 @@ Output only the packet types `dwt` and `event` to the generated CSV and CTF file
 
 ```bash
 ctrace .trace --all --type dwt event
+```
+
+### `--instructions` option
+
+The `--instructions` option selects the ETM instruction trace output mode for CSV output. It requires `--csv` or `--all` and does not change ITM/DWT decoding.
+
+Mode             | Output
+:----------------|:------------------------------------
+`pc` (default)   | One instruction PC per record, plus events and status.
+`ranges`         | OpenCSD generic instruction ranges, events, and status.
+`packets`        | ETM protocol packets, parser status, and diagnostics.
+
+!!! Note
+    ToDo: Decide whether to drop `ranges` from the first implementation.
+
+`pc` and `ranges` modes require code images in ELF or HEX format for each selected ETM trace source. Images are listed in `ctrace-images:`. If a selected source has no listed images, `ctrace` exits with an error. If an instruction address is outside that source's images, `ctrace` inserts a decode warning and recovers at the next possible instruction address.
+
+**Examples:**
+
+```bash
+ctrace .trace --csv
+ctrace .trace --csv --channel TB --instructions packets
 ```
 
 ### `--verbose` option
@@ -1013,14 +1054,15 @@ Column         | Description
 `type`         | Trace output type: `itm`, `dwt`, `event`, `pmu`, `exception`, `pcsample`, `global_ts`, `overflow`, `error`, `etmv3`, `etmv4`, `trigger`.
 `packet`       | Single [packet type](#packet) within the protocol selected by `type`. Supported for `etmv3` and `etmv4`.
 `index`        | Index determined by `type` and `packet`. See the descriptions below.
-`value`        | Value in hexadecimal form. For packet type `exception` state transition: `0x1` enter, `0x2` exit, `0x3` return.
-`pc`           | Program counter for packet types `dwt` and `pcsample`.
-`address`      | Data address for packet type `dwt`.
+`value`        | Value in hexadecimal form. For packet type `exception` state transition: `0x1` enter, `0x2` exit, `0x3` return. Execution state for instruction records. Instruction count for instruction range records.
+`pc`           | Program counter for packet types `dwt` and `pcsample` and for instruction trace. Start address for instruction ranges.
+`address`      | Data address for packet type `dwt`. Exclusive end address for instruction ranges.
+`opcode`       | Instruction encoding from the code image for individual instruction records.
 `note`         | Additional details, including error notifications and trigger origin.
 
-The `value`, `pc`, and `address` columns use hexadecimal form. See [Variable Data Sizes](#variable-data-sizes) for details.
+The `value`, `pc`, `address`, and `opcode` columns use hexadecimal form. See [Variable Data Sizes](#variable-data-sizes) for details.
 
-The following table contains details about the packet type. Information is empty when not provided by the trace packet.
+The following table contains details about the trace output type. Information is empty when unavailable or inapplicable to a record.
 
 !!! Note
     The ETM types and their packet descriptions are experimental and may change in future versions.
@@ -1030,8 +1072,8 @@ The following table contains details about the packet type. Information is empty
 `itm`       | `index` = ITM channel.
 `dwt`       | `index` = DWT comparator, `value` = data value, `address` = data address, `pc` = program counter.
 `event`     | Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.
-`etmv3`     | ETMv3 trace packets. Uses [`packet`](#packet) to identify specific protocol packets.
-`etmv4`     | ETMv4 trace packets. Uses [`packet`](#packet) to identify specific protocol packets.
+`etmv3`     | ETMv3 trace output. Protocol packets use [`packet`](#packet) to identify specific packet types.
+`etmv4`     | ETMv4 trace output. Protocol packets use [`packet`](#packet) to identify specific packet types.
 `trigger`   | Marks a trigger event at the trace sink.
 `pmu`       | Reserved for PMU counter rows. Detailed semantics will be specified in a future version.
 `exception` | `index` = exception number. `value` = exception state transition.
@@ -1070,6 +1112,8 @@ The `packet:` types for `etmv3` and `etmv4` are based on [OpenCSD](https://githu
 
 For the `value`, `pc`, and `address` columns, the number of hex digits represents the payload size: 1 byte: `0x00`, 2 bytes: `0x0000`, 4 bytes: `0x00000000`.
 
+`opcode` uses 4 or 8 hex digits for 2- or 4-byte instructions, including leading zeros. Thumb-32 places the first halfword first.
+
 For packet type `dwt`, payload sizes depend on the architecture:
 
 Column      | Armv7-M       | Armv8-M
@@ -1098,36 +1142,52 @@ Value | State    | Meaning
 `0x2` | `exit`   | The exception context was left or completed; consumers usually close that exception lane.
 `0x3` | `return` | Execution returned to, or resumed, the named exception context after another exception.
 
-**Example:**
+#### Instruction Records
+
+In `pc` mode, `value` encodes the following execution state:
+
+`value` | Meaning
+:-------|:------------------------------------
+`0x00`  | Execution condition failed.
+`0x01`  | Executed, branch not taken or not a branch.
+`0x02`  | Reserved.
+`0x03`  | Executed, branch taken.
+`0xFF`  | Execution state unknown.
+
+Here, "executed" means that the instruction's execution condition passed or the instruction was unconditional. It does not establish instruction completion.
+
+Check for `0xFF` (unknown) and `0x02` (reserved) before interpreting the bits. For the remaining values, bit 0 indicates whether the instruction executed, and bit 1 indicates whether a branch was taken. Executed non-branch instructions use `0x01`.
+
+#### CSV Example
 
 ```csv
-cycles,stream,type,packet,index,value,pc,address,note
-2518192,,itm,,0,0x53,,,
-2518404,,itm,,0,0x54,,,
-2518616,,itm,,0,0x4d,,,
-949338400,,dwt,,2,0xfffffdf9,0x08001234,0xfdf9,
-949338400,,dwt,,3,0x0000006c,0x08001240,0x006c,
-949338400,,dwt,,0,0x00,,,
-949339000,,pcsample,,,,0x08000100,,
-949338400,,exception,,0,0x3,,,
-949338400,,overflow,,,,,,
-950364820,,exception,,11,0x1,,,
-950389420,,exception,,0,0x3,,,
+cycles,stream,type,packet,index,value,pc,address,opcode,note
+2518192,,itm,,0,0x53,,,,
+2518404,,itm,,0,0x54,,,,
+2518616,,itm,,0,0x4d,,,,
+949338400,,dwt,,2,0xfffffdf9,0x08001234,0xfdf9,,
+949338400,,dwt,,3,0x0000006c,0x08001240,0x006c,,
+949338400,,dwt,,0,0x00,,,,
+949339000,,pcsample,,,,0x08000100,,,
+949338400,,exception,,0,0x3,,,,
+949338400,,overflow,,,,,,,
+950364820,,exception,,11,0x1,,,,
+950389420,,exception,,0,0x3,,,,
 ```
 
-cycles    | stream | type      | packet  | index  | value      | pc         | address | note
-:---------|:-------|:----------|:---------|:-------|:-----------|:-----------|:--------|:-----
-2518192   |        | itm       |         | 0      | 0x53       |            |         |
-2518404   |        | itm       |         | 0      | 0x54       |            |         |
-2518616   |        | itm       |         | 0      | 0x4d       |            |         |
-949338400 |        | dwt       |         | 2      | 0xfffffdf9 | 0x08001234 | 0xfdf9  |
-949338400 |        | dwt       |         | 3      | 0x0000006c | 0x08001240 | 0x006c  |
-949338400 |        | dwt       |         | 0      | 0x00       |            |         |
-949339000 |        | pcsample  |         |        |            | 0x08000100 |         |
-949338400 |        | exception |         | 0      | 0x3        |            |         |
-949338400 |        | overflow  |         |        |            |            |         |
-950364820 |        | exception |         | 11     | 0x1        |            |         |
-950389420 |        | exception |         | 0      | 0x3        |            |         |
+cycles    | stream | type      | packet  | index  | value      | pc         | address | opcode | note
+:---------|:-------|:----------|:---------|:-------|:-----------|:-----------|:--------|:-------|:-----
+2518192   |        | itm       |         | 0      | 0x53       |            |         |        |
+2518404   |        | itm       |         | 0      | 0x54       |            |         |        |
+2518616   |        | itm       |         | 0      | 0x4d       |            |         |        |
+949338400 |        | dwt       |         | 2      | 0xfffffdf9 | 0x08001234 | 0xfdf9  |        |
+949338400 |        | dwt       |         | 3      | 0x0000006c | 0x08001240 | 0x006c  |        |
+949338400 |        | dwt       |         | 0      | 0x00       |            |         |        |
+949339000 |        | pcsample  |         |        |            | 0x08000100 |         |        |
+949338400 |        | exception |         | 0      | 0x3        |            |         |        |
+949338400 |        | overflow  |         |        |            |            |         |        |
+950364820 |        | exception |         | 11     | 0x1        |            |         |        |
+950389420 |        | exception |         | 0      | 0x3        |            |         |        |
 
 #### Loopback Requests
 
