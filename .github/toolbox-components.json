@@ -1,5 +1,5 @@
 {
-  "schema": "1.7.62",
+  "schema": "1.7.63",
   "buildmgr": "2.15.0",
   "projmgr": "2.15.0",
   "cbridge": "0.10.3",
