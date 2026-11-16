@@ -455,7 +455,7 @@ jobs:
         uses: ./.github/setup_xc/
         with:
           os: ${{ matrix.target }}
-          version: '5.00'
+          version: '6.00'
 
       - name: Download cmsis toolbox ${{ matrix.target }} ${{ matrix.arch }}
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
