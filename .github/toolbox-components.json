@@ -1,11 +1,11 @@
 {
   "schema": "1.7.63",
-  "buildmgr": "2.15.0",
-  "projmgr": "2.15.0",
-  "cbridge": "0.10.3",
-  "cbuild": "2.15.0",
-  "cbuild2cmake": "0.12.0",
-  "cpackget": "2.2.2",
+  "buildmgr": "2.16.0",
+  "projmgr": "2.16.0",
+  "cbridge": "0.10.4",
+  "cbuild": "2.16.0",
+  "cbuild2cmake": "0.13.0",
+  "cpackget": "2.3.0",
   "packchk": "1.4.7",
   "svdconv": "3.3.52",
   "vidx2pidx": "0.0.6"

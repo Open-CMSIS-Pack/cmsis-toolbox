@@ -52,6 +52,7 @@ def test_check_archive(base_path):
         "iar_linker_script.icf.src",
         "PACK.xsd",
         "PackIndex.xsd",
+        "TargetIndex.xsd",
         "XC.5.0.0.cmake"}
 
     assert(True == path.isfile(path.join(base_path,"LICENSE.txt")))
