@@ -422,9 +422,7 @@ The following keys declare its sections:
 `user-interface:`                                       |            | Content
 :-------------------------------------------------------|:-----------|:------------------------------------
 `- section:`                                            |  Optional  | Section label; omitted, null, or empty labels hide the heading.
-&nbsp;&nbsp;&nbsp; `id:`                                |  Optional  | Stable section identifier; use when neither a label nor a YAML binding identifies the section.
 &nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Hover over text.
-&nbsp;&nbsp;&nbsp; `warning:`                           |  Optional  | Warning text displayed for the section.
 &nbsp;&nbsp;&nbsp; `condition:`                         |  Optional  | Boolean or expression controlling availability; defaults to `true`.
 &nbsp;&nbsp;&nbsp; `condition-message:`                 |  Optional  | Warning shown when a configured section's condition is false.
 &nbsp;&nbsp;&nbsp; `yml-node:`                          |  Optional  | Group node under `debugger:`, as a name or the mapping described below.
@@ -449,11 +447,6 @@ The section-level `yml-node:` also accepts a mapping:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `selected:`        |**Required**| Enabled value or non-empty list of aliases; the first value is written.
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `unselected:`      |**Required**| Disabled value or non-empty list of aliases; the first value is written.
 
-Section labels, IDs, descriptive text, and binding names/values support `${{ expression }}`.
-Expressions read `config` (effective debugger settings), `device` (complete device metadata), and
-`processors` (effective processor records used by the active projects and images).
-Property paths such as `${{ processors.name }}` project through arrays, retaining each record's associated data.
-Only `yml-node.value` expands sections. Conditions must evaluate to boolean `true` to make a section available.
 Non-collapsible subsection labels share a column beside their controls, stacking above them when space is limited.
 
 !!! Note
@@ -478,7 +471,38 @@ Non-collapsible subsection labels share a column beside their controls, stacking
 &nbsp;&nbsp;&nbsp; `value:`                             |  Optional  | Value used for the enum name in csolution.yml file. If empty, `name` is used as `value`.
 &nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Descriptive text (hover over or sub-text in dialog).
 
-**Example**
+#### String Expansion
+
+The section fields `section`, `description`, `condition-message`, and `yml-node`
+(string form or mapping `name` and `value`) support JavaScript expressions using `${{ expression }}`.
+This also applies to nested `subsections`, but not to option definitions.
+The `condition` field accepts a boolean or a complete expression; only boolean `true` makes the section available.
+
+Expressions can read the following data:
+
+Data         | Content
+:------------|:------------------------------------
+`config`     | Effective `debugger:` settings of the active target-set, including unsaved edits and option defaults in storage units; for example, `config.protocol`.
+`device`     | Complete device metadata returned by [`GetDeviceInfo`](https://github.com/Open-CMSIS-Pack/csolution-rpc/blob/f2336740ee7e7c4b2cda016d1dcb7a20d9f69a93/api/csolution-openapi.yml#L134-L144), including processor, memory, pack, and trace information; for example, `device.processors` and `device.trace.serialwire`.
+`processors` | Processor records used by the active projects and images, falling back to all device processors when none are selected, or one unnamed record when names are unavailable.
+
+A complete expression retains its result type; expressions embedded in text produce a string.
+Only an array in `yml-node.value` creates multiple sections. Property paths through arrays, such as
+`${{ processors.name }}`, create one section per record and keep its other properties available in that section.
+
+For example, a processor subsection can declare:
+
+```yml
+- section: '${{ processors.name }}'
+  description: 'Debugger protocol: ${{ config.protocol }}'
+  yml-node:
+    name: pname
+    value: '${{ processors.name }}'
+    optional: true
+  options: []
+```
+
+#### Examples
 
 ![Debug Adapter User Interface](./images/DebugAdapter.png "Debug Adapter User Interface")
 
@@ -508,7 +532,7 @@ debug-adapters:
     defaults: # this section is only used by csolution to provide default values when settings are missing
       port: 3333 # default value of first gdbserver port
       protocol: swd
-      clock: 1000
+      clock: 10000000
     user-interface:  # this section is only used by the UI to display and edit settings
       - section: Debug Interface
         description: Interface configuration for the debug port
@@ -516,9 +540,10 @@ debug-adapters:
         - name: Clock (kHz)       # UI display
           description: Trace configuration   # hover over text
           yml-node: clock          # node entry in csolution.yml
-          type: int                # type of value
-          range: [10, 5000]        # valid range
-          default: 1000            # default value if not specified anywhere
+          type: number             # type of value
+          range: [10, 30000]       # valid range
+          scale: 1000              # store clock in Hz
+          default: 10000           # default value if not specified anywhere
         - name: Protocol
           yml-node: protocol
           type: enum
@@ -527,59 +552,82 @@ debug-adapters:
               value: jtag
             - name: SWD
               value: swd
-          default: SWD
+          default: swd
       - section: Trace
         description: Trace configuration   # hover over text
-        yml-node: trace                    # when a yml node is given options are under this section
-        select: off
-        options:
-          - name: Clock (kHz)
-            yml-node: trace-clock
-            type: number
-            range: [10, 200000] # 10 kHz .. 200 MHz
-            default: 12000
-          - name: Mode
-            yml-node: trace-port
-            type: enum
-            values: 
-              - name: UART                 # UART is also used as value
-                description: SWO configured for UART protocol
-              - name: Manchester
-                value: Man
-                description: SWO configured for Manchester protocol
-              - name: Trace Port 4
-                value: TP4
-                description: Connection via 4-bit Trace port
-            default: UART
+        yml-node:
+          name: trace
+          kind: sequence
+        options: []
+        subsections:
+          - section: Serial Wire
+            yml-node:
+              name: swo-uart
+              select:
+                node: mode
+                selected: [file, server]
+                unselected: off
+            usage: available
+            select: true
+            options:
+              - name: Input Clock (kHz)
+                yml-node: input-clock
+                type: number
+                scale: 1000
+                default: 0
+                range: [0, 100000]
+            condition: ${{ device.trace.serialwire && config.protocol === "swd" }}
+            condition-message: Serial Wire trace requires device support and SWD.
+          - section: ${{ device.trace.tracebuffer.name || "Trace Buffer" }}
+            yml-node:
+              name: trace-buffer
+              select:
+                node: mode
+                selected: [file, server]
+                unselected: off
+              value: ${{ device.trace.tracebuffer.name }}
+            usage: available
+            select: true
+            options: []
       - section: Standard I/O
         description: Serial input/output via semihosting or RTT channel 0
-        yml-node: stdio
-        select: on
-        pname-options: # Deprecated; use processor subsections instead.
-        options:
-          - name: Standard I/O Mode
-            description: Configure Serial I/O redirect
-            yml-node: mode
-            type: enum
-            default: monitor
-            values:
-              - name: Telnet Server
-                value: server
-                description:  Serial I/O to Telnet server port
-              - name: Debug Console
-                value: console
-                description:  Serial output to console (Debug console in VS Code)
-              - name: Serial Monitor
-                value: monitor
-                description:  Serial I/O via TCP/IP port to VS Code Serial Monitor
-              - name: Text File
-                value: file
-                description:  Serial output to file (default ./out/<solution-name>+<target-type>.<pname>.out)
-              - name: Disabled
-                value: off
-                description:  Serial I/O disabled
- 
+        yml-node:
+          name: stdio
+          kind: sequence
+        select: false
+        options: []
+        subsections:
+          - section: ${{ processors.name }}
+            yml-node:
+              name: pname
+              value: ${{ processors.name }}
+              optional: true
+            collapsible: false
+            options:
+              - name: Standard I/O Mode
+                description: Configure Serial I/O redirect
+                yml-node: mode
+                type: enum
+                default: monitor
+                values:
+                  - name: Telnet Server
+                    value: server
+                    description:  Serial I/O to Telnet server port
+                  - name: Debug Console
+                    value: console
+                    description:  Serial output to console (Debug console in VS Code)
+                  - name: Serial Monitor
+                    value: monitor
+                    description:  Serial I/O via TCP/IP port to VS Code Serial Monitor
+                  - name: Text File
+                    value: file
+                    description:  Serial output to file (default ./out/<solution-name>+<target-type>.<pname>.out)
+                  - name: Disabled
+                    value: off
+                    description:  Serial I/O disabled
+
   - name: "J-Link Server"
+    user-interface:
       - section: Debug Interface
         description: Interface configuration for the debug port
         options:
@@ -587,31 +635,59 @@ debug-adapters:
           description: JTAG/SWO clock frequency   # hover over text
           yml-node: clock          # node entry in csolution.yml
           type: number             # type of value
-          range: [10, 5000]        # valid range
+          range: [10, 50000]       # valid range
+          scale: 1000              # store clock in Hz
           default: 4000            # default value if not specified anywhere
         - name: Protocol
           yml-node: protocol
           type: enum
           values: 
+            - name: JTAG
+              value: jtag
             - name: SWD
               value: swd
-          default: SWD
+          default: swd
       - section: Trace
         description: Trace configuration   # hover over text
-        yml-node: trace                    # only on/off option
-        select: off
-        options:
-          - name: Mode
-            yml-node: trace-port
-            type: enum
-            values:
-              name: UART
-            default: UART
+        yml-node:
+          name: trace
+          kind: sequence
+        options: []
+        subsections:
+          - section: Serial Wire
+            yml-node:
+              name: swo-uart
+              select:
+                node: mode
+                selected: [file, server]
+                unselected: off
+            usage: available
+            select: true
+            options:
+              - name: Input Clock (kHz)
+                yml-node: input-clock
+                type: number
+                scale: 1000
+                default: 0
+                range: [0, 10000]
+            condition: ${{ device.trace.serialwire && config.protocol === "swd" }}
+            condition-message: Serial Wire trace requires device support and SWD.
+          - section: ${{ device.trace.tracebuffer.name || "Trace Buffer" }}
+            yml-node:
+              name: trace-buffer
+              select:
+                node: mode
+                selected: [file, server]
+                unselected: off
+              value: ${{ device.trace.tracebuffer.name }}
+            usage: available
+            select: true
+            options: []
 
   - name: "Keil uVision"
     template: uVision.adapter.json # template file
     defaults:
-      uv4: "C:\\Keil_v5\\UV4\\UV4.exe"
+      uv4: "${env:LOCALAPPDATA}/Keil_v5/UV4/UV4.exe"
       args: []
     user-interface:  # this section is only used by the UI to display and edit settings
       - section: Setup
@@ -621,5 +697,6 @@ debug-adapters:
           description: Absolute path to uVision executable
           yml-node: uv4            # node entry in csolution.yml
           type: file               # type of value
-          default: "C:\\Keil_v5\\UV4\\UV4.exe"
+          path-type: absolute
+          default: "${env:LOCALAPPDATA}/Keil_v5/UV4/UV4.exe"
 ```
