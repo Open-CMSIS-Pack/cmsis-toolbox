@@ -23,7 +23,7 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.15.0 (C) 2022-2026 Arm Ltd. and Contributors
+cbuild: Build Invocation 2.16.0 (C) 2022-2026 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -79,7 +79,7 @@ Use "cbuild [command] --help" for more information about a command.
 Create build information for embedded applications that consist of one or more related projects.
 
 ```text
-csolution: Project Manager 2.15.0 (C) 2022-2026 Arm Ltd. and Contributors
+csolution: Project Manager 2.16.0 (C) 2022-2026 Arm Ltd. and Contributors
 
 Commands:
   check pack-updates            Check existing project for potential pack updates
