@@ -417,19 +417,48 @@ debug-adapters:
 ### User Interface
 
 The file `debug-adapters.yml` also contains the information for the user interface that is available in the VS Code CMSIS Solution extension.
-The options are added 
+The following keys declare its sections:
 
 `user-interface:`                                       |            | Content
 :-------------------------------------------------------|:-----------|:------------------------------------
-`- section:`                                            |**Required**| Label text for configuration section.
+`- section:`                                            |  Optional  | Section label; omitted, null, or empty labels hide the heading.
+&nbsp;&nbsp;&nbsp; `id:`                                |  Optional  | Stable section identifier; use when neither a label nor a YAML binding identifies the section.
 &nbsp;&nbsp;&nbsp; `description:`                       |  Optional  | Hover over text.
-&nbsp;&nbsp;&nbsp; `yml-node:`                          |  Optional  | If present, options are under this group node in the `debugger:` section. 
+&nbsp;&nbsp;&nbsp; `warning:`                           |  Optional  | Warning text displayed for the section.
+&nbsp;&nbsp;&nbsp; `condition:`                         |  Optional  | Boolean or expression controlling availability; defaults to `true`.
+&nbsp;&nbsp;&nbsp; `condition-message:`                 |  Optional  | Warning shown when a configured section's condition is false.
+&nbsp;&nbsp;&nbsp; `yml-node:`                          |  Optional  | Group node under `debugger:`, as a name or the mapping described below.
 &nbsp;&nbsp;&nbsp; `select:`                            |  Optional  | If present, the section can be enabled. Applies to all options. 
+&nbsp;&nbsp;&nbsp; `collapsible:`                       |  Optional  | Allow content sections to collapse; defaults to `true`. Unlabeled sections stay expanded.
 &nbsp;&nbsp;&nbsp; `options:`                           |  Optional  | List of available options.
-&nbsp;&nbsp;&nbsp; `pname-options:`                     |  Optional  | List of available options that are repeated for each pname.
+&nbsp;&nbsp;&nbsp; `subsections:`                       |  Optional  | Nested sections using the same declaration format.
+&nbsp;&nbsp;&nbsp; `subsections-layout:`                |  Optional  | Show children in `content` (default) or as nested `navigation` entries.
+&nbsp;&nbsp;&nbsp; `usage:`                             |  Optional  | Marks addable subsections (`available`) or configured instances (`used`).
+&nbsp;&nbsp;&nbsp; `pname-options:`                     | Deprecated | Repeat options per processor; use `subsections:` with `yml-node.value: '${{ processors.name }}'` instead.
+
+The section-level `yml-node:` also accepts a mapping:
+
+`yml-node:`                                             |            | Content
+:-------------------------------------------------------|:-----------|:------------------------------------
+&nbsp;&nbsp;&nbsp; `name:`                              |**Required**| Group node name, or marker name identifying a sequence entry.
+&nbsp;&nbsp;&nbsp; `kind:`                              |  Optional  | Container kind: `map` (default) or `sequence`.
+&nbsp;&nbsp;&nbsp; `value:`                             |  Optional  | Entry marker value; an array expands into one section per value. Null markers are retained by default.
+&nbsp;&nbsp;&nbsp; `optional:`                          |  Optional  | With `value:`, omit null/empty markers; defaults to `false`. The entry and its options remain.
+&nbsp;&nbsp;&nbsp; `select:`                            |  Optional  | Bind the section's enabled state to a stored option instead of node presence.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `node:`            |**Required**| Option name holding the enabled state.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `selected:`        |**Required**| Enabled value or non-empty list of aliases; the first value is written.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; `unselected:`      |**Required**| Disabled value or non-empty list of aliases; the first value is written.
+
+Section labels, IDs, descriptive text, and binding names/values support `${{ expression }}`.
+Expressions read `config` (effective debugger settings), `device` (complete device metadata), and
+`processors` (effective processor records used by the active projects and images).
+Property paths such as `${{ processors.name }}` project through arrays, retaining each record's associated data.
+Only `yml-node.value` expands sections. Conditions must evaluate to boolean `true` to make a section available.
+Non-collapsible subsection labels share a column beside their controls, stacking above them when space is limited.
 
 !!! Note
-    When a `section:` is disabled all nodes are removed from the `csolution.yml` file.
+    Disabling a section removes its node from `csolution.yml`, unless `yml-node.select` writes an unselected value.
+    Configured sections whose condition becomes false are retained and can be disabled or removed.
 
 `options:`                                              |            | Content
 :-------------------------------------------------------|:-----------|:------------------------------------
@@ -526,7 +555,7 @@ debug-adapters:
         description: Serial input/output via semihosting or RTT channel 0
         yml-node: stdio
         select: on
-        pname-options:
+        pname-options: # Deprecated; use processor subsections instead.
         options:
           - name: Standard I/O Mode
             description: Configure Serial I/O redirect
