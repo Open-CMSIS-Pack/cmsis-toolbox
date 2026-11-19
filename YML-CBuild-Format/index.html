@@ -220,7 +220,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../InfineonConfig/">Infineon Configuration Tools</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">MCUXpresso for NXP Devices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../RenesasRASC/">RA Smart Configurator for Renesas Devices</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">STM32CubeMX for STM32 Devices</a>
                   </li>
@@ -454,8 +458,8 @@
     - target-type: B-U585I-IOT02A
       target-configurations:
         - configuration:
-            - variables:
-                - Board-Layer: /Users/.../Arm/Packs/Keil/B-U585I-IOT02A_BSP/2.0.0-dev0/Layers/IoT/Board.clayer.yml
+          variables:
+            - Board-Layer: /Users/.../Arm/Packs/Keil/B-U585I-IOT02A_BSP/2.0.0-dev0/Layers/IoT/Board.clayer.yml
   cprojects:
     - cproject: Device/HID/HID.cproject.yml
       clayers:
@@ -480,10 +484,6 @@
       configuration: .Release+B-U585I-IOT02A
   cbuild-run: out/USB+B-U585I-IOT02A.cbuild-run.yml
 
-  errors: true                  # indicates error
-  packs-missing:                # lists missing packs
-    - pack: ARM::CMSIS-RTX      # with unspecified version
-    - pack: ARM::CMSIS@6.0.0    # with specified version
 </code></pre>
 <h3 id="cbuildyml"><code>*.cbuild.yml</code></h3>
 <p>The <code>&lt;project-name&gt;.&lt;build-type&gt;+&lt;target-type&gt;.cbuild.yml</code> file contains all information for one <em>context</em>. It is structured as outlined below.</p>
@@ -779,6 +779,10 @@
 <td style="text-align: left;">Descriptive text of the ML model under development.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>generated-by:</code></td>
+<td style="text-align: left;">Tool name along with version information used to generate this file.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>processor:</code></td>
 <td style="text-align: left;">Processor information for the ML model.</td>
 </tr>
@@ -814,6 +818,7 @@
 </table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">cbuild-mlops:
+  generated-by: csolution version 2.16.0
   description: ML model for detecting Rock/Paper/Scissors images
   processor:
     type: Cortex-M55
@@ -901,28 +906,29 @@
     - target-type: B-U585I-IOT02A
       target-configurations:
         - configuration:
-            - variables:
-              - Board-Layer: /Users/.../Arm/Packs/Keil/B-U585I-IOT02A_BSP/2.0.0-dev0/Layers/IoT/Board.clayer.yml
-                description: &quot;Configuration including FXLS8962 sensor&quot;
+          variables:
+            - Board-Layer: /Users/.../Arm/Packs/Keil/B-U585I-IOT02A_BSP/2.0.0-dev0/Layers/IoT/Board.clayer.yml
+              description: &quot;Configuration including FXLS8962 sensor&quot;
 
     - target-type: MyBoard
+      target-configurations:
         - configuration:
-            - variables:
-              - Board-Layer: ./layer/board/frdmk22f/frdmk22f.clayer.yml
-                description: &quot;Configuration: Ethernet, UART, and WiFi&quot;
-                settings:
+          variables:
+            - Board-Layer: ./layer/board/frdmk22f/frdmk22f.clayer.yml
+              description: &quot;Configuration: Ethernet, UART, and WiFi&quot;
+              settings:
                 - set: set1.select1 (connect A - set 1 select 1)
-                path: ./layer/board/frdmk22f
-                file: frdmk22f.clayer.yml
-                copy-to: board/frdmk22f
-              - Shield-Layer: ./layer/shield/agmp03/agmp03.clayer.yml
-                description: &quot;Shield with FXLS8962 and FXAS21002&quot;
-                settings:
-                - set: Bus.SPI (FXLS8962 SPI Bus - Jumper configuration: I2C/SPI=SPI)
-                - set: Bus.SPI (FXAS21002 SPI Bus - Jumper configuration: I2C/SPI=SPI)
-                path: ./layer/board/frdmk22f
-                file: frdmk22f.clayer.yml
-                copy-to: board/frdmk22f
+              path: ./layer/board/frdmk22f
+              file: frdmk22f.clayer.yml
+              copy-to: board/frdmk22f
+            - Shield-Layer: ./layer/shield/agmp03/agmp03.clayer.yml
+              description: &quot;Shield with FXLS8962 and FXAS21002&quot;
+              settings:
+                - set: &quot;Bus.SPI (FXLS8962 SPI Bus - Jumper configuration: I2C/SPI=SPI)&quot;
+                - set: &quot;Bus.SPI (FXAS21002 SPI Bus - Jumper configuration: I2C/SPI=SPI)&quot;
+              path: ./layer/board/frdmk22f
+              file: frdmk22f.clayer.yml
+              copy-to: board/frdmk22f
 </code></pre>
 <h4 id="cprojects"><code>cprojects:</code></h4>
 <p>The <code>cprojects:</code> node lists all <code>*.cproject.yml</code> input files along with <code>*.clayer.yml</code> files that are used to compose the application.</p>
@@ -968,12 +974,24 @@
 <td style="text-align: left;">Build description file of a single context for a *.cproject.yml input file.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>west:</code></td>
+<td style="text-align: left;">Indicates a context generated from a West project.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>cmake:</code></td>
+<td style="text-align: left;">Indicates a context generated from a native CMake project.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>project:</code></td>
 <td style="text-align: left;">Project name.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>configuration:</code></td>
 <td style="text-align: left;">Context configuration for this build description file.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>depends-on:</code></td>
+<td style="text-align: left;">List of contexts or execute steps required by this context.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>errors:</code></td>
@@ -988,6 +1006,14 @@
 <td style="text-align: left;">List of unused packs.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>clayers:</code></td>
+<td style="text-align: left;">List of <code>*.clayer.yml</code> input files used by this context.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>rebuild:</code></td>
+<td style="text-align: left;">Indicates that intermediate files must be cleaned before the next build.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>messages:</code></td>
 <td style="text-align: left;">List of <code>errors:</code>, <code>warnings:</code>, or <code>info:</code> messages.</td>
 </tr>
@@ -995,10 +1021,12 @@
 </table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">  cbuilds:
-    - cproject: AWS_MQTT_MutualAuth_SW_Framework/Demo.cproject.yml
+    - cbuild: out/Demo/FVP/Debug/Demo.Debug+FVP.cbuild.yml
       project: Demo
       configuration: .Debug+FVP
       errors: true
+      packs-missing:
+        - pack: ARM::CMSIS-RTX
       messages:
         errors:
           - no compatible software layer found. Review the required connections of the project
@@ -1508,7 +1536,7 @@
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>west-defs:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Defines in <code>CMake</code> format. The <code>west-defs:</code> from build and target-type are added.</td>
+<td style="text-align: left;">Effective defines in <code>CMake</code> format after compiler filtering, concatenation, and Access Sequence expansion.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>west-opt:</code></td>
@@ -1523,8 +1551,11 @@
     app-path: ../../../../hello_world
     board: stm32h7b3i_dk 
     west-defs:
-      - CONFIG_BUILD_OUTPUT_HEX=y
+      - CONFIG_BUILD_OUTPUT_HEX: y
+      - CONFIG_LLVM_USE_LLD: y
+        CONFIG_COMPILER_RT_RTLIB: y
 </code></pre>
+<p>When <a href="../YML-Input-Format/#for-compiler"><code>for-compiler:</code></a> is applied, the related <code>west-defs:</code> are generated only for the selected compiler. <a href="../YML-Input-Format/#access-sequences">Access Sequences</a> are expanded, while <code>${NAME}</code> expressions are preserved for CMake.</p>
 <h4 id="cmake"><code>cmake:</code></h4>
 <p>For each native CMake project context a node <code>cmake:</code> is created in <code>*.cbuild.yml</code>.</p>
 <table>
@@ -2353,7 +2384,7 @@ The <code>output:</code> node also contains other required files that are added 
 <td style="text-align: left;">Information for GDB server option of debugger.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stdio:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../pyOCD-Debugger/#stdio"><code>stdio:</code></a></td>
 <td>Optional</td>
 <td style="text-align: left;">Standard I/O service configuration.</td>
 </tr>
@@ -2373,9 +2404,9 @@ The <code>output:</code> node also contains other required files that are added 
 <td style="text-align: left;">Reset type and Halt configuration for Load command.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>rtt:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../pyOCD-Debugger/#rtt"><code>rtt:</code></a></td>
 <td>Optional</td>
-<td style="text-align: left;">Segger RTT configuration.</td>
+<td style="text-align: left;">SEGGER RTT configuration.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>systemview:</code></td>
@@ -2383,9 +2414,9 @@ The <code>output:</code> node also contains other required files that are added 
 <td style="text-align: left;">Segger SystemView configuration.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>trace:</code></td>
-<td>Future</td>
-<td style="text-align: left;">Trace port of the debugger.</td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="../pyOCD-Debugger/#trace"><code>trace:</code></a></td>
+<td>Optional</td>
+<td style="text-align: left;">Trace transport and output configuration.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>*:</code></td>
@@ -2643,7 +2674,7 @@ These initial values are overwritten by explicit settings in the <code>*.dbgconf
             // Ensure JTAG interface is reset
             DAP_SWJ_Sequence(6, 0x3F);
 
-        - if: !hasDormant
+        - if: &quot;!hasDormant&quot;
           atomic:
           execute:   |
             // Ensure current debug interface is in reset state
@@ -2691,7 +2722,7 @@ These initial values are overwritten by explicit settings in the <code>*.dbgconf
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &amp;gt; 50 cycles SWDIO/TMS High
             DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
 
-        - if: !hasDormant
+        - if: &quot;!hasDormant&quot;
           atomic:
           execute:  |
             // Ensure current debug interface is in reset state
@@ -2705,13 +2736,9 @@ These initial values are overwritten by explicit settings in the <code>*.dbgconf
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &amp;gt; 50 cycles SWDIO/TMS High
             DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
 
-              // Enter SWD Line Reset State
-          DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &amp;gt; 50 cycles SWDIO/TMS High
-          DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
-
     - execute:  |
-      // Read DPIDR to enable SWD interface (SW-DPv1 and SW-DPv2)
-      ReadDP(0x0);
+        // Read DPIDR to enable SWD interface (SW-DPv1 and SW-DPv2)
+        ReadDP(0x0);
 </code></pre>
 <h4 id="debug-sequences-conf"><code>debug-sequences-conf:</code></h4>
 <p>This node contains configuration information for how <a href="https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_sequence">debug sequences</a> are expected to be used by a debugger.</p>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Infineon Configuration Tools - CMSIS-Toolbox</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../css/extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Infineon Configuration Tools";
+        var mkdocs_page_input_path = "InfineonConfig.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> CMSIS-Toolbox
+        </a>
+        <div class="version">
+          2.16.0
+        </div><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../overview/">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-tools/">Build Tools</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-overview/">CSolution Project Structure</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-Input-Format/">CSolution Project Format</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../CreateApplications/">Create Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../ReferenceApplications/">Reference Applications</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../YML-CBuild-Format/">Build Information Files</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../build-operation/">Theory of Operation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../pack-tools/">Pack Creation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Troubleshooting/">Troubleshooting</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Experimental-Features/">Experimental Features</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Debugger Support</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../pyOCD-Debugger/">pyOCD Debugger</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../JLink-Debugger/">J-Link Debugger</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Infineon Configuration Tools</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run-a-configurator">Run a Configurator</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#device-configurator">Device Configurator</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mcu-config-wizard">MCU Config Wizard</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">MCUXpresso for NXP Devices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../RenesasRASC/">RA Smart Configurator for Renesas Devices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">STM32CubeMX for STM32 Devices</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">CMSIS-Toolbox</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Device Configuration Tools</li>
+      <li class="breadcrumb-item active">Infineon Configuration Tools</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox/edit/main/docs/InfineonConfig.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="infineon-configuration-tools">Infineon Configuration Tools</h1>
+<!-- markdownlint-disable MD013 -->
+
+<p>This chapter explains how to start Infineon Configuration Tools from a <em>csolution project</em>.</p>
+<p>CMSIS-Toolbox provides global generators for these tools:</p>
+<table>
+<thead>
+<tr>
+<th>Generator ID</th>
+<th>Tool</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>InfineonDeviceConfigurator</code></td>
+<td>Device Configurator</td>
+<td>Infineon devices supported by a selected Configurator library provider</td>
+</tr>
+<tr>
+<td><code>InfineonDevConf_MotixLitix</code></td>
+<td>Device Configurator</td>
+<td>MOTIX and LITIX devices</td>
+</tr>
+<tr>
+<td><code>InfineonMcuConfigWizard</code></td>
+<td>MCU Config Wizard</td>
+<td>MOTIX and LITIX devices</td>
+</tr>
+</tbody>
+</table>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>Windows on an amd64 host. The Infineon generators are not supported on Windows arm64, Linux, or macOS.</li>
+<li>Install the required tool from the <a href="https://softwaretools.infineon.com/">Infineon Developer Center</a>.</li>
+<li>Select a software pack component that refers to one of the global generator IDs listed above.</li>
+</ul>
+<p>Device Configurator is normally located using its Infineon Toolbox registration. To use a different executable, set <code>CONFIGURATOR_EXE</code> to its complete path before running <code>csolution</code>.</p>
+<h2 id="run-a-configurator">Run a Configurator</h2>
+<p>List the generators available for a project context with:</p>
+<pre><code class="language-shell">csolution MyApp.csolution.yml list generators --context MyProject.Debug+MyTarget --verbose
+</code></pre>
+<p>Start the generator required by the selected component, for example:</p>
+<pre><code class="language-shell">csolution MyApp.csolution.yml run --generator InfineonDeviceConfigurator --context MyProject.Debug+MyTarget
+</code></pre>
+<p>Only one context may be selected when running an Infineon generator. After changing the configuration and generating source files, run <code>cbuild setup</code> or build the application to update the project.</p>
+<h2 id="device-configurator">Device Configurator</h2>
+<p>The <code>InfineonDeviceConfigurator</code> launcher reads the selected device and Configurator library from the <a href="../YML-CBuild-Format/#generator-information-files"><code>*.cbuild-gen-idx.yml</code> and <code>*.cbuild-gen.yml</code> files</a>. It copies a suitable <code>design.modus</code> template to the generator directory when no context-specific design exists, and then opens that design in Device Configurator.</p>
+<p>The selected software packs must provide exactly one Configurator library for the device. An existing context-specific <code>design.modus</code> is preserved and must match the selected device.</p>
+<p>For MOTIX and LITIX devices, use <code>InfineonDevConf_MotixLitix</code> when this generator is specified by the selected component. It keeps <code>design.modus</code> in the solution's <code>config</code> directory and records the files from <code>GeneratedSource</code> in the generator import file.</p>
+<h2 id="mcu-config-wizard">MCU Config Wizard</h2>
+<p>Start MCU Config Wizard with:</p>
+<pre><code class="language-shell">csolution MyApp.csolution.yml run --generator InfineonMcuConfigWizard --context MyProject.Debug+MyTarget
+</code></pre>
+<p>The launcher finds the latest registered MCU Config Wizard installation and passes the generator index file to the tool. This generator is intended for MOTIX and LITIX devices.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../JLink-Debugger/" class="btn btn-neutral float-left" title="J-Link Debugger"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../MCUXpressoConfig/" class="btn btn-neutral float-right" title="MCUXpresso for NXP Devices">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Open-CMSIS-Pack/cmsis-toolbox" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../JLink-Debugger/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../MCUXpressoConfig/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

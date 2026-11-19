@@ -57,6 +57,10 @@
     <li class="toctree-l2"><a class="reference internal" href="#manual-setup">Manual Setup</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#requirements">Requirements</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#cmake-4-migration">CMake 4 Migration</a>
+    </li>
+        </ul>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#compiler-toolchains">Compiler Toolchains</a>
     </li>
@@ -152,7 +156,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../InfineonConfig/">Infineon Configuration Tools</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">MCUXpresso for NXP Devices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../RenesasRASC/">RA Smart Configurator for Renesas Devices</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">STM32CubeMX for STM32 Devices</a>
                   </li>
@@ -194,7 +202,7 @@
 <li><a href="#vcpkg-setup-in-vs-code">vcpkg in VS Code</a> using the vcpkg tool with VS Code integration</li>
 </ul>
 <h2 id="manual-setup">Manual Setup</h2>
-<p>Download the CMSIS-Toolbox from the <a href="https://artifacts.keil.arm.com/cmsis-toolbox/"><strong>Arm Tools Artifactory</strong></a>. An archive file provides signed binaries for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (arm64).</p>
+<p>Download the CMSIS-Toolbox from the <a href="https://artifacts.keil.arm.com/cmsis-toolbox/"><strong>Arm Tools Artifactory</strong></a>. An archive file provides signed binaries for Windows (amd64, arm64), Linux (amd64, arm64), and MacOS/Darwin (arm64).</p>
 <p>To set up the <strong>CMSIS-Toolbox</strong> on a local computer, copy the content of the archive file to an <code>&lt;cmsis-toolbox-installation-dir&gt;</code>, for example, to <code>~/cmsis-toolbox</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -216,8 +224,8 @@
 <tbody>
 <tr>
 <td style="text-align: left;"><a href="https://cmake.org/download"><strong>CMake</strong></a></td>
-<td style="text-align: left;">3.31.5 or higher</td>
-<td style="text-align: left;">For Win64, enable the install option add <em>CMake</em> to the system <em>Path</em></td>
+<td style="text-align: left;">3.31.5 or higher; 4.2.1 or higher recommended</td>
+<td style="text-align: left;">For Windows, enable the install option to add <em>CMake</em> to the system <em>Path</em></td>
 </tr>
 <tr>
 <td style="text-align: left;"><a href="https://github.com/ninja-build/ninja/releases"><strong>Ninja</strong></a></td>
@@ -226,6 +234,12 @@
 </tr>
 </tbody>
 </table>
+<h4 id="cmake-4-migration">CMake 4 Migration</h4>
+<p>CMSIS-Toolbox transitions from CMake 3 to CMake 4. CMake 3.31.5 or newer remain supported, but CMake 4.2.1 or newer is recommended.</p>
+<p>When the CMake version is older than 4.2.1, this notice is shown:</p>
+<pre><code class="language-txt">CMake 4.2.1 or newer is recommended for CMSIS-Toolbox. You are using CMake &lt;version&gt;.
+</code></pre>
+<p>The notice does not stop setup or build operations. Upgrade CMake to 4.2.1 or newer to remove it and prepare for the future CMake 4 minimum requirement. Do not edit the generated <code>CMakeLists.txt</code> files, as CMSIS-Toolbox recreates them.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>Windows:</strong> To use international characters in project names, filenames, or paths, enable <a href="https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page"><strong>Use Unicode UTF-8 for worldwide language support</strong></a> in the system locale settings and restart Windows.</p>
@@ -500,15 +514,7 @@ vcpkg-shell activate
 <li>Launch Visual Studio Code. Use the menu <code>View</code> and open <code>Extensions</code> and install the <code>Keil Studio Pack</code> extensions.</li>
 <li>Use the menu <code>View</code> and open <code>Source Control</code>. Select 'Clone Repository' and enter as url <a href="https://github.com/Open-CMSIS-Pack/vscode-get-started"><code>https://github.com/Open-CMSIS-Pack/vscode-get-started</code></a>.</li>
 <li>Specify the destination folder to clone to and select 'Open' when asked 'Would you like to open the cloned directory?'</li>
-<li>
-<p>Use the <code>View</code> menu 'Explorer' and select the file <code>vcpkg-configuration.json</code>. This file instructs <a href="https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts">Microsoft vcpkg</a> to install the prerequisite artifacts required for building the solution and installs therefore:</p>
-<ul>
-<li>CMSIS-Toolbox 2.6.1</li>
-<li>cmake 3.28.4</li>
-<li>ninja 1.12.0</li>
-<li>arm-none-eabi-gcc 13.3.1-mpacbti (GNU Arm Embedded Toolchain 13.3.1)</li>
-</ul>
-</li>
+<li>Use the Explorer <code>View</code> to open the file <code>vcpkg-configuration.json</code>. This file instructs <a href="https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts">Microsoft vcpkg</a> to install the prerequisite artifacts required for building the solution, such as the CMSIS-Toolbox, CMake, Ninja, and a compiler toolchain. The file contains the applicable version requirements, which may change as the example is updated.</li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -529,6 +535,10 @@ vcpkg-shell activate
 <tr>
 <td style="text-align: left;"><code>pack.idx</code></td>
 <td style="text-align: left;">Empty file that is touched (timestamp is updated) when packs are added or removed.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>/.Targets/index.tidx</code></td>
+<td style="text-align: left;"><code>cpackget</code> maintains and index of devices and boards provided by installed packs and registered local packs.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>/.Web</code></td>

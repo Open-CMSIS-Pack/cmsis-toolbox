@@ -402,7 +402,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../InfineonConfig/">Infineon Configuration Tools</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">MCUXpresso for NXP Devices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../RenesasRASC/">RA Smart Configurator for Renesas Devices</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">STM32CubeMX for STM32 Devices</a>
                   </li>
@@ -922,15 +926,17 @@ can specify a different project and describe, therefore, project dependencies.</
       board: NUCLEO-L552ZE-Q    # specifies board
       target-set:
         - set:
-          - project-context: TFM.Debug
-          - project-context: MQTT_AWS.Debug
+          images:
+            - project-context: TFM.Debug
+            - project-context: MQTT_AWS.Debug
 
     - type: Production-HW       # target-type: Production-HW
       device: STM32L5X          # specifies device
       target-set:
         - set:
-          - project-context: TFM.Release
-          - project-context: MQTT_AWS.Debug
+          images:
+            - project-context: TFM.Release
+            - project-context: MQTT_AWS.Debug
 
   build-types:
     - type: Debug               # build-type: Debug
@@ -955,7 +961,7 @@ can specify a different project and describe, therefore, project dependencies.</
 </code></pre>
 <p>The example below uses from the TFM project always <code>build-type: Debug</code> and the <code>target-type: Production-HW</code>.</p>
 <pre><code class="language-yml">    files:
-    - file: `$cmse-lib(TFM.Release+Production-HW)$` # use symbol output file of TFM Project
+    - file: $cmse-lib(TFM.Release+Production-HW)$ # use symbol output file of TFM Project
 </code></pre>
 <p>The example below uses the <code>build-type: Debug</code> and the <code>target-type</code> of the current processed context is used.</p>
 <pre><code class="language-yml">  executes:
@@ -1148,27 +1154,27 @@ the compiler with specific default controls. The search order for this file is:<
 </table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">solution:
-  created-for: cmsis-toolbox@2.14 # minimum CMSIS-Toolbox version required for project build
-  cdefault:                       # use default setup of toolchain-specific controls.
-  compiler: GCC                   # overwrite compiler definition in 'cdefaults.yml'
+  created-for: cmsis-toolbox@2.14.0 # minimum CMSIS-Toolbox version required for project build
+  cdefault:                         # use default setup of toolchain-specific controls.
+  compiler: GCC                     # overwrite compiler definition in 'cdefaults.yml'
 
   packs:
-    - pack: ST                    # add ST packs in 'cdefaults.yml'
+    - pack: ST                      # add ST packs in 'cdefaults.yml'
+    - pack: ST::TestSW
+      path: ./MyDev/TestSW
+      for-context: .Test
 
-  build-types:                    # additional build types
-    - type: Test                  # build-type: Test
+  build-types:                      # additional build types
+    - type: Test                    # build-type: Test
       optimize: none
       debug: on
-      packs:                      # with explicit pack specification
-        - pack: ST::TestSW
-          path: ./MyDev/TestSW
 
   target-types:
-    - type: Board                 # target-type: Board
+    - type: Board                   # target-type: Board
       board: NUCLEO-L552ZE-Q
 
-    - type: Production-HW         # target-type: Production-HW
-      device: STM32U5X            # specifies device
+    - type: Production-HW           # target-type: Production-HW
+      device: STM32U5X              # specifies device
 
   projects:
     - project: ./blinky/Bootloader.cproject.yml
@@ -1178,7 +1184,7 @@ the compiler with specific default controls. The search order for this file is:<
 <h4 id="image-only-solution">Image-only solution</h4>
 <p>A solution may configure programming and debugging for images produced by another build system without specifying a <code>projects:</code> node. Such an image-only solution requires a <code>target-set:</code> that lists the image files and debugger configuration. An optional <a href="#executes"><code>executes:</code></a> node can invoke the external build system before the image is used.</p>
 <pre><code class="language-yml">solution:
-  created-for: cmsis-toolbox@2.15.0
+  created-for: cmsis-toolbox@2.16.0
 
   target-types:
     - type: Hardware
@@ -1333,7 +1339,7 @@ the compiler with specific default controls. The search order for this file is:<
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">project:
   misc:
-    - compiler: AC6                          # specify misc controls for Arm Compiler 6
+    - for-compiler: AC6                      # specify misc controls for Arm Compiler 6
       C: [-fshort-enums, -fshort-wchar]      # set options for C files
   add-path:
     - $OutDir(Secure)$                       # add the path to the secure project's output directory
@@ -1701,10 +1707,10 @@ the compiler with specific default controls. The search order for this file is:<
 </table>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">solution:
-  created-for: cmsis-toolbox@2.5  # minimum CMSIS-Toolbox version required for project build
-  select-compiler:                # list tested compilers that can be selected
-    - compiler: GCC               # GCC is supported
-    - compiler: AC6@6.22          # AC6 is supported, version number is a hint on what was tested
+  created-for: cmsis-toolbox@2.5.0 # minimum CMSIS-Toolbox version required for project build
+  select-compiler:                 # list tested compilers that can be selected
+    - compiler: GCC                # GCC is supported
+    - compiler: AC6@6.22.0         # AC6 is supported, version number is a hint on what was tested
 </code></pre>
 <h3 id="compiler"><code>compiler:</code></h3>
 <p>Selects the compiler toolchain used for code generation. It can be applied in <code>*.csolution.yml</code> files.
@@ -2587,12 +2593,12 @@ project. It is, however, possible to change that <code>setup:</code> settings on
       define:
         - test: 12
 
-   - setup: GCC project setup
-     for-compiler: GCC
-     linker:
-       - script: my-project.inc
-     define:
-       - test: 11
+    - setup: GCC project setup
+      for-compiler: GCC
+      linker:
+        - script: my-project.inc
+      define:
+        - test: 11
 </code></pre>
 <h2 id="pack-selection">Pack Selection</h2>
 <p>The <code>packs:</code> node which can be specified in the <code>*.csolution.yml</code> file, allows you to:</p>
@@ -3289,13 +3295,13 @@ Refer to the section <a href="../build-overview/#configure-related-projects">"Co
 <p><em>Example.csolution.yml</em></p>
 <pre><code class="language-yml">solution:
   target-types:
-    - type: NXP Board
+    - type: NXP-Board
       board: IMXRT1050-EVKB
       variables:
         - Socket-Layer: $SolutionDir()$/Socket/FreeRTOS+TCP/Socket.clayer.yml
         - Board-Layer:  $SolutionDir()$/Board/IMXRT1050-EVKB/Board.clayer.yml
 
-    - type: ST Board
+    - type: ST-Board
       board: B-U585I-IOT02A
       variables:
         - Socket-Layer: $SolutionDir()$/Socket/WiFi/Socket.clayer.yml
@@ -3315,12 +3321,12 @@ Refer to the section <a href="../build-overview/#configure-related-projects">"Co
 <p><em>Example.csolution.yml</em></p>
 <pre><code class="language-yml">solution:
   target-types:
-    - type: Alif Board
+    - type: Alif-Board
       board: Alif Semiconductor::DevKit-E7
       variables:
         - west-board: alif_e7_dk_rtss_he              # explicit west board name
 
-    - type: ST Board
+    - type: ST-Board
       board: STMicroelectronics::STM32H7B3I-DK        # $west-board$ set to `stm32h7b3i_dk`
 </code></pre>
 <h3 id="context-map"><code>context-map:</code></h3>
@@ -4146,9 +4152,11 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </tbody>
 </table>
 <h3 id="west-defs"><code>west-defs:</code></h3>
-<p>Defines for the <code>west build</code> commands are specified in CMake format. The <code>west-defs:</code> that are defined under the active target and build type are concatenated as follows:</p>
+<p>Defines for the <code>west build</code> commands are a list of CMake variables. Use <a href="#for-compiler"><code>for-compiler:</code></a> to apply this define only for the selected compiler toolchain.</p>
+<p>The <code>west-defs:</code> that are defined under the active target and build type are filtered for the selected compiler and concatenated as follows:</p>
 <p><code>&lt;west-defs&gt; := &lt;west:west-defs&gt; + &lt;target-type:west-defs&gt; + &lt;build-type:west-defs&gt;</code></p>
-<p>The information provided with the <code>west:</code> and <code>west-def:</code> nodes are used to generate the command line for the <code>west</code> tool:</p>
+<p>Values may contain <a href="#variables">variables</a> and <a href="#access-sequences">Access Sequences</a>, including <code>$Pack(vendor::name)$</code>. Access Sequences are expanded before the definitions are passed to West. A <code>${NAME}</code> expression is preserved for expansion as an environment or CMake variable by the downstream build system; it is not interpreted as a CMSIS Access Sequence. Colons and semicolons are permitted in values, for example to pass several pack directories in <code>EXTRA_ZEPHYR_MODULES</code>.</p>
+<p>The information provided with the <code>west:</code> and <code>west-defs:</code> nodes is used to generate the command line for the <code>west</code> tool:</p>
 <pre><code class="language-bash">&gt;west &lt;west-opt&gt; build --board &lt;board&gt; --build-dir $SolutionDir()$/out/&lt;project-id&gt;/$TargetType$
             --pristine {auto | always} &lt;app-path&gt; -- &lt;west-defs&gt;
 </code></pre>
@@ -4162,6 +4170,28 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </ul>
 </div>
 <p><strong>Example:</strong></p>
+<pre><code class="language-yml">solution:
+  packs:
+    - pack: PyTorch::ExecuTorch
+
+  build-types:
+    - type: Debug
+      west-defs:
+        - CONFIG_DEBUG: y
+          CONFIG_DEBUG_THREAD_INFO: y
+        - CONFIG_LLVM_USE_LLD: y
+          CONFIG_COMPILER_RT_RTLIB: y
+          for-compiler: CLANG
+
+  projects:
+    - west:
+        project-id: Zephyr_App
+        app-path: .
+        west-defs:
+          - DTC_OVERLAY_FILE: app.overlay
+          - EXTRA_ZEPHYR_MODULES: $Pack(PyTorch::ExecuTorch)$
+</code></pre>
+<p>The compiler-specific item adds the LLVM definitions only to a CLANG context. The <code>$Pack(PyTorch::ExecuTorch)$</code> Access Sequence resolves the installed pack directory without embedding its version or absolute installation path in the project.</p>
 <p><a href="https://github.com/Arm-Examples/CMSIS-Zephyr">Arm-Examples/CMSIS-Zephyr</a> explains the setup of a Zephyr project.</p>
 <h2 id="cmake-build">CMake Build</h2>
 <p>Enable native CMake project build orchestration and add its output images to the <em>csolution project</em>. This project type is supported with CMSIS-Toolbox 2.15 or higher and does not require a <code>*.cproject.yml</code> file.</p>
@@ -4195,7 +4225,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>configure:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">List of options for the CMake configure command.</td>
+<td style="text-align: left;">List of options for the CMake configure command; supports <a href="#variables">variables</a> and <a href="#access-sequences">Access Sequences</a>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>target:</code></td>
@@ -4215,8 +4245,8 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </tbody>
 </table>
 <h4 id="cmake-images">CMake <code>images:</code></h4>
-<p>The <code>images:</code> node lists the output images produced by the native CMake project. Each output type can be specified only once.</p>
-<p>Image paths are relative to the context output directory. CMSIS-Toolbox records these files as build outputs but does not define how the native CMake project creates them.</p>
+<p>The <code>images:</code> node lists the output images produced by the native CMake project. Each output type can be specified only once. The <code>image:</code> path supports <a href="#variables">variables</a> and <a href="#access-sequences">Access Sequences</a>.</p>
+<p>Image paths that remain relative after expansion are relative to the context output directory. CMSIS-Toolbox records these files as build outputs but does not define how the native CMake project creates them.</p>
 <table>
 <thead>
 <tr>
@@ -4238,23 +4268,32 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </tr>
 </tbody>
 </table>
+<p>The strings under <code>configure:</code> and <code>image:</code> are expanded for each context and may use variables from the active <code>build-type:</code> and <code>target-type:</code> along with <a href="#access-sequences">Access Sequences</a> such as <code>$BuildType$</code>, <code>$TargetType$</code>, <code>$SolutionDir()$</code>, and <code>$OutDir()$</code>.</p>
 <p><strong>Example:</strong></p>
-<pre><code class="language-yml">  projects:
+<pre><code class="language-yml">  build-types:
+    - type: Debug
+      variables:
+        - CMakeConfig: Debug
+    - type: Release
+      variables:
+        - CMakeConfig: Release
+
+  projects:
     - cmake:
         source: ./cmake/core0
         project-id: core0
         device: :cm0_core0
         generator: Ninja
         configure:
-          - -DCMAKE_BUILD_TYPE=Debug
+          - -DCMAKE_BUILD_TYPE=$CMakeConfig$
+          - -DCMSIS_BUILD_TYPE=$BuildType$
+          - -DGENERATED_DIR=$OutDir()$/generated
         target: core0-target
         images:
-          - image: build/core0.elf
+          - image: $OutDir()$/build/$CMakeConfig$/core0.elf
             type: elf
-          - image: build/core0.hex
+          - image: build/$CMakeConfig$/core0.hex
             type: hex
-          - image: build/core0.bin
-            type: bin
 </code></pre>
 <h2 id="prepost-build-steps">Pre/Post Build Steps</h2>
 <p>The CMSIS-Toolbox supports pre-build and post-build steps that utilize external tools or scripts. Such external commands can be used for various tasks such as:</p>
@@ -4552,7 +4591,7 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 </ul>
 <h3 id="example-board">Example: Board</h3>
 <p>This <code>connections:</code> node of a board layer describes the available interfaces.  The WiFi interface requires a CMSIS-RTOS2 function.</p>
-<pre><code class="language-yml">  connections:                          # describes the functionality of a board layer
+<pre><code class="language-yml">  connections:                           # describes the functionality of a board layer
     - connect: WiFi interface
       provides:
         - CMSIS-Driver WiFi:
@@ -4603,45 +4642,45 @@ the <code>%Instance%</code> with the instance number <code>n</code>.</p>
 <h3 id="example-sensor-shield">Example: Sensor Shield</h3>
 <p>This sensor shield layer provides a set of interfaces that are configurable.</p>
 <pre><code class="language-yml">  connections:
-    - connect: I2C Interface 'Std'
-      set:  comm.I2C-Std
-      info: JP1=Off  JP2=Off
+    - connect: I2C Interface 'Std'
+      set: comm.I2C-Std
+      info: JP1=Off JP2=Off
       provides:
-        - Sensor_I2C:
-      consumes:
-        - Ardunio_Uno_I2C:
+        - Sensor_I2C:
+      consumes:
+        - Arduino_Uno_I2C:
 
-    - connect: I2C Interface 'Alt'
-      set:  comm.I2C-Alt
-      info: JP1=On  JP2=Off
+    - connect: I2C Interface 'Alt'
+      set: comm.I2C-Alt
+      info: JP1=On JP2=Off
       provides:
-        - Sensor_I2C:
-      consumes:
-        - Ardunio_Uno_I2C-Alt:
+        - Sensor_I2C:
+      consumes:
+        - Arduino_Uno_I2C-Alt:
 
-    - connect: SPI Interface 'Alt'
-      set:  comm.SPI
+    - connect: SPI Interface 'Alt'
+      set: comm.SPI
       info: JP2=On
       provides:
-        - Sensor_SPI:
-      consumes:
-        - Ardunio_Uno_SPI:
+        - Sensor_SPI:
+      consumes:
+        - Arduino_Uno_SPI:
 
-    - connect: Sensor Interrupt INT0
-      set:  SensorIRQ.0
+    - connect: Sensor Interrupt INT0
+      set: SensorIRQ.0
       info: JP3=Off
-      provides:
-        - Sensor_IRQ:
-      consumes:
-        - Ardunio_Uno_D2:
+      provides:
+        - Sensor_IRQ:
+      consumes:
+        - Arduino_Uno_D2:
 
-    - connect: Sensor Interrupt INT1
-      set:  SensorIRQ.1
+    - connect: Sensor Interrupt INT1
+      set: SensorIRQ.1
       info: JP3=On
-      provides:
-        - Sensor_IRQ:
-      consumes:
-        - Ardunio_Uno_D3:
+      provides:
+        - Sensor_IRQ:
+      consumes:
+        - Arduino_Uno_D3:
 </code></pre>
 <h2 id="debugger-configuration">Debugger Configuration</h2>
 <p>The <code>debugger:</code> node specified under the <a href="#target-set"><code>target-set:</code></a> in the <em>csolution project</em> configures the debugger.</p>

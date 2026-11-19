@@ -248,7 +248,11 @@
               </ul>
               <p class="caption"><span class="caption-text">Device Configuration Tools</span></p>
               <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../InfineonConfig/">Infineon Configuration Tools</a>
+                  </li>
                   <li class="toctree-l1"><a class="reference internal" href="../MCUXpressoConfig/">MCUXpresso for NXP Devices</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../RenesasRASC/">RA Smart Configurator for Renesas Devices</a>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../CubeMX/">STM32CubeMX for STM32 Devices</a>
                   </li>
@@ -290,6 +294,7 @@
 <li><a href="#linker-script-management">Linker Script Management</a> defines the  available memory and controls the linker operation.</li>
 <li><a href="#generator-support">Generator Support</a> integrates configuration tools such as STM32CubeMX or MCUXpresso Config.</li>
 <li><a href="#run-and-debug-configuration">Run and Debug Configuration</a> explains how to configure debug adapters such as CMSIS-DAP or J-Link.</li>
+<li><a href="#native-cmake-build-integration">Native CMake Build Integration</a> orchestrates native CMake projects in context with a <em>csolution project</em>.</li>
 <li><a href="#west-build-system-integration">West Build System Integration</a> allows to manage Zephyr applications in context with a <em>csolution project</em>.</li>
 <li><a href="#mlops-integration">MLOps Integration</a> describes how to generate an ML model layer and integrate it into an application.</li>
 </ul>
@@ -691,6 +696,7 @@ therefore, manages related projects. It may also be deployed to different target
 
     - type: Production-HW
       device: STM32U5X          # specifies device
+      target-set:
         - set:                  # default set for this target
           images:               # all projects as release version
             - project-context: Bootloader.Release
@@ -885,7 +891,7 @@ The related <code>Library.cproject.yml</code> file sets the output to a library 
   description: RTX RTOS with configuration settings
 
   packs:
-    - pack: ARM:CMSIS-RTX
+    - pack: ARM::CMSIS-RTX
 
   components:
     - component: CMSIS:RTOS2:Keil RTX5&amp;Source
@@ -1333,7 +1339,7 @@ Merge content from update file, rename update file to base file and remove previ
 <p><a href="https://developer.arm.com/Tools%20and%20Software/Arm%20Toolchain%20for%20Embedded">CLANG v21 (ATfE)</a> uses picolibc initialization support that requires the linker symbols <code>__bothinit_array_start</code> and <code>__bothinit_array_end</code>. The current <code>clang_linker_script.ld.src</code> template defines these symbols around the pre-initialization and initialization arrays. When upgrading an existing project to CLANG v21 (ATfE), update any customized or previously copied CLANG linker script accordingly.</p>
 </div>
 <h2 id="generator-support">Generator Support</h2>
-<p><em>Generators</em>, such as STM32CubeMX or MCUXpresso Config Tools, simplify the configuration for devices and boards. The CMSIS-Toolbox implements a <a href="../build-operation/#generator-integration">generic interface for generators</a>. <em>Generators</em> may be used to:</p>
+<p><em>Generators</em>, such as <a href="../CubeMX/">STM32CubeMX</a>, <a href="../InfineonConfig/">Infineon Configuration Tools</a>, <a href="../MCUXpressoConfig/">MCUXpresso Config Tools</a>, or <a href="../RenesasRASC/">Renesas RA Smart Configurator</a>, simplify the configuration for devices and boards. The CMSIS-Toolbox implements a <a href="../build-operation/#generator-integration">generic interface for generators</a>. <em>Generators</em> may be used to:</p>
 <ul>
 <li>Configure device and/or board settings, such as clock configuration or pinout.</li>
 <li>Add and configure software drivers, for example, for UART, SPI, or I/O ports.</li>
@@ -1377,6 +1383,7 @@ CubeMX (Global Registered Generator)                 # Name of the Generator
 <ul>
 <li><a href="../CubeMX/">Configure STM32 Devices with CubeMX</a></li>
 <li><a href="../MCUXpressoConfig/">Configure NXP Devices with MCUXpresso Config Tools</a></li>
+<li><a href="../InfineonConfig/">Configure Infineon Devices</a></li>
 </ul>
 <h2 id="run-and-debug-configuration">Run and Debug Configuration</h2>
 <p>The CMSIS-Toolbox uses the information from the DFP and BSP to simplify the debugger configuration.  It generates the file <code>&lt;solution-name&gt;+&lt;target-type&gt;.cbuild-run.yml</code> that contains for one target of a <em>csolution project</em> all information for run and debug. This file is used by <a href="https://pyocd.io/">pyOCD</a> and the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">CMSIS Solution extension for VS Code</a> to configure debug and programming features of the <a href="../build-operation/#debug-adapter-integration">supported debug adapters</a>.</p>
@@ -1428,15 +1435,24 @@ pyocd gdbserver --cbuild-run MyApplication+MyBoard.cbuild-run.yml         # star
 <h2 id="native-cmake-build-integration">Native CMake Build Integration</h2>
 <p>Native CMake projects can be integrated into a <em>csolution project</em> without a <code>*.cproject.yml</code> file. The CMSIS-Toolbox configures and builds each project using the source directory, generator, configure options, and optional build target specified in the <a href="../YML-Input-Format/#cmake-build"><code>cmake:</code> node</a>.</p>
 <p>CMake projects are listed under <code>projects:</code> in the <code>*.csolution.yml</code> file and participate in the solution's <code>target-types:</code> and <code>build-types:</code>. Their declared output images are included in the generated <a href="../YML-CBuild-Format/#run-and-debug-management"><code>*.cbuild-run.yml</code></a> file and can therefore be combined with images from other project contexts for programming and debugging.</p>
+<p>For each context, CMSIS-Toolbox expands <a href="../YML-Input-Format/#variables">variables</a> and <a href="../YML-Input-Format/#access-sequences">Access Sequences</a> to <code>configure:</code> arguments and <code>images:</code> paths. This allows the active build and target types to select native CMake settings and context-specific output files.</p>
 <p>The standard build commands also apply to native CMake project contexts:</p>
 <pre><code class="language-shell">cbuild setup MySolution.csolution.yml --active DualCoreDevice
 cbuild MySolution.csolution.yml --active DualCoreDevice
 cbuild MySolution.csolution.yml --active DualCoreDevice --clean
 cbuild MySolution.csolution.yml --active DualCoreDevice --rebuild
 </code></pre>
-<p>The native project remains responsible for its <code>CMakeLists.txt</code>, toolchain setup, build targets, and generated files. CMSIS-Toolbox provides orchestration and records the declared images; it does not translate the native project into a <code>*.cproject.yml</code> file. Paths under <code>images:</code> identify outputs relative to the native project's context output directory.</p>
+<p>The native CMake project remains responsible for its <code>CMakeLists.txt</code>, toolchain setup, build targets, and generated files. Paths under <code>images:</code> identify outputs relative to the native project's context output directory.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">solution:
+  build-types:
+    - type: Debug
+      variables:
+        - CMakeConfig: Debug
+    - type: Release
+      variables:
+        - CMakeConfig: Release
+
   target-types:
     - type: DualCoreDevice
       device: Vendor::DualCoreDevice
@@ -1445,8 +1461,11 @@ cbuild MySolution.csolution.yml --active DualCoreDevice --rebuild
     - cmake:
         source: ./core0
         device: :Core0
+        configure:
+          - -DCMAKE_BUILD_TYPE=$CMakeConfig$
+          - -DCMSIS_CONTEXT=$BuildType$+$TargetType$
         images:
-          - image: build/core0.elf
+          - image: build/$CMakeConfig$/core0.elf
             type: elf
 </code></pre>
 <p>For a complete application that integrates a native CMake project with CMSIS-Toolbox, refer to <a href="https://github.com/Arm-Examples/CMSIS-CMake">Arm-Examples/CMSIS-CMake</a>.</p>
@@ -1454,7 +1473,7 @@ cbuild MySolution.csolution.yml --active DualCoreDevice --rebuild
 <p>The West build system is a project management system used primarily in the <a href="https://www.zephyrproject.org/">Zephyr</a> ecosystem. The integration in the CMSIS-Toolbox acts as a "build orchestration wrapper" around CMake.
 The CMSIS-Toolbox connects the <code>west build</code> command with the information of the CMSIS-Pack system as shown in the diagram below. For the <a href="#compiler-selection">selected compiler</a> the related <a href="../build-operation/#west-integration">environment variables for the west build system</a> are set. When combined with the <a href="https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution">VS Code CMSIS Solution</a> extension, features such as project outline in the CMSIS View or "go-to-definition" with <code>clangd</code> are available.</p>
 <p><img alt="West Build System Integration" src="../images/west-integration.png" title="West Build System Integration" /></p>
-<p>West projects are specified using the <a href="../YML-Input-Format/#west"><code>west:</code></a> node under <code>projects:</code> in the <code>*.csolution.yml</code> file and can be managed with the <code>target-types</code> and <code>build-types</code> of the <em>csolution project</em>. Note that the <code>sysbuild</code> feature of <code>west</code> is not supported as the CMSIS-Toolbox manages already related projects.</p>
+<p>West projects are specified using the <a href="../YML-Input-Format/#west"><code>west:</code></a> node under <code>projects:</code> in the <code>*.csolution.yml</code> file and can be managed with the <code>target-types</code> and <code>build-types</code> of the <em>csolution project</em>. The <a href="../YML-Input-Format/#west-defs"><code>west-defs:</code></a> from the project, active target type, and active build type are combined for each context. Individual definition groups may be restricted with <code>for-compiler:</code>, and their values may use variables and Access Sequences such as <code>$Pack(vendor::name)$</code>. Note that the <code>sysbuild</code> feature of <code>west</code> is not supported as the CMSIS-Toolbox manages already related projects.</p>
 <p>The usual <code>cbuild</code> setup, build, clean, and rebuild operations also apply to West projects. During setup, the integration requests a <code>compile_commands.json</code> database from West for editor and language-server support. See <a href="../build-operation/#west-integration">West Integration</a> for the command mapping.</p>
 <p><strong>Example:</strong></p>
 <pre><code class="language-yml">solution:
@@ -1463,6 +1482,7 @@ The CMSIS-Toolbox connects the <code>west build</code> command with the informat
   packs:
     - pack: AlifSemiconductor::Ensemble@^2.0.0-0
     - pack: ARM::CMSIS
+    - pack: PyTorch::ExecuTorch
 
   target-types:
     - type: DevKit-E7
@@ -1501,6 +1521,8 @@ The CMSIS-Toolbox connects the <code>west build</code> command with the informat
         app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_he
         board: $west-board$_he
         device: :M55_HE
+        west-defs:
+          - EXTRA_ZEPHYR_MODULES: $Pack(PyTorch::ExecuTorch)$
     - west:
         app-path: ./alif/samples/drivers/ipm/ipm_arm_mhuv2/rtss_hp
         board: $west-board$_hp
@@ -1619,6 +1641,7 @@ cbuild MyApp.csolution.yml --active SSE-320-U85@FVP-Test</code></p>
 </code></pre>
 <p><code>MyApp.cbuild-mlops.yml</code> output. Paths are relative to the location of the <code>*.cbuild-mlops.yml</code> file (which is in the same directory as the <code>*.csolution.yml</code> file).</p>
 <pre><code class="language-yml">cbuild-mlops:
+  generated-by: csolution version 2.16.0
   description: ML model for detecting Rock/Paper/Scissors images
   processor:
     type: Cortex-M55
