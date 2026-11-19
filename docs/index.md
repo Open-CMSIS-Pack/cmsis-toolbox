@@ -37,13 +37,16 @@ Thank you for using the **CMSIS-Toolbox** that provides command-line tools for:
     - [**J-Link Debugger**](pyOCD-Debugger.md) explains the usage of the [J-Link GDB Server](https://www.segger.com/products/debug-probes/j-link/tools/j-link-gdb-server/about-j-link-gdb-server/) in combination with the CMSIS-Toolbox configuration features.
 
 - **Device Configuration Tools**
+    - [**Infineon Configuration Tools**](InfineonConfig.md) explains how to use Device Configurator and MCU Config Wizard with a *csolution project*.
     - [**MCUXpresso for NXP Devices**](./MCUXpressoConfig.md) shows how to use [MCUXpresso Config Tools](https://www.nxp.com/configtools) to manage device and board configuration.
+    - [**RA Smart Configurator for Renesas Devices**](RenesasRASC.md) explains how to use the Renesas RA Smart Configurator with a *csolution project*.
     - [**STM32CubeMX for STM32**](CubeMX.md) explains how to use [STM32CubeMX](https://www.st.com/en/development-tools/stm32cubemx.html) to manage device and board configuration.
 
 ## Revision History
 
 Version            | Description
 :-----------------:|:-------------------------
+2.16.0             | CMSIS-Toolbox [2.16.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.16.0) adds Cortex-M42 support, [device and board management with cpackget](build-tools.md#find-devices-and-boards), enhanced [native CMake](build-overview.md#native-cmake-build-integration) and [West](build-overview.md#west-build-system-integration) integrations, and support for [Renesas](RenesasRASC.md) and [Infineon](InfineonConfig.md) configuration tools.
 2.15.0             | CMSIS-Toolbox [2.15.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.15.0) fixes [several issues](https://github.com/orgs/Open-CMSIS-Pack/projects/22/views/14). It documents a [workaround for stack unwinding issues with GDB debugger](Troubleshooting.md#stack-unwinding-fails-or-hangs), and adds [native CMake project integration](build-overview.md#native-cmake-build-integration), solution-level [`compiler-alias:`](YML-Input-Format.md#compiler-alias), support for per-library [`whole-archive`](YML-Input-Format.md#link), and enhanced pack and configuration [lifecycle management](build-overview.md#plm-of-software-packs).
 2.14.0             | CMSIS-Toolbox [2.14.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.14.0) fixes [several issues](https://github.com/orgs/Open-CMSIS-Pack/projects/22/views/13). It adds [MLOps Integration](build-overview.md#mlops-integration), target-set-specific [temporary directories](YML-Input-Format.md#output-dirs), automatic rebase of [configuration files](build-overview.md#plm-of-configuration-files), enhanced [library generation](build-overview.md#generate-library) with [component](YML-Input-Format.md#components) `build-scope:`, and a command to [check for pack updates](build-overview.md#plm-of-software-packs).
 2.13.0             | CMSIS-Toolbox [2.13.0](https://github.com/Open-CMSIS-Pack/cmsis-toolbox/releases/tag/2.13.0) fixes [several issues](https://github.com/orgs/Open-CMSIS-Pack/projects/12/views/12) and adds [compiler support](installation.md#compiler-toolchains) for Microchip XC and CLANG_TI. The pyOCD command `run` supports [SEGGER RTT](pyOCD-Debugger.md#rtt). A [minimal setup](pyOCD-Debugger.md#minimal-setup) for pyOCD is documented.

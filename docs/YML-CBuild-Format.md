@@ -146,8 +146,8 @@ build-idx:
     - target-type: B-U585I-IOT02A
       target-configurations:
         - configuration:
-            - variables:
-                - Board-Layer: /Users/.../Arm/Packs/Keil/B-U585I-IOT02A_BSP/2.0.0-dev0/Layers/IoT/Board.clayer.yml
+          variables:
+            - Board-Layer: /Users/.../Arm/Packs/Keil/B-U585I-IOT02A_BSP/2.0.0-dev0/Layers/IoT/Board.clayer.yml
   cprojects:
     - cproject: Device/HID/HID.cproject.yml
       clayers:
@@ -172,10 +172,6 @@ build-idx:
       configuration: .Release+B-U585I-IOT02A
   cbuild-run: out/USB+B-U585I-IOT02A.cbuild-run.yml
 
-  errors: true                  # indicates error
-  packs-missing:                # lists missing packs
-    - pack: ARM::CMSIS-RTX      # with unspecified version
-    - pack: ARM::CMSIS@6.0.0    # with specified version
 ```
 
 ### `*.cbuild.yml`
@@ -359,6 +355,7 @@ Refer to [MLOps Integration](build-overview.md#mlops-integration) for more infor
 `cbuild-mlops:`                                             | Content
 :-----------------------------------------------------------|:------------------------------------
 &nbsp;&nbsp;&nbsp; `description:`                           | Descriptive text of the ML model under development.
+&nbsp;&nbsp;&nbsp; `generated-by:`                          | Tool name along with version information used to generate this file.
 &nbsp;&nbsp;&nbsp; `processor:`                             | Processor information for the ML model.
 &nbsp;&nbsp;&nbsp; `npu:`                                   | NPU type and MAC configuration (only present for devices with NPU).
 &nbsp;&nbsp;&nbsp; `vela:`                                  | Vela INI file and option string (only present for Ethos-U NPUs).
@@ -372,6 +369,7 @@ Refer to [MLOps Integration](build-overview.md#mlops-integration) for more infor
 
 ```yml
 cbuild-mlops:
+  generated-by: csolution version 2.16.0
   description: ML model for detecting Rock/Paper/Scissors images
   processor:
     type: Cortex-M55
@@ -425,28 +423,29 @@ The `configurations:` node lists possible configurations for [reference applicat
     - target-type: B-U585I-IOT02A
       target-configurations:
         - configuration:
-            - variables:
-              - Board-Layer: /Users/.../Arm/Packs/Keil/B-U585I-IOT02A_BSP/2.0.0-dev0/Layers/IoT/Board.clayer.yml
-                description: "Configuration including FXLS8962 sensor"
+          variables:
+            - Board-Layer: /Users/.../Arm/Packs/Keil/B-U585I-IOT02A_BSP/2.0.0-dev0/Layers/IoT/Board.clayer.yml
+              description: "Configuration including FXLS8962 sensor"
 
     - target-type: MyBoard
+      target-configurations:
         - configuration:
-            - variables:
-              - Board-Layer: ./layer/board/frdmk22f/frdmk22f.clayer.yml
-                description: "Configuration: Ethernet, UART, and WiFi"
-                settings:
+          variables:
+            - Board-Layer: ./layer/board/frdmk22f/frdmk22f.clayer.yml
+              description: "Configuration: Ethernet, UART, and WiFi"
+              settings:
                 - set: set1.select1 (connect A - set 1 select 1)
-                path: ./layer/board/frdmk22f
-                file: frdmk22f.clayer.yml
-                copy-to: board/frdmk22f
-              - Shield-Layer: ./layer/shield/agmp03/agmp03.clayer.yml
-                description: "Shield with FXLS8962 and FXAS21002"
-                settings:
-                - set: Bus.SPI (FXLS8962 SPI Bus - Jumper configuration: I2C/SPI=SPI)
-                - set: Bus.SPI (FXAS21002 SPI Bus - Jumper configuration: I2C/SPI=SPI)
-                path: ./layer/board/frdmk22f
-                file: frdmk22f.clayer.yml
-                copy-to: board/frdmk22f
+              path: ./layer/board/frdmk22f
+              file: frdmk22f.clayer.yml
+              copy-to: board/frdmk22f
+            - Shield-Layer: ./layer/shield/agmp03/agmp03.clayer.yml
+              description: "Shield with FXLS8962 and FXAS21002"
+              settings:
+                - set: "Bus.SPI (FXLS8962 SPI Bus - Jumper configuration: I2C/SPI=SPI)"
+                - set: "Bus.SPI (FXAS21002 SPI Bus - Jumper configuration: I2C/SPI=SPI)"
+              path: ./layer/board/frdmk22f
+              file: frdmk22f.clayer.yml
+              copy-to: board/frdmk22f
 ```
 
 #### `cprojects:`
@@ -477,21 +476,28 @@ The `cbuilds:` node lists all project context configurations that are generated 
 `cbuilds:`                                                         | Content
 :------------------------------------------------------------------|:------------------------------------
 `- cbuild:`                                                        | Build description file of a single context for a *.cproject.yml input file.
+&nbsp;&nbsp;&nbsp; `west:`                                         | Indicates a context generated from a West project.
+&nbsp;&nbsp;&nbsp; `cmake:`                                        | Indicates a context generated from a native CMake project.
 &nbsp;&nbsp;&nbsp; `project:`                                      | Project name.
 &nbsp;&nbsp;&nbsp; `configuration:`                                | Context configuration for this build description file.
+&nbsp;&nbsp;&nbsp; `depends-on:`                                   | List of contexts or execute steps required by this context.
 &nbsp;&nbsp;&nbsp; `errors:`                                       | Error indication.
 &nbsp;&nbsp;&nbsp; `packs-missing:`                                | List of missing packs.
 &nbsp;&nbsp;&nbsp; `packs-unused:`                                 | List of unused packs.
+&nbsp;&nbsp;&nbsp; `clayers:`                                      | List of `*.clayer.yml` input files used by this context.
+&nbsp;&nbsp;&nbsp; `rebuild:`                                      | Indicates that intermediate files must be cleaned before the next build.
 &nbsp;&nbsp;&nbsp; `messages:`                                     | List of `errors:`, `warnings:`, or `info:` messages.
 
 **Example:**
 
 ```yml
   cbuilds:
-    - cproject: AWS_MQTT_MutualAuth_SW_Framework/Demo.cproject.yml
+    - cbuild: out/Demo/FVP/Debug/Demo.Debug+FVP.cbuild.yml
       project: Demo
       configuration: .Debug+FVP
       errors: true
+      packs-missing:
+        - pack: ARM::CMSIS-RTX
       messages:
         errors:
           - no compatible software layer found. Review the required connections of the project
@@ -719,7 +725,7 @@ For each west build context a node `west:` is created in *.cbuild.yml
 &nbsp;&nbsp;&nbsp; `project-id:`                          | **Required** | Project identifier
 &nbsp;&nbsp;&nbsp; `board:`                               | **Required** | Board name used for west build invocation.
 &nbsp;&nbsp;&nbsp; `device:`                              |   Optional   | Specify the processor core for execution of the generated image (used in `*.cbuild-run.yml`).
-&nbsp;&nbsp;&nbsp; `west-defs:`                           |   Optional   | Defines in `CMake` format. The `west-defs:` from build and target-type are added.
+&nbsp;&nbsp;&nbsp; `west-defs:`                           |   Optional   | Effective defines in `CMake` format after compiler filtering, concatenation, and Access Sequence expansion.
 &nbsp;&nbsp;&nbsp; `west-opt:`                            |   Optional   | Options for the `west` tool (default: empty).
 
 **Example:**
@@ -730,8 +736,12 @@ For each west build context a node `west:` is created in *.cbuild.yml
     app-path: ../../../../hello_world
     board: stm32h7b3i_dk 
     west-defs:
-      - CONFIG_BUILD_OUTPUT_HEX=y
+      - CONFIG_BUILD_OUTPUT_HEX: y
+      - CONFIG_LLVM_USE_LLD: y
+        CONFIG_COMPILER_RT_RTLIB: y
 ```
+
+When [`for-compiler:`](YML-Input-Format.md#for-compiler) is applied, the related `west-defs:` are generated only for the selected compiler. [Access Sequences](YML-Input-Format.md#access-sequences) are expanded, while `${NAME}` expressions are preserved for CMake.
 
 #### `cmake:`
 
@@ -1100,13 +1110,13 @@ This node contains connection information for a debugger with initial settings c
 &nbsp;&nbsp;&nbsp; `dbgconf:`                             |  Optional   | Debugger configuration file (pinout, trace).
 &nbsp;&nbsp;&nbsp; `start-pname:`                         |  Optional   | Debugger connects at start to this processor.
 &nbsp;&nbsp;&nbsp; `gdbserver:`                           |  Optional   | Information for GDB server option of debugger.
-&nbsp;&nbsp;&nbsp; `stdio:`                               |  Optional   | Standard I/O service configuration.
+&nbsp;&nbsp;&nbsp; [`stdio:`](pyOCD-Debugger.md#stdio)    |  Optional   | Standard I/O service configuration.
 &nbsp;&nbsp;&nbsp; `connect:`                             |  Optional   | Connect mode to hardware.
 &nbsp;&nbsp;&nbsp; `reset:`                               |  Optional   | Reset type configuration for various cores.
 &nbsp;&nbsp;&nbsp; `load-setup:`                          |  Optional   | Reset type and Halt configuration for Load command.
-&nbsp;&nbsp;&nbsp; `rtt:`                                 |  Optional   | Segger RTT configuration.
+&nbsp;&nbsp;&nbsp; [`rtt:`](pyOCD-Debugger.md#rtt)        |  Optional   | SEGGER RTT configuration.
 &nbsp;&nbsp;&nbsp; `systemview:`                          |  Optional   | Segger SystemView configuration.
-&nbsp;&nbsp;&nbsp; `trace:`                               |  Future     | Trace port of the debugger.
+&nbsp;&nbsp;&nbsp; [`trace:`](pyOCD-Debugger.md#trace)    |  Optional   | Trace transport and output configuration.
 &nbsp;&nbsp;&nbsp; `*:`                                   |  Optional   | Other debugger specific options specified under [target-set](YML-Input-Format.md#target-set).
 
 !!! Note
@@ -1254,7 +1264,7 @@ debug-sequences:
             // Ensure JTAG interface is reset
             DAP_SWJ_Sequence(6, 0x3F);
 
-        - if: !hasDormant
+        - if: "!hasDormant"
           atomic:
           execute:   |
             // Ensure current debug interface is in reset state
@@ -1302,7 +1312,7 @@ debug-sequences:
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &gt; 50 cycles SWDIO/TMS High
             DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
 
-        - if: !hasDormant
+        - if: "!hasDormant"
           atomic:
           execute:  |
             // Ensure current debug interface is in reset state
@@ -1316,13 +1326,9 @@ debug-sequences:
             DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &gt; 50 cycles SWDIO/TMS High
             DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
 
-              // Enter SWD Line Reset State
-          DAP_SWJ_Sequence(51, 0x0007FFFFFFFFFFFF);  // &gt; 50 cycles SWDIO/TMS High
-          DAP_SWJ_Sequence(3,  0x00);                // At least 2 idle cycles (SWDIO/TMS Low)
-
     - execute:  |
-      // Read DPIDR to enable SWD interface (SW-DPv1 and SW-DPv2)
-      ReadDP(0x0);
+        // Read DPIDR to enable SWD interface (SW-DPv1 and SW-DPv2)
+        ReadDP(0x0);
 ```
 
 #### `debug-sequences-conf:`
@@ -1331,7 +1337,7 @@ This node contains configuration information for how [debug sequences](https://o
 
 `debug-sequences-conf:`              |              | Content
 :------------------------------------|--------------|:------------------------------------
-&nbsp;&nbsp;&nbsp; `trace-setup:`     |   Optional   | Configure how to use trace sequences. Can be `full` or `legacy` (default: `legacy`).
+&nbsp;&nbsp;&nbsp; `trace-setup:`    |   Optional   | Configure how to use trace sequences. Can be `full` or `legacy` (default: `legacy`).
 
 Value `full` for `trace-setup:` informs the debugger that all trace component setup is done by the trace sequences. Opposed to that, the `legacy` mode expected debuggers to program the CoreSight trace components as per built-in support knowledge. Going forward, `full` is the preferred mode to allow new CoreSight component support without debug tool updates.
 
@@ -1343,7 +1349,6 @@ debug-sequences:
 debug-sequences-conf:
   trace-setup: full
 ```
-
 
 #### `programming:`
 

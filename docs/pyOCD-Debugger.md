@@ -43,20 +43,22 @@ pyOCD integrates a standard I/O service for character I/O functions via Semihost
 The `stdio:` node configures:
 
 - Server port for connecting remote tools, for example the [Serial Monitor VS Code extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-serial-monitor).
-- Redirect the output to a `file`, `console`, `server`, or `monitor`. The setting `monitor` connects a Telnet server `port` to the Serial Monitor in VS Code. The default output file and location is derived from the [`cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management) and uses the extension `<pname>.out`, format: `<solution-name>+<target-type>.<pname>.out`
+- Redirect the output to a `file`, `console`, `server`, or `monitor`. The setting `monitor` connects a Telnet server `port` to the Serial Monitor in VS Code. Default input and output files are placed next to the generated [`*.cbuild-run.yml` file](YML-CBuild-Format.md#run-and-debug-management) and use the format `<solution-name>+<target-type>[.<pname>].{in | out}`. The processor suffix is omitted for an unnamed processor in a single-core system.
 
 `stdio:`                       |              | Description
 :------------------------------|:-------------|:------------------------------------
 `- mode:`                      | **Required** | Redirect output: `off` (default), `server`, `file`, `console`, `monitor`.
 &nbsp;&nbsp;&nbsp; `pname:`    |   Optional   | Identifies the processor (not required for single core system).
 &nbsp;&nbsp;&nbsp; `port:`     |   Optional   | Set TCP/IP port number of Telnet Server (default: 4444, 4445, ... incremented for each processor).
-&nbsp;&nbsp;&nbsp; `file-in:`  |   Optional   | Explicit path and name of the input file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.in`
-&nbsp;&nbsp;&nbsp; `file-out:` |   Optional   | Explicit path and name of the output file. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.out`
+&nbsp;&nbsp;&nbsp; `file-in:`  |   Optional   | Explicit path and name of the input file. Default relative to `*.cbuild-run.yml`: `<solution-name>+<target-type>[.<pname>].in`.
+&nbsp;&nbsp;&nbsp; `file-out:` |   Optional   | Explicit path and name of the output file. Default relative to `*.cbuild-run.yml`: `<solution-name>+<target-type>[.<pname>].out`.
+
+The `file-in:` and `file-out:` paths may use [access sequences](YML-Input-Format.md#access-sequences), for example `$OutDir(project)$`. Relative paths are resolved from the directory that contains `*.csolution.yml`. In the generated `*.cbuild-run.yml` file, they are rebased to continue referring to the same files.
 
 Standard I/O Mode              | Description
 :------------------------------|:--------------------------------------
 `server`                       | Serial I/O to Telnet server port.
-`file`                         | Serial I/O to text files. Default: `./out/\<solution-name\>+\<target-type\>.\<pname\>.{in \| out}`
+`file`                         | Serial I/O to text files. Default relative to `*.cbuild-run.yml`: `<solution-name>+<target-type>[.<pname>].{in | out}`.
 `console`                      | Serial output to console (Debug console in VS Code).
 `monitor`                      | Serial I/O via TCP/IP port to VS Code Serial Monitor.
 `off`                          | Serial I/O disabled.
@@ -235,6 +237,8 @@ The `channel:` node selects the RTT channel mode.
 &nbsp;&nbsp;&nbsp; `file-out:`                      |   Optional   | Path of the file that receives data from the RTT channel. Applies to `file` mode. Default: `<target>[_core<core>]_ch<channel>.out`.
 &nbsp;&nbsp;&nbsp; `file-in:`                       |   Optional   | Path of the file that sends data to the RTT channel. Applies to `file` mode. Default: `<target>[_core<core>]_ch<channel>.in`; input is disabled when the file does not exist.
 
+The `file-in:` and `file-out:` paths may use [access sequences](YML-Input-Format.md#access-sequences), for example `$OutDir(project)$`. Relative paths are based on the directory that contains the `*.csolution.yml` file. In the generated `*.cbuild-run.yml` file, they are rebased to continue referring to the same files.
+
 Channel Mode                  | Description
 :-----------------------------|:------------------------------------
 `stdio`                       | Connects channel to standard I/O service that is configured via the [`stdio:`](#stdio) node.
@@ -336,13 +340,12 @@ The default trace output file and location is derived from the [`cbuild-run.yml`
 is located in the solution's `.trace/` sub-folder and uses the format `<solution-name>+<target-type>@<target-set>.<channel>.raw`.
 The `<channel>` part is derived from the type node as it follows.
 
+An explicit `file:` path may use [access sequences](YML-Input-Format.md#access-sequences). Relative paths are based on the directory that contains the `*.csolution.yml` file. In the generated `*.cbuild-run.yml` file, they are rebased to continue referring to the same files.
+
 Type node                          | `<channel>` |
 :----------------------------------|:------------|
 [`- swo-uart:`](#swo-uart)         | SWO         |
 [`- trace-buffer:`](#trace-buffer) | TB          |
-
-!!! Note
-    The `trace:` node is implemented as a list. However, currently only one node is supported. Additional nodes are ignored.
 
 ```yml
 trace:
@@ -407,7 +410,7 @@ If a `*.csolution.yml` specifies a `dbgconf:` node instead of a `device-settings
 
 !!! Note
     - Settings that are not assigned under the `device-settings:` node or the referenced `*.dbgconf` file default to the values assigned in the device's [`<debugvars>`](https://open-cmsis-pack.github.io/Open-CMSIS-Pack-Spec/main/html/pdsc_family_pg.html#element_debugvars) section of the PDSC file.
-    
+
 **Example:** MySetup.csolution.yml
 
 ```yml

@@ -14,7 +14,7 @@ There are three different ways to set up the CMSIS-Toolbox:
 
 ## Manual Setup
 
-Download the CMSIS-Toolbox from the [**Arm Tools Artifactory**](https://artifacts.keil.arm.com/cmsis-toolbox/). An archive file provides signed binaries for Windows (amd64), Linux (amd64, arm64), and MacOS/Darwin (arm64).
+Download the CMSIS-Toolbox from the [**Arm Tools Artifactory**](https://artifacts.keil.arm.com/cmsis-toolbox/). An archive file provides signed binaries for Windows (amd64, arm64), Linux (amd64, arm64), and MacOS/Darwin (arm64).
 
 To set up the **CMSIS-Toolbox** on a local computer, copy the content of the archive file to an `<cmsis-toolbox-installation-dir>`, for example, to `~/cmsis-toolbox`.
 
@@ -28,8 +28,20 @@ The CMSIS-Toolbox uses the CMake build system with a Ninja generator. The instal
 
 | Tool | Version | Notes |
 |:-----|:--------|:------|
-| [**CMake**](https://cmake.org/download) | 3.31.5 or higher | For Win64, enable the install option add *CMake* to the system *Path* |
+| [**CMake**](https://cmake.org/download) | 3.31.5 or higher; 4.2.1 or higher recommended | For Windows, enable the install option to add *CMake* to the system *Path* |
 | [**Ninja**](https://github.com/ninja-build/ninja/releases) | 1.12.0 or higher | May be copied to the `<cmsis-toolbox-installation-dir>/bin` directory |
+
+#### CMake 4 Migration
+
+CMSIS-Toolbox transitions from CMake 3 to CMake 4. CMake 3.31.5 or newer remain supported, but CMake 4.2.1 or newer is recommended.
+
+When the CMake version is older than 4.2.1, this notice is shown:
+
+```txt
+CMake 4.2.1 or newer is recommended for CMSIS-Toolbox. You are using CMake <version>.
+```
+
+The notice does not stop setup or build operations. Upgrade CMake to 4.2.1 or newer to remove it and prepare for the future CMake 4 minimum requirement. Do not edit the generated `CMakeLists.txt` files, as CMSIS-Toolbox recreates them.
 
 !!! Note
     **Windows:** To use international characters in project names, filenames, or paths, enable [**Use Unicode UTF-8 for worldwide language support**](https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page) in the system locale settings and restart Windows.
@@ -284,12 +296,7 @@ vcpkg-shell activate
 2. Launch Visual Studio Code. Use the menu `View` and open `Extensions` and install the `Keil Studio Pack` extensions.
 3. Use the menu `View` and open `Source Control`. Select 'Clone Repository' and enter as url [`https://github.com/Open-CMSIS-Pack/vscode-get-started`](https://github.com/Open-CMSIS-Pack/vscode-get-started).
 4. Specify the destination folder to clone to and select 'Open' when asked 'Would you like to open the cloned directory?'
-5. Use the `View` menu 'Explorer' and select the file `vcpkg-configuration.json`. This file instructs [Microsoft vcpkg](https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts) to install the prerequisite artifacts required for building the solution and installs therefore:
-
-    - CMSIS-Toolbox 2.6.1
-    - cmake 3.28.4
-    - ninja 1.12.0
-    - arm-none-eabi-gcc 13.3.1-mpacbti (GNU Arm Embedded Toolchain 13.3.1)
+5. Use the Explorer `View` to open the file `vcpkg-configuration.json`. This file instructs [Microsoft vcpkg](https://github.com/microsoft/vcpkg-tool#vcpkg-artifacts) to install the prerequisite artifacts required for building the solution, such as the CMSIS-Toolbox, CMake, Ninja, and a compiler toolchain. The file contains the applicable version requirements, which may change as the example is updated.
 
 !!! Note
     If vcpkg shows an error in the VSCode status bar, the `vcpkg` output provides further information.
@@ -305,6 +312,7 @@ The [environment variable `CMSIS_PACK_ROOT`](#environment-variables) defines the
 Content of `CMSIS_PACK_ROOT` | Description
 :----------------------------|:----------------
 `pack.idx`                   | Empty file that is touched (timestamp is updated) when packs are added or removed.
+`/.Targets/index.tidx`       | `cpackget` maintains and index of devices and boards provided by installed packs and registered local packs.
 `/.Web`                      | Contains `*.pdsc` files available on public web pages.
 `/.Web/index.pidx`           | An index file that lists publicly available software packs.
 `/.Download`                 | A local cache of packs that are downloaded.
