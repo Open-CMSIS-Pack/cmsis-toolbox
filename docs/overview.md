@@ -10,7 +10,7 @@ The CMSIS-Toolbox is a set of command-line tools for building embedded applicati
 
 A [*csolution project*](build-overview.md) provides common project information for an embedded application. It combines the application structure and [build configurations](YML-Input-Format.md#build-types) with device, board, and reusable software information from [CMSIS Packs](YML-Input-Format.md#packs).
 
-The same common project information supports the [command line, VS Code, and automated CI/DevOps workflows](#command-line-and-ide-usage). It can orchestrate [CMSIS projects](build-overview.md#minimal-project-setup), [Zephyr applications built with West](build-overview.md#west-build-system-integration), and [native CMake projects](build-overview.md#native-cmake-build-integration).
+The same common project information supports the [command line, VS Code, and automated CI/DevOps workflows](#command-line-and-ide-usage). It can orchestrate [CMSIS projects](build-overview.md#minimal-project-setup), [Zephyr applications built with West](build-overview.md#west-build-system-integration), and [native CMake projects](build-overview.md#native-cmake-build-integration), including solutions that combine these project types.
 
 CMSIS-Toolbox resolves this information into [machine-readable build information](build-overview.md#overview-of-operation). It connects [smart editor features](build-tools.md#ide-usage), [static code analysis](build-tools.md#static-code-analysis), and test tools to the application development workflow. This avoids duplicating project and target configuration in each tool.
 
@@ -79,7 +79,7 @@ The overall benefits of the CMSIS-Toolbox are:
 
 - Organize solutions with independent projects to support a wide range of use cases, including multi-processor applications or unit testing.
 
-- Integrates with domain-specific [generators](build-overview.md#use-a-generator) (e.g., CubeMX or MCUXpresso Config Tools) for configuring devices/boards and complex software stacks such as motor control.
+- Integrates with domain-specific [generators](build-overview.md#use-a-generator), such as [CubeMX](CubeMX.md), [Infineon Configuration Tools](InfineonConfig.md), [MCUXpresso Config Tools](MCUXpressoConfig.md), and [Renesas RA Smart Configurator](RenesasRASC.md), for configuring devices, boards, and complex software stacks such as motor control.
 
 - Target types allow application deployment to different hardware (test board, production hardware, virtual simulation models, etc.).
 

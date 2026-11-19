@@ -23,7 +23,6 @@ There are several ways to configure the CMSIS-Pack repository:
 Orchestrate the overall build steps utilizing the various tools of the CMSIS-Toolbox and a CMake-based compilation process.
 
 ```txt
-cbuild: Build Invocation 2.16.0 (C) 2022-2026 Arm Ltd. and Contributors
 
 Usage:
   cbuild [command] <name>.csolution.yml [options]
@@ -35,30 +34,31 @@ Commands:
   zephyr      Generate Zephyr module files from clayer input
 
 Options:
-  -a, --active arg         Select active target: <target-type>[@<target-set>]
-      --cbuildgen          Generate legacy *.cprj files and use cbuildgen backend
-  -C, --clean              Remove intermediate and output directories
-  -c, --context arg [...]  Input context names [<project-name>][.<build-type>][+<target-type>]
-  -S, --context-set        Select the context names from cbuild-set.yml for generating the target application
-  -d, --debug              Enable debug messages of the cmsis build tools
-      --frozen-packs       Pack list and versions from cbuild-pack.yml are fixed and raises errors if it changes
-  -g, --generator arg      Select build system generator (default "Ninja")
-  -h, --help               Print usage
-  -j, --jobs int           Number of job slots for parallel execution (default 8)
-  -l, --load arg           Set policy for packs loading [latest | all | required] (default "required")
-      --log arg            Save output messages in a log file
-  -n, --no-schema-check    Skip schema check
-  -O, --output arg         Base folder for output files, 'outdir' and 'tmpdir' (default "Same as '*.csolution.yml'")
-  -p, --packs              Download missing software packs with cpackget
-  -q, --quiet              Suppress output messages except build invocations
-  -r, --rebuild            Remove intermediate and output directories and rebuild
-  -s, --schema             Validate project input file(s) against schema [deprecated]
-      --skip-convert       Skip csolution convert step
-  -t, --target arg         Optional CMake target name
-      --toolchain arg      Input toolchain to be used
-      --update-rte         Update the RTE directory and files
-  -v, --verbose            Enable verbose messages from toolchain builds
-  -V, --version            Print version
+  -a, --active arg                     Select active target: <target-type>[@<target-set>]
+      --build-commands[=true|false]    Show command invocations during build process
+      --cbuildgen[=true|false]         Generate legacy *.cprj files and use cbuildgen backend
+  -C, --clean[=true|false]             Remove intermediate and output directories
+  -c, --context arg [...]              Input context names [<project-name>][.<build-type>][+<target-type>]
+  -S, --context-set[=true|false]       Select the context names from cbuild-set.yml for generating the target application
+  -d, --debug[=true|false]             Enable debug messages of the cmsis build tools
+      --frozen-packs[=true|false]      Pack list and versions from cbuild-pack.yml are fixed and raises errors if it changes
+  -g, --generator arg                  Select build system generator (default "Ninja")
+  -h, --help[=true|false]              Print usage
+  -j, --jobs int                       Number of job slots for parallel execution (default 8)
+  -l, --load arg                       Set policy for packs loading [latest | all | required] (default "required")
+      --log arg                        Save output messages in a log file
+  -n, --no-schema-check[=true|false]   Skip schema check
+  -O, --output arg                     Base folder for output files, 'outdir' and 'tmpdir' (default "Same as '*.csolution.yml'")
+  -p, --packs[=true|false]             Download missing software packs with cpackget
+  -q, --quiet[=true|false]             Suppress output messages except build invocations
+  -r, --rebuild[=true|false]           Remove intermediate and output directories and rebuild
+  -s, --schema[=true|false]            Validate project input file(s) against schema [deprecated]
+      --skip-convert[=true|false]      Skip csolution convert step
+  -t, --target arg                     Optional CMake target name
+      --toolchain arg                  Input toolchain to be used
+      --update-rte[=true|false]        Update the RTE directory and files
+  -v, --verbose[=true|false]           Enable verbose messages from toolchain builds
+  -V, --version[=true|false]           Print version
 
 Use "cbuild [command] --help" for more information about a command.
 ```
@@ -81,6 +81,9 @@ Create build information for embedded applications that consist of one or more r
 ```text
 csolution: Project Manager 2.16.0 (C) 2022-2026 Arm Ltd. and Contributors
 
+Usage:
+  csolution <command> [<name>.csolution.yml] [options]
+
 Commands:
   check pack-updates            Check existing project for potential pack updates
   convert                       Convert user input *.yml files to *.cbuild.yml files
@@ -93,7 +96,7 @@ Commands:
   list devices                  Print list of available device names
   list environment              Print list of environment configurations
   list examples                 Print list of examples
-  list templates                Print list of templates
+  list templates                Print list of csolution project templates
   list generators               Print list of code generators of a given context
   list layers                   Print list of available, referenced and compatible layers
   list npus                     Print list of available NPUs
@@ -122,7 +125,7 @@ Options:
   -S, --context-set             Select the context names from cbuild-set.yml for generating the target application
   -t, --toolchain arg           Selection of the toolchain used in the project optionally with version
   -v, --verbose                 Enable verbose messages
-  -V, --version                 Print version|
+  -V, --version                 Print version
 
 Use 'csolution <command> -h' for more information about a command.
 ```
@@ -132,34 +135,36 @@ Use 'csolution <command> -h' for more information about a command.
 Manage the installation of *software packs* on the host computer.
 
 ``` txt
-cpackget version 2.2.1 (C) 2021-2023 Linaro, 2024-2026 Arm Ltd.
+cpackget version 2.3.0 (C) 2021-2023 Linaro, 2024-2026 Arm Ltd.
 
 Usage:
   cpackget [command] [flags]
 
 Available Commands:
-  add              Add Open-CMSIS-Pack packages
-  checksum-create  Generates a .checksum file containing the digests of a pack
-  checksum-verify  Verifies the integrity of a pack using its .checksum file
-  completion       Generate the autocompletion script for the specified shell
-  connection       Check online connection to default or given URL
-  help             Help about any command
-  init             Initializes a pack root folder
-  list             List installed packs
-  rm               Remove Open-CMSIS-Pack packages
-  signature-create Digitally signs a pack with a X.509 certificate or PGP key
-  signature-verify Verifies a signed pack
-  update           Update Open-CMSIS-Pack packages to latest
-  update-index     Update the public index
+  add                 Add Open-CMSIS-Pack packages
+  checksum-create     Generates a .checksum file containing the digests of a pack
+  checksum-verify     Verifies the integrity of a pack using its .checksum file
+  completion          Generate the autocompletion script for the specified shell
+  connection          Check online connection to default or given URL
+  find                Find devices and boards online
+  help                Help about any command
+  init                Initializes a pack root folder
+  list                List installed packs
+  rm                  Remove Open-CMSIS-Pack packages
+  signature-create    Digitally signs a pack with a X.509 certificate or PGP key
+  signature-verify    Verifies a signed pack
+  update              Update Open-CMSIS-Pack packages to latest
+  update-index        Update the public index
+  update-target-index Rebuild the installed target index offline
 
 Flags:
   -C, --concurrent-downloads uint   Number of concurrent batch downloads. Set to 0 to disable concurrency (default 20)
-  -h, --help                        help for cpackget
-  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable.
-  -q, --quiet                       Run cpackget silently, printing only error messages
+  -h, --help[=true|false]           help for cpackget
+  -R, --pack-root string            Specifies pack root folder. Defaults to CMSIS_PACK_ROOT environment variable (default "C:\\Users\\reikei01\\AppData\\Local\\Arm\\Packs")
+  -q, --quiet[=true|false]          Run cpackget silently, printing only error messages
   -T, --timeout uint                Set maximum duration (in seconds) of a download. Disabled by default
-  -v, --verbose                     Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging). Specify "-q" for no messages
-  -V, --version                     Prints the version number of cpackget and exit
+  -v, --verbose[=true|false]        Sets verboseness level: None (Errors + Info + Warnings), -v (all + Debugging). Specify "-q" for no messages
+  -V, --version[=true|false]        Prints the version number of cpackget and exit
 
 Use "cpackget [command] --help" for more information about a command and command-specific flags.
 ```
@@ -423,8 +428,10 @@ csolution list configs SimpleTZ.csolution.yml -S
 In an IDE environment, this command downloads missing packs creates [build information files](YML-CBuild-Format.md), and generates the file `compile_commands.json` for IntelliSense. Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
 
 ```shell
-cbuild setup example.csolution.yml --active <target-type>[@<target-set>] --packs
+cbuild setup example.csolution.yml --active <target-type>[@<target-set>] --packs [--build-commands]
 ```
+
+Add `--build-commands` to display the commands executed while generating the compilation database. This is useful when diagnosing toolchain or `compile_commands.json` generation problems.
 
 ### Specify CMSIS-Pack root directory
 
@@ -489,6 +496,40 @@ cpackget update-index --all-pdsc-files
 cpackget update-index --all-pdsc-files --deprecated
 ```
 
+### Find Devices and Boards
+
+The `cpackget find` command uses a web service to identify packs that provide a device or board.
+
+```shell
+cpackget find device stm32h757
+cpackget find device NXP::LPC55
+cpackget find board nucleo-h743zi
+cpackget find board STMicroelectronics::STM32N6570-DK:Rev.C
+```
+
+A  `Vendor::` prefix and `:Revision` may be applied.
+
+Add `--mounted-devices` to display the devices mounted on a board and the packs that provide them.
+
+```shell
+cpackget find board NXP::LPCXpresso812MAX --mounted-devices
+```
+
+Search results use the latest available packs. Installed pack versions and registered local packs are shown with their locations, but installed packs are not used as an offline fallback for the online search.
+
+### Installed Target Index
+
+`cpackget` maintains the file `.Targets/index.tidx` in the [`CMSIS_PACK_ROOT` directory](installation.md#cmsis_pack_root) which lists devices and boards from the installed version of each public pack and from registered local PDSC files. Mounted-device entries contain target identities; their providers are resolved through the device entries in the same index.
+
+The index is updated automatically when `cpackget` installs, updates, removes, or registers packs. After packs are copied manually, or to recover from an index update error, rebuild the index without network access:
+
+```shell
+cpackget update-target-index
+cpackget update-target-index --pack-root <path/to/pack-root>
+```
+
+A malformed source PDSC causes the rebuild to fail without replacing the previous index. Consumers should identify entries by their target and provider identities and must not rely on the XML element order.
+
 ### Add packs
 
 There are different ways to install software packs.
@@ -527,6 +568,19 @@ Install latest version of a public software pack with the same major version or 
 cpackget add Vendor::PackName@^x.y.z         # check if there is any version greater or equal to x.y.z, but with same major version x
 cpackget add Vendor::PackName@~x.y.z         # check if there is any version greater or equal to x.y.z, but with same major/minor version x.y
 ```
+
+#### Install packs for a device or board
+
+When the required pack name is not known, `cpackget add device` and `cpackget add board` search by target and install the matching pack set:
+
+```shell
+cpackget add device stm32h757
+cpackget add board nucleo-h743zi
+```
+
+These commands accept the same case-insensitive target patterns, optional `Vendor::` prefix, and optional board `:Revision` suffix as [`cpackget find`](#find-devices-and-boards). Installing for a board resolves both the board pack and the packs that provide its mounted devices.
+
+Installation proceeds only when all matches resolve to one complete pack set. Ambiguous or unresolved results stop before installation and list candidate packs for explicit selection. The normal dependency and license options of `cpackget add` also apply to target-based installation. Target subcommands cannot be combined with positional pack identifiers, pack-list files, or license extraction.
 
 #### Install a list of software packs
 
@@ -774,7 +828,7 @@ For other project types, the analysis input differs:
 An IDE may use the following `cbuild setup` command to set up the project outline view and get information about components and software layers.
 
 ```shell
-cbuild setup example.csolution.yml --active <target-type>[@<target-set>] [--packs] [--update-rte]
+cbuild setup example.csolution.yml --active <target-type>[@<target-set>] [--packs] [--update-rte] [--build-commands]
 ```
 
 The command above is used when the IDE starts:
@@ -782,6 +836,7 @@ The command above is used when the IDE starts:
 - The option `--active` uses one `target` in the format `<target-type>[@<target-set>]` that may specify multiple related projects.
 - The option `--packs` can enable the download of missing software packs that are public.
 - The option `--update-rte` is used when the IDE changes `device:`, `board:` or `component:` settings.
+- The option `--build-commands` displays command invocations during compilation-database generation and is intended for diagnostics.
 
 The `cbuild setup` command creates [build information files](YML-CBuild-Format.md), `compile_commands.json`, and `compile_macros.h` for IDE language services and [Static Code Analysis](#static-code-analysis). Refer to [cbuild setup command](build-operation.md#details-of-the-setup-mode) for more information.
 

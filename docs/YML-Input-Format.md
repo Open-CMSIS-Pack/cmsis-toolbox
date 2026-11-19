@@ -274,15 +274,17 @@ solution:
       board: NUCLEO-L552ZE-Q    # specifies board
       target-set:
         - set:
-          - project-context: TFM.Debug
-          - project-context: MQTT_AWS.Debug
+          images:
+            - project-context: TFM.Debug
+            - project-context: MQTT_AWS.Debug
 
     - type: Production-HW       # target-type: Production-HW
       device: STM32L5X          # specifies device
       target-set:
         - set:
-          - project-context: TFM.Release
-          - project-context: MQTT_AWS.Debug
+          images:
+            - project-context: TFM.Release
+            - project-context: MQTT_AWS.Debug
 
   build-types:
     - type: Debug               # build-type: Debug
@@ -317,7 +319,7 @@ The example below uses from the TFM project always `build-type: Debug` and the `
 
 ```yml
     files:
-    - file: `$cmse-lib(TFM.Release+Production-HW)$` # use symbol output file of TFM Project
+    - file: $cmse-lib(TFM.Release+Production-HW)$ # use symbol output file of TFM Project
 ```
 
 The example below uses the `build-type: Debug` and the `target-type` of the current processed context is used.
@@ -419,27 +421,27 @@ The `solution:` node is the start of a `*.csolution.yml` file that collects rela
 
 ```yml
 solution:
-  created-for: cmsis-toolbox@2.14 # minimum CMSIS-Toolbox version required for project build
-  cdefault:                       # use default setup of toolchain-specific controls.
-  compiler: GCC                   # overwrite compiler definition in 'cdefaults.yml'
+  created-for: cmsis-toolbox@2.14.0 # minimum CMSIS-Toolbox version required for project build
+  cdefault:                         # use default setup of toolchain-specific controls.
+  compiler: GCC                     # overwrite compiler definition in 'cdefaults.yml'
 
   packs:
-    - pack: ST                    # add ST packs in 'cdefaults.yml'
+    - pack: ST                      # add ST packs in 'cdefaults.yml'
+    - pack: ST::TestSW
+      path: ./MyDev/TestSW
+      for-context: .Test
 
-  build-types:                    # additional build types
-    - type: Test                  # build-type: Test
+  build-types:                      # additional build types
+    - type: Test                    # build-type: Test
       optimize: none
       debug: on
-      packs:                      # with explicit pack specification
-        - pack: ST::TestSW
-          path: ./MyDev/TestSW
 
   target-types:
-    - type: Board                 # target-type: Board
+    - type: Board                   # target-type: Board
       board: NUCLEO-L552ZE-Q
 
-    - type: Production-HW         # target-type: Production-HW
-      device: STM32U5X            # specifies device
+    - type: Production-HW           # target-type: Production-HW
+      device: STM32U5X              # specifies device
 
   projects:
     - project: ./blinky/Bootloader.cproject.yml
@@ -453,7 +455,7 @@ A solution may configure programming and debugging for images produced by anothe
 
 ```yml
 solution:
-  created-for: cmsis-toolbox@2.15.0
+  created-for: cmsis-toolbox@2.16.0
 
   target-types:
     - type: Hardware
@@ -506,7 +508,7 @@ The `project:` node is the start of a `*.cproject.yml` file and can contain the 
 ```yml
 project:
   misc:
-    - compiler: AC6                          # specify misc controls for Arm Compiler 6
+    - for-compiler: AC6                      # specify misc controls for Arm Compiler 6
       C: [-fshort-enums, -fshort-wchar]      # set options for C files
   add-path:
     - $OutDir(Secure)$                       # add the path to the secure project's output directory
@@ -710,10 +712,10 @@ Lists the compilers that this *csolution project* is tested with. This informati
 
 ```yml
 solution:
-  created-for: cmsis-toolbox@2.5  # minimum CMSIS-Toolbox version required for project build
-  select-compiler:                # list tested compilers that can be selected
-    - compiler: GCC               # GCC is supported
-    - compiler: AC6@6.22          # AC6 is supported, version number is a hint on what was tested
+  created-for: cmsis-toolbox@2.5.0 # minimum CMSIS-Toolbox version required for project build
+  select-compiler:                 # list tested compilers that can be selected
+    - compiler: GCC                # GCC is supported
+    - compiler: AC6@6.22.0         # AC6 is supported, version number is a hint on what was tested
 ```
 
 ### `compiler:`
@@ -1233,12 +1235,12 @@ project:
       define:
         - test: 12
 
-   - setup: GCC project setup
-     for-compiler: GCC
-     linker:
-       - script: my-project.inc
-     define:
-       - test: 11
+    - setup: GCC project setup
+      for-compiler: GCC
+      linker:
+        - script: my-project.inc
+      define:
+        - test: 11
 ```
 
 ## Pack Selection
@@ -1636,13 +1638,13 @@ With variables that are defined in the `*.csolution.yml` file, a `*.cproject.yml
 ```yml
 solution:
   target-types:
-    - type: NXP Board
+    - type: NXP-Board
       board: IMXRT1050-EVKB
       variables:
         - Socket-Layer: $SolutionDir()$/Socket/FreeRTOS+TCP/Socket.clayer.yml
         - Board-Layer:  $SolutionDir()$/Board/IMXRT1050-EVKB/Board.clayer.yml
 
-    - type: ST Board
+    - type: ST-Board
       board: B-U585I-IOT02A
       variables:
         - Socket-Layer: $SolutionDir()$/Socket/WiFi/Socket.clayer.yml
@@ -1670,12 +1672,12 @@ solution:
 ```yml
 solution:
   target-types:
-    - type: Alif Board
+    - type: Alif-Board
       board: Alif Semiconductor::DevKit-E7
       variables:
         - west-board: alif_e7_dk_rtss_he              # explicit west board name
 
-    - type: ST Board
+    - type: ST-Board
       board: STMicroelectronics::STM32H7B3I-DK        # $west-board$ set to `stm32h7b3i_dk`
 ```
 
@@ -2195,11 +2197,15 @@ Use the command `west build` to generate images from application source code spe
 
 ### `west-defs:`
 
-Defines for the `west build` commands are specified in CMake format. The `west-defs:` that are defined under the active target and build type are concatenated as follows:
+Defines for the `west build` commands are a list of CMake variables. Use [`for-compiler:`](#for-compiler) to apply this define only for the selected compiler toolchain.
+
+The `west-defs:` that are defined under the active target and build type are filtered for the selected compiler and concatenated as follows:
 
 `<west-defs> := <west:west-defs> + <target-type:west-defs> + <build-type:west-defs>`
 
-The information provided with the `west:` and `west-def:` nodes are used to generate the command line for the `west` tool:
+Values may contain [variables](#variables) and [Access Sequences](#access-sequences), including `$Pack(vendor::name)$`. Access Sequences are expanded before the definitions are passed to West. A `${NAME}` expression is preserved for expansion as an environment or CMake variable by the downstream build system; it is not interpreted as a CMSIS Access Sequence. Colons and semicolons are permitted in values, for example to pass several pack directories in `EXTRA_ZEPHYR_MODULES`.
+
+The information provided with the `west:` and `west-defs:` nodes is used to generate the command line for the `west` tool:
 
 ```bash
 >west <west-opt> build --board <board> --build-dir $SolutionDir()$/out/<project-id>/$TargetType$
@@ -2213,6 +2219,31 @@ The information provided with the `west:` and `west-def:` nodes are used to gene
     - The cbuild orchestration instructs `west` calls with `--pristine auto` option. The cbuild option `--rebuild` cleans temporary files before proceeding with a new build.
 
 **Example:**
+
+```yml
+solution:
+  packs:
+    - pack: PyTorch::ExecuTorch
+
+  build-types:
+    - type: Debug
+      west-defs:
+        - CONFIG_DEBUG: y
+          CONFIG_DEBUG_THREAD_INFO: y
+        - CONFIG_LLVM_USE_LLD: y
+          CONFIG_COMPILER_RT_RTLIB: y
+          for-compiler: CLANG
+
+  projects:
+    - west:
+        project-id: Zephyr_App
+        app-path: .
+        west-defs:
+          - DTC_OVERLAY_FILE: app.overlay
+          - EXTRA_ZEPHYR_MODULES: $Pack(PyTorch::ExecuTorch)$
+```
+
+The compiler-specific item adds the LLVM definitions only to a CLANG context. The `$Pack(PyTorch::ExecuTorch)$` Access Sequence resolves the installed pack directory without embedding its version or absolute installation path in the project.
 
 [Arm-Examples/CMSIS-Zephyr](https://github.com/Arm-Examples/CMSIS-Zephyr) explains the setup of a Zephyr project.
 
@@ -2231,25 +2262,35 @@ The `project:`, `west:`, and `cmake:` descriptors are mutually exclusive within 
 &nbsp;&nbsp;&nbsp; `source:`                              | **Required** | Path to the CMake source directory.
 &nbsp;&nbsp;&nbsp; `project-id:`                          |   Optional   | Project identifier used for the context name and output path (default: last sub-dir name of `source`).
 &nbsp;&nbsp;&nbsp; `generator:`                           |   Optional   | CMake generator to use for the build (default: `Ninja`).
-&nbsp;&nbsp;&nbsp; `configure:`                           |   Optional   | List of options for the CMake configure command.
+&nbsp;&nbsp;&nbsp; `configure:`                           |   Optional   | List of options for the CMake configure command; supports [variables](#variables) and [Access Sequences](#access-sequences).
 &nbsp;&nbsp;&nbsp; `target:`                              |   Optional   | CMake build target.
 &nbsp;&nbsp;&nbsp; [`images:`](#cmake-images)             |   Optional   | List of output images produced by the CMake project.
 &nbsp;&nbsp;&nbsp; [`device:`](#device)                   |   Optional   | Specify the processor core for execution of the generated images (used in `*.cbuild-run.yml`).
 
 #### CMake `images:`
 
-The `images:` node lists the output images produced by the native CMake project. Each output type can be specified only once.
+The `images:` node lists the output images produced by the native CMake project. Each output type can be specified only once. The `image:` path supports [variables](#variables) and [Access Sequences](#access-sequences).
 
-Image paths are relative to the context output directory. CMSIS-Toolbox records these files as build outputs but does not define how the native CMake project creates them.
+Image paths that remain relative after expansion are relative to the context output directory. CMSIS-Toolbox records these files as build outputs but does not define how the native CMake project creates them.
 
 `images:`                                                 |              | Content
 :---------------------------------------------------------|:-------------|:------------------------------------
 `- image:`                                                | **Required** | Path to the CMake build output image.
 &nbsp;&nbsp;&nbsp; [`type:`](#type)                       | **Required** | Output image type: `elf`, `hex`, `bin`, or `lib`.
 
+The strings under `configure:` and `image:` are expanded for each context and may use variables from the active `build-type:` and `target-type:` along with [Access Sequences](#access-sequences) such as `$BuildType$`, `$TargetType$`, `$SolutionDir()$`, and `$OutDir()$`.
+
 **Example:**
 
 ```yml
+  build-types:
+    - type: Debug
+      variables:
+        - CMakeConfig: Debug
+    - type: Release
+      variables:
+        - CMakeConfig: Release
+
   projects:
     - cmake:
         source: ./cmake/core0
@@ -2257,15 +2298,15 @@ Image paths are relative to the context output directory. CMSIS-Toolbox records 
         device: :cm0_core0
         generator: Ninja
         configure:
-          - -DCMAKE_BUILD_TYPE=Debug
+          - -DCMAKE_BUILD_TYPE=$CMakeConfig$
+          - -DCMSIS_BUILD_TYPE=$BuildType$
+          - -DGENERATED_DIR=$OutDir()$/generated
         target: core0-target
         images:
-          - image: build/core0.elf
+          - image: $OutDir()$/build/$CMakeConfig$/core0.elf
             type: elf
-          - image: build/core0.hex
+          - image: build/$CMakeConfig$/core0.hex
             type: hex
-          - image: build/core0.bin
-            type: bin
 ```
 
 ## Pre/Post Build Steps
@@ -2492,7 +2533,7 @@ For *key*/*value* pairs listed under `consumed:` the following rules exist:
 This `connections:` node of a board layer describes the available interfaces.  The WiFi interface requires a CMSIS-RTOS2 function.
 
 ```yml
-  connections:                          # describes the functionality of a board layer
+  connections:                           # describes the functionality of a board layer
     - connect: WiFi interface
       provides:
         - CMSIS-Driver WiFi:
@@ -2558,45 +2599,45 @@ This sensor shield layer provides a set of interfaces that are configurable.
 
 ```yml
   connections:
-    - connect: I2C Interface 'Std'
-      set:  comm.I2C-Std
-      info: JP1=Off  JP2=Off
+    - connect: I2C Interface 'Std'
+      set: comm.I2C-Std
+      info: JP1=Off JP2=Off
       provides:
-        - Sensor_I2C:
-      consumes:
-        - Ardunio_Uno_I2C:
+        - Sensor_I2C:
+      consumes:
+        - Arduino_Uno_I2C:
 
-    - connect: I2C Interface 'Alt'
-      set:  comm.I2C-Alt
-      info: JP1=On  JP2=Off
+    - connect: I2C Interface 'Alt'
+      set: comm.I2C-Alt
+      info: JP1=On JP2=Off
       provides:
-        - Sensor_I2C:
-      consumes:
-        - Ardunio_Uno_I2C-Alt:
+        - Sensor_I2C:
+      consumes:
+        - Arduino_Uno_I2C-Alt:
 
-    - connect: SPI Interface 'Alt'
-      set:  comm.SPI
+    - connect: SPI Interface 'Alt'
+      set: comm.SPI
       info: JP2=On
       provides:
-        - Sensor_SPI:
-      consumes:
-        - Ardunio_Uno_SPI:
+        - Sensor_SPI:
+      consumes:
+        - Arduino_Uno_SPI:
 
-    - connect: Sensor Interrupt INT0
-      set:  SensorIRQ.0
+    - connect: Sensor Interrupt INT0
+      set: SensorIRQ.0
       info: JP3=Off
-      provides:
-        - Sensor_IRQ:
-      consumes:
-        - Ardunio_Uno_D2:
+      provides:
+        - Sensor_IRQ:
+      consumes:
+        - Arduino_Uno_D2:
 
-    - connect: Sensor Interrupt INT1
-      set:  SensorIRQ.1
+    - connect: Sensor Interrupt INT1
+      set: SensorIRQ.1
       info: JP3=On
-      provides:
-        - Sensor_IRQ:
-      consumes:
-        - Ardunio_Uno_D3:
+      provides:
+        - Sensor_IRQ:
+      consumes:
+        - Arduino_Uno_D3:
 ```
 
 ## Debugger Configuration

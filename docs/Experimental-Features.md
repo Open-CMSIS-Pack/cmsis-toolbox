@@ -317,7 +317,7 @@ The `*.ctrace.yml` file starts with the node `ctrace:` and contains the trace ca
 &nbsp;&nbsp;&nbsp; [`instructions:`](#instructions)       |  Optional   | ETM or MTB instruction trace configuration.
 &nbsp;&nbsp;&nbsp; [`pcsampling:`](#pcsampling)           |  Optional   | DWT PC sampling configuration.
 &nbsp;&nbsp;&nbsp; [`synchronization:`](#synchronization) |  Optional   | Trace synchronization packet period configuration.
-&nbsp;&nbsp;&nbsp; [`tracehalt:`](#tracehalt)             |  Future     | Trace sink or formatter halt trigger configuration.
+&nbsp;&nbsp;&nbsp; [`tracehalt:`](#tracehalt)             |  Optional   | Trace sink or formatter halt trigger configuration.
 
 **Example:**
 

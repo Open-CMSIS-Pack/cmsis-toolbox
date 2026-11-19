@@ -56,7 +56,7 @@ It generates the application program that is described with the `<name>.csolutio
 The `cbuild setup` command prepares the data for an IDE environment. This command is called at the start of an IDE or whenever a *csolution project* file is modified. The typical invocation is:
 
 ```bash
-cbuild setup <name>.csolution.yml --active <target-type>[@<target-set>] [--packs] [--update-rte] [--frozen-packs]
+cbuild setup <name>.csolution.yml --active <target-type>[@<target-set>] [--packs] [--update-rte] [--frozen-packs] [--build-commands]
 ```
 
 The option `--active` selects the [target-set](build-overview.md#working-with-target-set) that specifies the application configuration. For an application described by a `<name>.csolution.yml` file, these steps are executed:
@@ -77,6 +77,7 @@ The operation is further controlled by options:
 - The option [`--update-rte`](build-overview.md#rte-directory-structure) updates the configuration files of the application.
 - With the option `--frozen-packs` the file `*.cbuild-pack.yml` is used as input. An error is issued when a pack version changes.
 - The option `--toolchain` can be used to explicitly select a compiler.
+- The option `--build-commands` shows the command invocations that run while the setup targets are built. Use this for diagnosing setup.
 
 ### `csolution` Project Manager
 
@@ -109,7 +110,7 @@ Output Directory/File                    | Description
 
 ### `CMake` Invocation
 
-The CMake build system is invoked with the following commands:
+The CMake build system is invoked with the following commands. Generated super-build and image-only `CMakeLists.txt` files print a notice when CMake is older than the [recommended version](installation.md#cmake-4-migration). The build continues.
 
 - CMake configuration command defines the build generator, source, and build directory with:
 
@@ -122,6 +123,8 @@ The CMake build system is invoked with the following commands:
 - CMake build command automatically executed by `cbuild setup` to generate `compile_commands.json` for each [context](build-overview.md#context):
 
   `cmake --build <tmpdir> -j <n> --target <context>-database`
+
+  By default, Ninja runs in quiet mode. Add the option `--build-commands` to display the commands executed by the target.
 
 ## Adding a Toolchain to CMSIS-Toolbox
 
@@ -190,11 +193,35 @@ CMake Variable                                   | Description
 
 ## Native CMake Project Integration
 
-CMSIS-Toolbox 2.15 can orchestrate a native CMake project directly from a [`cmake:` project entry](YML-Input-Format.md#cmake-build). Such an entry creates a synthetic project context and generated `*.cbuild.yml` metadata, but bypasses processing that is specific to `*.cproject.yml` files, such as CMSIS component, translation-control, and linker-script generation.
+CMSIS-Toolbox can orchestrate a native CMake project directly from a [`cmake:` project entry](YML-Input-Format.md#cmake-build). Such an entry creates a synthetic project context and generated `*.cbuild.yml` metadata, but bypasses processing that is specific to `*.cproject.yml` files, such as CMSIS component, translation-control, and linker-script generation.
 
 For each selected native CMake context, `cbuild` uses the specified source directory and generator, appends the entries under `configure:` to the CMake configure operation, and builds the optional `target:`. If `target:` is omitted, the native CMake project's default target is built. The normal clean and rebuild operations apply to these contexts. To generate a compilation database, add `-DCMAKE_EXPORT_COMPILE_COMMANDS=ON` under `configure:`.
 
-Files declared under `images:` are treated as outputs of the native build. They are copied into the generated context information and, when selected by a `target-set:`, into `*.cbuild-run.yml` for programming and debugging. The optional `device:` identifies the processor that executes those images in a multi-processor target.
+CMSIS-Toolbox expands [variables](YML-Input-Format.md#variables) and [Access Sequences](YML-Input-Format.md#access-sequences) in every `configure:` argument and `images:` path for the selected context. Variables defined by the active `build-type:` and `target-type:` can therefore select native CMake configuration parameters and outputs. Access Sequences provide context values and paths such as `$BuildType$`, `$TargetType$`, `$SolutionDir()$`, and `$OutDir()$`.
+
+The `images:` node lists the output files of a build. Relative paths are based on the context output directory. The paths are copied into the generated context information and, when selected by a `target-set:`, into `*.cbuild-run.yml` for programming and debugging. The optional `device:` identifies the processor that executes those images in a multi-processor target.
+
+```yml
+solution:
+  build-types:
+    - type: Debug
+      variables:
+        - CMakeConfig: Debug
+    - type: Release
+      variables:
+        - CMakeConfig: Release
+
+  projects:
+    - cmake:
+        source: ./MyNativeProject
+        project-id: MyNativeProject
+        configure:
+          - -DCMAKE_BUILD_TYPE=$CMakeConfig$
+          - -DCMSIS_CONTEXT=$BuildType$+$TargetType$
+        images:
+          - image: build/$CMakeConfig$/MyNativeProject.elf
+            type: elf
+```
 
 This direct project integration differs from the following mechanism, which invokes CMake only as a custom build step.
 
@@ -297,8 +324,7 @@ The utility [`cbridge`](https://github.com/Open-CMSIS-Pack/generator-bridge) get
 - `*.c/.h` source files, i.e. for interfacing with drivers
 - `<project-name>.cgen.yml` (created by `cbridge`) provides the data for project import into the csolution build process.
 
-!!! Note
-    The NXP MCUXpresso generator has a direct interface to the csolution project format. The [utility `cbridge`](https://github.com/Open-CMSIS-Pack/generator-bridge) is in this case not required as the  [build information files](YML-CBuild-Format.md) are the input and the `<project-name>.cgen.yml` is directly generated.
+STM32CubeMX uses `cbridge`. The other generators process the generator information files directly. Tool-specific setup and usage are described for [STM32CubeMX](CubeMX.md), [Infineon Configuration Tools](InfineonConfig.md), [NXP MCUXpresso Config Tools](MCUXpressoConfig.md), and [Renesas RA Smart Configurator](RenesasRASC.md).
 
 ### Generator Start via `component`
 
@@ -362,8 +388,7 @@ The master definitions are maintained in the [Open-CMSIS-Pack Debug Adapter Regi
 `- name:`                                               |**Required**| `<generator-id>` referred in the `*.PDSC` file
 &nbsp;&nbsp;&nbsp; `alias-name:`                        |  Optional  | List of names (in input node or BSP) that map to this debug adapter.
 &nbsp;&nbsp;&nbsp; `template:`                          |  Optional  | Used only by the [VS Code CMSIS Solution](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-csolution) extension for configuration.
-&nbsp;&nbsp;&nbsp; `gdbserver:`                         |  Optional  | Add the [`gdbserver:`](YML-CBuild-Format.md#gdbserver) node in the `cbuild-run.yml` file.
-&nbsp;&nbsp;&nbsp; `defaults:`                          |  Optional  | List of default options to use when not specified in the [`target-set:`](YML-Input-Format.md#target-set) node.
+&nbsp;&nbsp;&nbsp; `defaults:`                          |  Optional  | List of default options, including `gdbserver:` and `telnet:`, to use when not specified in the [`target-set:`](YML-Input-Format.md#target-set) node.
 &nbsp;&nbsp;&nbsp; [`user-interface:`](#user-interface) |  Optional  | Defines the user interface for VS Code CMSIS Solution extension.
 
 !!! Note
@@ -377,35 +402,40 @@ debug-adapters:
   - name: "CMSIS-DAP@pyOCD"
     alias-name: ["CMSIS-DAP", "DAP-Link"]     # alternative names that map to this debug adapter
     template: CMSIS-DAP-pyOCD.adapter.json    # template file
-    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
     defaults:                                 # default values to use when nowhere specified
-      port: 3333                              # default value of first gdbserver port
+      gdbserver:
+        active:                               # add gdbserver: node under debugger: in cbuild-run.yml
+        port: 3333
       protocol: swd
       clock: 10000000
 
   - name: "ULINKplus"
     template: CMSIS-DAP-pyOCD.adapter.json    # template file (initially same as CMSIS-DAP@pyOCD)
-    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
     defaults:                                 # default values to use when nowhere specified
-      port: 3333                              # default value of first gdbserver port
+      gdbserver:
+        active:                               # add gdbserver: node under debugger: in cbuild-run.yml
+        port: 3333
       protocol: swd
       clock: 10000000
 
   - name: "ST-Link@pyOCD"
     alias-name: ["ST-LINK"]                   # alternative names that map to this debug adapter
     template: STLink-pyOCD.adapter.json       # template file
-    gdbserver:                                # add gdbserver: node under debugger: in cbuild-run.yml
     defaults:                                 # default values to use when nowhere specified
-      port: 3333                              # default value of first gdbserver port
+      gdbserver:
+        active:                               # add gdbserver: node under debugger: in cbuild-run.yml
+        port: 3333
       protocol: swd
       clock: 10000000
 
   - name: "J-Link Server"
     template: jlink.adapter.json              # template file
     defaults:                                 # default values to use when nowhere specified
-      port: 3333                              # default value of first gdbserver port
+      gdbserver:
+        active:                               # add gdbserver: node under debugger: in cbuild-run.yml
+        port: 3333
       protocol: swd
-      clock: auto
+      clock: 4000000
 
   - name: "Arm-FVP"
     template: FVP.adapter.json                # template file
@@ -475,9 +505,10 @@ debug-adapters:
   - name: "CMSIS-DAP@pyOCD"
     alias-name: ["CMSIS-DAP", "DAP-Link"] # alternative names that map to this debug adapter
     template: CMSIS-DAP-pyOCD.adapter.json # template file
-    gdbserver: # add gdbserver: node under debugger: in cbuild-run.yml
     defaults: # this section is only used by csolution to provide default values when settings are missing
-      port: 3333 # default value of first gdbserver port
+      gdbserver:
+        active: # add gdbserver: node under debugger: in cbuild-run.yml
+        port: 3333
       protocol: swd
       clock: 1000
     user-interface:  # this section is only used by the UI to display and edit settings
@@ -487,7 +518,7 @@ debug-adapters:
         - name: Clock (kHz)       # UI display
           description: Trace configuration   # hover over text
           yml-node: clock          # node entry in csolution.yml
-          type: int                # type of value
+          type: number             # type of value
           range: [10, 5000]        # valid range
           default: 1000            # default value if not specified anywhere
         - name: Protocol
@@ -498,7 +529,7 @@ debug-adapters:
               value: jtag
             - name: SWD
               value: swd
-          default: SWD
+          default: swd
       - section: Trace
         description: Trace configuration   # hover over text
         yml-node: trace                    # when a yml node is given options are under this section
@@ -551,6 +582,7 @@ debug-adapters:
                 description:  Serial I/O disabled
  
   - name: "J-Link Server"
+    user-interface:
       - section: Debug Interface
         description: Interface configuration for the debug port
         options:
@@ -576,7 +608,7 @@ debug-adapters:
             yml-node: trace-port
             type: enum
             values:
-              name: UART
+              - name: UART
             default: UART
 
   - name: "Keil uVision"
