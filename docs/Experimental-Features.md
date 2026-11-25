@@ -234,32 +234,6 @@ Specify `trace/serialwire/@clockMax` only when vendor data supports the limit fo
 
     **Documentation update:** Clarify the 1:1 fallback in *Trace Clocks* ([pyOCD](pyOCD-Debugger.md#trace-clocks), [J-Link](JLink-Debugger.md#trace-clocks)): if `output-clock` is omitted or zero and neither a suitable probe rate nor any limits are known, use `input-clock` as `output-clock`. Specify how to report an explicit rate the target or probe cannot achieve.
 
-### TO REMOVE, DETAILED INVESTIGATION INFO
-
-| Constraint | Debug Unit | Device | Board | PDSC (device) | PDSC (board) | adapter-registry (static per debug unit) | CMSIS-DAP Protocol |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| **Debug interface** | | | | | | | |
-| Debug Clock - Default | x | x | x | `debugconfig/@clock` | `debugProbe/@debugClock` | `defaults.clock`: CMSIS-DAP 10 MHz; ST-Link 4 MHz | - |
-| Debug Clock - Max | x | x | x | - | - | `clock` option `range`: UI maximum, CMSIS-DAP 30 MHz; ST-Link 24 MHz | - |
-| Debug Protocol - Default | x | x | - | `debugconfig/@default` | `debugProbe/@debugLink` | `defaults.protocol`: `swd` for both | - |
-| Debug Protocol - Support | x | x | x | `debugport/jtag`, `debugport/swd` | - | `protocol` option `values`: `jtag`, `swd` for both | `DAP_Info 0xF0`: SWD/JTAG |
-| Debug Protocol - Switchable | - | Fixed by device; not a setting | - | `debugconfig/@swj` | - | - | - |
-| Debug Protocol - Dormant | - | Fixed by device; not a setting | - | `debugconfig/@dormant` | - | - | - |
-| ADI version | x | Fixed by device; not a setting | - | `accessportV2` | - | - | - |
-| **Trace capabilities** | | | | | | | |
-| Trace Types | x | x | x | `trace/serialwire`, `trace/traceport`, `trace/tracebuffer` | `debugInterface/@connector` (hint only) | **Short-term/Default**: Show all supported by debug unit; **Long-term**: Selectable types supported by device and debug unit | `DAP_Info 0xF0`: SWO only |
-| ETM/MTB/ITM per proc | - | x | - | - | - | - | - |
-| **Serial Wire Output (SWO)** | | | | | | | |
-| SWO - Type | x | - | - | - | - | **Short-term/Default**: Fixed to UART/NRZ (by debug unit and server); **Long-term**: selectable encodings supported by the debug unit | `DAP_Info 0xF0`: UART/Manchester |
-| SWO - Baudrate | x | x | x | - | - | **Short-term/Default**: Static range by debug unit (superset); **Long-term**: auto-detection from debug unit | `DAP_SWO_Baudrate`: request rate, returns actual rate or 0 |
-| **Trace buffer** | | | | | | | |
-| Trace Buffer - Start | - | x | - | `trace/tracebuffer/@start` | - | Pending review | - |
-| Trace Buffer - Size | - | x | - | `trace/tracebuffer/@size` | - | Pending review | - |
-| Trace Buffer - Type (with or without dedicated memory) | - | x | - | - | - | Pending review | - |
-| **Parallel trace (TPIU)** | | | | | | | |
-| TPIU - portwidth | x | x | x | `trace/traceport/@width` | `debugInterface/@connector` (hint only; no width field) | Deferred | - |
-| TPIU - max clock | x | x | x | - | - | Deferred | - |
-
 ## Trace
 
 Target execution data is captured through trace stream channels. The overall process has these steps:
