@@ -160,9 +160,11 @@
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#file-structure-of-ctrace-runyml">File Structure of *.ctrace-run.yml</a>
         <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#index">index:</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#register-accesses">Register Accesses</a>
     </li>
-    <li class="toctree-l4"><a class="reference internal" href="#example">Example</a>
+    <li class="toctree-l4"><a class="reference internal" href="#examples">Examples</a>
     </li>
         </ul>
     </li>
@@ -182,13 +184,21 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#-type-option">--type option</a>
     </li>
+    <li class="toctree-l3"><a class="reference internal" href="#-instructions-option">--instructions option</a>
+    </li>
     <li class="toctree-l3"><a class="reference internal" href="#-verbose-option">--verbose option</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#csv-format">CSV Format</a>
         <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#packet">packet:</a>
+    </li>
     <li class="toctree-l4"><a class="reference internal" href="#variable-data-sizes">Variable Data Sizes</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#pc-sampling-markers">PC Sampling Markers</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#instruction-records">Instruction Records</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#csv-example">CSV Example</a>
     </li>
     <li class="toctree-l4"><a class="reference internal" href="#loopback-requests">Loopback Requests</a>
     </li>
@@ -203,6 +213,10 @@
     <li class="toctree-l3"><a class="reference internal" href="#itm_1">ITM</a>
     </li>
     <li class="toctree-l3"><a class="reference internal" href="#dwt">DWT</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#etmv3_1">ETMv3</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#etmv4_1">ETMv4</a>
     </li>
         </ul>
     </li>
@@ -575,6 +589,7 @@
 <pre><code class="language-yml">ref: &lt;pname&gt;/data#2        # refers to pname section, `data:` node, list node #2
 ref: data#2                # `data:` node, list node #2
 ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
+ref: &lt;pname&gt;/tracehalt#0   # `tracehalt:` node, list node #0 for the named processor
 </code></pre>
 <h3 id="tools-and-extensions">Tools and Extensions</h3>
 <p>The trace workflow is split across the command-line tools and VS Code extensions as shown below.</p>
@@ -762,7 +777,7 @@ ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#tracehalt"><code>tracehalt:</code></a></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Trace sink or formatter halt trigger configuration.</td>
+<td style="text-align: left;">Hardware trigger conditions that stop the selected trace sink.</td>
 </tr>
 </tbody>
 </table>
@@ -802,7 +817,7 @@ ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
         privileged: 0x0
 </code></pre>
 <h4 id="timestamps"><code>timestamps:</code></h4>
-<p>When <code>timestamps:</code> is present, timestamp generation is enabled in the trace stream. ITM uses local timestamps with a synchronous timestamp source.</p>
+<p>When <code>timestamps:</code> is present, timestamp generation is enabled in the trace stream. ITM uses local timestamps with a synchronous timestamp source. ETM uses its cycle counter for local processor-cycle timing where supported.</p>
 <table>
 <thead>
 <tr>
@@ -826,7 +841,7 @@ ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
 </table>
 <p>The timestamp <code>clock</code> typically is the processor clock.</p>
 <h4 id="timesync"><code>timesync:</code></h4>
-<p>The <code>timesync:</code> node controls insertion of global timestamps into ITM trace streams for correlation across processors. This requires a timestamp generator on the device, configured with the trace communication settings in <code>*.csolution.yml</code> and optionally <code>*.dbgconf</code>.</p>
+<p>The <code>timesync:</code> node controls insertion of global timestamps for correlation across processors. This applies to ITM and ETM trace streams. It requires a shared system timestamp source. The timestamp generator is configured with the trace communication settings in <code>*.csolution.yml</code> and optionally <code>*.dbgconf</code>.</p>
 <table>
 <thead>
 <tr>
@@ -840,6 +855,11 @@ ref: instruction:start#0   # `instruction:` node, `start:` node, list node #0
 <td style="text-align: left;"><code>ITM:</code></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Global timestamp mode: <code>off</code> (default), <code>packet</code>, <code>128</code>, or <code>8192</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETM:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Global timestamp mode: <code>off</code> (default) or <code>on</code>.</td>
 </tr>
 </tbody>
 </table>
@@ -1049,6 +1069,10 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For currently supported ETMs, the synchronization period is fixed to 1024 bytes of emitted ETM data.</p>
+</div>
 <p><code>sync-on-run:</code> is preserved in <code>*.ctrace-run.yml</code> under <code>ctrace-setup:</code> so that pyOCD can apply the requested synchronization behavior. It only applies to trace sources with enabled synchronization and that do not always insert synchronization packets at start of a step or run.</p>
 <p>The debugger requests DWT/ITM synchronization packets by toggling bits 24, 26, and 28 of <code>DWT_CYCCNT</code> twice after setting up trace capture and before a processor step or run. These are the bits selectable by <code>DWT_CTRL.SYNCTAP</code>. The second toggle restores the original cycle counter value. Do not toggle other bits to avoid side effects.</p>
 <p><strong>Example:</strong></p>
@@ -1057,7 +1081,89 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
   sync-on-run: false  # Skip manual DWT synchronization at start of run
 </code></pre>
 <h4 id="instructions"><code>instructions:</code></h4>
-<p>The <code>instructions:</code> node enables ETM or MTB instruction trace. It is not required for the initial implementation.</p>
+<p>The <code>instructions:</code> node enables instruction trace generated by ETM or MTB. Availability depends on the target processor and system implementation. See <a href="#configure-trace-generation">Configure Trace Generation</a> for processor-specific capabilities. Instruction trace is only available for <a href="#trace-stream-channels">TB</a> configurations. It is not required for the initial implementation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>MTB support is not part of the first instruction trace implementation.</p>
+</div>
+<p>The <code>instructions:</code> node enables ETM instruction trace with the following fixed base configuration.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>ETMv3</th>
+<th>ETMv4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Conditional non-branch instructions</td>
+<td>Always on</td>
+<td><code>ETMv4_TRCCONFIGR[10:8] = 0</code> (none; no OpenCSD support)</td>
+</tr>
+<tr>
+<td>Branch broadcasting</td>
+<td><code>ETMv3_ETMCR[8] = 0</code> (off)</td>
+<td><code>ETMv4_TRCCONFIGR[3] = 0</code> (off)</td>
+</tr>
+<tr>
+<td>Return-stack compression</td>
+<td>Not available</td>
+<td><code>ETMv4_TRCCONFIGR[12] = 1</code> (on)</td>
+</tr>
+<tr>
+<td>Always trace reset</td>
+<td>Not available</td>
+<td><code>ETMv4_TRCVICTLR[10] = 1</code> (on)</td>
+</tr>
+<tr>
+<td>Always trace system errors</td>
+<td>Not available</td>
+<td><code>ETMv4_TRCVICTLR[11] = 1</code> (on)</td>
+</tr>
+<tr>
+<td>Trace Thread mode</td>
+<td>Always on</td>
+<td><code>ETMv4_TRCVICTLR[16] = 0</code> (on)</td>
+</tr>
+<tr>
+<td>Trace Handler mode</td>
+<td>Always on</td>
+<td><code>ETMv4_TRCVICTLR[19] = 0</code> (on)</td>
+</tr>
+<tr>
+<td>Periodic stream synchronization</td>
+<td>Always on</td>
+<td>Always on</td>
+</tr>
+</tbody>
+</table>
+<p>For currently supported ETMs, the read-only registers <code>ETMv3_ETMSYNCFR</code> and <code>ETMv4_TRCSYNCPR</code> have fixed values that give a synchronization period of 1024 emitted trace bytes.</p>
+<p>The following configurations are excluded from the base configuration and are configurable through the linked settings.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>ETMv3</th>
+<th>ETMv4</th>
+<th>Setting</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cycle Count</td>
+<td>Not available</td>
+<td><code>ETMv4_TRCCONFIGR[4]</code>, <code>ETMv4_TRCCCCTLR[11:0]</code></td>
+<td><a href="#timestamps"><code>timestamps:</code></a></td>
+</tr>
+<tr>
+<td>Global timestamps</td>
+<td><code>ETMv3_ETMCR[28]</code> (Cortex-M3(r2p1)/M4/M23)</td>
+<td><code>ETMv4_TRCCONFIGR[11]</code></td>
+<td><a href="#timesync"><code>timesync:</code></a></td>
+</tr>
+</tbody>
+</table>
 <table>
 <thead>
 <tr>
@@ -1068,20 +1174,98 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>start:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#start-and-stop"><code>start:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Conditions that start instruction trace.</td>
 </tr>
 <tr>
-<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>stop:</code></td>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <a href="#start-and-stop"><code>stop:</code></a></td>
 <td style="text-align: left;">Optional</td>
 <td style="text-align: left;">Conditions that stop instruction trace.</td>
 </tr>
 </tbody>
 </table>
-<p><code>start:</code> and <code>stop:</code> contain <a href="#conditions">condition</a> entries. These entries define when instruction trace starts or stops; they do not define trace output.</p>
+<h5 id="start-and-stop"><code>start:</code> and <code>stop:</code></h5>
+<p><code>start:</code> and <code>stop:</code> contain <a href="#conditions">condition</a> entries that start or stop instruction trace generation without stopping the processor or trace sink. It uses direct connections from DWT to ETM. Multiple conditions within each list are logically OR-combined.</p>
+<p>Instruction trace is initially stopped if <code>start:</code> conditions exist. Otherwise it is initially enabled. Without <code>stop:</code> conditions, tracing continues after starting.</p>
+<p>The number of allowed conditions depends on the available DWT comparators and ETM resources. See <a href="#configure-trace-generation">Configure Trace Generation</a> for processor-specific capabilities.</p>
+<p>For ETM, each <code>start:</code> or <code>stop:</code> entry generates:</p>
+<ul>
+<li>One or more <code>ref</code> nodes with type <code>dwt</code> to program the condition and, on Armv8-M, enable DWT Data Trace Match packets where supported.</li>
+<li>One <code>ref</code> node to program ETM Start/Stop input selection. For <code>start:</code>, it additionally sets <code>packet</code>.</li>
+</ul>
+<p>The <code>start:</code> ETM <code>ref</code> node uses type <code>etmv3</code> or <code>etmv4</code> with:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">ETMv3</th>
+<th style="text-align: left;">ETMv4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>packet</code></td>
+<td style="text-align: left;"><code>[I_SYNC, I_SYNC_CYCLE]</code></td>
+<td style="text-align: left;"><code>I_TRACE_ON</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>index</code></td>
+<td style="text-align: left;"><code>1</code></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<p>See an example <a href="#trace-start-stop-example">here</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li><code>start:</code> and <code>stop:</code> do not use cross-triggers to spare them for other debug features.</li>
+<li><code>start:</code> and <code>stop:</code> indications cannot be traced back to the exact condition because restart packets provide no identifying hints.</li>
+<li><code>start:</code> and <code>stop:</code> are experimental and may change in future versions.</li>
+</ul>
+</div>
 <h4 id="tracehalt"><code>tracehalt:</code></h4>
-<p>The <code>tracehalt:</code> node contains <a href="#conditions">condition</a> entries that halt a trace sink or formatter by a trace trigger. It affects all trace streams that use the sink. Support to combine two conditions by logic operators may be added in the future.</p>
+<p>The <code>tracehalt:</code> node contains <a href="#conditions">condition</a> entries that stop capture for all streams into the connected trace sink without stopping the processor. It uses direct connections from DWT to ETM. Multiple conditions for a single processor are logically OR-combined.</p>
+<p><code>tracehalt:</code> requires an ETM and a trace sink that supports stopping on trigger signals. It is not available with SWO output. The number of allowed conditions depends on the available DWT comparators and ETM resources. See <a href="#configure-trace-generation">Configure Trace Generation</a> for processor-specific capabilities.</p>
+<p>Each <code>tracehalt:</code> entry generates:</p>
+<ul>
+<li>One or more <code>ref</code> nodes with type <code>dwt</code> to program the condition and, on Armv8-M, enable DWT Data Trace Match packets that identify the matching comparator.</li>
+<li>One <code>ref</code> node to program ETM condition selection and inject a packet into the ETM stream to identify the stream and processor. It must enable and configure the ETM using masked register writes to preserve the bits controlling instruction trace emission.</li>
+<li>One <code>ref</code> node with type <code>trigger</code> to program ETM condition selection and trigger logic. The <code>trigger</code> packet is generated by the trace sink outside the individual trace streams and has no stream ID.</li>
+</ul>
+<p>The ETM <code>ref</code> node uses:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>type</code></th>
+<th style="text-align: left;"><code>packet</code></th>
+<th style="text-align: left;"><code>index</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>etmv3</code></td>
+<td style="text-align: left;"><code>TRIGGER</code></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>etmv4</code></td>
+<td style="text-align: left;"><code>I_EVENT</code></td>
+<td style="text-align: left;"><code>0</code></td>
+</tr>
+</tbody>
+</table>
+<p>The ETM <code>tracehalt:</code> <code>ref</code> node requires an active ETM decoder for the referenced stream to process the <code>TRIGGER</code> (ETMv3) or <code>I_EVENT</code> (ETMv4) packets emitted into that stream. The decoder is required even when <code>instructions:</code> is disabled.</p>
+<p>See an example <a href="#trace-halt-example">here</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li><code>tracehalt:</code> does not use cross-triggers to spare them for other debug features.</li>
+<li><code>tracehalt:</code> does not require <code>instructions:</code> to be enabled.</li>
+<li><code>tracehalt:</code> with ETMv4 must always use event <code>0</code> to send an ATB trigger to the trace sink.</li>
+</ul>
+</div>
 <h4 id="conditions">Conditions</h4>
 <p>The nodes <code>start:</code>, <code>stop:</code>, and <code>tracehalt:</code> may contain a condition list that is logically OR-combined. They have the following form.</p>
 <table>
@@ -1163,6 +1347,16 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <td style="text-align: left;">Per-processor register values that disable trace features before applying <code>ctrace-refs:</code>.</td>
 </tr>
 <tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ctrace-caps:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Per-processor core types and read-only identification and capability register values for trace decoders.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ctrace-images:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Image files for instruction reconstruction.</td>
+</tr>
+<tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>ctrace-refs:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
 <td style="text-align: left;">List of <a href="#references">references</a> in the <code>*.ctrace.yml</code> file.</td>
@@ -1192,6 +1386,66 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 </tr>
 </tbody>
 </table>
+<p>The <code>ctrace-caps:</code> node contains processor core types and read-only identification and capability register values supplied by pyTS. Multi-processor entries require <code>pname:</code>, while single-processor entries omit it. Its <code>regs:</code> entries use the identification register format under <a href="#register-accesses">Register Accesses</a>.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>ctrace-caps:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- pname:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Processor name.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>core:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Processor core type, copied from <code>system-resources:processors:core:</code> in <a href="../YML-CBuild-Format/#processors"><code>*.cbuild-run.yml</code></a>.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>regs:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Read-only identification and capability register values for this processor.</td>
+</tr>
+</tbody>
+</table>
+<p>These values provide the implementation information required, for example, to configure the <a href="https://github.com/Linaro/OpenCSD/blob/master/decoder/docs/prog_guide/prog_guide_main.md#configuring-decoders">OpenCSD ETM decoder</a> used in the <code>ctrace</code> utility. Examples include:</p>
+<ul>
+<li>ETMv3: <code>ETMv3_ETMIDR</code>, <code>ETMv3_ETMCCER</code>.</li>
+<li>ETMv4: <code>ETMv4_TRCIDR0</code>–<code>ETMv4_TRCIDR2</code> and <code>ETMv4_TRCIDR8</code>–<code>ETMv4_TRCIDR13</code>.</li>
+</ul>
+<p>The <code>ctrace-images:</code> node lists image files available to the <code>ctrace</code> utility to reconstruct instruction traces. File paths are relative to <code>*.ctrace-run.yml</code>. Multi-processor entries require <code>pname:</code>, while single-processor entries omit it.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>ctrace-images:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- file:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Specifies the file name.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Specifies the file type (see below).</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">Image belongs to processor in a multi-core system.</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>type:</code> value is <code>elf</code> for ELF files (<code>.elf</code> or <code>.axf</code>) or <code>hex</code> for Intel HEX files. Addresses in HEX files must be the code addresses at execution time, which can differ from the addresses in the load regions.</p>
 <p>The <code>ref:</code> node references the trace generation configuration in the file <code>*.ctrace.yml</code> and contains register values that represent the setup for trace sources. The <code>regs:</code> entries use the <a href="#register-accesses">register access format</a>. A single-core system has no <code>pname:</code> value; a multi-processor always includes a <code>pname:</code> value in the <code>ref:</code> node.</p>
 <table>
 <thead>
@@ -1210,7 +1464,12 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>type:</code></td>
 <td style="text-align: left;"><strong>Required</strong></td>
-<td style="text-align: left;">Trace source type.</td>
+<td style="text-align: left;">Trace output type.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>packet:</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;"><a href="#packet">Packet type</a> or array of packet types produced by this reference, within the protocol selected by <code>type</code>. Supported for <code>etmv3</code> and <code>etmv4</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>pname:</code></td>
@@ -1225,7 +1484,7 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>index:</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Index or list of indices of ITM channels or DWT comparators used by setting.</td>
+<td style="text-align: left;">Index or list of indices. See detailed usage <a href="#index">here</a>.</td>
 </tr>
 <tr>
 <td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>info:</code></td>
@@ -1274,16 +1533,23 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 </tr>
 </tbody>
 </table>
-<p>The trace source types are: <code>dwt</code>, <code>event</code>, <code>exception</code>, <code>itm</code>, <code>pmu</code>, <code>overflow</code>, <code>pcsample</code>, <code>global_ts</code>.</p>
+<p>The trace packet types are: <code>dwt</code>, <code>event</code>, <code>exception</code>, <code>itm</code>, <code>pmu</code>, <code>overflow</code>, <code>pcsample</code>, <code>global_ts</code>, <code>etmv3</code>, <code>etmv4</code>, <code>trigger</code>. The decoder-only <code>error</code> type has no setting reference.</p>
+<p>The <code>etmv3</code> and <code>etmv4</code> types on <code>instructions:</code> and <code>tracehalt:</code> <code>ref</code> nodes select the ETM protocol for decoding the referenced stream. ETM types may use <a href="#packet"><code>packet:</code></a> to identify individual packet types within the ETM protocols.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The ETM types and their packet descriptions are experimental and may change in future versions.</p>
+</div>
 <p>Each of the <code>info:</code>, <code>warning:</code>, and <code>error:</code> nodes accepts either a string or a list of strings, allowing multiple messages to be represented separately.</p>
 <p>Multiple <code>ref</code> entries may reference the same configuration node when it generates setups for multiple streams. The combination of <code>ref</code> and <code>stream</code> identifies each generated setup.</p>
 <p>The <code>data-type</code> in combination with <code>size</code> provides a hint for the display format. Other information required for generating CTF data can be extracted from the referenced setting node in the <code>ctrace-setup:</code> section.</p>
 <p><code>size</code> can be extracted from symbol information or provided in the <code>ctrace</code> file. If both are present, user input takes precedence.</p>
-<p>The use of <code>index:</code> depends on the combination of <code>type:</code> and the setting referenced by <code>ref:</code>.</p>
+<h4 id="index"><code>index:</code></h4>
+<p>The use of <code>index:</code> depends on the combination of <code>type:</code>, <code>packet:</code>, and the setting referenced by <code>ref:</code>.</p>
 <table>
 <thead>
 <tr>
 <th style="text-align: left;"><code>type:</code></th>
+<th style="text-align: left;"><code>packet:</code></th>
 <th style="text-align: left;"><code>ref:</code> setting</th>
 <th style="text-align: left;">Usage of <code>index:</code></th>
 </tr>
@@ -1291,23 +1557,38 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <tbody>
 <tr>
 <td style="text-align: left;"><code>dwt</code></td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;"><code>data:</code></td>
 <td style="text-align: left;">Number or array of DWT comparators allocated for the data-trace entry.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>dwt</code></td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;"><code>instructions:start:</code>, <code>instructions:stop:</code>, or <code>tracehalt:</code></td>
 <td style="text-align: left;">Number or array of DWT comparators allocated for the condition.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>itm</code></td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;"><code>itm:</code></td>
 <td style="text-align: left;">Number or array of enabled ITM channels.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>etmv3</code></td>
+<td style="text-align: left;"><code>[I_SYNC, I_SYNC_CYCLE]</code></td>
+<td style="text-align: left;"><code>instructions:start:</code></td>
+<td style="text-align: left;">I-sync reason code, always <code>1</code> for <code>start:</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>etmv4</code></td>
+<td style="text-align: left;"><code>I_EVENT</code></td>
+<td style="text-align: left;"><code>tracehalt:</code></td>
+<td style="text-align: left;">ETMv4 event number, always <code>0</code> for <code>tracehalt:</code>.</td>
 </tr>
 </tbody>
 </table>
 <h4 id="register-accesses">Register Accesses</h4>
-<p>The <code>ctrace-run.yml</code> file contains the disabled register values and active register setup required for trace generation. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.</p>
+<p>The <code>ctrace-run.yml</code> file contains the disabled register values and active register setup required for trace generation, along with read-only identification register values for trace decoders. It does not include enable sequences required by the Arm processor to access these registers. The debugger (pyOCD) has knowledge about architecturally defined trace components (listed in the table below) and therefore generates the right sequences, potentially with timeouts.</p>
 <table>
 <thead>
 <tr>
@@ -1333,13 +1614,19 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <td style="text-align: left;">Performance Monitoring Unit.</td>
 </tr>
 <tr>
-<td style="text-align: left;"><code>ETM</code></td>
+<td style="text-align: left;"><code>ETMv3</code></td>
 <td style="text-align: center;"><code>0xE0041000</code></td>
-<td style="text-align: left;">Embedded Trace Macrocell.</td>
+<td style="text-align: left;">Embedded Trace Macrocell, architecture version 3.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4</code></td>
+<td style="text-align: center;"><code>0xE0041000</code></td>
+<td style="text-align: left;">Embedded Trace Macrocell, architecture version 4.</td>
 </tr>
 </tbody>
 </table>
-<p><code>regs:</code> entries are used under both <code>ctrace-disable:</code> and <code>ctrace-refs:</code> and have the following format:</p>
+<p>Register names use the component prefix followed by an underscore, for example <code>ITM_TCR</code>, <code>ETMv3_ETMCR</code>, or <code>ETMv4_TRCCONFIGR</code>.</p>
+<p><code>regs:</code> entries under <code>ctrace-disable:</code> and <code>ctrace-refs:</code> describe register writes and have the following format:</p>
 <table>
 <thead>
 <tr>
@@ -1367,7 +1654,30 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 </tbody>
 </table>
 <p>When applying <code>ctrace-disable:</code> writes to DWT comparators, the debugger preserves active watchpoints.</p>
-<h4 id="example">Example</h4>
+<p><code>regs:</code> entries under <code>ctrace-caps:</code> contain read-only identification and capability values. They are for example used to configure a trace decoder.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>regs:</code></th>
+<th style="text-align: left;"></th>
+<th style="text-align: left;">Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>- name:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Symbolic name of the register.</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;&nbsp; <code>value:</code></td>
+<td style="text-align: left;"><strong>Required</strong></td>
+<td style="text-align: left;">Read-only register value supplied by pyTS.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="examples">Examples</h4>
+<p>A generic example introducing the main concepts.</p>
 <pre><code class="language-yml">ctrace-run:
   generated-by: pyTS v0.0
   ctrace-setup:
@@ -1381,6 +1691,16 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
         mask: 0x00000006  # Disable timestamp and synchronization generation
       - name: ITM_TER0
         value: 0x00000000  # No mask: disable all 32 ITM channels
+  ctrace-caps:
+  - pname: core0
+    core: CM4
+    regs:
+      - name: ETMv3_ETMIDR  # ETMv3
+        value: 0x4114F250
+  ctrace-images:
+  - file: ../out/Blinky/Target/Debug/Blinky.axf
+    type: elf
+    pname: core0
   ctrace-refs:
   - ref: core0/itm
     pname: core0
@@ -1426,21 +1746,102 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
         value: 0x00000002
         mask: 0x00000002
 
-  # - ref: core0/timestamps
-  #   type: etm            # etm not yet supported, for demonstration purposes only
-  #   pname: core0
-  #   stream: 2
-  #   regs:
-  #     - name: TRCCONFIGR
-  #       value: 0x00000010
-  #       mask: 0x00000010
-  #     - name: TRCCCCTLR
-  #       value: 0x4
+  # ETM timestamp and instruction-record types remain to be specified.
 </code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The processor <code>itm</code> reference configures the ITM ATB stream ID. It may be generated even when no ITM channels are enabled.</p>
 </div>
+<h5 id="trace-start-stop-example">Trace Start / Stop Example</h5>
+<p>Example of Trace Start / Stop programming for a Cortex-M4 processor with ETMv3.</p>
+<pre><code class="language-yml">ctrace-refs:
+  - ref: instructions:start#0
+    type: dwt
+    index: 0               # DWT Comparator 0
+    regs:
+      - name: DWT_COMP0
+        value: 0x00008000
+      - name: DWT_MASK0
+        value: 0x00000002  # Ignore address bits [1:0]: 4-byte range
+      - name: DWT_FUNCTION0
+        value: 0x00000008  # Assert CMPMATCH[0] on instruction-address match
+
+  - ref: instructions:start#0
+    type: etmv3
+    packet: [I_SYNC, I_SYNC_CYCLE]
+    stream: 1              # ETM stream ID 1
+    index: 1               # I-sync reason: tracing enabled
+    regs:
+      - name: ETMv3_ETMTEEVR
+        value: 0x0000006F  # TraceEnable enabling event: always TRUE
+      - name: ETMv3_ETMTECR1
+        value: 0x02000000  # Enable Start/Stop control
+      - name: ETMv3_ETMSR
+        value: 0x00000000  # Initial Start/Stop state: stopped
+        mask: 0x00000004
+      - name: ETMv3_ETMTESSEICR
+        value: 0x00000001  # Start on DWT comparator input 0
+        mask: 0x00000001
+
+  - ref: instructions:stop#0
+    type: dwt
+    index: 1               # DWT Comparator 1
+    regs:
+      - name: DWT_COMP1
+        value: 0x00008040
+      - name: DWT_MASK1
+        value: 0x00000002  # Ignore address bits [1:0]: 4-byte range
+      - name: DWT_FUNCTION1
+        value: 0x00000008  # Assert CMPMATCH[1] on instruction-address match
+
+  - ref: instructions:stop#0
+    type: etmv3
+    stream: 1
+    regs:
+      - name: ETMv3_ETMTESSEICR
+        value: 0x00020000  # Stop on DWT comparator input 1
+        mask: 0x00020000
+</code></pre>
+<h5 id="trace-halt-example">Trace Halt Example</h5>
+<p>Example of Trace Halt programming for a v8-M based processor with ETMv4.</p>
+<pre><code class="language-yml">ctrace-refs:
+  - ref: tracehalt#0
+    type: dwt
+    stream: 2              # ITM/DWT stream ID 2
+    index: 2               # DWT Comparator 2
+    regs:
+      - name: DWT_COMP2
+        value: 0x24000030
+      - name: DWT_FUNCTION2
+        value: 0x00000825  # Emit match packet on word write and assert CMPMATCH[2]
+
+  - ref: tracehalt#0
+    type: etmv4
+    packet: I_EVENT
+    stream: 1              # ETM stream ID 1
+    index: 0               # ETMv4 Event 0
+    regs:
+      - name: ETMv4_TRCRSCTLR2
+        value: 0x00010004  # Resource Selector 2 selects DWT comparator input 2
+      - name: ETMv4_TRCEVENTCTL0R
+        value: 0x00000002  # Event 0 selects Resource Selector 2
+        mask: 0x000000FF
+      - name: ETMv4_TRCEVENTCTL1R
+        value: 0x00000001  # INSTEN[0]: generate an ETM Event packet
+        mask: 0x00000001
+
+  - ref: tracehalt#0
+    type: trigger
+    regs:
+      - name: ETMv4_TRCRSCTLR2
+        value: 0x00010004  # GROUP=1, SELECT[2]=1: DWT comparator 2, Not Inverted
+      - name: ETMv4_TRCEVENTCTL0R
+        value: 0x00000002  # Event 0 selects resource selector 2
+        mask: 0x000000FF
+      - name: ETMv4_TRCEVENTCTL1R
+        value: 0x00000800  # ATB: send a trigger to the trace sink
+        mask: 0x00000800
+</code></pre>
 <h3 id="initial-implementation">Initial Implementation</h3>
 <p>The initial implementation focuses on pyOCD with SWO UART and interactive operation in CMSIS-Debugger.</p>
 <p>Subsequent releases may extend this initial solution to:</p>
@@ -1451,7 +1852,7 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 </ul>
 <h3 id="remaining-design-questions">Remaining Design Questions</h3>
 <ul>
-<li>Cross-trigger functionality will be represented later (potentially in <code>*.ctrace.yml</code>)</li>
+<li>Cross-trigger functionality will be represented later (potentially in <code>*.ctrace.yml</code>).</li>
 <li>What are system wide settings? How are they represented? What trace component is configured with such settings?</li>
 </ul>
 <h3 id="out-of-scope">Out-of-Scope</h3>
@@ -1467,15 +1868,17 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <tr>
 <th style="text-align: left;">Option</th>
 <th style="text-align: center;">M0</th>
-<th style="text-align: center;">M0+, M23</th>
-<th style="text-align: center;">M3, M4, M7, M33</th>
-<th style="text-align: center;">M52, M55</th>
-<th style="text-align: center;">M85</th>
+<th style="text-align: center;">M0+</th>
+<th style="text-align: center;">M23</th>
+<th style="text-align: center;">M3, M4</th>
+<th style="text-align: center;">M7, M33</th>
+<th style="text-align: center;">M52, M55, M85</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align: left;">Timestamps</td>
+<td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">yes</td>
@@ -1486,12 +1889,14 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <td style="text-align: left;">Exceptions</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
 <td style="text-align: left;">Event Counters</td>
+<td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">yes</td>
@@ -1502,25 +1907,19 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <td style="text-align: left;">PMU Event</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
 <td style="text-align: center;">no</td>
-<td style="text-align: center;">yes</td>
+<td style="text-align: center;">no</td>
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
 <td style="text-align: left;">Instrumentation Trace</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
-<td style="text-align: center;">yes</td>
-<td style="text-align: center;">yes</td>
-<td style="text-align: center;">yes</td>
-</tr>
-<tr>
-<td style="text-align: left;">DWT Data Trace</td>
 <td style="text-align: center;">-</td>
-<td style="text-align: center;">-</td>
-<td style="text-align: center;">4 comparators</td>
-<td style="text-align: center;">8 comparators</td>
-<td style="text-align: center;">4 comparators</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
 </tr>
 <tr>
 <td style="text-align: left;">Instruction Trace</td>
@@ -1529,17 +1928,47 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <td style="text-align: center;">with TB</td>
 <td style="text-align: center;">with TB</td>
 <td style="text-align: center;">with TB</td>
+<td style="text-align: center;">with TB</td>
 </tr>
 <tr>
-<td style="text-align: left;">Start, Stop, Halt</td>
+<td style="text-align: left;">DWT Comparators (total)</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">8</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;– DWT Data Trace</td>
 <td style="text-align: center;">-</td>
-<td style="text-align: center;">2 comparators</td>
-<td style="text-align: center;">4 comparators</td>
-<td style="text-align: center;">8 comparators</td>
-<td style="text-align: center;">8 comparators</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;– Start, Stop</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">8</td>
+</tr>
+<tr>
+<td style="text-align: left;">&nbsp;&nbsp;– Trace Halt</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">8</td>
 </tr>
 <tr>
 <td style="text-align: left;">PC Sampling</td>
+<td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">yes</td>
@@ -1550,12 +1979,14 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <td style="text-align: left;">Time Synchronization</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
+<td style="text-align: center;">-</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 </tr>
 <tr>
 <td style="text-align: left;">Stream Synchronization</td>
+<td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">-</td>
 <td style="text-align: center;">yes</td>
@@ -1568,8 +1999,12 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <p class="admonition-title">Note</p>
 <ul>
 <li>The available Event Counters depend on the Cortex-M processor.</li>
-<li>The DWT comparators available for <code>DWT Data Trace</code> and <code>Start, Stop, Halt</code> are shared, so the total number of available comparators is not the sum of the values in the two rows.</li>
+<li>ETM support is limited to instruction trace.</li>
+<li>The DWT comparators available for <code>DWT Data Trace</code>, <code>Start, Stop</code>, and <code>Trace Halt</code> are shared, so the total number of available comparators is not the sum of the values in these rows.</li>
+<li>Linked conditions can require additional DWT comparators for any of these features.</li>
+<li>An ETMv4 resource selector can OR all available PE inputs. An event selects one selector or a Boolean-combined selector pair.</li>
 <li>M52, M55, M85 use the first 4 DWT comparators for data trace.</li>
+<li><code>Trace Halt</code> additionally requires a supported ETM-to-sink trigger path.</li>
 </ul>
 </div>
 <div class="admonition note">
@@ -1583,6 +2018,8 @@ It is up to the individual debug tool to route the <code>printf</code> data to a
 <li>Converts symbolic names in the file <code>.cmsis/&lt;solution-set&gt;.ctrace.yml</code> to physical addresses by using the corresponding ELF output files.</li>
 <li>Uses processor information and implementation details to map the trace generation setup into CoreSight trace register values. See <a href="#processor-specific-trace-features">Processor-Specific Trace Features</a></li>
 <li>Generates <code>ctrace-disable:</code> with one group per processor that needs disable writes and one write per register, covering every trace feature pyTS can configure on the target, even if not enabled.</li>
+<li>Generates <code>ctrace-caps:</code> when processor and ID register information is needed to configure the <code>ctrace</code> utility.</li>
+<li>Generates <code>ctrace-images:</code> from the <code>output:</code> entries in <code>*.cbuild-run.yml</code>, with paths made relative to <code>*.ctrace-run.yml</code>.</li>
 <li>Rejects incompatible configuration settings with user-oriented messages (<code>info:</code>, <code>warning:</code>, or <code>error:</code>) in the <code>ref:</code> node of the file <code>*.ctrace-run.yml</code></li>
 </ul>
 <p>For a given target, <code>ctrace-disable:</code> remains unchanged when feature settings change. pyTS includes disable fields for every trace-eligible DWT comparator. If no writes are needed, it emits <code>ctrace-disable:</code> without children, which the debugger treats as no disable writes. The disable-values for supported components are listed in <a href="#trace-component-registers">Trace Component Registers</a>.</p>
@@ -1603,6 +2040,7 @@ Options:
   -a  --all                Generate both CSV and CTF files
       --type sel [...]     Filter output for specific packet types; repeat to select multiple types (default: all packet types)
       --stream sel [...]   Filter output for specific streams; repeat to select multiple streams (default: all streams)
+      --instructions mode  Select ETM instruction trace output: pc, ranges, or packets (default: pc)
   -c, --channel arg        Specify &lt;channel&gt; to decode; repeat to decode multiple channels
                            (default: process all channels for specified solution sets in trace-dir)
   -t, --target arg         Specify &lt;solution-set&gt; (default: process all solution sets in trace-dir)
@@ -1614,12 +2052,46 @@ Options:
 - If a solution set contains more than one <code>&lt;channel&gt;</code>, each channel is processed separately.</p>
 <p>CSV and CTF output files are written to the <code>&lt;trace-dir&gt;</code> as explained under <a href="#directory-and-file-structure">directory and file structure</a>.
 When no option for generating files is specified, the raw trace data files are validated.</p>
+<p><code>ctrace</code> requires the per-processor <code>core:</code> and <code>regs:</code> values in <code>ctrace-caps:</code> from <code>*.ctrace-run.yml</code> to configure its OpenCSD ETMv3 and ETMv4 decoders. It derives the CPU architecture version and profile from <code>core:</code>. It obtains the RW register values from the <code>regs:</code> entries of ETM references under <code>ctrace-refs:</code>, including those for <code>instructions:</code> and <code>tracehalt:</code>.</p>
 <h3 id="-type-option"><code>--type</code> option</h3>
 <p>The <code>--type</code> option is applied to the decoded packet type for both CSV and CTF files. Only the specified packet types are contained in the generated files.</p>
-<p>Accepted packet types are: <code>itm</code>, <code>dwt</code>, <code>event</code>, <code>pmu</code>, <code>exception</code>, <code>pcsample</code>, <code>global_ts</code>, <code>overflow</code>, <code>error</code>.</p>
+<p>Accepted packet types are: <code>itm</code>, <code>dwt</code>, <code>event</code>, <code>pmu</code>, <code>exception</code>, <code>pcsample</code>, <code>global_ts</code>, <code>overflow</code>, <code>error</code>, <code>etmv3</code>, <code>etmv4</code>, <code>trigger</code>. Selecting an ETM type includes all its packet types.</p>
 <p><strong>Example:</strong></p>
 <p>Output only the packet types <code>dwt</code> and <code>event</code> to the generated CSV and CTF files.</p>
 <pre><code class="language-bash">ctrace .trace --all --type dwt event
+</code></pre>
+<h3 id="-instructions-option"><code>--instructions</code> option</h3>
+<p>The <code>--instructions</code> option selects the ETM instruction trace output mode for CSV output. It requires <code>--csv</code> or <code>--all</code> and does not change ITM/DWT decoding.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Mode</th>
+<th style="text-align: left;">Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>pc</code> (default)</td>
+<td style="text-align: left;">One instruction PC per record, plus events and status.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ranges</code></td>
+<td style="text-align: left;">OpenCSD generic instruction ranges, events, and status.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>packets</code></td>
+<td style="text-align: left;">ETM protocol packets, parser status, and diagnostics.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ToDo: Decide whether to drop <code>ranges</code> from the first implementation.</p>
+</div>
+<p><code>pc</code> and <code>ranges</code> modes require code images in ELF or HEX format for each selected ETM trace source. Images are listed in <code>ctrace-images:</code>. If a selected source has no listed images, <code>ctrace</code> exits with an error. If an instruction address is outside that source's images, <code>ctrace</code> inserts a decode warning and recovers at the next possible instruction address.</p>
+<p><strong>Examples:</strong></p>
+<pre><code class="language-bash">ctrace .trace --csv
+ctrace .trace --csv --channel TB --instructions packets
 </code></pre>
 <h3 id="-verbose-option"><code>--verbose</code> option</h3>
 <p>The <code>--verbose</code> option (short form <code>-v</code>) enables detailed CLI diagnostics on <code>stderr</code>. By default, diagnostics use compact text with the cause and relevant counts.</p>
@@ -1639,36 +2111,48 @@ When no option for generating files is specified, the raw trace data files are v
 </tr>
 <tr>
 <td style="text-align: left;"><code>stream</code></td>
-<td style="text-align: left;">Stream ID (CoreSight ATB ID) of the trace packet. Empty if no formatting.</td>
+<td style="text-align: left;">Stream ID (CoreSight ATB ID). An empty value indicates unformatted trace or trace that is not associated with an individual trace stream.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>type</code></td>
-<td style="text-align: left;">Packet type: <code>itm</code>, <code>dwt</code>, <code>event</code>, <code>pmu</code>, <code>exception</code>, <code>pcsample</code>, <code>global_ts</code>, <code>overflow</code>, <code>error</code>.</td>
+<td style="text-align: left;">Trace output type: <code>itm</code>, <code>dwt</code>, <code>event</code>, <code>pmu</code>, <code>exception</code>, <code>pcsample</code>, <code>global_ts</code>, <code>overflow</code>, <code>error</code>, <code>etmv3</code>, <code>etmv4</code>, <code>trigger</code>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>packet</code></td>
+<td style="text-align: left;">Single <a href="#packet">packet type</a> within the protocol selected by <code>type</code>. Supported for <code>etmv3</code> and <code>etmv4</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>index</code></td>
-<td style="text-align: left;">Index of the ITM channel, DWT comparator, or exception depending on <code>type</code> value.</td>
+<td style="text-align: left;">Index determined by <code>type</code> and <code>packet</code>. See the descriptions below.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>value</code></td>
-<td style="text-align: left;">Value in hexadecimal form. For packet type <code>exception</code> state transition: <code>0x1</code> enter, <code>0x2</code> exit, <code>0x3</code> return.</td>
+<td style="text-align: left;">Value in hexadecimal form. For packet type <code>exception</code> state transition: <code>0x1</code> enter, <code>0x2</code> exit, <code>0x3</code> return. Execution state for instruction records. Instruction count for instruction range records.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>pc</code></td>
-<td style="text-align: left;">Program counter for packet types <code>dwt</code> and <code>pcsample</code>.</td>
+<td style="text-align: left;">Program counter for packet types <code>dwt</code> and <code>pcsample</code> and for instruction trace. Start address for instruction ranges.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>address</code></td>
-<td style="text-align: left;">Data address for packet type <code>dwt</code>.</td>
+<td style="text-align: left;">Data address for packet type <code>dwt</code>. Exclusive end address for instruction ranges.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>opcode</code></td>
+<td style="text-align: left;">Instruction encoding from the code image for individual instruction records.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>note</code></td>
-<td style="text-align: left;">Additional details, used for error notification.</td>
+<td style="text-align: left;">Additional details, including error notifications and trigger origin.</td>
 </tr>
 </tbody>
 </table>
-<p>The <code>value</code>, <code>pc</code>, and <code>address</code> columns use hexadecimal form. See <a href="#variable-data-sizes">Variable Data Sizes</a> for details.</p>
-<p>The following table contains details about the packet type. Information is empty when not provided by the trace packet.</p>
+<p>The <code>value</code>, <code>pc</code>, <code>address</code>, and <code>opcode</code> columns use hexadecimal form. See <a href="#variable-data-sizes">Variable Data Sizes</a> for details.</p>
+<p>The following table contains details about the trace output type. Information is empty when unavailable or inapplicable to a record.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The ETM types and their packet descriptions are experimental and may change in future versions.</p>
+</div>
 <table>
 <thead>
 <tr>
@@ -1688,6 +2172,18 @@ When no option for generating files is specified, the raw trace data files are v
 <tr>
 <td style="text-align: left;"><code>event</code></td>
 <td style="text-align: left;">Reserved for profiling/event-counter rows. Detailed semantics will be specified in a future version.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>etmv3</code></td>
+<td style="text-align: left;">ETMv3 trace output. Protocol packets use <a href="#packet"><code>packet</code></a> to identify specific packet types.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>etmv4</code></td>
+<td style="text-align: left;">ETMv4 trace output. Protocol packets use <a href="#packet"><code>packet</code></a> to identify specific packet types.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>trigger</code></td>
+<td style="text-align: left;">Marks a trigger event at the trace sink.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>pmu</code></td>
@@ -1719,8 +2215,60 @@ When no option for generating files is specified, the raw trace data files are v
 <p class="admonition-title">Note</p>
 <p>The timestamp packet type information is provided in the <code>cycles</code> column.</p>
 </div>
+<h4 id="packet"><code>packet:</code></h4>
+<p>The <code>packet</code> field is supported for <code>etmv3</code> and <code>etmv4</code>. It further identifies the packet type if <code>type</code> identifies a trace output type with a complex protocol.</p>
+<p>The <code>packet:</code> types for <code>etmv3</code> and <code>etmv4</code> are based on <a href="https://github.com/Linaro/OpenCSD">OpenCSD</a>. The tables below list some types with special meaning to features such as Trace Halt and instruction trace start/stop. For other <code>packet:</code> names, refer to the <code>packetTypeName</code> method in the OpenCSD <a href="https://github.com/Linaro/OpenCSD/blob/master/decoder/source/etmv3/trc_pkt_elem_etmv3.cpp">ETMv3 decoder</a> and <a href="https://github.com/Linaro/OpenCSD/blob/master/decoder/source/etmv4/trc_pkt_elem_etmv4i.cpp">ETMv4 decoder</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This part of the specification is experimental and may change in future versions.</p>
+</div>
+<h5 id="etmv3">ETMv3</h5>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>packet</code></th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;"><code>index</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>TRIGGER</code></td>
+<td style="text-align: left;">Inline Trigger packet. <code>stream</code> identifies its ETM source.</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>I_SYNC</code>, <code>I_SYNC_CYCLE</code></td>
+<td style="text-align: left;">Instruction synchronization packets. <code>stream</code> identifies its ETM source.</td>
+<td style="text-align: left;">Reason: <code>0</code> - Periodic, <code>1</code> - Started, <code>2</code> - Overflow, <code>3</code> - Debug exit.</td>
+</tr>
+</tbody>
+</table>
+<h5 id="etmv4">ETMv4</h5>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>packet</code></th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;"><code>index</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>I_EVENT</code></td>
+<td style="text-align: left;">Event packet. <code>stream</code> identifies its ETM source.</td>
+<td style="text-align: left;">Event number.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>I_TRACE_ON</code></td>
+<td style="text-align: left;">Trace On packet. <code>stream</code> identifies its ETM source.</td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
 <h4 id="variable-data-sizes">Variable Data Sizes</h4>
 <p>For the <code>value</code>, <code>pc</code>, and <code>address</code> columns, the number of hex digits represents the payload size: 1 byte: <code>0x00</code>, 2 bytes: <code>0x0000</code>, 4 bytes: <code>0x00000000</code>.</p>
+<p><code>opcode</code> uses 4 or 8 hex digits for 2- or 4-byte instructions, including leading zeros. Thumb-32 places the first halfword first.</p>
 <p>For packet type <code>dwt</code>, payload sizes depend on the architecture:</p>
 <table>
 <thead>
@@ -1801,19 +2349,53 @@ When no option for generating files is specified, the raw trace data files are v
 </tr>
 </tbody>
 </table>
-<p><strong>Example:</strong></p>
-<pre><code class="language-csv">cycles,stream,type,index,value,pc,address,note
-2518192,,itm,0,0x53,,,
-2518404,,itm,0,0x54,,,
-2518616,,itm,0,0x4d,,,
-949338400,,dwt,2,0xfffffdf9,0x08001234,0xfdf9,
-949338400,,dwt,3,0x0000006c,0x08001240,0x006c,
-949338400,,dwt,0,0x00,,,
-949339000,,pcsample,,,0x08000100,,
-949338400,,exception,0,0x3,,,
-949338400,,overflow,,,,,
-950364820,,exception,11,0x1,,,
-950389420,,exception,0,0x3,,,
+<h4 id="instruction-records">Instruction Records</h4>
+<p>In <code>pc</code> mode, <code>value</code> encodes the following execution state:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>value</code></th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>0x00</code></td>
+<td style="text-align: left;">Execution condition failed.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>0x01</code></td>
+<td style="text-align: left;">Executed, branch not taken or not a branch.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>0x02</code></td>
+<td style="text-align: left;">Reserved.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>0x03</code></td>
+<td style="text-align: left;">Executed, branch taken.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>0xFF</code></td>
+<td style="text-align: left;">Execution state unknown.</td>
+</tr>
+</tbody>
+</table>
+<p>Here, "executed" means that the instruction's execution condition passed or the instruction was unconditional. It does not establish instruction completion.</p>
+<p>Check for <code>0xFF</code> (unknown) and <code>0x02</code> (reserved) before interpreting the bits. For the remaining values, bit 0 indicates whether the instruction executed, and bit 1 indicates whether a branch was taken. Executed non-branch instructions use <code>0x01</code>.</p>
+<h4 id="csv-example">CSV Example</h4>
+<pre><code class="language-csv">cycles,stream,type,packet,index,value,pc,address,opcode,note
+2518192,,itm,,0,0x53,,,,
+2518404,,itm,,0,0x54,,,,
+2518616,,itm,,0,0x4d,,,,
+949338400,,dwt,,2,0xfffffdf9,0x08001234,0xfdf9,,
+949338400,,dwt,,3,0x0000006c,0x08001240,0x006c,,
+949338400,,dwt,,0,0x00,,,,
+949339000,,pcsample,,,,0x08000100,,,
+949338400,,exception,,0,0x3,,,,
+949338400,,overflow,,,,,,,
+950364820,,exception,,11,0x1,,,,
+950389420,,exception,,0,0x3,,,,
 </code></pre>
 <table>
 <thead>
@@ -1821,10 +2403,12 @@ When no option for generating files is specified, the raw trace data files are v
 <th style="text-align: left;">cycles</th>
 <th style="text-align: left;">stream</th>
 <th style="text-align: left;">type</th>
+<th style="text-align: left;">packet</th>
 <th style="text-align: left;">index</th>
 <th style="text-align: left;">value</th>
 <th style="text-align: left;">pc</th>
 <th style="text-align: left;">address</th>
+<th style="text-align: left;">opcode</th>
 <th style="text-align: left;">note</th>
 </tr>
 </thead>
@@ -1833,8 +2417,10 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">2518192</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;">itm</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;">0</td>
 <td style="text-align: left;">0x53</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
@@ -1843,8 +2429,10 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">2518404</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;">itm</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;">0</td>
 <td style="text-align: left;">0x54</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
@@ -1853,38 +2441,46 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">2518616</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;">itm</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;">0</td>
 <td style="text-align: left;">0x4d</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
 </tr>
 <tr>
 <td style="text-align: left;">949338400</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;">dwt</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;">2</td>
 <td style="text-align: left;">0xfffffdf9</td>
 <td style="text-align: left;">0x08001234</td>
 <td style="text-align: left;">0xfdf9</td>
 <td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
 </tr>
 <tr>
 <td style="text-align: left;">949338400</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;">dwt</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;">3</td>
 <td style="text-align: left;">0x0000006c</td>
 <td style="text-align: left;">0x08001240</td>
 <td style="text-align: left;">0x006c</td>
 <td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
 </tr>
 <tr>
 <td style="text-align: left;">949338400</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;">dwt</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;">0</td>
 <td style="text-align: left;">0x00</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
@@ -1895,7 +2491,9 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">pcsample</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;">0x08000100</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 </tr>
@@ -1903,8 +2501,10 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">949338400</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;">exception</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;">0</td>
 <td style="text-align: left;">0x3</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
@@ -1918,13 +2518,17 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
 </tr>
 <tr>
 <td style="text-align: left;">950364820</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;">exception</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;">11</td>
 <td style="text-align: left;">0x1</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
@@ -1933,8 +2537,10 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">950389420</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;">exception</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;">0</td>
 <td style="text-align: left;">0x3</td>
+<td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
@@ -1958,14 +2564,19 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">CSV record <code>type</code>. Identifies the trace setting in the dialog, e.g. Exceptions or DWT Data Trace.</td>
 </tr>
 <tr>
+<td style="text-align: left;"><code>packet</code></td>
+<td style="text-align: left;">Optional</td>
+<td style="text-align: left;">CSV record <a href="#packet"><code>packet</code></a>.</td>
+</tr>
+<tr>
 <td style="text-align: left;"><code>stream</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">CSV record <code>stream</code> value. Identifies the trace stream the setting belongs to. Implicitly indicates the trace source and processor that generated the trace. An empty value indicates unformatted trace.</td>
+<td style="text-align: left;">CSV record <code>stream</code> value. Identifies the trace stream the setting belongs to and its processor. An empty value indicates unformatted trace or trace that is not associated with an individual trace stream.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>index</code></td>
 <td style="text-align: left;">Optional</td>
-<td style="text-align: left;">Depending on CSV record type, <code>index</code> may specify a value to narrow down the origin of a record, e.g. the <code>exception</code> number, an <code>itm</code> channel, or a <code>dwt</code> comparator. Where applicable, this may help to identify a child of a setting node.</td>
+<td style="text-align: left;">CSV record <code>index</code> value. Narrows the origin of a record according to <code>type</code> and <code>packet</code>.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><code>solution-set</code></td>
@@ -1975,9 +2586,11 @@ When no option for generating files is specified, the raw trace data files are v
 </tbody>
 </table>
 <p>Requests are used to look up <code>ref:</code> nodes in <code>.trace/&lt;solution-set&gt;.ctrace-run.yml</code>. More than one may match.</p>
+<p>A <code>packet:</code> array in a <code>ref:</code> matches any listed packet name. The other lookup parameters still apply.</p>
 <p>Types <code>overflow</code> and <code>error</code> report stream and decoder states and are not associated to a setings entry. Hence they do not resolve to a <code>ref:</code> node.</p>
 <h3 id="ctf-format">CTF Format</h3>
 <p>The generated <a href="https://diamon.org/ctf/v1.8.3/">Common Trace Format (CTF) v1.8.3</a> is compatible with <a href="https://eclipse.dev/tracecompass/#home">Trace Compass</a> and is used by <a href="https://marketplace.visualstudio.com/items?itemName=eclipse-cdt.vscode-trace-extension">Trace Viewer for VS Code</a>. It uses the following files that are generated by <code>ctrace</code> in the directory <code>.trace/&lt;solution-set&gt;.ctf/</code>.</p>
+<p>ETM CTF export is not supported initially.</p>
 <table>
 <thead>
 <tr>
@@ -2074,6 +2687,154 @@ When no option for generating files is specified, the raw trace data files are v
 </tbody>
 </table>
 <p>The <code>DWT_CTRL</code> disable mask preserves <code>CYCCNTENA</code> because application software may use the DWT cycle counter. It also preserves <code>CYCDISS</code> on Armv8-M processors with the Security Extension. This bit controls whether the counter increments in Secure state.</p>
+<h3 id="etmv3_1">ETMv3</h3>
+<p>The following ETMv3 register values are used for <code>ctrace-disable:</code> on Cortex-M processors:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Offset</th>
+<th style="text-align: left;"><code>value:</code></th>
+<th style="text-align: left;"><code>mask:</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>ETMv3_ETMCR</code></td>
+<td style="text-align: left;"><code>0x000</code></td>
+<td style="text-align: left;"><code>0x00000411</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv3_ETMTRIGGER</code></td>
+<td style="text-align: left;"><code>0x008</code></td>
+<td style="text-align: left;"><code>0x0000406F</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv3_ETMSR</code></td>
+<td style="text-align: left;"><code>0x010</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>0x0000000C</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv3_ETMTEEVR</code></td>
+<td style="text-align: left;"><code>0x020</code></td>
+<td style="text-align: left;"><code>0x0000406F</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv3_ETMTECR1</code></td>
+<td style="text-align: left;"><code>0x024</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv3_ETMTESSEICR</code></td>
+<td style="text-align: left;"><code>0x1F0</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv3_ETMTSEVR</code> (Cortex-M4/M23 only)</td>
+<td style="text-align: left;"><code>0x1F8</code></td>
+<td style="text-align: left;"><code>0x0000406F</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>ETMv3_ETMTRIGGER</code>, <code>ETMv3_ETMTEEVR</code>, and <code>ETMv3_ETMTSEVR</code> select the always-false event.</p>
+<p>For configuration, clear <code>ETMv3_ETMCR[0]</code> (Power down), set <code>ETMv3_ETMCR[10]</code> (Programming) in a separate write, and wait for <code>ETMv3_ETMSR[1] = 1</code>. Apply the configuration, then clear Programming and wait for <code>ETMv3_ETMSR[1] = 0</code>.</p>
+<p>For power down, set <code>ETMv3_ETMCR[10]</code> (Programming) and wait for <code>ETMv3_ETMSR[1] = 1</code>. Apply the <code>ETMv3_ETMCR</code> disable settings with <code>ETMv3_ETMCR[0] = 0</code>, program all other disable registers, then set <code>ETMv3_ETMCR[0]</code> (Power down).</p>
+<h3 id="etmv4_1">ETMv4</h3>
+<p>The following ETMv4 register values are used for <code>ctrace-disable:</code> on Cortex-M processors. For Cortex-M7, this table covers the instruction-only ETM configuration. These are disabled settings; most programmable fields have an UNKNOWN value after trace unit reset.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Offset</th>
+<th style="text-align: left;"><code>value:</code></th>
+<th style="text-align: left;"><code>mask:</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCPRGCTLR</code></td>
+<td style="text-align: left;"><code>0x004</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCCONFIGR</code></td>
+<td style="text-align: left;"><code>0x010</code></td>
+<td style="text-align: left;"><code>0x00000001</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCEVENTCTL0R</code></td>
+<td style="text-align: left;"><code>0x020</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCEVENTCTL1R</code></td>
+<td style="text-align: left;"><code>0x024</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCSTALLCTLR</code></td>
+<td style="text-align: left;"><code>0x02C</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCTSCTLR</code></td>
+<td style="text-align: left;"><code>0x030</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCCCCTLR</code></td>
+<td style="text-align: left;"><code>0x038</code></td>
+<td style="text-align: left;"><code>0x00000004</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCTRACEIDR</code></td>
+<td style="text-align: left;"><code>0x040</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCVICTLR</code></td>
+<td style="text-align: left;"><code>0x080</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCVIPCSSCTLR</code></td>
+<td style="text-align: left;"><code>0x08C</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCRSCTLR&lt;n&gt;</code> (<code>&lt;n&gt;</code> = 2 or 3)</td>
+<td style="text-align: left;"><code>0x200 + &lt;n&gt;*0x004</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ETMv4_TRCPDCR</code></td>
+<td style="text-align: left;"><code>0x310</code></td>
+<td style="text-align: left;"><code>0x00000000</code></td>
+<td style="text-align: left;"><code>None</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>ETMv4_TRCCCCTLR.THRESHOLD</code> uses the minimum cycle-count threshold of <code>4</code>, documented in <code>ETMv4_TRCIDR3.CCITMIN</code> for Cortex-M7, M33, M52, M55, and M85.</p>
+<p>For configuration, set <code>ETMv4_TRCPDCR.PU</code> to request power and wait for <code>ETMv4_TRCPDSR.POWER = 1</code>. Clear <code>ETMv4_TRCPRGCTLR.EN</code> and wait for <code>ETMv4_TRCSTATR.IDLE = 1</code>. Apply the configuration, then set <code>ETMv4_TRCPRGCTLR.EN</code> and wait for <code>ETMv4_TRCSTATR.IDLE = 0</code>.</p>
+<p>For power down, clear <code>ETMv4_TRCPRGCTLR.EN</code> and wait for <code>ETMv4_TRCSTATR.IDLE = 1</code>. Program all other disable registers except <code>ETMv4_TRCPDCR</code>, then clear <code>ETMv4_TRCPDCR.PU</code> to release the power-up request and permit power down.</p>
 <h2 id="processor-specific-trace-features">Processor-Specific Trace Features</h2>
 <p>TODO: Discard most of the following chapters. Condensed in table further above.</p>
 <p>The following information lists the Cortex-M processors and the DWT, ITM, ETM, MTB, and PMU implementation options.</p>
@@ -2125,7 +2886,7 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">-</td>
 <td style="text-align: left;"><code>4</code> comps</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">Optional ETMv3.4/v3.5 <em>instruction trace</em><br>Up to <code>4</code> DWT comparator inputs; <code>1</code> reduced-function counter in newer revisions; <code>2</code> external inputs; start/stop logic; read-only <code>ETMSYNCFR</code> fixed at <code>1024</code></td>
+<td style="text-align: left;">Optional ETMv3.4/v3.5 <em>instruction trace</em><br>Up to <code>4</code> DWT comparator inputs; <code>1</code> reduced-function counter in newer revisions; <code>2</code> external inputs; start/stop logic; read-only <code>ETMv3_ETMSYNCFR</code> fixed at <code>1024</code></td>
 <td style="text-align: left;">-</td>
 </tr>
 <tr>
@@ -2134,7 +2895,7 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">-</td>
 <td style="text-align: left;"><code>4</code> comps</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">Optional ETMv3.5 <em>instruction trace</em><br>Up to <code>4</code> DWT comparator inputs; <code>1</code> reduced-function counter; <code>2</code> external inputs; start/stop logic; read-only <code>ETMSYNCFR</code> fixed at <code>1024</code></td>
+<td style="text-align: left;">Optional ETMv3.5 <em>instruction trace</em><br>Up to <code>4</code> DWT comparator inputs; <code>1</code> reduced-function counter; <code>2</code> external inputs; start/stop logic; read-only <code>ETMv3_ETMSYNCFR</code> fixed at <code>1024</code></td>
 <td style="text-align: left;">-</td>
 </tr>
 <tr>
@@ -2143,7 +2904,7 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">-</td>
 <td style="text-align: left;"><code>4</code> comps</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">Optional ETMv4 <em>instruction trace</em> or <em>instruction and data trace</em>;<br><em>instruction-only</em> resources: <code>4</code> DWT inputs, <code>1</code> reduced-function counter, <code>2</code> resource-selector pairs, <code>1</code> single-shot control, read-only <code>TRCSYNCPR</code>;<br><em>instruction+data</em> resources: <code>4</code> DWT inputs, <code>2</code> counters, <code>8</code> resource-selector pairs, <code>4</code> address-comparator pairs, <code>2</code> data-value comparators, <code>1</code> four-state sequencer, read/write <code>TRCSYNCPR</code></td>
+<td style="text-align: left;">Optional ETMv4 <em>instruction trace</em> or <em>instruction and data trace</em>;<br><em>instruction-only</em> resources: <code>4</code> DWT inputs, <code>1</code> reduced-function counter, <code>2</code> resource-selector pairs, <code>1</code> single-shot control, read-only <code>ETMv4_TRCSYNCPR</code>;<br><em>instruction+data</em> resources: <code>4</code> DWT inputs, <code>2</code> counters, <code>8</code> resource-selector pairs, <code>4</code> address-comparator pairs, <code>2</code> data-value comparators, <code>1</code> four-state sequencer, read/write <code>ETMv4_TRCSYNCPR</code></td>
 <td style="text-align: left;">-</td>
 </tr>
 <tr>
@@ -2153,7 +2914,7 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">-</td>
 <td style="text-align: left;"><code>4</code> comps; no trace</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">Optional ETMv3.5 <em>instruction trace</em>; mutually exclusive with MTB<br><code>4</code> DWT comparator inputs; <code>1</code> reduced-function counter; <code>2</code> external inputs; start/stop logic; read-only <code>ETMSYNCFR</code> fixed at <code>1024</code> Optional; mutually exclusive with ETM; start/stop using <code>2</code> or <code>4</code> DWT inputs, <code>TSTART</code>/<code>TSTOP</code> inputs, or software; watermark autostop</td>
+<td style="text-align: left;">Optional ETMv3.5 <em>instruction trace</em>; mutually exclusive with MTB<br><code>4</code> DWT comparator inputs; <code>1</code> reduced-function counter; <code>2</code> external inputs; start/stop logic; read-only <code>ETMv3_ETMSYNCFR</code> fixed at <code>1024</code> Optional; mutually exclusive with ETM; start/stop using <code>2</code> or <code>4</code> DWT inputs, <code>TSTART</code>/<code>TSTOP</code> inputs, or software; watermark autostop</td>
 </tr>
 <tr>
 <td style="text-align: left;">Cortex-M33</td>
@@ -2161,7 +2922,7 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">-</td>
 <td style="text-align: left;"><code>4</code> comps</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">Optional ETMv4 <em>instruction trace</em><br><code>2</code> or <code>4</code> DWT inputs; <code>1</code> reduced-function counter; <code>2</code> resource-selector pairs; <code>1</code> single-shot control; read-only <code>TRCSYNCPR</code></td>
+<td style="text-align: left;">Optional ETMv4 <em>instruction trace</em><br><code>2</code> or <code>4</code> DWT inputs; <code>1</code> reduced-function counter; <code>2</code> resource-selector pairs; <code>1</code> single-shot control; read-only <code>ETMv4_TRCSYNCPR</code></td>
 <td style="text-align: left;">Optional; start/stop using <code>2</code> or <code>4</code> DWT inputs, CTI inputs, or software; watermark autostop</td>
 </tr>
 <tr>
@@ -2170,7 +2931,7 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;"><code>4</code> comps</td>
 <td style="text-align: left;"><code>8</code> comps</td>
 <td style="text-align: left;">Debug-set-dependent</td>
-<td style="text-align: left;">Optional ETMv4.5 <em>instruction trace</em><br><code>2</code>, <code>4</code>, or <code>8</code> DWT inputs; <code>1</code> reduced-function counter; resource selectors; <code>1</code> single-shot control; read-only <code>TRCSYNCPR</code></td>
+<td style="text-align: left;">Optional ETMv4.5 <em>instruction trace</em><br><code>2</code>, <code>4</code>, or <code>8</code> DWT inputs; <code>1</code> reduced-function counter; resource selectors; <code>1</code> single-shot control; read-only <code>ETMv4_TRCSYNCPR</code></td>
 <td style="text-align: left;">-</td>
 </tr>
 <tr>
@@ -2179,7 +2940,7 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;"><code>4</code> comps</td>
 <td style="text-align: left;"><code>8</code> comps</td>
 <td style="text-align: left;">Debug-set-dependent</td>
-<td style="text-align: left;">Optional ETMv4.5 <em>instruction trace</em><br><code>2</code>, <code>4</code>, or <code>8</code> DWT inputs; <code>1</code> reduced-function counter; <code>2</code> resource-selector pairs; <code>1</code> single-shot control; <code>4</code> external-input selectors; <code>2</code> external outputs; read-only <code>TRCSYNCPR</code></td>
+<td style="text-align: left;">Optional ETMv4.5 <em>instruction trace</em><br><code>2</code>, <code>4</code>, or <code>8</code> DWT inputs; <code>1</code> reduced-function counter; <code>2</code> resource-selector pairs; <code>1</code> single-shot control; <code>4</code> external-input selectors; <code>2</code> external outputs; read-only <code>ETMv4_TRCSYNCPR</code></td>
 <td style="text-align: left;">-</td>
 </tr>
 <tr>
@@ -2188,7 +2949,7 @@ When no option for generating files is specified, the raw trace data files are v
 <td style="text-align: left;">-</td>
 <td style="text-align: left;"><code>8</code> comps</td>
 <td style="text-align: left;">Debug-set-dependent</td>
-<td style="text-align: left;">Optional ETMv4.5 <em>instruction trace</em><br><code>4</code> or <code>8</code> DWT inputs; <code>1</code> reduced-function counter; <code>2</code> resource-selector pairs; <code>1</code> single-shot control; <code>4</code> external-input selectors; <code>2</code> external outputs; read-only <code>TRCSYNCPR</code></td>
+<td style="text-align: left;">Optional ETMv4.5 <em>instruction trace</em><br><code>4</code> or <code>8</code> DWT inputs; <code>1</code> reduced-function counter; <code>2</code> resource-selector pairs; <code>1</code> single-shot control; <code>4</code> external-input selectors; <code>2</code> external outputs; read-only <code>ETMv4_TRCSYNCPR</code></td>
 <td style="text-align: left;">-</td>
 </tr>
 </tbody>
@@ -2326,10 +3087,10 @@ When no option for generating files is specified, the raw trace data files are v
 <h3 id="etm-synchronization">ETM Synchronization</h3>
 <p>The ETM synchronization range <code>0</code>, <code>256</code>, ... , <code>1M</code> is not generally configurable on the listed Cortex-M processors.</p>
 <ul>
-<li>Cortex-M3, Cortex-M4, and Cortex-M23 ETMv3 implementations use a read-only <code>ETMSYNCFR</code> fixed at <code>1024</code> trace bytes.</li>
-<li>Cortex-M33, Cortex-M52, Cortex-M55, and Cortex-M85 use a read-only <code>TRCSYNCPR</code> fixed at <code>1024</code> trace bytes.</li>
-<li>Cortex-M7 instruction-only ETM uses a read-only <code>TRCSYNCPR</code> fixed at <code>1024</code> trace bytes.</li>
-<li>Cortex-M7 instruction-and-data ETM has a programmable <code>TRCSYNCPR</code>. The requested period must use an implemented power-of-two encoding.</li>
+<li>Cortex-M3, Cortex-M4, and Cortex-M23 ETMv3 implementations use a read-only <code>ETMv3_ETMSYNCFR</code> fixed at <code>1024</code> trace bytes.</li>
+<li>Cortex-M33, Cortex-M52, Cortex-M55, and Cortex-M85 use a read-only <code>ETMv4_TRCSYNCPR</code> fixed at <code>1024</code> trace bytes.</li>
+<li>Cortex-M7 instruction-only ETM uses a read-only <code>ETMv4_TRCSYNCPR</code> fixed at <code>1024</code> trace bytes.</li>
+<li>Cortex-M7 instruction-and-data ETM has a programmable <code>ETMv4_TRCSYNCPR</code>. The requested period must use an implemented power-of-two encoding.</li>
 </ul>
 <p>Among the listed Arm ETM implementations, an <code>ETM\&lt;period&gt;</code> override is therefore configurable only for the Cortex-M7 instruction-and-data ETM. For other implementations, the tool should accept a fixed or default setting and diagnose attempts to override it.</p>
 <p>The ETM synchronization unit is <strong>trace bytes</strong>, not processor cycles.</p>
@@ -2399,11 +3160,11 @@ When no option for generating files is specified, the raw trace data files are v
 </ul>
 <p>The requested <code>X</code>, <code>R</code>, <code>W</code>, <code>RW</code>, value-match, and range conditions are not supported by every ETM or MTB trigger path. The resolver should report when a condition is syntactically valid but cannot be represented by the selected component.</p>
 <h3 id="timestamps_1">Timestamps</h3>
-<p>ITM local timestamps, ETM timestamp packets, and ETM cycle-count timing are distinct facilities. ETM timestamp packets can carry values derived from a shared system or global timestamp source.</p>
+<p>ITM local timestamps, ETM local processor-cycle timing, and ETM global timestamp packets are distinct facilities. ETM global timestamps use a shared system timestamp source.</p>
 <ul>
 <li>ITM timestamp prescaler values <code>1</code>, <code>4</code>, <code>16</code>, and <code>64</code> are architectural.</li>
 <li>ITM timestamps require ITM and a functioning cycle counter.</li>
-<li>ETM timestamp packets correlate trace with the shared system timestamp domain, while ETM cycle counts report elapsed processor cycles within the instruction trace. The system timestamp generator and its distribution infrastructure are optional.</li>
+<li>ETM global timestamp packets correlate trace with the shared system timestamp domain, while ETM cycle counts report elapsed processor cycles within the instruction trace. The system timestamp generator and its distribution infrastructure are optional.</li>
 </ul>
 <h3 id="itm-channels">ITM Channels</h3>
 <p>A 32-bit <code>enable</code> mask is suitable for the architectural ITM stimulus ports.</p>
