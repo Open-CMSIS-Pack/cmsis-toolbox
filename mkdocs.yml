@@ -1,8 +1,10 @@
 site_name: CMSIS-Toolbox
 extra:
-  version: 2.15.0
+  version: 2.16.0
 repo_url: https://github.com/Open-CMSIS-Pack/cmsis-toolbox
 edit_uri: ./edit/main/docs
+exclude_docs: |
+  README.md
 nav:
   - Home: index.md
   - Overview: overview.md
@@ -21,7 +23,9 @@ nav:
     - pyOCD Debugger: pyOCD-Debugger.md
     - J-Link Debugger: JLink-Debugger.md
   - Device Configuration Tools:
+    - Infineon Configuration Tools: InfineonConfig.md
     - MCUXpresso for NXP Devices: MCUXpressoConfig.md
+    - RA Smart Configurator for Renesas Devices: RenesasRASC.md
     - STM32CubeMX for STM32 Devices: CubeMX.md
 plugins: 
   - search
