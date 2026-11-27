@@ -148,26 +148,41 @@ The *Manage Solution* dialog presents settings for the selected device and debug
 
 ### Constraints
 
-- **Debug unit (NEW):** Use the debug server's [Debugger Capabilities File](#debugger-capabilities-file), not direct USB access. Verify which capabilities ST-Link V3 and the J-Link GDB Server report.
+- **Debug unit (NEW):** Use the debug server's [Debugger Capabilities File](#debugger-capabilities-file). The dialog should not query USB devices directly for their capabilities. Verify which capabilities ST-Link V3 and the J-Link GDB Server report.
 - **PDSC – Device:** DFP `<devices>` elements supply capabilities and debug defaults. **(NEW)** Read PDSC constraints directly for the dialog; `*.cbuild-run.yml` is an output.
 - **PDSC – Board:** DFP/BSP `<boards>` elements describe connectors and on-board probes. **(NEW)** Using board constraints in the dialog is deferred beyond the first implementation.
 - **Adapter registry:** Start with debug unit family defaults and static ranges, which may exceed an individual unit's limits. **(NEW)** Without probe access, narrow choices using PDSC data and `debugger:` selections in `*.csolution.yml`. With probe access, also use support flags and maxima from `debugger-caps.yml`.
 
 ### Debugger Capabilities File
 
-**(NEW)** The following workflow and YAML format define the debugger capabilities file. On open, save, or adapter change, *Manage Solution* requests capabilities for the selected probe type:
+**(NEW)** The following workflow and YAML format define the debugger capabilities file. *Manage Solution* refreshes the snapshot on open, save, or adapter change. A VS Code command also allows a manual refresh.
 
-```bash
-pyocd info --probe <probe-type> --debugger-caps --all
+With the workspace as the current working directory:
+
+```text
+pyocd list [-p] --capabilities-yml --output .cmsis/debugger-caps.yml
 ```
 
-`--debugger-caps` writes probe capabilities to `.cmsis/debugger-caps.yml` in the workspace without connecting to the target. pyOCD may supplement probe responses with internal VID/PID mappings. `--all` includes every matching probe; without it, pyOCD prompts for a choice if several match.
+The brackets indicate that `-p` (`--probes`) is optional; probe listing is already the default. The following additions to `pyocd list` are **(NEW)**:
+
+| Option | Category | Description |
+| --- | --- | --- |
+| `--capabilities` | list output | Human-readable capabilities for command-line debugger users. Available only with probe listing. |
+| `--capabilities-yml` | list output | Capabilities in the YAML format below. Available only with probe listing. |
+| `--probe <probe-filter>` | list options | **TBC:** Whether to add this filter to `list`, and whether filtering belongs in pyOCD or nearer the dialog. |
+| `-o, --output <path>` | list options | Write list output to the required file path. Relative paths resolve from the current working directory. |
+
+The two capabilities formats are alternatives. Output goes to standard output unless `--output` is supplied. pyOCD obtains capabilities without connecting to the target and may supplement probe responses with internal VID/PID mappings.
+
+The file is a snapshot used solely to narrow dialog options. Initially, use the first entry matching the selected adapter if several probes match. Stickiness and explicit probe selection from the *Manage Solution* dialog may be reconsidered later.
+
+When launching a debug connection, pyOCD validates the settings again against the actual probe's capabilities. Connecting or disconnecting probes after the snapshot may cause a different probe with incompatible capabilities to be selected.
 
 #### File Structure of `debugger-caps.yml`
 
 `debuggers:`                      |             | Content
 :---------------------------------|:------------|:---------------------------------------
-`- type:`                         |  Required   | Debug probe type.
+`- type:`                         |  Required   | **TBC:** Free-form, server-specific probe type; can be checked by the user-interface framework.
 &nbsp;&nbsp;&nbsp; `uid:`         |  Required   | Unique debug probe ID.
 &nbsp;&nbsp;&nbsp; `name:`        |  Optional   | Debug probe name displayed by pyOCD.
 &nbsp;&nbsp;&nbsp; `debug:`       |  Optional   | Supported debug protocols.
