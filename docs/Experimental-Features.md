@@ -139,6 +139,126 @@ The exported module can then be consumed by a Zephyr application by adding the m
 
 Example: the [cmsis-to-zephyr-concept `ml_inference` example](https://github.com/brondani/cmsis-to-zephyr-concept/tree/main/ml_inference) shows a minimal end-to-end flow: exporting a layer as a Zephyr module and consuming it from a Zephyr application.
 
+## Debug Adapter Settings
+
+The *Manage Solution* dialog presents settings for the selected device and debug unit before target connection. **(NEW)** marks proposed behavior or interfaces not yet implemented.
+
+- **(NEW)** Hide a setting only when the capability sources rule it out. Unknown support does not hide it.
+- Apply defaults only to unset fields. **(NEW)** On save, flag selections incompatible with the combined constraints without replacing them. Where to report them (dialog, log, or Problems view) remains open.
+
+### Constraints
+
+- **Debug unit (NEW):** Use the debug server's [Debugger Capabilities File](#debugger-capabilities-file). The dialog should not query USB devices directly for their capabilities. Verify which capabilities ST-Link V3 and the J-Link GDB Server report.
+- **PDSC – Device:** DFP `<devices>` elements supply capabilities and debug defaults. **(NEW)** Read PDSC constraints directly for the dialog; `*.cbuild-run.yml` is an output.
+- **PDSC – Board:** DFP/BSP `<boards>` elements describe connectors and on-board probes. **(NEW)** Using board constraints in the dialog is deferred beyond the first implementation.
+- **Adapter registry:** Start with debug unit family defaults and static ranges, which may exceed an individual unit's limits. **(NEW)** Without probe access, narrow choices using PDSC data and `debugger:` selections in `*.csolution.yml`. With probe access, also use support flags and maxima from `debugger-caps.yml`.
+
+### Debugger Capabilities File
+
+**(NEW)** The following workflow and YAML format define the debugger capabilities file. *Manage Solution* refreshes the snapshot on open, save, or adapter change. A VS Code command also allows a manual refresh.
+
+With the workspace as the current working directory:
+
+```text
+pyocd list [-p] --capabilities-yml --output .cmsis/debugger-caps.yml
+```
+
+The brackets indicate that `-p` (`--probes`) is optional; probe listing is already the default. The following additions to `pyocd list` are **(NEW)**:
+
+| Option | Category | Description |
+| --- | --- | --- |
+| `--capabilities` | list output | Human-readable capabilities for command-line debugger users. Available only with probe listing. |
+| `--capabilities-yml` | list output | Capabilities in the YAML format below. Available only with probe listing. |
+| `--probe <probe-filter>` | list options | **TBC:** Whether to add this filter to `list`, and whether filtering belongs in pyOCD or nearer the dialog. |
+| `-o, --output <path>` | list options | Write list output to the required file path. Relative paths resolve from the current working directory. |
+
+The two capabilities formats are alternatives. Output goes to standard output unless `--output` is supplied. pyOCD obtains capabilities without connecting to the target and may supplement probe responses with internal VID/PID mappings.
+
+The file is a snapshot used solely to narrow dialog options. Initially, use the first entry matching the selected adapter if several probes match. Stickiness and explicit probe selection from the *Manage Solution* dialog may be reconsidered later.
+
+**(NEW)** When launching a debug connection, pyOCD must validate the settings against the actual probe's capabilities. Connecting or disconnecting probes after the snapshot may cause a different probe with incompatible capabilities to be selected.
+
+#### File Structure of `debugger-caps.yml`
+
+`debuggers:`                      |             | Content
+:---------------------------------|:------------|:---------------------------------------
+`- type:`                         |  Required   | **TBC:** Free-form, server-specific probe type; can be checked by the user-interface framework.
+&nbsp;&nbsp;&nbsp; `uid:`         |  Required   | Unique debug probe ID.
+&nbsp;&nbsp;&nbsp; `name:`        |  Optional   | Debug probe name displayed by pyOCD.
+&nbsp;&nbsp;&nbsp; `debug:`       |  Optional   | Supported debug protocols.
+&nbsp;&nbsp;&nbsp; `trace:`       |  Optional   | Supported SWO encodings.
+
+Capability nodes under `debug:` and `trace:` can be empty or have a numeric value:
+
+| Representation | Meaning |
+| --- | --- |
+| Node omitted | Unsupported |
+| Empty node (`swd:`) | Supported; no probe maximum supplied |
+| Numeric value | Supported; maximum in the node's documented unit |
+
+With an empty node, the effective maximum comes from the adapter registry and applicable DFP/BSP constraints. If no usable snapshot is available, probe capabilities are unknown.
+
+`debug:`                          |             | Content
+:---------------------------------|:------------|:---------------------------------------
+`- jtag:`                         |  Optional   | JTAG support. Optional value: maximum debug clock (Hz).
+`- swd:`                          |  Optional   | SWD support. Optional value: maximum debug clock (Hz).
+
+`trace:`                          |             | Content
+:---------------------------------|:------------|:---------------------------------------
+`- swo-uart:`                     |  Optional   | SWO UART/NRZ support. Optional value: maximum input symbol rate (baud).
+`- swo-manchester:`               |  Optional   | SWO Manchester support. Optional value: maximum input symbol rate (baud).
+
+#### CMSIS-DAP Command Mapping
+
+[`DAP_Info(0xF0)`](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__Info.html) reports capabilities in `Info0`. **(NEW)** For the YAML mapping, all bits listed for a node must be set to report support. Omit unsupported capability nodes. SWO requires streaming; there is no `DAP_SWO_Data` fallback.
+
+| Node | `Info0` capability bits | `DAP_Info` command for maximum clock or symbol rate | Command to set rate |
+| --- | --- | --- | --- |
+| `debug/jtag` | Bit 1 (JTAG) | **(NEW)** Read maximum JTAG debug clock (Hz) | `DAP_SWJ_Clock` |
+| `debug/swd` | Bit 0 (SWD) | **(NEW)** Read maximum SWD debug clock (Hz) | `DAP_SWJ_Clock` |
+| `trace/swo-uart` | Bit 6 (streaming) and bit 2 (UART) | **(NEW)** Read maximum SWO UART/NRZ input symbol rate (baud) | `DAP_SWO_Baudrate` |
+| `trace/swo-manchester` | Bit 6 (streaming) and bit 3 (Manchester) | **(NEW)** Read maximum SWO Manchester input symbol rate (baud) | `DAP_SWO_Baudrate` |
+
+The four proposed `DAP_Info` queries would each return the probe's maximum without changing its rate. Their IDs are unassigned; `DAP_Info(0xF1)` is the model for a frequency query, but returns the Test Domain Timer frequency only.
+
+[`DAP_SWJ_Clock`](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__SWJ__Clock.html) returns status; [`DAP_SWO_Baudrate`](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__SWO__Baudrate.html) returns the configured symbol rate (possibly rounded), or zero if none was set. Neither lists rates or reports a maximum. Leave supported capability nodes empty when their maximum is unknown.
+
+### Debug Interface
+
+| Setting | Adapter registry | `debugger-caps.yml` **(NEW)** | PDSC - Device | PDSC - Board | Selection rule |
+| --- | --- | --- | --- | --- | --- |
+| Debug clock maximum | `clock` option `range`; **(NEW)** its upper bound is required | `debug/jtag` or `debug/swd` maximum for the selected protocol | **(NEW)** `debugconfig/@clockMax` | **(NEW)** `debugProbe/@debugClockMax` | **(NEW)** Use the lowest known maximum. |
+| Debug clock default | `defaults.clock` | — | `debugconfig/@clock` | `debugProbe/@debugClock` | Use the rightmost applicable default. **(NEW)** Cap it at the effective maximum. |
+| Supported debug protocols | `protocol` option `values` | `debug/jtag`, `debug/swd` | `debugport/jtag`, `debugport/swd` | `debugInterface/@connector` (hint only) | **(NEW)** Exclude if any source reports no support. If all are unknown, offer the protocol. |
+| Debug protocol default | `defaults.protocol` | — | `debugconfig/@default` | `debugProbe/@debugLink` (on-board probe) | Prefill the protocol from the available choices. |
+
+Example: An effective SWD maximum of 8 MHz caps the `CMSIS-DAP@pyOCD` registry default of 10 MHz at 8 MHz.
+
+### Trace Capture Settings
+
+| Setting | Adapter registry | `debugger-caps.yml` **(NEW)** | PDSC - Device | PDSC - Board | Selection rule |
+| --- | --- | --- | --- | --- | --- |
+| Trace type | — | `trace/swo-uart` or `trace/swo-manchester` indicates SWO support. | `trace/serialwire`, `trace/traceport`, `trace/tracebuffer` | `debugInterface/@connector` (hint only) | **(NEW)** Exclude only types the probe rules out. Long term, also exclude types the device rules out. |
+| SWO encoding | — | `trace/swo-uart`, `trace/swo-manchester` | — | — | Initially offer UART/NRZ. **(NEW)** Exclude it if the probe rules it out. Long term, offer all encodings it does not rule out. |
+| SWO baud rate | Static probe range, if defined | Maximum input symbol rate for the selected encoding (baud) | **(NEW)** `trace/serialwire/@clockMax` (SWO pin symbol clock in Hz, shared by both encodings) | — | **(NEW)** Apply the lowest known maximum to the dialog's range. Select a rate the target prescaler can generate and the probe can capture; this may be lower. |
+
+**(NEW)** Treat SWO baud rates as a range in the dialog. If a source later lists discrete rates, filter that list by the same constraints.
+
+Specify `trace/serialwire/@clockMax` only when vendor data supports the limit for the pin configuration and load.
+
+### Remaining Design Questions for Debug Adapter Settings
+
+| Area | Questions |
+| --- | --- |
+| Trace sources | Does *Configure Trace Generation* need per-processor attributes for ETM, MTB, and ITM presence? For ITM, would a comparator count or an implementation level be more useful? |
+| Trace buffer | How should the dialog distinguish buffers with and without an address range? Can one buffer have multiple ranges? Should those ranges map to PDSC `<memory>` elements? |
+| TPIU | Can the same approach cover parallel trace width (`trace/traceport/@width`) and maximum clock, or do they need separate handling? |
+
+!!! Note
+    **CMSIS-DAP baud rate selection (NEW):** With `output-clock` omitted or zero, a CMSIS-DAP debugger can try rates the target prescaler can generate within the known limits, highest first. Skip zero or rounded replies from `DAP_SWO_Baudrate`; use the first exact match for both target and probe. This selects a rate without detecting a running SWO signal.
+
+    **Documentation update (NEW):** Clarify the 1:1 fallback in *Trace Clocks* ([pyOCD](pyOCD-Debugger.md#trace-clocks), [J-Link](JLink-Debugger.md#trace-clocks)): if `output-clock` is omitted or zero and neither a suitable probe rate nor any limits are known, use `input-clock` as `output-clock`. Specify how to report an explicit rate the target or probe cannot achieve.
+
 ## Trace
 
 Target execution data is captured through trace stream channels. The overall process has these steps:
