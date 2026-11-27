@@ -176,7 +176,7 @@ The two capabilities formats are alternatives. Output goes to standard output un
 
 The file is a snapshot used solely to narrow dialog options. Initially, use the first entry matching the selected adapter if several probes match. Stickiness and explicit probe selection from the *Manage Solution* dialog may be reconsidered later.
 
-When launching a debug connection, pyOCD validates the settings again against the actual probe's capabilities. Connecting or disconnecting probes after the snapshot may cause a different probe with incompatible capabilities to be selected.
+**(NEW)** When launching a debug connection, pyOCD must validate the settings against the actual probe's capabilities. Connecting or disconnecting probes after the snapshot may cause a different probe with incompatible capabilities to be selected.
 
 #### File Structure of `debugger-caps.yml`
 
@@ -187,6 +187,16 @@ When launching a debug connection, pyOCD validates the settings again against th
 &nbsp;&nbsp;&nbsp; `name:`        |  Optional   | Debug probe name displayed by pyOCD.
 &nbsp;&nbsp;&nbsp; `debug:`       |  Optional   | Supported debug protocols.
 &nbsp;&nbsp;&nbsp; `trace:`       |  Optional   | Supported SWO encodings.
+
+Capability nodes under `debug:` and `trace:` can be empty or have a numeric value:
+
+| Representation | Meaning |
+| --- | --- |
+| Node omitted | Unsupported |
+| Empty node (`swd:`) | Supported; no probe maximum supplied |
+| Numeric value | Supported; maximum in the node's documented unit |
+
+With an empty node, the effective maximum comes from the adapter registry and applicable DFP/BSP constraints. If no usable snapshot is available, probe capabilities are unknown.
 
 `debug:`                          |             | Content
 :---------------------------------|:------------|:---------------------------------------
@@ -200,7 +210,7 @@ When launching a debug connection, pyOCD validates the settings again against th
 
 #### CMSIS-DAP Command Mapping
 
-[`DAP_Info(0xF0)`](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__Info.html) reports capabilities in `Info0`. **(NEW)** For the YAML mapping, all bits listed for a node must be set to report support. SWO requires streaming; there is no `DAP_SWO_Data` fallback.
+[`DAP_Info(0xF0)`](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__Info.html) reports capabilities in `Info0`. **(NEW)** For the YAML mapping, all bits listed for a node must be set to report support. Omit unsupported capability nodes. SWO requires streaming; there is no `DAP_SWO_Data` fallback.
 
 | Node | `Info0` capability bits | `DAP_Info` command for maximum clock or symbol rate | Command to set rate |
 | --- | --- | --- | --- |
@@ -211,7 +221,7 @@ When launching a debug connection, pyOCD validates the settings again against th
 
 The four proposed `DAP_Info` queries would each return the probe's maximum without changing its rate. Their IDs are unassigned; `DAP_Info(0xF1)` is the model for a frequency query, but returns the Test Domain Timer frequency only.
 
-[`DAP_SWJ_Clock`](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__SWJ__Clock.html) returns status; [`DAP_SWO_Baudrate`](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__SWO__Baudrate.html) returns the configured symbol rate (possibly rounded), or zero if none was set. Neither lists rates or reports a maximum. Omit the numeric value in `debugger-caps.yml` if the maximum is unknown.
+[`DAP_SWJ_Clock`](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__SWJ__Clock.html) returns status; [`DAP_SWO_Baudrate`](https://arm-software.github.io/CMSIS-DAP/latest/group__DAP__SWO__Baudrate.html) returns the configured symbol rate (possibly rounded), or zero if none was set. Neither lists rates or reports a maximum. Leave supported capability nodes empty when their maximum is unknown.
 
 ### Debug Interface
 
